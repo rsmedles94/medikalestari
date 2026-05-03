@@ -2,7 +2,6 @@
 
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
 import {
   Ambulance,
   Pill,
@@ -16,6 +15,7 @@ import {
   Bed,
   Dumbbell,
   Syringe,
+  Newspaper, // Ganti LayoutTextWindow yang sering error
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -26,6 +26,7 @@ interface ServiceItem {
 }
 
 const ServicesMenu: React.FC = () => {
+  // Menggunakan semua logic data asli kamu
   const services: ServiceItem[] = [
     {
       label: "Emergency",
@@ -107,21 +108,15 @@ const ServicesMenu: React.FC = () => {
   };
 
   return (
-    <section className="py-12 px-4 bg-[#005753]/10 md:bg-white relative overflow-hidden">
-      <div className="max-w-7xl mx-auto relative">
-        {/* Logo Watermark Khusus Mobile */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-5 md:hidden">
-          <Image
-            src="/medikalestari.png"
-            alt="Watermark"
-            width={300}
-            height={300}
-            className="object-contain"
-          />
-        </div>
-
+    <section className="py-12 px-4 bg-[#005753]/10 md:bg-white">
+      <div className="max-w-7xl mx-auto">
         <motion.div
-          className="grid grid-cols-3 lg:grid-cols-6 gap-y-10 gap-x-4 relative z-10"
+          /* 
+             Grid config: 
+             - grid-cols-3 (Mobile)
+             - lg:grid-cols-6 (Desktop)
+          */
+          className="grid grid-cols-3 lg:grid-cols-6 gap-y-10 gap-x-4"
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
@@ -131,8 +126,8 @@ const ServicesMenu: React.FC = () => {
             <motion.div
               key={service.label}
               variants={itemVariants}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.1 }} // Hover scale sesuai permintaan
+              whileTap={{ scale: 0.95 }} // Active scale
               className="flex flex-col items-center"
             >
               <Link
