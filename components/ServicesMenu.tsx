@@ -30,62 +30,62 @@ const ServicesMenu: React.FC = () => {
   const services: ServiceItem[] = [
     {
       label: "Emergency",
-      icon: <Ambulance size={32} strokeWidth={1.5} />,
+      icon: <Ambulance size={40} strokeWidth={1.5} />,
       href: "/services/emergency",
     },
     {
       label: "Farmasi",
-      icon: <Pill size={32} strokeWidth={1.5} />,
+      icon: <Pill size={40} strokeWidth={1.5} />,
       href: "/services/farmasi",
     },
     {
       label: "Fisioterapi",
-      icon: <Activity size={32} strokeWidth={1.5} />,
+      icon: <Activity size={40} strokeWidth={1.5} />,
       href: "/services/fisioterapi",
     },
     {
       label: "Kamar Perawatan",
-      icon: <Hotel size={32} strokeWidth={1.5} />,
+      icon: <Hotel size={40} strokeWidth={1.5} />,
       href: "/services/kamar-perawatan",
     },
     {
       label: "Laboratory",
-      icon: <Microscope size={32} strokeWidth={1.5} />,
+      icon: <Microscope size={40} strokeWidth={1.5} />,
       href: "/services/laboratory-testing",
     },
     {
       label: "Gawat Darurat",
-      icon: <Siren size={32} strokeWidth={1.5} />,
+      icon: <Siren size={40} strokeWidth={1.5} />,
       href: "/services/layanan-gawat-darurat",
     },
     {
       label: "Medical Checkup",
-      icon: <Heart size={32} strokeWidth={1.5} />,
+      icon: <Heart size={40} strokeWidth={1.5} />,
       href: "/services/medical-checkup",
     },
     {
       label: "Poli Klinik",
-      icon: <Stethoscope size={32} strokeWidth={1.5} />,
+      icon: <Stethoscope size={40} strokeWidth={1.5} />,
       href: "/services/poli-klinik",
     },
     {
       label: "Radiologi",
-      icon: <Radio size={32} strokeWidth={1.5} />,
+      icon: <Radio size={40} strokeWidth={1.5} />,
       href: "/services/radiologi",
     },
     {
       label: "Rawat Inap",
-      icon: <Bed size={32} strokeWidth={1.5} />,
+      icon: <Bed size={40} strokeWidth={1.5} />,
       href: "/services/rawat-inap",
     },
     {
       label: "Rehabilitasi",
-      icon: <Dumbbell size={32} strokeWidth={1.5} />,
+      icon: <Dumbbell size={40} strokeWidth={1.5} />,
       href: "/services/rehabilitasi-medik",
     },
     {
       label: "Vaksinasi",
-      icon: <Syringe size={32} strokeWidth={1.5} />,
+      icon: <Syringe size={40} strokeWidth={1.5} />,
       href: "/services/vaccination-services",
     },
   ];
