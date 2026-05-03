@@ -1,5 +1,6 @@
 import HeroSection from "@/components/HeroSection";
 import ServicesSection from "@/components/ServicesSection";
+import ServicesMenu from "@/components/ServicesMenu";
 import MadingSection from "@/components/MadingSection"; // Import komponen baru
 import LocationSection from "@/components/LocationSection";
 
@@ -9,6 +10,9 @@ export default async function Home() {
       <main>
         {/* 1. HeroSection: Banner Utama */}
         <HeroSection />
+
+        {/* 2. Services Menu: Grid Fasilitas & Layanan */}
+        <ServicesMenu />
 
         {/* 3. Services Section: Informasi & Pelayanan (Aksen Biru) */}
         <ServicesSection />
