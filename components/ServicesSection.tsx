@@ -185,7 +185,7 @@ const ServicesSection = () => {
       <div className="relative w-screen left-1/2 -translate-x-1/2 min-h-[550px] flex items-center overflow-hidden border-t border-slate-100 -mb-20">
         <div className="absolute inset-0">
           <Image
-            src="/kamar-perawatan.jpg"
+            src="/cs.jpeg"
             alt="Hubungi Kami"
             fill
             className="object-cover"
