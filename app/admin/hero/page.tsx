@@ -238,8 +238,8 @@ const AdminHeroBannersPage = () => {
                         }`}
                       >
                         {banner.device_type === "desktop"
-                          ? "Desktop (1900x720)"
-                          : "Mobile (2208x2760)"}
+                          ? "Desktop (1900x780)"
+                          : "Mobile (220x2760)"}
                       </span>
                     </td>
                     <td className="px-6 py-4 font-medium text-gray-800">

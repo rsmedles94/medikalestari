@@ -401,6 +401,21 @@ const HeroSection = () => {
             </div>
           );
         })}
+
+        {/* IMAGE INDICATORS - Mobile */}
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-40 flex items-center gap-1">
+          {mobileSlides.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setPage(index)}
+              className={`h-1 transition-all duration-300 ${
+                index === currentSlide
+                  ? "bg-white w-6"
+                  : "bg-white bg-opacity-50 w-2"
+              }`}
+            />
+          ))}
+        </div>
       </div>
 
       {/* SEARCH BAR */}

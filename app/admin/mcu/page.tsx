@@ -290,12 +290,6 @@ const MCUAdmin = () => {
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
-          <button
-            onClick={() => router.back()}
-            className="p-2 hover:bg-gray-200 rounded-lg transition"
-          >
-            <ChevronLeft size={24} className="text-gray-700" />
-          </button>
           <div>
             <h1 className="text-3xl font-bold text-[#005753]">
               Kelola Paket MCU
