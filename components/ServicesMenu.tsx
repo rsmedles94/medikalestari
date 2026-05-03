@@ -108,7 +108,7 @@ const ServicesMenu: React.FC = () => {
   };
 
   return (
-    <section className="py-12 px-4 bg-white">
+    <section className="py-12 px-4 bg-[#005753]/10 md:bg-white">
       <div className="max-w-7xl mx-auto">
         <motion.div
           /* 
