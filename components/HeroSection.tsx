@@ -370,6 +370,21 @@ const HeroSection = () => {
             </button>
           </div>
         </div>
+
+        {/* IMAGE INDICATORS - Desktop */}
+        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1">
+          {desktopSlides.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setPage(index)}
+              className={`h-1 transition-all duration-300 ${
+                index === currentSlide
+                  ? "bg-white/20 w-10"
+                  : "bg-white bg-opacity-50 w-10"
+              }`}
+            />
+          ))}
+        </div>
       </div>
 
       {/* BANNER AREA - Mobile */}
