@@ -373,7 +373,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               <div className="flex flex-col p-4">
                 <button
                   onClick={handleHomeClick}
-                  className="text-left p-4 font-bold text-[#005753] border-b text-lg"
+                  className="text-left p-4 font-semibold text-[#005753] border-b text-lg"
                 >
                   Beranda
                 </button>
@@ -381,7 +381,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                 <Link
                   href="/dokter#section-dokter"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-left p-4 font-bold text-[#005753] border-b text-lg"
+                  className="text-left p-4 font-semibold text-[#005753] border-b text-lg"
                 >
                   Dokter Kami
                 </Link>
@@ -389,7 +389,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                 <Link
                   href="/jadwal-dokter"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-left p-4 font-bold text-[#005753] border-b text-lg"
+                  className="text-left p-4 font-semibold text-[#005753] border-b text-lg"
                 >
                   Jadwal Dokter
                 </Link>
@@ -400,7 +400,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                       onClick={() =>
                         setActiveMenu(activeMenu === item ? null : item)
                       }
-                      className="w-full text-left p-4 font-semibold text-gray-700 flex justify-between items-center"
+                      className="w-full text-left p-4 font-semibold text-[#005753] flex justify-between items-center text-lg"
                     >
                       {item}
 
@@ -460,7 +460,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                                   setIsMobileMenuOpen(false);
                                   setActiveMenu(null);
                                 }}
-                                className="block p-4 pl-8 text-gray-600 border-b text-sm hover:bg-blue-50 hover:text-[#00423E] transition-colors"
+                                className="block p-4 pl-8 text-gray-600 border-b text-sm hover:bg-[#00423E]/10 hover:text-[#00423E] transition-colors"
                               >
                                 {subitem}
                               </Link>
@@ -475,7 +475,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                 <Link
                   href="/tentang-kami"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-left p-4 font-bold text-[#005753] border-b text-lg"
+                  className="text-left p-4 font-semibold text-[#005753] border-b text-lg"
                 >
                   Tentang Kami
                 </Link>
@@ -539,12 +539,12 @@ function AuthArea({
         href="/admin/dashboard"
         onClick={onClick}
         className={`flex items-center gap-2 font-medium ${
-          isMobile ? "text-[#005753] text-sm" : "text-white text-sm "
+          isMobile ? "text-[#005753] text-lg" : "text-white text-sm "
         }`}
         title="Panel Admin"
       >
         <LayoutDashboard size={isMobile ? 24 : 20} />
-        {isMobile && <span>DASHBOARD</span>}
+        {isMobile && <span>DASHBOARD ADMIN</span>}
       </Link>
     );
   }
