@@ -90,7 +90,7 @@ const ServiceSection = () => {
 
   return (
     <section className="w-full bg-white font-sans text-slate-800 relative py-20 overflow-hidden">
-      <div className="relative z-10 max-w-290 mx-auto px-4 md:px-8">
+      <div className="relative z-10 max-w-290 mx-auto px-4 md:px-8 -mt-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}

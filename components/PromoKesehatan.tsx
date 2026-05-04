@@ -64,7 +64,7 @@ const PromoKesehatan = () => {
 
   return (
     <section className="bg-[#005753]/5 py-12 px-4 sm:px-6 lg:px-8 min-h-screen mt-10">
-      <div className="relative z-10 max-w-290 mx-auto px-4 md:px-8">
+      <div className="relative z-10 max-w-290 mx-auto md:px-8">
         {/* Header Section */}
         <div className="text-center mb-12">
           <h2 className="text-2xl md:text-3xl font-bold text-black uppercase tracking-widest">

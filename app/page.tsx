@@ -5,7 +5,7 @@ import AboutMedikaLestari from "@/components/AboutMedikaLestari"
 import PromoKesehatan from "@/components/PromoKesehatan";
 import CallCenter from "@/components/CallCenter"; // Path disesuaikan menggunakan alias @
 import MadingSection from "@/components/MadingSection";
-import LocationSection from "@/components/LocationSection";
+
 
 export default async function Home() {
   return (
@@ -21,7 +21,6 @@ export default async function Home() {
         {/* Bagian Hubungi Kami */}
         <CallCenter />
 
-        <LocationSection />
         <MadingSection />
 
         <div className="pb-20"></div>

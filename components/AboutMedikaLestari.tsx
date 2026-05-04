@@ -28,8 +28,8 @@ const AboutMedikaLestari = () => {
   ];
 
   return (
-    <section className="py-16 bg-[#005753]/5 overflow-hidden mt-10">
-      <div className="relative z-10 max-w-290 mx-auto px-4 md:px-8">
+    <section className="py-16 bg-white overflow-hidden">
+      <div className="relative z-10 max-w-290 mx-auto px-4 md:px-8 border-b border-gray-200">
         {/* Header Section */}
         <div className="flex flex-col items-center mb-16 text-center">
           <div className="mb-8">
@@ -92,7 +92,7 @@ const AboutMedikaLestari = () => {
           </div>
 
           {/* Kolom Kanan: Video Youtube Utama & Video Lainnya */}
-          <div className="w-full lg:w-1/2">
+          <div className="w-full lg:w-1/2 mb-20">
             {/* Iframe Utama */}
             <div className="relative pt-[56.25%] overflow-hidden bg-slate-100">
               <iframe
