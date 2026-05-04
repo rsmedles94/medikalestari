@@ -1,11 +1,10 @@
 import HeroSection from "@/components/HeroSection";
 import ServiceSection from "@/components/ServicesSection"; // Nama disesuaikan dengan komponen baru
 import ServicesMenu from "@/components/ServicesMenu";
-import AboutMedikaLestari from "@/components/AboutMedikaLestari"
+import AboutMedikaLestari from "@/components/AboutMedikaLestari";
 import PromoKesehatan from "@/components/PromoKesehatan";
 import CallCenter from "@/components/CallCenter"; // Path disesuaikan menggunakan alias @
 import MadingSection from "@/components/MadingSection";
-
 
 export default async function Home() {
   return (
@@ -13,8 +12,9 @@ export default async function Home() {
       <main>
         <HeroSection />
         <ServicesMenu />
-        <AboutMedikaLestari />
+
         <ServiceSection />
+        <AboutMedikaLestari />
 
         <PromoKesehatan />
 
