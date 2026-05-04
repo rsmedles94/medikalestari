@@ -28,8 +28,8 @@ export default function MedicalCheckup() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="max-w-[1175px] mx-auto px-4 md:px-8 pt-16 pb-12 -mt-8">
+    <div className="min-h-screen bg-white mb-20">
+      <div className="max-w-[1175px] mx-auto px-4 md:px-8 pt-16 pb-12 -mt-8 ">
         <nav className="flex items-center gap-1 text-[14px] font-normal text-gray-300 mb-4">
           <Link
             href="/"
