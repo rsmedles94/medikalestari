@@ -32,7 +32,7 @@ const AboutMedikaLestari = () => {
       <div className="relative z-10 max-w-290 mx-auto px-4 md:px-8">
         {/* Header Section */}
         <div className="flex flex-col items-center mb-16 text-center">
-          <div className="mb-4">
+          <div className="mb-8">
             {/* Menggunakan logo medikalestari.png dari folder public */}
             <div className="relative w-20 h-20">
               <Image
@@ -43,17 +43,14 @@ const AboutMedikaLestari = () => {
               />
             </div>
           </div>
-          <h2 className="text-2xl md:text-4xl font-bold text-slate-800 uppercase tracking-tight">
-            Pusat Unggulan Medika Lestari
+          <h2 className="text-2xl md:text-3xl font-bold text-black uppercase tracking-widest">
+           Layanan Kesehatan Medika Lestari
           </h2>
         </div>
 
         <div className="flex flex-col lg:flex-row items-start gap-12">
           {/* Kolom Kiri: Teks & List */}
           <div className="w-full lg:w-1/2">
-            <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 leading-snug">
-              Pusat Keunggulan Medika Lestari
-            </h3>
             {/* Text Justify di sini */}
             <p className="text-gray-600 mb-8 leading-relaxed text-sm md:text-base text-justify">
               Pusat kesehatan terpadu yang menyediakan berbagai layanan medis
@@ -97,7 +94,7 @@ const AboutMedikaLestari = () => {
           {/* Kolom Kanan: Video Youtube Utama & Video Lainnya */}
           <div className="w-full lg:w-1/2">
             {/* Iframe Utama */}
-            <div className="relative pt-[56.25%] shadow-2xl rounded-sm overflow-hidden bg-slate-100">
+            <div className="relative pt-[56.25%] overflow-hidden bg-slate-100">
               <iframe
                 className="absolute top-0 left-0 w-full h-full"
                 src="https://www.youtube.com/embed/52jXBsYay1U"
@@ -107,12 +104,6 @@ const AboutMedikaLestari = () => {
               ></iframe>
             </div>
 
-            {/* Dekorasi garis bawah video */}
-            <div className="h-2 w-full flex mt-3">
-              <div className="flex-1 bg-[#005753]"></div>
-              <div className="flex-1 bg-red-600"></div>
-              <div className="flex-1 bg-[#005753]"></div>
-            </div>
 
             {/* Bagian Video Lainnya (2 Video Kecil) */}
             <div className="mt-8">
@@ -121,7 +112,7 @@ const AboutMedikaLestari = () => {
               </h4>
               <div className="grid grid-cols-2 gap-4">
                 {/* Video 1 */}
-                <div className="relative pt-[56.25%] rounded shadow-md overflow-hidden bg-slate-200">
+                <div className="relative pt-[56.25%] overflow-hidden bg-slate-200">
                   <iframe
                     className="absolute top-0 left-0 w-full h-full"
                     src="https://www.youtube.com/embed/m8IpHYHFhIY"
