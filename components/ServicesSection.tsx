@@ -15,7 +15,7 @@ interface ServiceItem {
   href: string | null;
 }
 
-const ServicesSection = () => {
+const ServiceSection = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = React.useState(true);
 
@@ -91,7 +91,6 @@ const ServicesSection = () => {
   return (
     <section className="w-full bg-white font-sans text-slate-800 relative py-20 overflow-hidden">
       <div className="relative z-10 max-w-290 mx-auto px-4 md:px-8">
-        <div className="mb-12">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -100,11 +99,12 @@ const ServicesSection = () => {
             className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-4 pb-5 border-b border-slate-100"
           >
             <div>
-              <h2 className="text-3xl md:text-4xl font-light text-slate-900 mt-1 uppercase tracking-tight">
+              <h2 className="text-3xl md:text-4xl font-light text-slate-900 -mt-10 md:mt-1 uppercase tracking-tight text-center md:text-left">
                 Pusat Pelayanan
               </h2>
             </div>
-            <p className="text-slate-500 max-w-sm text-sm md:text-right">
+
+            <p className="text-slate-500 max-w-sm text-sm text-center mx-auto md:text-left md:mx-0">
               Akses informasi fasilitas, jadwal tenaga medis, dan operasional
               rumah sakit.
             </p>
@@ -151,14 +151,10 @@ const ServicesSection = () => {
                         </p>
                       </div>
 
-                      {/* --- EFEK KEBETAN BUKU (DOG EAR) LEBIH BESAR --- */}
-                      {/* Background Segitiga Gelap (untuk kedalaman) */}
                       <div className="absolute bottom-0 right-0 z-30 w-0 h-0 border-solid border-t-[70px] border-r-[70px] border-t-transparent border-r-[#00403d] transition-all duration-300 opacity-0 group-hover:opacity-100" />
 
-                      {/* Lipatan Segitiga Putih */}
                       <div className="absolute bottom-0 right-0 z-40 w-0 h-0 border-solid border-b-[65px] border-l-[65px] border-b-white border-l-transparent translate-x-20 translate-y-20 transition-transform duration-300 group-hover:translate-x-0 group-hover:translate-y-0 shadow-[-4px_-4px_10px_rgba(0,0,0,0.2)]" />
 
-                      {/* Panah di area sobekan */}
                       <div className="absolute bottom-3 right-2 z-50 opacity-0 scale-50 transition-all duration-500 delay-100 group-hover:opacity-100 group-hover:scale-100">
                         <svg
                           className="w-7 h-7 text-[#005753]"
@@ -179,91 +175,8 @@ const ServicesSection = () => {
             </div>
           </div>
         </div>
-      </div>
-
-      {/* SECTION INFORMASI */}
-      <div className="relative w-screen left-1/2 -translate-x-1/2 min-h-[550px] flex items-center overflow-hidden border-t border-slate-100 -mb-20">
-        <div className="absolute inset-0">
-          <Image
-            src="/cs.jpeg"
-            alt="Hubungi Kami"
-            fill
-            className="object-cover"
-            priority
-          />
-        </div>
-        <div className="absolute inset-0 bg-black/60 z-10" />
-        <div className="relative z-20 max-w-290 mx-auto px-6 md:px-10 w-full grid grid-cols-1 md:grid-cols-2 gap-16 py-24 items-center">
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className="flex flex-col justify-center"
-          >
-            <h2 className="text-4xl md:text-6xl font-light text-white tracking-tighter leading-[1.1] mb-6">
-              Hubungi Pusat <br /> Informasi Kami
-            </h2>
-            <p className="text-white max-w-lg text-sm md:text-base leading-relaxed opacity-90">
-              Tim Layanan Pelanggan kami siap melayani pertanyaan, keluhan,
-              maupun panduan akses layanan Rumah Sakit Medika Lestari.
-            </p>
-          </motion.div>
-          <div className="flex flex-col justify-center gap-10 md:pl-10">
-            {[
-              {
-                id: "cs",
-                title: "HUBUNGI CUSTOMER CARE",
-                action: "https://wa.me/6282246232527",
-              },
-              {
-                id: "email",
-                title: "EMAIL RESMI MARKETING",
-                action: "mailto:marketing@rsmedikalestari.com",
-              },
-              {
-                id: "lokasi",
-                title: "LIHAT LOKASI RUMAH SAKIT",
-                action: "https://maps.app.goo.gl/19qWtLaQQXXN7d5W9",
-              },
-            ].map((menu, index) => (
-              <motion.a
-                key={menu.id}
-                href={menu.action}
-                target="_blank"
-                rel="noopener noreferrer"
-                initial={{ opacity: 0, x: 50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.2 }}
-                className="group flex flex-col w-full transition-all duration-300 hover:pl-4"
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs md:text-sm font-bold tracking-[0.25em] text-white transition-colors group-hover:text-white">
-                    {menu.title}
-                  </span>
-                  <svg
-                    className="w-5 h-5 text-white/50 transition-transform duration-300 group-hover:translate-x-2 group-hover:text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </div>
-                <div className="w-full h-[1px] bg-white/20 transition-all duration-300 group-hover:bg-white/60" />
-              </motion.a>
-            ))}
-          </div>
-        </div>
-      </div>
     </section>
   );
 };
 
-export default ServicesSection;
+export default ServiceSection;

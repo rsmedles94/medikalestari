@@ -108,14 +108,9 @@ const ServicesMenu: React.FC = () => {
   };
 
   return (
-    <section className="py-12 px-4 bg-[#005753]/10 md:bg-white">
+    <section className="py-12 px-4 bg-white mt-10">
       <div className="max-w-7xl mx-auto">
         <motion.div
-          /* 
-             Grid config: 
-             - grid-cols-3 (Mobile)
-             - lg:grid-cols-6 (Desktop)
-          */
           className="grid grid-cols-3 lg:grid-cols-6 gap-y-10 gap-x-4"
           variants={containerVariants}
           initial="hidden"
