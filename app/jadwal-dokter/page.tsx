@@ -6,7 +6,7 @@ import { ArrowRight, ChevronRight } from "lucide-react";
 import Link from "next/link";
 
 export const metadata = {
-  title: "Jadwal Dokter | RS Medika Lestari",
+  title: "Jadwal Dokter",
   description:
     "Lihat jadwal praktek lengkap semua dokter spesialis yang sedang anda cari.",
 };
