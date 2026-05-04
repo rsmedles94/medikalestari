@@ -11,6 +11,17 @@ import {
   LayoutDashboard,
   Stethoscope,
   Phone,
+  Ambulance,
+  Pill,
+  Activity,
+  Hotel,
+  Microscope,
+  Siren,
+  Heart,
+  Radio,
+  Bed,
+  Dumbbell,
+  Syringe,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthProvider";
@@ -80,6 +91,21 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
       "Asuransi & Rekanan",
       "Panduan Kunjungan",
     ],
+  };
+
+  const serviceIcons: Record<string, React.ReactNode> = {
+    Emergency: <Ambulance size={20} strokeWidth={1.5} />,
+    Farmasi: <Pill size={20} strokeWidth={1.5} />,
+    Fisioterapi: <Activity size={20} strokeWidth={1.5} />,
+    "Kamar Perawatan": <Hotel size={20} strokeWidth={1.5} />,
+    "Laboratory Testing": <Microscope size={20} strokeWidth={1.5} />,
+    "Layanan gawat darurat": <Siren size={20} strokeWidth={1.5} />,
+    "Medical Checkup": <Heart size={20} strokeWidth={1.5} />,
+    "Poli Klinik": <Stethoscope size={20} strokeWidth={1.5} />,
+    Radiologi: <Radio size={20} strokeWidth={1.5} />,
+    "Rawat Inap": <Bed size={20} strokeWidth={1.5} />,
+    "Rehabilitasi Medik": <Dumbbell size={20} strokeWidth={1.5} />,
+    "Vaccination Services": <Syringe size={20} strokeWidth={1.5} />,
   };
 
   const languages = [
@@ -159,7 +185,11 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                   setIsMobileMenuOpen(false);
                 }}
               >
-                <DropdownMenuItem title={title} href={itemHref} />
+                <DropdownMenuItem
+                  title={title}
+                  href={itemHref}
+                  icon={serviceIcons[title as keyof typeof serviceIcons]}
+                />
               </div>
             );
           })}
