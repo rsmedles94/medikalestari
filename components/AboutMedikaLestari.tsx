@@ -28,7 +28,7 @@ const AboutMedikaLestari = () => {
   ];
 
   return (
-    <section className="py-16 bg-white overflow-hidden">
+    <section className="py-16 bg-[#005753]/5 overflow-hidden mt-10">
       <div className="relative z-10 max-w-290 mx-auto px-4 md:px-8">
         {/* Header Section */}
         <div className="flex flex-col items-center mb-16 text-center">
@@ -46,7 +46,6 @@ const AboutMedikaLestari = () => {
           <h2 className="text-2xl md:text-4xl font-bold text-slate-800 uppercase tracking-tight">
             Pusat Unggulan Medika Lestari
           </h2>
-          <div className="w-24 h-1.5 bg-[#005753] mt-4"></div>
         </div>
 
         <div className="flex flex-col lg:flex-row items-start gap-12">
@@ -95,8 +94,9 @@ const AboutMedikaLestari = () => {
             </ul>
           </div>
 
-          {/* Kolom Kanan: Video Youtube */}
+          {/* Kolom Kanan: Video Youtube Utama & Video Lainnya */}
           <div className="w-full lg:w-1/2">
+            {/* Iframe Utama */}
             <div className="relative pt-[56.25%] shadow-2xl rounded-sm overflow-hidden bg-slate-100">
               <iframe
                 className="absolute top-0 left-0 w-full h-full"
@@ -106,11 +106,39 @@ const AboutMedikaLestari = () => {
                 allowFullScreen
               ></iframe>
             </div>
-            {/* Dekorasi garis bawah video sesuai screenshot (892).jpg */}
+
+            {/* Dekorasi garis bawah video */}
             <div className="h-2 w-full flex mt-3">
               <div className="flex-1 bg-[#005753]"></div>
               <div className="flex-1 bg-red-600"></div>
               <div className="flex-1 bg-[#005753]"></div>
+            </div>
+
+            {/* Bagian Video Lainnya (2 Video Kecil) */}
+            <div className="mt-8">
+              <h4 className="text-lg font-bold text-slate-800 mb-4 border-l-4 border-[#005753] pl-3">
+                Video Lainnya
+              </h4>
+              <div className="grid grid-cols-2 gap-4">
+                {/* Video 1 */}
+                <div className="relative pt-[56.25%] rounded shadow-md overflow-hidden bg-slate-200">
+                  <iframe
+                    className="absolute top-0 left-0 w-full h-full"
+                    src="https://www.youtube.com/embed/m8IpHYHFhIY"
+                    title="Video Pendukung 1"
+                    allowFullScreen
+                  ></iframe>
+                </div>
+                {/* Video 2 */}
+                <div className="relative pt-[56.25%] rounded shadow-md overflow-hidden bg-slate-200">
+                  <iframe
+                    className="absolute top-0 left-0 w-full h-full"
+                    src="https://www.youtube.com/embed/Y22T2vcL_Dg"
+                    title="Video Pendukung 2"
+                    allowFullScreen
+                  ></iframe>
+                </div>
+              </div>
             </div>
           </div>
         </div>
