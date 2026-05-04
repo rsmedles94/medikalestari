@@ -99,7 +99,7 @@ const ServiceSection = () => {
           className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-4 pb-5 border-b border-slate-100"
         >
           <div>
-            <h2 className="text-3xl md:text-4xl font-light text-slate-900 -mt-10 md:mt-1 uppercase tracking-tight text-center md:text-left">
+            <h2 className="text-3xl md:text-4xl font-light text-slate-900 mt-10 md:mt-1 uppercase tracking-tight text-center md:text-left">
               Pusat Pelayanan
             </h2>
           </div>
