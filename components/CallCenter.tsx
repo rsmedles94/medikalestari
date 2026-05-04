@@ -27,14 +27,14 @@ const CallCenter = () => {
     <section className="relative w-full min-h-[550px] flex items-center overflow-hidden border-t border-slate-100 mt-20">
       <div className="absolute inset-0">
         <Image
-          src="/cs.jpeg"
+          src="/cs.jpg"
           alt="Hubungi Kami"
           fill
           className="object-cover"
           priority
         />
       </div>
-      <div className="absolute inset-0 bg-black/60 z-10" />
+      <div className="absolute inset-0 bg-black/40 z-10" />
       <div className="relative z-20 max-w-290 mx-auto px-6 md:px-10 w-full grid grid-cols-1 md:grid-cols-2 gap-16 py-24 items-center">
         <motion.div
           initial={{ opacity: 0, x: -50 }}
