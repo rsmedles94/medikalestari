@@ -123,7 +123,12 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
             const title = typeof item === "string" ? item : item.label;
             let itemHref = "/";
 
-            if (title === "Profil RS Medika Lestari" || title === "Visi & Misi")
+            if (title === "Dokter Kami") itemHref = "/dokter#section-dokter";
+            else if (title === "Jadwal Dokter") itemHref = "/jadwal-dokter";
+            else if (
+              title === "Profil RS Medika Lestari" ||
+              title === "Visi & Misi"
+            )
               itemHref = "/tentang-kami";
             else if (title === "Emergency") itemHref = "/services/emergency";
             else if (title === "Farmasi") itemHref = "/services/farmasi";
@@ -241,33 +246,30 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               />
             </button>
 
-            <Link
-              href="/dokter#section-dokter"
-              className="flex items-center h-full px-6 transition-colors font-medium relative group"
+            <div
+              className="relative h-full flex items-center"
+              onMouseEnter={() => setActiveMenu("Dokter")}
+              onMouseLeave={() => setActiveMenu(null)}
             >
-              Dokter Kami
-              <div
-                className={`absolute bottom-0 left-6 right-6 h-1 bg-white rounded-t-full transition-transform duration-300 ${
-                  pathname === "/dokter"
-                    ? "scale-x-100"
-                    : "scale-x-0 group-hover:scale-x-100"
-                }`}
-              />
-            </Link>
+              <button className="flex items-center h-full px-6 transition-colors font-medium relative group">
+                Dokter
+                <div
+                  className={`absolute bottom-0 left-6 right-6 h-1 bg-white rounded-t-full transition-transform duration-300 ${
+                    activeMenu === "Dokter"
+                      ? "scale-x-100"
+                      : "scale-x-0 group-hover:scale-x-100"
+                  }`}
+                />
+              </button>
 
-            <Link
-              href="/jadwal-dokter"
-              className="flex items-center h-full px-6 transition-colors font-medium relative group"
-            >
-              Jadwal Dokter
-              <div
-                className={`absolute bottom-0 left-6 right-6 h-1 bg-white rounded-t-full transition-transform duration-300 ${
-                  pathname === "/jadwal-dokter"
-                    ? "scale-x-100"
-                    : "scale-x-0 group-hover:scale-x-100"
-                }`}
-              />
-            </Link>
+              <AnimatePresence>
+                {activeMenu === "Dokter" &&
+                  renderDropdownContent(
+                    ["Dokter Kami", "Jadwal Dokter"],
+                    "left-0 w-56",
+                  )}
+              </AnimatePresence>
+            </div>
 
             {Object.keys(menuData).map((item) => (
               <div
