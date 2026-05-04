@@ -56,11 +56,38 @@ const PROMO_DATA = [
   },
 ];
 
+function SkeletonCard() {
+  return (
+    <div className="bg-white border border-gray-100 flex flex-col h-full shadow-sm overflow-hidden">
+      <div className="relative aspect-square w-full bg-gray-100 overflow-hidden">
+        <div className="absolute inset-0 bg-linear-to-r from-gray-200 via-gray-100 to-gray-200 animate-[shimmer_1.2s_infinite]" />
+      </div>
+
+      <div className="p-4 md:p-5 flex flex-col grow text-center">
+        <div className="h-5 bg-gray-200 rounded w-3/4 mx-auto mb-3 animate-pulse" />
+        <div className="h-3 bg-gray-200 rounded w-11/12 mx-auto mb-2 animate-pulse" />
+        <div className="h-3 bg-gray-200 rounded w-10/12 mx-auto mb-2 animate-pulse" />
+        <div className="mt-auto">
+          <div className="h-8 bg-gray-200 rounded w-full animate-pulse" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const PromoKesehatan = () => {
   const [showAll, setShowAll] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Menampilkan 4 data awal, atau semua data (7) jika showAll true
   const visibleData = showAll ? PROMO_DATA : PROMO_DATA.slice(0, 4);
+
+  // Simple loading demo: hide after images / data ready.
+  // In a real app replace with real loading state (fetch/next/image onLoad etc.)
+  React.useEffect(() => {
+    const t = setTimeout(() => setIsLoading(false), 700);
+    return () => clearTimeout(t);
+  }, []);
 
   return (
     <section className="bg-[#005753]/5 py-12 px-4 sm:px-6 lg:px-8 min-h-screen mt-10">
@@ -78,49 +105,54 @@ const PromoKesehatan = () => {
 
         {/* Grid System: 2 Kolom Mobile, 4 Kolom Desktop */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-          {visibleData.map((item) => (
-            <div
-              key={item.id}
-              className="bg-white border border-gray-100 flex flex-col h-full shadow-sm overflow-hidden"
-            >
-              {/* Image Container (1600x1600 aspect ratio via aspect-square) */}
-              <div className="relative aspect-square w-full">
-                <Image
-                  src={item.image}
-                  alt={item.title}
-                  width={1600}
-                  height={1600}
-                  className="object-cover w-full h-full"
-                  priority={item.id <= 4}
-                />
-              </div>
+          {isLoading
+            ? // Show 4 skeletons while loading
+              Array.from({ length: 4 }).map((_, idx) => (
+                <SkeletonCard key={"skeleton-" + idx} />
+              ))
+            : visibleData.map((item) => (
+                <div
+                  key={item.id}
+                  className="bg-white border border-gray-100 flex flex-col h-full shadow-sm overflow-hidden"
+                >
+                  {/* Image Container (1600x1600 aspect ratio via aspect-square) */}
+                  <div className="relative aspect-square w-full">
+                    <Image
+                      src={item.image}
+                      alt={item.title}
+                      width={1600}
+                      height={1600}
+                      className="object-cover w-full h-full"
+                      priority={item.id <= 4}
+                    />
+                  </div>
 
-              {/* Text Content */}
-              <div className="p-4 md:p-5 flex flex-col flex-grow text-center">
-                <h3 className="text-sm md:text-lg font-bold text-[#005753] mb-3 min-h-[3rem] flex items-center justify-center leading-tight">
-                  {item.title}
-                </h3>
-                <p className="text-[10px] md:text-sm text-gray-500 leading-relaxed mb-6 line-clamp-4">
-                  {item.description}
-                </p>
-                <div className="mt-auto">
-                  <button className="w-full py-2 border border-[#005753] text-[#005753] text-[10px] md:text-xs font-bold uppercase tracking-wider transition-colors hover:bg-gray-50">
-                    Selengkapnya
-                  </button>
+                  {/* Text Content */}
+                  <div className="p-4 md:p-5 flex flex-col grow text-center">
+                    <h3 className="text-sm md:text-lg font-bold text-[#005753] mb-3 min-h-12 flex items-center justify-center leading-tight">
+                      {item.title}
+                    </h3>
+                    <p className="text-[10px] md:text-sm text-gray-500 leading-relaxed mb-6 line-clamp-4">
+                      {item.description}
+                    </p>
+                    <div className="mt-auto">
+                      <button className="w-full py-2 border border-[#005753] text-[#005753] text-[10px] md:text-xs font-bold uppercase tracking-wider transition-colors hover:bg-gray-50">
+                        Selengkapnya
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          ))}
+              ))}
         </div>
 
         {/* Toggle Text Link */}
         <div className="mt-12 text-center">
-          <span
+          <button
             onClick={() => setShowAll(!showAll)}
-            className="cursor-pointer text-[#005753] text-xs md:text-sm font-bold uppercase tracking-widest underline underline-offset-4 decoration-2 transition-opacity hover:opacity-70"
+            className="text-[#005753] text-xs md:text-sm font-bold uppercase tracking-widest underline underline-offset-4 decoration-2 transition-opacity hover:opacity-70"
           >
             {showAll ? "Tampilkan Lebih Sedikit" : "Lihat Semua"}
-          </span>
+          </button>
         </div>
       </div>
     </section>
