@@ -69,7 +69,7 @@ const ServiceSection = () => {
       title: "Medical Checkup",
       description: "Informasi lengkap layanan Medical Check-Up (MCU).",
       targetId: null,
-      href: "/medical-checkup",
+      href: "/services/medical-checkup",
     },
   ];
 
