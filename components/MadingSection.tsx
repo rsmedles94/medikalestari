@@ -65,7 +65,7 @@ const MadingSection = () => {
   );
 
   return (
-    <section className="w-full bg-[#005753]/5 py-16 px-4 md:px-8">
+    <section className="w-full bg-white md:bg-[#005753]/5 py-16 px-4 md:px-8">
       <div className="max-w-[1110px] mx-auto">
         {/* Header Navigation */}
         <div className="flex items-center justify-between mb-8 border-b border-gray-100">

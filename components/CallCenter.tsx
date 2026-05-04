@@ -24,7 +24,7 @@ const CallCenter = () => {
   ];
 
   return (
-    <section className="relative w-full min-h-[550px] flex items-center overflow-hidden border-t border-slate-100 mt-20">
+    <section className="relative w-full min-h-[550px] flex items-center overflow-hidden border-t border-slate-100 ">
       <div className="absolute inset-0">
         <Image
           src="/cs.jpg"
