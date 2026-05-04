@@ -121,7 +121,7 @@ const AboutMedikaLestari = () => {
                   ></iframe>
                 </div>
                 {/* Video 2 */}
-                <div className="relative pt-[56.25%] rounded shadow-md overflow-hidden bg-slate-200">
+                <div className="relative pt-[56.25%] overflow-hidden bg-slate-200">
                   <iframe
                     className="absolute top-0 left-0 w-full h-full"
                     src="https://www.youtube.com/embed/Y22T2vcL_Dg"
