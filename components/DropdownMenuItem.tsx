@@ -17,15 +17,15 @@ const DropdownMenuItem = ({ title, href, icon }: DropdownItemProps) => {
     >
       <div className="flex items-center gap-3">
         {/* ICON */}
-        {icon && <div className="text-[#005753] shrink-0">{icon}</div>}
+        {icon && <div className="text-[#003369] shrink-0">{icon}</div>}
 
         {/* PANAH KIRI */}
         <div className="w-0 opacity-0 -ml-4 group-hover:w-5 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300 ease-out">
-          <ArrowRight size={18} style={{ color: "#005753" }} />
+          <ArrowRight size={18} style={{ color: "#003369" }} />
         </div>
 
         {/* TEKS */}
-        <span className="text-[14px] text-gray-700 group-hover:text-[#005753] group-hover:font-medium transition-colors duration-300">
+        <span className="text-[14px] text-gray-700 group-hover:text-[#003369] group-hover:font-medium transition-colors duration-300">
           {title}
         </span>
       </div>

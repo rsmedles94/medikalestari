@@ -68,7 +68,7 @@ export default function DoctorSchedulePage() {
           <a
             href="https://wa.me/6282246232527"
             target="_blank"
-            className="inline-flex items-center gap-2 px-4 py-3 bg-[#005753] text-white text-[11px] sm:text-sm font-semibold rounded-lg hover:bg-[#005753]/90 transition-all hover:scale-95 shrink-0"
+            className="inline-flex items-center gap-2 px-4 py-3 bg-[#003369] text-white text-[11px] sm:text-sm font-semibold rounded-lg hover:bg-[#003369]/90 transition-all hover:scale-95 shrink-0"
           >
             <span className="hidden lg:inline">Hubungi Customer Care</span>
             <span className="md:hidden">Hubungi Customer Care</span>

@@ -106,7 +106,7 @@ const PromoKesehatan = () => {
   return (
     <section
       ref={sectionRef}
-      className="bg-[#005753]/5 py-12 px-4 sm:px-6 lg:px-8 min-h-screen mt-10"
+      className="bg-[#003369]/5 py-12 px-4 sm:px-6 lg:px-8 min-h-screen mt-10"
     >
       <div className="relative z-10 max-w-290 mx-auto md:px-8">
         {/* Header Section */}
@@ -143,14 +143,14 @@ const PromoKesehatan = () => {
                   </div>
 
                   <div className="p-4 md:p-5 flex flex-col grow text-center">
-                    <h3 className="text-sm md:text-lg font-bold text-[#005753] mb-3 min-h-12 flex items-center justify-center leading-tight">
+                    <h3 className="text-sm md:text-lg font-bold text-[#003369] mb-3 min-h-12 flex items-center justify-center leading-tight">
                       {item.title}
                     </h3>
                     <p className="text-[10px] md:text-sm text-gray-500 leading-relaxed mb-6 line-clamp-4">
                       {item.description}
                     </p>
                     <div className="mt-auto">
-                      <button className="w-full py-2 border border-[#005753] text-[#005753] text-[10px] md:text-xs font-bold uppercase tracking-wider transition-colors hover:bg-gray-50">
+                      <button className="w-full py-2 border border-[#003369] text-[#003369] text-[10px] md:text-xs font-bold uppercase tracking-wider transition-colors hover:bg-gray-50">
                         Selengkapnya
                       </button>
                     </div>
@@ -163,7 +163,7 @@ const PromoKesehatan = () => {
         <div className="mt-12 text-center">
           <button
             onClick={handleToggle}
-            className="text-[#005753] text-xs md:text-sm font-bold uppercase tracking-widest underline underline-offset-4 decoration-2 transition-opacity hover:opacity-70"
+            className="text-[#003369] text-xs md:text-sm font-bold uppercase tracking-widest underline underline-offset-4 decoration-2 transition-opacity hover:opacity-70"
           >
             {showAll ? "Tampilkan Lebih Sedikit" : "Lihat Semua"}
           </button>

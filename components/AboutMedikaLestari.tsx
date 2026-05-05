@@ -44,7 +44,7 @@ const AboutMedikaLestari = () => {
             </div>
           </div>
           <h2 className="text-2xl md:text-3xl font-bold text-black uppercase tracking-widest">
-           Layanan Kesehatan Medika Lestari
+            Layanan Kesehatan Medika Lestari
           </h2>
         </div>
 
@@ -63,7 +63,7 @@ const AboutMedikaLestari = () => {
               {excellencePoints.map((point, index) => (
                 <li key={index} className="flex items-start">
                   <div className="flex-shrink-0 mt-1">
-                    <div className="bg-[#005753] rounded-full p-1 shadow-sm">
+                    <div className="bg-[#003369] rounded-full p-1 shadow-sm">
                       <svg
                         className="h-3.5 w-3.5 text-white"
                         fill="none"
@@ -104,10 +104,9 @@ const AboutMedikaLestari = () => {
               ></iframe>
             </div>
 
-
             {/* Bagian Video Lainnya (2 Video Kecil) */}
             <div className="mt-8">
-              <h4 className="text-lg font-bold text-slate-800 mb-4 border-l-4 border-[#005753] pl-3">
+              <h4 className="text-lg font-bold text-slate-800 mb-4 border-l-4 border-[#003369] pl-3">
                 Video Lainnya
               </h4>
               <div className="grid grid-cols-2 gap-4">

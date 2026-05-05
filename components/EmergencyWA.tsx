@@ -49,7 +49,7 @@ const EmergencyWA = () => {
             rel="noopener noreferrer"
             whileHover={{ scale: 1.08 }}
             whileTap={{ scale: 0.92 }}
-            className="flex items-center gap-1.5 md:gap-2.5 bg-[#005753] text-white pl-3 pr-4 py-2 md:pl-4 md:pr-5 md:py-2.5 rounded-full font-sans no-underline shadow-lg md:shadow-none"
+            className="flex items-center gap-1.5 md:gap-2.5 bg-[#003369] text-white pl-3 pr-4 py-2 md:pl-4 md:pr-5 md:py-2.5 rounded-full font-sans no-underline shadow-lg md:shadow-none"
           >
             {/* Ikon WhatsApp Original */}
             <svg

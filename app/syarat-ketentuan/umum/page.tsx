@@ -14,7 +14,7 @@ const KetentruanUmum = () => {
       <Breadcrumb items={breadcrumbs} />
 
       {/* Header */}
-      <section className="bg-gradient-to-r from-[#005753] to-[#005753] text-white py-8 px-6">
+      <section className="bg-gradient-to-r from-[#003369] to-[#003369] text-white py-8 px-6">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold">Ketentuan Umum</h1>
         </div>
@@ -24,7 +24,7 @@ const KetentruanUmum = () => {
       <section className="py-12 px-6">
         <div className="max-w-4xl mx-auto">
           <div className="prose prose-blue max-w-none">
-            <h2 className="text-2xl font-bold text-[#005753] mb-6">
+            <h2 className="text-2xl font-bold text-[#003369] mb-6">
               Ketentuan Umum Penggunaan Layanan
             </h2>
 
@@ -87,8 +87,8 @@ const KetentruanUmum = () => {
                 </p>
               </div>
 
-              <div className="bg-blue-50 border-l-4 border-[#005753] p-6 rounded">
-                <h3 className="text-lg font-bold text-[#005753] mb-3">
+              <div className="bg-blue-50 border-l-4 border-[#003369] p-6 rounded">
+                <h3 className="text-lg font-bold text-[#003369] mb-3">
                   Catatan Penting
                 </h3>
                 <p className="text-gray-700">
@@ -105,7 +105,7 @@ const KetentruanUmum = () => {
           <div className="mt-12 flex justify-between items-center pt-6 border-t">
             <Link
               href="/syarat-ketentuan"
-              className="text-[#005753] hover:text-[#00423E] font-semibold flex items-center"
+              className="text-[#003369] hover:text-[#01274F] font-semibold flex items-center"
             >
               <svg
                 className="w-4 h-4 mr-2"
@@ -124,7 +124,7 @@ const KetentruanUmum = () => {
             </Link>
             <Link
               href="/syarat-ketentuan/hak-kewajiban"
-              className="text-[#005753] hover:text-[#00423E] font-semibold flex items-center"
+              className="text-[#003369] hover:text-[#01274F] font-semibold flex items-center"
             >
               Selanjutnya
               <svg

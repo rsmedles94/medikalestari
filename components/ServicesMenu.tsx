@@ -129,10 +129,10 @@ const ServicesMenu: React.FC = () => {
                 href={service.href}
                 className="flex flex-col items-center group w-full"
               >
-                <div className="mb-3 text-[#005753] transition-colors">
+                <div className="mb-3 text-[#003369] transition-colors">
                   {service.icon}
                 </div>
-                <span className="text-center text-[10px] md:text-sm font-medium text-gray-600 leading-tight group-hover:text-[#00423E]">
+                <span className="text-center text-[10px] md:text-sm font-medium text-gray-600 leading-tight group-hover:text-[#01274F]">
                   {service.label}
                 </span>
               </Link>

@@ -201,7 +201,7 @@ const SearchContent = () => {
                       animate={{ opacity: 1, y: 0 }}
                     >
                       <Link href={`/dokter/${doctor.id}`}>
-                        <div className="group flex gap-3 p-4 bg-white rounded-lg md:rounded-xl border border-gray-200 hover:border-[#005753] hover:shadow-md transition-all cursor-pointer md:p-5">
+                        <div className="group flex gap-3 p-4 bg-white rounded-lg md:rounded-xl border border-gray-200 hover:border-[#003369] hover:shadow-md transition-all cursor-pointer md:p-5">
                           <div className="w-20 h-20 md:w-24 md:h-24 rounded-lg overflow-hidden flex-shrink-0 bg-gray-200">
                             <Image
                               src={
@@ -215,10 +215,10 @@ const SearchContent = () => {
                             />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h3 className="text-sm md:text-lg font-bold text-gray-900 group-hover:text-[#005753] transition-colors line-clamp-1">
+                            <h3 className="text-sm md:text-lg font-bold text-gray-900 group-hover:text-[#003369] transition-colors line-clamp-1">
                               {doctor.name}
                             </h3>
-                            <p className="text-xs md:text-sm text-[#005753] font-semibold mb-1 md:mb-2">
+                            <p className="text-xs md:text-sm text-[#003369] font-semibold mb-1 md:mb-2">
                               {doctor.specialty}
                             </p>
                             <p className="text-xs md:text-sm text-gray-600 line-clamp-1 md:line-clamp-2">
@@ -226,7 +226,7 @@ const SearchContent = () => {
                             </p>
                           </div>
                           <div className="flex-shrink-0 flex items-center">
-                            <div className="px-3 md:px-4 py-2 bg-[#005753] text-white rounded-lg font-semibold text-xs md:text-sm hover:bg-[#00423E] transition-colors">
+                            <div className="px-3 md:px-4 py-2 bg-[#003369] text-white rounded-lg font-semibold text-xs md:text-sm hover:bg-[#01274F] transition-colors">
                               Lihat
                             </div>
                           </div>
@@ -270,7 +270,7 @@ const SearchContent = () => {
                       >
                         <button
                           onClick={() => handleCategoryClick(category)}
-                          className="px-3 md:px-4 py-2 bg-gradient-to-r from-blue-50 to-cyan-50 hover:from-blue-100 hover:to-cyan-100 border border-blue-200 hover:border-blue-300 rounded-full text-xs md:text-sm font-medium text-gray-700 hover:text-[#005753] transition-all whitespace-nowrap"
+                          className="px-3 md:px-4 py-2 bg-gradient-to-r from-blue-50 to-cyan-50 hover:from-blue-100 hover:to-cyan-100 border border-blue-200 hover:border-blue-300 rounded-full text-xs md:text-sm font-medium text-gray-700 hover:text-[#003369] transition-all whitespace-nowrap"
                         >
                           {category}
                         </button>
@@ -292,7 +292,7 @@ const SearchContent = () => {
                       >
                         <button
                           onClick={() => handleCategoryClick(category)}
-                          className="px-3 md:px-4 py-2 bg-gradient-to-r from-blue-50 to-cyan-50 hover:from-blue-100 hover:to-cyan-100 border border-blue-200 hover:border-blue-300 rounded-full text-xs md:text-sm font-medium text-gray-700 hover:text-[#005753] transition-all whitespace-nowrap"
+                          className="px-3 md:px-4 py-2 bg-gradient-to-r from-blue-50 to-cyan-50 hover:from-blue-100 hover:to-cyan-100 border border-blue-200 hover:border-blue-300 rounded-full text-xs md:text-sm font-medium text-gray-700 hover:text-[#003369] transition-all whitespace-nowrap"
                         >
                           {category}
                         </button>
@@ -307,7 +307,7 @@ const SearchContent = () => {
                     onClick={() => setShowAllCategories(!showAllCategories)}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="w-full flex items-center justify-center gap-2 py-3 text-[#005753] font-semibold text-sm hover:bg-blue-50 rounded-lg transition-colors"
+                    className="w-full flex items-center justify-center gap-2 py-3 text-[#003369] font-semibold text-sm hover:bg-blue-50 rounded-lg transition-colors"
                   >
                     <span>
                       {showAllCategories ? "Sembunyikan" : "Tampilkan Semua"}
@@ -341,7 +341,7 @@ const SearchContent = () => {
                           >
                             <button
                               onClick={() => handleCategoryClick(category)}
-                              className="px-3 md:px-4 py-2 bg-gradient-to-r from-blue-50 to-cyan-50 hover:from-blue-100 hover:to-cyan-100 border border-blue-200 hover:border-blue-300 rounded-full text-xs md:text-sm font-medium text-gray-700 hover:text-[#005753] transition-all whitespace-nowrap"
+                              className="px-3 md:px-4 py-2 bg-gradient-to-r from-blue-50 to-cyan-50 hover:from-blue-100 hover:to-cyan-100 border border-blue-200 hover:border-blue-300 rounded-full text-xs md:text-sm font-medium text-gray-700 hover:text-[#003369] transition-all whitespace-nowrap"
                             >
                               {category}
                             </button>
