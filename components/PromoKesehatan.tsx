@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Image from "next/image";
 
 // Data Demo dengan referensi ke public/promo/
@@ -79,18 +79,35 @@ const PromoKesehatan = () => {
   const [showAll, setShowAll] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Menampilkan 4 data awal, atau semua data (7) jika showAll true
+  // Ref untuk menargetkan bagian atas section
+  const sectionRef = useRef<HTMLElement>(null);
+
   const visibleData = showAll ? PROMO_DATA : PROMO_DATA.slice(0, 4);
 
-  // Simple loading demo: hide after images / data ready.
-  // In a real app replace with real loading state (fetch/next/image onLoad etc.)
   React.useEffect(() => {
     const t = setTimeout(() => setIsLoading(false), 700);
     return () => clearTimeout(t);
   }, []);
 
+  // Fungsi toggle dengan logic scroll
+  const handleToggle = () => {
+    if (showAll) {
+      // Jika saat ini sedang tampil semua, maka scroll ke atas saat ditutup
+      setShowAll(false);
+      sectionRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    } else {
+      setShowAll(true);
+    }
+  };
+
   return (
-    <section className="bg-[#005753]/5 py-12 px-4 sm:px-6 lg:px-8 min-h-screen mt-10">
+    <section
+      ref={sectionRef}
+      className="bg-[#005753]/5 py-12 px-4 sm:px-6 lg:px-8 min-h-screen mt-10"
+    >
       <div className="relative z-10 max-w-290 mx-auto md:px-8">
         {/* Header Section */}
         <div className="text-center mb-12">
@@ -98,16 +115,15 @@ const PromoKesehatan = () => {
             PROMO PAKET KESEHATAN
           </h2>
           <p className="mt-4 text-gray-600 max-w-3xl mx-auto text-sm md:text-base leading-relaxed">
-            Ketahuilah jenis pemeriksaan yang anda butuhkan dengan paket
-            Kesehatan & Medical Check Up dari kami
+            Kenali jenis pemeriksaan yang Anda butuhkan melalui pilihan paket
+            Kesehatan Medika Lestari.
           </p>
         </div>
 
-        {/* Grid System: 2 Kolom Mobile, 4 Kolom Desktop */}
+        {/* Grid System */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {isLoading
-            ? // Show 4 skeletons while loading
-              Array.from({ length: 4 }).map((_, idx) => (
+            ? Array.from({ length: 4 }).map((_, idx) => (
                 <SkeletonCard key={"skeleton-" + idx} />
               ))
             : visibleData.map((item) => (
@@ -115,7 +131,6 @@ const PromoKesehatan = () => {
                   key={item.id}
                   className="bg-white border border-gray-100 flex flex-col h-full shadow-sm overflow-hidden"
                 >
-                  {/* Image Container (1600x1600 aspect ratio via aspect-square) */}
                   <div className="relative aspect-square w-full">
                     <Image
                       src={item.image}
@@ -127,7 +142,6 @@ const PromoKesehatan = () => {
                     />
                   </div>
 
-                  {/* Text Content */}
                   <div className="p-4 md:p-5 flex flex-col grow text-center">
                     <h3 className="text-sm md:text-lg font-bold text-[#005753] mb-3 min-h-12 flex items-center justify-center leading-tight">
                       {item.title}
@@ -148,7 +162,7 @@ const PromoKesehatan = () => {
         {/* Toggle Text Link */}
         <div className="mt-12 text-center">
           <button
-            onClick={() => setShowAll(!showAll)}
+            onClick={handleToggle}
             className="text-[#005753] text-xs md:text-sm font-bold uppercase tracking-widest underline underline-offset-4 decoration-2 transition-opacity hover:opacity-70"
           >
             {showAll ? "Tampilkan Lebih Sedikit" : "Lihat Semua"}

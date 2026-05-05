@@ -6,30 +6,30 @@ import Image from "next/image";
 const AboutMedikaLestari = () => {
   const excellencePoints = [
     {
-      title: "Women's Health Center",
-      desc: "Perawatan kesehatan khusus untuk wanita, termasuk kebidanan, ginekologi, dan kesehatan reproduksi.",
+      title: "Poli Kebidanan",
+      desc: "Layanan kesehatan khusus wanita yang mencakup pemeriksaan kehamilan, konsultasi kandungan, hingga perawatan kesehatan reproduksi dengan tenaga medis berpengalaman.",
     },
     {
-      title: "Stroke Assisted Living Center",
-      desc: "Pusat pemulihan pasca-stroke pertama di Indonesia yang terintegrasi langsung dengan rumah sakit.",
+      title: "Poli Gigi",
+      desc: "Perawatan gigi menyeluruh mulai dari pencegahan, penanganan masalah gigi dan mulut, hingga tindakan estetika dengan dukungan teknologi modern.",
     },
     {
-      title: "Emergency & Heart Attack Center",
-      desc: "Unit gawat darurat kami siap 24/7 untuk menangani kondisi darurat, termasuk serangan jantung, dengan respons cepat.",
+      title: " Medical Check Up",
+      desc: "Paket pemeriksaan kesehatan lengkap untuk deteksi dini berbagai penyakit, membantu Anda menjaga kondisi tubuh tetap optimal.",
     },
     {
-      title: "Heart & Vascular Center",
-      desc: "Pusat jantung dan vaskular dengan teknologi mutakhir untuk diagnosa dan pengobatan penyakit kardiovaskular.",
+      title: "Instalasi Gawat Darurat (IGD)",
+      desc: "Siaga 24 jam dengan tim medis profesional untuk menangani kondisi darurat secara cepat, tepat, dan responsif.",
     },
     {
-      title: "Dental Center",
-      desc: "Perawatan gigi lengkap, dari pencegahan hingga prosedur kosmetik dan bedah mulut dengan teknologi canggih.",
+      title: "Poli Jantung",
+      desc: "Layanan pemeriksaan dan penanganan penyakit jantung dengan fasilitas modern untuk diagnosis akurat dan perawatan yang optimal.",
     },
   ];
 
   return (
     <section className="py-16 bg-white overflow-hidden">
-      <div className="relative z-10 max-w-290 mx-auto px-4 md:px-8 border-b border-gray-200">
+      <div className="relative z-10 max-w-290 mx-auto px-4 md:px-8 -mt-15">
         {/* Header Section */}
         <div className="flex flex-col items-center mb-16 text-center">
           <div className="mb-8">
@@ -52,7 +52,7 @@ const AboutMedikaLestari = () => {
           {/* Kolom Kiri: Teks & List */}
           <div className="w-full lg:w-1/2">
             {/* Text Justify di sini */}
-            <p className="text-gray-600 mb-8 leading-relaxed text-sm md:text-base text-justify">
+            <p className="text-gray-600 mb-2 -mt-2 leading-relaxed text-sm md:text-base text-justify">
               Pusat kesehatan terpadu yang menyediakan berbagai layanan medis
               unggulan untuk memenuhi kebutuhan kesehatan Anda dan keluarga
               dengan standar pelayanan tinggi, didukung oleh tenaga medis ahli

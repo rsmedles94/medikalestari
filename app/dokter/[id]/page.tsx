@@ -91,7 +91,7 @@ const DoctorDetailPage = () => {
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              whileHover={{ scale: 1.5 }} // Scale 1.5 mungkin terlalu besar untuk lingkaran, 1.1 - 1.2 biasanya lebih pas
+              whileHover={{ scale: 1.5 }}
               transition={{
                 type: "spring",
                 stiffness: 300,
