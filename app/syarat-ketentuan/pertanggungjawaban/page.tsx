@@ -17,7 +17,7 @@ const Pertanggungjawaban = () => {
       <Breadcrumb items={breadcrumbs} />
 
       {/* Header */}
-      <section className="bg-gradient-to-r from-[#004a8c] to-[#005753] text-white py-8 px-6">
+      <section className="bg-gradient-to-r from-[#005753] to-[#005753] text-white py-8 px-6">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold">Pertanggungjawaban</h1>
         </div>
@@ -29,7 +29,7 @@ const Pertanggungjawaban = () => {
           <div className="space-y-12">
             {/* Tanggung Jawab RS */}
             <div>
-              <h2 className="text-3xl font-bold text-[#004a8c] mb-6 pb-4 border-b-2 border-[#005753]">
+              <h2 className="text-3xl font-bold text-[#005753] mb-6 pb-4 border-b-2 border-[#005753]">
                 Tanggung Jawab RS Medika Lestari
               </h2>
 
@@ -102,7 +102,7 @@ const Pertanggungjawaban = () => {
 
             {/* Keterbatasan Tanggung Jawab */}
             <div>
-              <h2 className="text-3xl font-bold text-[#004a8c] mb-6 pb-4 border-b-2 border-[#005753]">
+              <h2 className="text-3xl font-bold text-[#005753] mb-6 pb-4 border-b-2 border-[#005753]">
                 Keterbatasan Tanggung Jawab
               </h2>
 
@@ -180,7 +180,7 @@ const Pertanggungjawaban = () => {
 
             {/* Prosedur Keluhan dan Pengaduan */}
             <div>
-              <h2 className="text-3xl font-bold text-[#004a8c] mb-6 pb-4 border-b-2 border-[#005753]">
+              <h2 className="text-3xl font-bold text-[#005753] mb-6 pb-4 border-b-2 border-[#005753]">
                 Prosedur Keluhan dan Pengaduan
               </h2>
 
@@ -264,7 +264,7 @@ const Pertanggungjawaban = () => {
 
             {/* Kontak */}
             <div className="bg-blue-50 border-l-4 border-[#005753] p-6 rounded">
-              <h3 className="text-lg font-bold text-[#004a8c] mb-3">
+              <h3 className="text-lg font-bold text-[#005753] mb-3">
                 Hubungi Tim Kami
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">

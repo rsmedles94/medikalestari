@@ -14,7 +14,7 @@ const KetentruanUmum = () => {
       <Breadcrumb items={breadcrumbs} />
 
       {/* Header */}
-      <section className="bg-gradient-to-r from-[#004a8c] to-[#005753] text-white py-8 px-6">
+      <section className="bg-gradient-to-r from-[#005753] to-[#005753] text-white py-8 px-6">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold">Ketentuan Umum</h1>
         </div>
@@ -24,7 +24,7 @@ const KetentruanUmum = () => {
       <section className="py-12 px-6">
         <div className="max-w-4xl mx-auto">
           <div className="prose prose-blue max-w-none">
-            <h2 className="text-2xl font-bold text-[#004a8c] mb-6">
+            <h2 className="text-2xl font-bold text-[#005753] mb-6">
               Ketentuan Umum Penggunaan Layanan
             </h2>
 
@@ -88,7 +88,7 @@ const KetentruanUmum = () => {
               </div>
 
               <div className="bg-blue-50 border-l-4 border-[#005753] p-6 rounded">
-                <h3 className="text-lg font-bold text-[#004a8c] mb-3">
+                <h3 className="text-lg font-bold text-[#005753] mb-3">
                   Catatan Penting
                 </h3>
                 <p className="text-gray-700">

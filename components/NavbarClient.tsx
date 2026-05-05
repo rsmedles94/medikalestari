@@ -91,6 +91,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
       "Asuransi & Rekanan",
       "Panduan Kunjungan",
     ],
+    Profil: ["Tentang Kami", "Indikator Mutu", "Rekanan Kami", "Karir"],
   };
 
   const serviceIcons: Record<string, React.ReactNode> = {
@@ -151,6 +152,10 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
             if (title === "Dokter Kami") itemHref = "/dokter#section-dokter";
             else if (title === "Jadwal Dokter") itemHref = "/jadwal-dokter";
+            else if (title === "Tentang Kami") itemHref = "/tentang-kami";
+            else if (title === "Indikator Mutu") itemHref = "/indikator-mutu";
+            else if (title === "Rekanan Kami") itemHref = "/rekanan-kami";
+            else if (title === "Karir") itemHref = "/careers";
             else if (
               title === "Profil RS Medika Lestari" ||
               title === "Visi & Misi"
@@ -218,19 +223,10 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
             <span className="text-gray-300">|</span>
 
             <Link
-              href="/careers"
+              href="/syarat-ketentuan"
               className="hover:text-[#00423E] hover:underline"
             >
-              Karir
-            </Link>
-
-            <span className="text-gray-300">|</span>
-
-            <Link
-              href="/tentang-kami"
-              className="hover:text-[#00423E] hover:underline"
-            >
-              Tentang Kami
+              Syarat & Ketentuan
             </Link>
           </div>
 
@@ -278,6 +274,28 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
             <div
               className="relative h-full flex items-center"
+              onMouseEnter={() => setActiveMenu("Profil")}
+              onMouseLeave={() => setActiveMenu(null)}
+            >
+              <button className="flex items-center h-full px-6 transition-colors font-medium relative group">
+                Profil
+                <div
+                  className={`absolute bottom-0 left-6 right-6 h-1 bg-white rounded-t-full transition-transform duration-300 ${
+                    activeMenu === "Profil"
+                      ? "scale-x-100"
+                      : "scale-x-0 group-hover:scale-x-100"
+                  }`}
+                />
+              </button>
+
+              <AnimatePresence>
+                {activeMenu === "Profil" &&
+                  renderDropdownContent(menuData["Profil"], "left-0 w-56")}
+              </AnimatePresence>
+            </div>
+
+            <div
+              className="relative h-full flex items-center"
               onMouseEnter={() => setActiveMenu("Dokter")}
               onMouseLeave={() => setActiveMenu(null)}
             >
@@ -301,31 +319,33 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               </AnimatePresence>
             </div>
 
-            {Object.keys(menuData).map((item) => (
-              <div
-                key={item}
-                className="relative h-full flex items-center"
-                onMouseEnter={() => setActiveMenu(item)}
-                onMouseLeave={() => setActiveMenu(null)}
-              >
-                <button className="flex items-center h-full px-6 transition-colors font-medium relative group">
-                  {item}
+            {Object.keys(menuData)
+              .filter((item) => item !== "Profil")
+              .map((item) => (
+                <div
+                  key={item}
+                  className="relative h-full flex items-center"
+                  onMouseEnter={() => setActiveMenu(item)}
+                  onMouseLeave={() => setActiveMenu(null)}
+                >
+                  <button className="flex items-center h-full px-6 transition-colors font-medium relative group">
+                    {item}
 
-                  <div
-                    className={`absolute bottom-0 left-6 right-6 h-1 bg-white rounded-t-full transition-transform duration-300 ${
-                      activeMenu === item
-                        ? "scale-x-100"
-                        : "scale-x-0 group-hover:scale-x-100"
-                    }`}
-                  />
-                </button>
+                    <div
+                      className={`absolute bottom-0 left-6 right-6 h-1 bg-white rounded-t-full transition-transform duration-300 ${
+                        activeMenu === item
+                          ? "scale-x-100"
+                          : "scale-x-0 group-hover:scale-x-100"
+                      }`}
+                    />
+                  </button>
 
-                <AnimatePresence>
-                  {activeMenu === item &&
-                    renderDropdownContent(menuData[item], "left-0 w-72")}
-                </AnimatePresence>
-              </div>
-            ))}
+                  <AnimatePresence>
+                    {activeMenu === item &&
+                      renderDropdownContent(menuData[item], "left-0 w-72")}
+                  </AnimatePresence>
+                </div>
+              ))}
           </div>
 
           <div className="flex items-center h-full gap-2 text-[15px]">
@@ -410,6 +430,57 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                   Beranda
                 </button>
 
+                <button
+                  onClick={() =>
+                    setActiveMenu(activeMenu === "Profil" ? null : "Profil")
+                  }
+                  className="w-full text-left p-4 font-semibold text-[#005753] flex justify-between items-center text-lg border-b"
+                >
+                  Profil
+                  <motion.span
+                    animate={{ rotate: activeMenu === "Profil" ? 180 : 0 }}
+                  >
+                    ▼
+                  </motion.span>
+                </button>
+
+                <AnimatePresence>
+                  {activeMenu === "Profil" && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="overflow-hidden bg-gray-50"
+                    >
+                      {menuData["Profil"].map((subitem) => {
+                        let itemHref = "/";
+
+                        if (subitem === "Tentang Kami")
+                          itemHref = "/tentang-kami";
+                        else if (subitem === "Indikator Mutu")
+                          itemHref = "/indikator-mutu";
+                        else if (subitem === "Rekanan Kami")
+                          itemHref = "/rekanan-kami";
+                        else if (subitem === "Karir") itemHref = "/careers";
+
+                        return (
+                          <Link
+                            key={subitem}
+                            href={itemHref}
+                            onClick={() => {
+                              setIsMobileMenuOpen(false);
+                              setActiveMenu(null);
+                            }}
+                            className="block p-4 pl-8 text-gray-600 border-b text-sm hover:bg-[#00423E]/10 hover:text-[#00423E] transition-colors"
+                          >
+                            {subitem}
+                          </Link>
+                        );
+                      })}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
                 <Link
                   href="/dokter#section-dokter"
                   onClick={() => setIsMobileMenuOpen(false)}
@@ -426,91 +497,93 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                   Jadwal Dokter
                 </Link>
 
-                {Object.keys(menuData).map((item) => (
-                  <div key={item} className="border-b">
-                    <button
-                      onClick={() =>
-                        setActiveMenu(activeMenu === item ? null : item)
-                      }
-                      className="w-full text-left p-4 font-semibold text-[#005753] flex justify-between items-center text-lg"
-                    >
-                      {item}
-
-                      <motion.span
-                        animate={{ rotate: activeMenu === item ? 180 : 0 }}
+                {Object.keys(menuData)
+                  .filter((item) => item !== "Profil")
+                  .map((item) => (
+                    <div key={item} className="border-b">
+                      <button
+                        onClick={() =>
+                          setActiveMenu(activeMenu === item ? null : item)
+                        }
+                        className="w-full text-left p-4 font-semibold text-[#005753] flex justify-between items-center text-lg"
                       >
-                        ▼
-                      </motion.span>
-                    </button>
+                        {item}
 
-                    <AnimatePresence>
-                      {activeMenu === item && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          className="overflow-hidden bg-gray-50"
+                        <motion.span
+                          animate={{ rotate: activeMenu === item ? 180 : 0 }}
                         >
-                          {menuData[item].map((subitem) => {
-                            let itemHref = "/";
+                          ▼
+                        </motion.span>
+                      </button>
 
-                            if (
-                              subitem === "Profil RS Medika Lestari" ||
-                              subitem === "Visi & Misi"
-                            )
-                              itemHref = "/tentang-kami";
-                            else if (subitem === "Emergency")
-                              itemHref = "/services/emergency";
-                            else if (subitem === "Farmasi")
-                              itemHref = "/services/farmasi";
-                            else if (subitem === "Fisioterapi")
-                              itemHref = "/services/fisioterapi";
-                            else if (subitem === "Kamar Perawatan")
-                              itemHref = "/services/kamar-perawatan";
-                            else if (subitem === "Laboratory Testing")
-                              itemHref = "/services/laboratory-testing";
-                            else if (subitem === "Layanan gawat darurat")
-                              itemHref = "/services/layanan-gawat-darurat";
-                            else if (subitem === "Medical Checkup")
-                              itemHref = "/services/medical-checkup";
-                            else if (subitem === "Poli Klinik")
-                              itemHref = "/services/poli-klinik";
-                            else if (subitem === "Radiologi")
-                              itemHref = "/services/radiologi";
-                            else if (subitem === "Rawat Inap")
-                              itemHref = "/services/rawat-inap";
-                            else if (subitem === "Rehabilitasi Medik")
-                              itemHref = "/services/rehabilitasi-medik";
-                            else if (subitem === "Vaccination Services")
-                              itemHref = "/services/vaccination-services";
+                      <AnimatePresence>
+                        {activeMenu === item && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="overflow-hidden bg-gray-50"
+                          >
+                            {menuData[item].map((subitem) => {
+                              let itemHref = "/";
 
-                            return (
-                              <Link
-                                key={subitem}
-                                href={itemHref}
-                                onClick={() => {
-                                  setIsMobileMenuOpen(false);
-                                  setActiveMenu(null);
-                                }}
-                                className="block p-4 pl-8 text-gray-600 border-b text-sm hover:bg-[#00423E]/10 hover:text-[#00423E] transition-colors"
-                              >
-                                {subitem}
-                              </Link>
-                            );
-                          })}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                ))}
+                              if (subitem === "Tentang Kami")
+                                itemHref = "/tentang-kami";
+                              else if (subitem === "Indikator Mutu")
+                                itemHref = "/indikator-mutu";
+                              else if (subitem === "Rekanan Kami")
+                                itemHref = "/rekanan-kami";
+                              else if (subitem === "Karir")
+                                itemHref = "/careers";
+                              else if (
+                                subitem === "Profil RS Medika Lestari" ||
+                                subitem === "Visi & Misi"
+                              )
+                                itemHref = "/tentang-kami";
+                              else if (subitem === "Emergency")
+                                itemHref = "/services/emergency";
+                              else if (subitem === "Farmasi")
+                                itemHref = "/services/farmasi";
+                              else if (subitem === "Fisioterapi")
+                                itemHref = "/services/fisioterapi";
+                              else if (subitem === "Kamar Perawatan")
+                                itemHref = "/services/kamar-perawatan";
+                              else if (subitem === "Laboratory Testing")
+                                itemHref = "/services/laboratory-testing";
+                              else if (subitem === "Layanan gawat darurat")
+                                itemHref = "/services/layanan-gawat-darurat";
+                              else if (subitem === "Medical Checkup")
+                                itemHref = "/services/medical-checkup";
+                              else if (subitem === "Poli Klinik")
+                                itemHref = "/services/poli-klinik";
+                              else if (subitem === "Radiologi")
+                                itemHref = "/services/radiologi";
+                              else if (subitem === "Rawat Inap")
+                                itemHref = "/services/rawat-inap";
+                              else if (subitem === "Rehabilitasi Medik")
+                                itemHref = "/services/rehabilitasi-medik";
+                              else if (subitem === "Vaccination Services")
+                                itemHref = "/services/vaccination-services";
 
-                <Link
-                  href="/tentang-kami"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-left p-4 font-semibold text-[#005753] border-b text-lg"
-                >
-                  Tentang Kami
-                </Link>
+                              return (
+                                <Link
+                                  key={subitem}
+                                  href={itemHref}
+                                  onClick={() => {
+                                    setIsMobileMenuOpen(false);
+                                    setActiveMenu(null);
+                                  }}
+                                  className="block p-4 pl-8 text-gray-600 border-b text-sm hover:bg-[#00423E]/10 hover:text-[#00423E] transition-colors"
+                                >
+                                  {subitem}
+                                </Link>
+                              );
+                            })}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  ))}
 
                 <div className="mt-6 px-4">
                   <AuthArea

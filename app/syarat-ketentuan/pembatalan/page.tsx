@@ -14,7 +14,7 @@ const Pembatalan = () => {
       <Breadcrumb items={breadcrumbs} />
 
       {/* Header */}
-      <section className="bg-gradient-to-r from-[#004a8c] to-[#005753] text-white py-8 px-6">
+      <section className="bg-gradient-to-r from-[#005753] to-[#005753] text-white py-8 px-6">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold">Kebijakan Pembatalan</h1>
         </div>
@@ -26,7 +26,7 @@ const Pembatalan = () => {
           <div className="space-y-12">
             {/* Pembatalan Janji Temu */}
             <div>
-              <h2 className="text-3xl font-bold text-[#004a8c] mb-6 pb-4 border-b-2 border-[#005753]">
+              <h2 className="text-3xl font-bold text-[#005753] mb-6 pb-4 border-b-2 border-[#005753]">
                 Pembatalan Janji Temu
               </h2>
 
@@ -99,7 +99,7 @@ const Pembatalan = () => {
 
             {/* Pembatalan Rawat Inap */}
             <div>
-              <h2 className="text-3xl font-bold text-[#004a8c] mb-6 pb-4 border-b-2 border-[#005753]">
+              <h2 className="text-3xl font-bold text-[#005753] mb-6 pb-4 border-b-2 border-[#005753]">
                 Pembatalan Rawat Inap
               </h2>
 
@@ -155,7 +155,7 @@ const Pembatalan = () => {
 
             {/* Pengecualian */}
             <div>
-              <h2 className="text-3xl font-bold text-[#004a8c] mb-6 pb-4 border-b-2 border-[#005753]">
+              <h2 className="text-3xl font-bold text-[#005753] mb-6 pb-4 border-b-2 border-[#005753]">
                 Pengecualian dan Keadaan Khusus
               </h2>
 
@@ -200,7 +200,7 @@ const Pembatalan = () => {
 
             {/* Cara Membatalkan */}
             <div>
-              <h2 className="text-3xl font-bold text-[#004a8c] mb-6 pb-4 border-b-2 border-[#005753]">
+              <h2 className="text-3xl font-bold text-[#005753] mb-6 pb-4 border-b-2 border-[#005753]">
                 Cara Membatalkan
               </h2>
 
@@ -254,7 +254,7 @@ const Pembatalan = () => {
 
             {/* Important Notes */}
             <div className="bg-blue-50 border-l-4 border-[#005753] p-6 rounded">
-              <h3 className="text-lg font-bold text-[#004a8c] mb-3">
+              <h3 className="text-lg font-bold text-[#005753] mb-3">
                 Catatan Penting
               </h3>
               <ul className="text-gray-700 space-y-2">

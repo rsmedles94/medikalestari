@@ -51,7 +51,7 @@ const SyaratKetentuan = () => {
       <Breadcrumb />
 
       {/* Header Section */}
-      <section className="bg-gradient-to-r from-[#004a8c] to-[#005753] text-white py-12 px-6">
+      <section className="bg-gradient-to-r from-[#005753] to-[#005753] text-white py-12 px-6">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             Syarat & Ketentuan
@@ -70,7 +70,7 @@ const SyaratKetentuan = () => {
             {sections.map((section) => (
               <Link key={section.id} href={section.href}>
                 <div className="p-6 border border-gray-200 rounded-lg hover:shadow-lg hover:border-[#005753] transition-all cursor-pointer group">
-                  <h3 className="text-xl font-bold text-[#004a8c] group-hover:text-[#005753] mb-2">
+                  <h3 className="text-xl font-bold text-[#005753] group-hover:text-[#005753] mb-2">
                     {section.title}
                   </h3>
                   <p className="text-gray-600">{section.content}</p>
@@ -97,7 +97,7 @@ const SyaratKetentuan = () => {
 
           {/* Summary Section */}
           <div className="mt-12 p-6 bg-blue-50 border-l-4 border-[#005753] rounded">
-            <h3 className="text-lg font-bold text-[#004a8c] mb-4">
+            <h3 className="text-lg font-bold text-[#005753] mb-4">
               Ringkasan Penting
             </h3>
             <ul className="space-y-2 text-gray-700">

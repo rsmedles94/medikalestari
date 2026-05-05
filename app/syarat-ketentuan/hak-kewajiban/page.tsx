@@ -17,7 +17,7 @@ const HakKewajiban = () => {
       <Breadcrumb items={breadcrumbs} />
 
       {/* Header */}
-      <section className="bg-gradient-to-r from-[#004a8c] to-[#005753] text-white py-8 px-6">
+      <section className="bg-gradient-to-r from-[#005753] to-[#005753] text-white py-8 px-6">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold">Hak dan Kewajiban Pasien</h1>
         </div>
@@ -29,7 +29,7 @@ const HakKewajiban = () => {
           <div className="space-y-12">
             {/* Hak Pasien */}
             <div>
-              <h2 className="text-3xl font-bold text-[#004a8c] mb-6 pb-4 border-b-2 border-[#005753]">
+              <h2 className="text-3xl font-bold text-[#005753] mb-6 pb-4 border-b-2 border-[#005753]">
                 Hak-Hak Pasien
               </h2>
 
@@ -104,7 +104,7 @@ const HakKewajiban = () => {
 
             {/* Kewajiban Pasien */}
             <div>
-              <h2 className="text-3xl font-bold text-[#004a8c] mb-6 pb-4 border-b-2 border-[#005753]">
+              <h2 className="text-3xl font-bold text-[#005753] mb-6 pb-4 border-b-2 border-[#005753]">
                 Kewajiban-Kewajiban Pasien
               </h2>
 
