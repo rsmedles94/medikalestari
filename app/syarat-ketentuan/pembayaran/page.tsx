@@ -47,7 +47,7 @@ const Pembayaran = () => {
       <Breadcrumb items={breadcrumbs} />
 
       {/* Header */}
-      <section className="bg-gradient-to-r from-[#003369] to-[#003369] text-white py-8 px-6">
+      <section className="bg-gradient-to-r from-[#006360] to-[#006360] text-white py-8 px-6">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold">Ketentuan Pembayaran</h1>
         </div>
@@ -59,7 +59,7 @@ const Pembayaran = () => {
           <div className="space-y-12">
             {/* Metode Pembayaran */}
             <div>
-              <h2 className="text-3xl font-bold text-[#003369] mb-6 pb-4 border-b-2 border-[#003369]">
+              <h2 className="text-3xl font-bold text-[#006360] mb-6 pb-4 border-b-2 border-[#006360]">
                 Metode Pembayaran yang Tersedia
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -80,11 +80,11 @@ const Pembayaran = () => {
 
             {/* Jadwal dan Tenggat Waktu */}
             <div>
-              <h2 className="text-3xl font-bold text-[#003369] mb-6 pb-4 border-b-2 border-[#003369]">
+              <h2 className="text-3xl font-bold text-[#006360] mb-6 pb-4 border-b-2 border-[#006360]">
                 Jadwal dan Tenggat Waktu Pembayaran
               </h2>
               <div className="space-y-4">
-                <div className="p-4 bg-blue-50 border-l-4 border-[#003369] rounded">
+                <div className="p-4 bg-blue-50 border-l-4 border-[#006360] rounded">
                   <h3 className="text-lg font-bold text-gray-900 mb-2">
                     Pembayaran di Tempat (Walk-in)
                   </h3>
@@ -94,7 +94,7 @@ const Pembayaran = () => {
                   </p>
                 </div>
 
-                <div className="p-4 bg-blue-50 border-l-4 border-[#003369] rounded">
+                <div className="p-4 bg-blue-50 border-l-4 border-[#006360] rounded">
                   <h3 className="text-lg font-bold text-gray-900 mb-2">
                     Pembayaran Asuransi
                   </h3>
@@ -105,7 +105,7 @@ const Pembayaran = () => {
                   </p>
                 </div>
 
-                <div className="p-4 bg-blue-50 border-l-4 border-[#003369] rounded">
+                <div className="p-4 bg-blue-50 border-l-4 border-[#006360] rounded">
                   <h3 className="text-lg font-bold text-gray-900 mb-2">
                     Pembayaran Cicilan
                   </h3>
@@ -120,7 +120,7 @@ const Pembayaran = () => {
 
             {/* Biaya dan Tarif */}
             <div>
-              <h2 className="text-3xl font-bold text-[#003369] mb-6 pb-4 border-b-2 border-[#003369]">
+              <h2 className="text-3xl font-bold text-[#006360] mb-6 pb-4 border-b-2 border-[#006360]">
                 Informasi Biaya
               </h2>
               <div className="space-y-4">
@@ -140,7 +140,7 @@ const Pembayaran = () => {
 
             {/* Kebijakan Pembatalan dan Pengembalian Dana */}
             <div>
-              <h2 className="text-3xl font-bold text-[#003369] mb-6 pb-4 border-b-2 border-[#003369]">
+              <h2 className="text-3xl font-bold text-[#006360] mb-6 pb-4 border-b-2 border-[#006360]">
                 Kebijakan Pembatalan dan Pengembalian Dana
               </h2>
               <div className="space-y-4">
@@ -180,7 +180,7 @@ const Pembayaran = () => {
 
             {/* Pajak */}
             <div>
-              <h2 className="text-3xl font-bold text-[#003369] mb-6 pb-4 border-b-2 border-[#003369]">
+              <h2 className="text-3xl font-bold text-[#006360] mb-6 pb-4 border-b-2 border-[#006360]">
                 Pajak dan Biaya Tambahan
               </h2>
               <p className="text-gray-700 leading-relaxed mb-4">
@@ -191,8 +191,8 @@ const Pembayaran = () => {
             </div>
 
             {/* Contact */}
-            <div className="bg-blue-50 border-l-4 border-[#003369] p-6 rounded">
-              <h3 className="text-lg font-bold text-[#003369] mb-3">
+            <div className="bg-blue-50 border-l-4 border-[#006360] p-6 rounded">
+              <h3 className="text-lg font-bold text-[#006360] mb-3">
                 Pertanyaan Tentang Pembayaran?
               </h3>
               <p className="text-gray-700 mb-3">
@@ -212,7 +212,7 @@ const Pembayaran = () => {
           <div className="mt-12 flex justify-between items-center pt-6 border-t">
             <Link
               href="/syarat-ketentuan/privasi"
-              className="text-[#003369] hover:text-[#01274F] font-semibold flex items-center"
+              className="text-[#006360] hover:text-[#009C96] font-semibold flex items-center"
             >
               <svg
                 className="w-4 h-4 mr-2"
@@ -231,7 +231,7 @@ const Pembayaran = () => {
             </Link>
             <Link
               href="/syarat-ketentuan/pembatalan"
-              className="text-[#003369] hover:text-[#01274F] font-semibold flex items-center"
+              className="text-[#006360] hover:text-[#009C96] font-semibold flex items-center"
             >
               Selanjutnya
               <svg

@@ -17,7 +17,7 @@ const Pertanggungjawaban = () => {
       <Breadcrumb items={breadcrumbs} />
 
       {/* Header */}
-      <section className="bg-gradient-to-r from-[#003369] to-[#003369] text-white py-8 px-6">
+      <section className="bg-gradient-to-r from-[#006360] to-[#006360] text-white py-8 px-6">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold">Pertanggungjawaban</h1>
         </div>
@@ -29,7 +29,7 @@ const Pertanggungjawaban = () => {
           <div className="space-y-12">
             {/* Tanggung Jawab RS */}
             <div>
-              <h2 className="text-3xl font-bold text-[#003369] mb-6 pb-4 border-b-2 border-[#003369]">
+              <h2 className="text-3xl font-bold text-[#006360] mb-6 pb-4 border-b-2 border-[#006360]">
                 Tanggung Jawab RS Medika Lestari
               </h2>
 
@@ -102,7 +102,7 @@ const Pertanggungjawaban = () => {
 
             {/* Keterbatasan Tanggung Jawab */}
             <div>
-              <h2 className="text-3xl font-bold text-[#003369] mb-6 pb-4 border-b-2 border-[#003369]">
+              <h2 className="text-3xl font-bold text-[#006360] mb-6 pb-4 border-b-2 border-[#006360]">
                 Keterbatasan Tanggung Jawab
               </h2>
 
@@ -180,7 +180,7 @@ const Pertanggungjawaban = () => {
 
             {/* Prosedur Keluhan dan Pengaduan */}
             <div>
-              <h2 className="text-3xl font-bold text-[#003369] mb-6 pb-4 border-b-2 border-[#003369]">
+              <h2 className="text-3xl font-bold text-[#006360] mb-6 pb-4 border-b-2 border-[#006360]">
                 Prosedur Keluhan dan Pengaduan
               </h2>
 
@@ -192,7 +192,7 @@ const Pertanggungjawaban = () => {
               <div className="space-y-4">
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
-                    <div className="flex items-center justify-center h-8 w-8 rounded-full bg-[#003369] text-white font-bold">
+                    <div className="flex items-center justify-center h-8 w-8 rounded-full bg-[#006360] text-white font-bold">
                       1
                     </div>
                   </div>
@@ -210,7 +210,7 @@ const Pertanggungjawaban = () => {
 
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
-                    <div className="flex items-center justify-center h-8 w-8 rounded-full bg-[#003369] text-white font-bold">
+                    <div className="flex items-center justify-center h-8 w-8 rounded-full bg-[#006360] text-white font-bold">
                       2
                     </div>
                   </div>
@@ -228,7 +228,7 @@ const Pertanggungjawaban = () => {
 
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
-                    <div className="flex items-center justify-center h-8 w-8 rounded-full bg-[#003369] text-white font-bold">
+                    <div className="flex items-center justify-center h-8 w-8 rounded-full bg-[#006360] text-white font-bold">
                       3
                     </div>
                   </div>
@@ -245,7 +245,7 @@ const Pertanggungjawaban = () => {
 
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
-                    <div className="flex items-center justify-center h-8 w-8 rounded-full bg-[#003369] text-white font-bold">
+                    <div className="flex items-center justify-center h-8 w-8 rounded-full bg-[#006360] text-white font-bold">
                       4
                     </div>
                   </div>
@@ -263,8 +263,8 @@ const Pertanggungjawaban = () => {
             </div>
 
             {/* Kontak */}
-            <div className="bg-blue-50 border-l-4 border-[#003369] p-6 rounded">
-              <h3 className="text-lg font-bold text-[#003369] mb-3">
+            <div className="bg-blue-50 border-l-4 border-[#006360] p-6 rounded">
+              <h3 className="text-lg font-bold text-[#006360] mb-3">
                 Hubungi Tim Kami
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
@@ -296,7 +296,7 @@ const Pertanggungjawaban = () => {
           <div className="mt-12 flex justify-between items-center pt-6 border-t">
             <Link
               href="/syarat-ketentuan/pembatalan"
-              className="text-[#003369] hover:text-[#01274F] font-semibold flex items-center"
+              className="text-[#006360] hover:text-[#009C96] font-semibold flex items-center"
             >
               <svg
                 className="w-4 h-4 mr-2"
@@ -315,7 +315,7 @@ const Pertanggungjawaban = () => {
             </Link>
             <Link
               href="/syarat-ketentuan"
-              className="text-[#003369] hover:text-[#01274F] font-semibold flex items-center"
+              className="text-[#006360] hover:text-[#009C96] font-semibold flex items-center"
             >
               Kembali ke Utama
               <svg

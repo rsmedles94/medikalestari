@@ -164,10 +164,10 @@ const AboutUs = () => {
 
                 {/* Layer Overlay Biru (Transparansi) */}
                 <div
-                  className="absolute inset-0 z-10 bg-[#01274F]/75 transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] 
+                  className="absolute inset-0 z-10 bg-[#009C96]/75 transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] 
                              md:[clip-path:polygon(0_85%,100%_70%,100%_100%,0%_100%)] 
                              md:group-hover:[clip-path:polygon(0_0,100%_0,100%_100%,0%_100%)]
-                             md:group-hover:bg-[#01274F]/85"
+                             md:group-hover:bg-[#009C96]/85"
                 />
 
                 {/* Konten Teks */}

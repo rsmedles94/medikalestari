@@ -81,7 +81,7 @@ export default function DoctorScheduleGrid({
   if (loading) {
     return (
       <div className="w-full min-h-96 flex flex-col items-center justify-center">
-        <Loader2 className="h-12 w-12 animate-spin text-[#003369] mb-4" />
+        <Loader2 className="h-12 w-12 animate-spin text-[#006360] mb-4" />
         <p className="text-slate-600">Memuat jadwal dokter...</p>
       </div>
     );
@@ -110,7 +110,7 @@ export default function DoctorScheduleGrid({
                     // Auto-apply on enter
                   }
                 }}
-                className="w-full border border-slate-200 py-3 pl-10 pr-4 outline-none focus:border-[#003369] text-sm bg-white"
+                className="w-full border border-slate-200 py-3 pl-10 pr-4 outline-none focus:border-[#006360] text-sm bg-white"
               />
             </div>
 
@@ -122,7 +122,7 @@ export default function DoctorScheduleGrid({
               className="p-3 border border-slate-200 hover:bg-slate-50 transition-all"
               title="Filter Spesialis"
             >
-              <Stethoscope size={20} className="text-[#003369]" />
+              <Stethoscope size={20} className="text-[#006360]" />
             </button>
 
             {/* Day Icon Button */}
@@ -131,7 +131,7 @@ export default function DoctorScheduleGrid({
               className="p-3 border border-slate-200 hover:bg-slate-50 transition-all"
               title="Filter Hari"
             >
-              <CalendarDays size={20} className="text-[#003369]" />
+              <CalendarDays size={20} className="text-[#006360]" />
             </button>
           </div>
 
@@ -146,7 +146,7 @@ export default function DoctorScheduleGrid({
                 className="bg-white border border-slate-200 rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto"
               >
                 <div className="p-2">
-                  <div className="px-4 py-2 text-xs font-bold text-[#003369] sticky top-0 bg-white">
+                  <div className="px-4 py-2 text-xs font-bold text-[#006360] sticky top-0 bg-white">
                     Pilih Spesialis
                   </div>
                   <button
@@ -156,7 +156,7 @@ export default function DoctorScheduleGrid({
                     }}
                     className={`w-full text-left px-4 py-2 text-sm rounded-md transition-all ${
                       selectedSpecialty === null
-                        ? "bg-[#003369]/10 text-[#003369] font-semibold"
+                        ? "bg-[#006360]/10 text-[#006360] font-semibold"
                         : "text-slate-700 hover:bg-slate-50"
                     }`}
                   >
@@ -171,7 +171,7 @@ export default function DoctorScheduleGrid({
                       }}
                       className={`w-full text-left px-4 py-2 text-sm rounded-md transition-all ${
                         selectedSpecialty === s
-                          ? "bg-[#003369]/10 text-[#003369] font-semibold"
+                          ? "bg-[#006360]/10 text-[#006360] font-semibold"
                           : "text-slate-700 hover:bg-slate-50"
                       }`}
                     >
@@ -194,7 +194,7 @@ export default function DoctorScheduleGrid({
                 className="bg-white border border-slate-200 rounded-lg shadow-lg z-50"
               >
                 <div className="p-2">
-                  <div className="px-4 py-2 text-xs font-bold text-[#003369] bg-white">
+                  <div className="px-4 py-2 text-xs font-bold text-[#006360] bg-white">
                     Pilih Hari
                   </div>
                   <button
@@ -204,7 +204,7 @@ export default function DoctorScheduleGrid({
                     }}
                     className={`w-full text-left px-4 py-2 text-sm rounded-md transition-all whitespace-nowrap ${
                       selectedDay === null
-                        ? "bg-[#003369]/10 text-[#003369] font-semibold"
+                        ? "bg-[#006360]/10 text-[#006360] font-semibold"
                         : "text-slate-700 hover:bg-slate-50"
                     }`}
                   >
@@ -219,7 +219,7 @@ export default function DoctorScheduleGrid({
                       }}
                       className={`w-full text-left px-4 py-2 text-sm rounded-md transition-all whitespace-nowrap ${
                         selectedDay === d
-                          ? "bg-[#003369]/10 text-[#003369] font-semibold"
+                          ? "bg-[#006360]/10 text-[#006360] font-semibold"
                           : "text-slate-700 hover:bg-slate-50"
                       }`}
                     >
@@ -248,7 +248,7 @@ export default function DoctorScheduleGrid({
                 // Auto-apply on enter
               }
             }}
-            className="w-full border border-slate-200 py-3 pl-10 pr-4 outline-none focus:border-[#003369] text-sm bg-white"
+            className="w-full border border-slate-200 py-3 pl-10 pr-4 outline-none focus:border-[#006360] text-sm bg-white"
           />
         </div>
 
@@ -258,7 +258,7 @@ export default function DoctorScheduleGrid({
             onClick={() => setSelectedSpecialty(null)}
             className={`px-4 py-2 rounded-full font-medium transition-all text-sm whitespace-nowrap ${
               selectedSpecialty === null
-                ? "bg-[#003369] text-white shadow-md"
+                ? "bg-[#006360] text-white shadow-md"
                 : "bg-slate-100 text-slate-700 hover:bg-slate-200"
             }`}
           >
@@ -274,7 +274,7 @@ export default function DoctorScheduleGrid({
                 onClick={() => setSelectedSpecialty(specialty)}
                 className={`px-4 py-2 rounded-full font-medium transition-all text-sm whitespace-nowrap ${
                   selectedSpecialty === specialty
-                    ? "bg-[#003369] text-white "
+                    ? "bg-[#006360] text-white "
                     : "bg-slate-100 text-slate-700 hover:bg-slate-200"
                 }`}
               >
@@ -297,7 +297,7 @@ export default function DoctorScheduleGrid({
                   router.push(`/dokter/${doctor.id}`);
                 }
               }}
-              className="bg-white shadow-lg overflow-hidden cursor-pointer transition-all hover:shadow-lg border border-slate-200 hover:border-blue-200 hover:shadow-md hover:shadow-[#003369] text-left"
+              className="bg-white shadow-lg overflow-hidden cursor-pointer transition-all hover:shadow-lg border border-slate-200 hover:border-blue-200 hover:shadow-md hover:shadow-[#006360] text-left"
             >
               {/* Doctor Header */}
               <div className="bg-slate-50 p-4 border-b border-slate-200">
@@ -327,7 +327,7 @@ export default function DoctorScheduleGrid({
               <div className="p-4 overflow-x-auto">
                 <table className="w-full text-xs">
                   <thead>
-                    <tr className="bg-[#003369]/10">
+                    <tr className="bg-[#006360]/10">
                       {DAYS.map((day) => (
                         <th
                           key={day}

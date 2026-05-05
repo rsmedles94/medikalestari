@@ -8,14 +8,14 @@ export default function RehabilitasiMedik() {
       <div className="max-w-4xl mx-auto px-4">
         <Link
           href="/"
-          className="flex items-center gap-2 text-[#015A85] hover:text-[#003369] mb-8"
+          className="flex items-center gap-2 text-[#015A85] hover:text-[#006360] mb-8"
         >
           <ArrowLeft size={20} />
           Kembali ke Beranda
         </Link>
 
         <div className="bg-white rounded-lg shadow-lg p-8">
-          <h1 className="text-4xl font-bold text-[#003369] mb-4">
+          <h1 className="text-4xl font-bold text-[#006360] mb-4">
             Rehabilitasi Medik
           </h1>
 
@@ -32,7 +32,7 @@ export default function RehabilitasiMedik() {
 
           <div className="grid md:grid-cols-2 gap-6">
             <div className="bg-blue-50 p-4 rounded-lg">
-              <h3 className="font-semibold text-[#003369] mb-2">Program</h3>
+              <h3 className="font-semibold text-[#006360] mb-2">Program</h3>
               <ul className="text-sm text-gray-700 space-y-1">
                 <li>✓ Pasca operasi</li>
                 <li>✓ Stroke</li>
@@ -40,7 +40,7 @@ export default function RehabilitasiMedik() {
               </ul>
             </div>
             <div className="bg-blue-50 p-4 rounded-lg">
-              <h3 className="font-semibold text-[#003369] mb-2">
+              <h3 className="font-semibold text-[#006360] mb-2">
                 Tim Profesional
               </h3>
               <ul className="text-sm text-gray-700 space-y-1">
