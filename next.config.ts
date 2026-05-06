@@ -12,6 +12,10 @@ const nextConfig: NextConfig = {
         hostname: "zecqskgvmfyorhxzhoeu.supabase.co",
         pathname: "/storage/**",
       },
+      {
+        protocol: "https",
+        hostname: "flagcdn.com",
+      },
     ],
   },
   /* config options lain bisa ditaruh di sini */

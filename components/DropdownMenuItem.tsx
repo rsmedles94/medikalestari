@@ -1,31 +1,47 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 
 interface DropdownItemProps {
   title: string;
   href: string;
   icon?: React.ReactNode;
+  flag?: string;
 }
 
-const DropdownMenuItem = ({ title, href, icon }: DropdownItemProps) => {
+const DropdownMenuItem = ({ title, href, icon, flag }: DropdownItemProps) => {
   return (
     <Link
       href={href}
       className="flex items-center justify-between px-6 py-3 hover:bg-gray-50 transition-all duration-300 relative overflow-hidden group"
     >
       <div className="flex items-center gap-3">
-        {/* ICON */}
-        {icon && <div className="text-[#006360] shrink-0">{icon}</div>}
+        {/* FLAG atau ICON */}
+        {flag?.startsWith("http") && (
+          <Image
+            src={flag}
+            alt={title}
+            width={24}
+            height={16}
+            className="rounded-sm object-cover shrink-0"
+          />
+        )}
+        {flag && !flag.startsWith("http") && (
+          <div className="text-2xl shrink-0 flex items-center justify-center w-6">
+            {flag}
+          </div>
+        )}
+        {!flag && icon && <div className="text-[#004684] shrink-0">{icon}</div>}
 
         {/* PANAH KIRI */}
         <div className="w-0 opacity-0 -ml-4 group-hover:w-5 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300 ease-out">
-          <ArrowRight size={18} style={{ color: "#006360" }} />
+          <ArrowRight size={18} style={{ color: "#004684" }} />
         </div>
 
         {/* TEKS */}
-        <span className="text-[14px] text-gray-700 group-hover:text-[#006360] group-hover:font-medium transition-colors duration-300">
+        <span className="text-[14px] text-gray-700 group-hover:text-[#004684] group-hover:font-medium transition-colors duration-300">
           {title}
         </span>
       </div>

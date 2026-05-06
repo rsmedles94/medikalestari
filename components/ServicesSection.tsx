@@ -137,7 +137,7 @@ const ServiceSection = () => {
                       />
                     </div>
 
-                    <div className="absolute inset-x-0 bottom-0 h-[65%] bg-linear-to-t from-[#006360] via-[#006360]/85 to-transparent z-10" />
+                    <div className="absolute inset-x-0 bottom-0 h-[65%] bg-linear-to-t from-[#004684] via-[#004684]/85 to-transparent z-10" />
 
                     <div
                       className="relative z-20 mt-auto p-7 flex flex-col items-start"
@@ -157,7 +157,7 @@ const ServiceSection = () => {
 
                     <div className="absolute bottom-3 right-2 z-50 opacity-0 scale-50 transition-all duration-500 delay-100 group-hover:opacity-100 group-hover:scale-100">
                       <svg
-                        className="w-7 h-7 text-[#006360]"
+                        className="w-7 h-7 text-[#004684]"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"

@@ -53,7 +53,7 @@ const MobileBottomNavbar = () => {
           <circle cx="12" cy="12" r="10" />
           <path
             d="M12 6v6l4 2"
-            stroke="#006360" // Memberikan warna kontras di dalam solid icon
+            stroke="#004684" // Memberikan warna kontras di dalam solid icon
             strokeWidth="1.8"
             strokeLinecap="round"
           />
@@ -77,7 +77,7 @@ const MobileBottomNavbar = () => {
           <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18H6Z" />
           <path d="M2 14a2 2 0 0 1 2-2h2v10H4a2 2 0 0 1-2-2v-6Z" />
           <path d="M18 9a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2V9Z" />
-          <path stroke="#006360" strokeWidth="1.5" d="M9 7h6M9 11h6M9 15h6" />
+          <path stroke="#004684" strokeWidth="1.5" d="M9 7h6M9 11h6M9 15h6" />
         </g>
       ),
     },
@@ -85,7 +85,7 @@ const MobileBottomNavbar = () => {
 
   return (
     <>
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[#006360] z-50 border-t border-white/5 pb-safe">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[#004684] z-50 border-t border-white/5 pb-safe">
         <div className="flex justify-around items-stretch h-18">
           {navItems.map((item) => {
             const isItemActive = pathname === item.href;

@@ -2,11 +2,11 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Search,
   Menu,
   X,
-  Globe,
   UserCircle,
   LayoutDashboard,
   Stethoscope,
@@ -34,11 +34,36 @@ interface NavbarClientProps {
   logoNode: React.ReactNode;
 }
 
+interface LanguageItem {
+  label: string;
+  code: string;
+  flag: string;
+  active: boolean;
+}
+
 const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
+  const languages: LanguageItem[] = [
+    {
+      label: "Bahasa Indonesia",
+      code: "ID",
+      flag: "https://flagcdn.com/w40/id.png",
+      active: true,
+    },
+    {
+      label: "English",
+      code: "EN",
+      flag: "https://flagcdn.com/w40/gb.png",
+      active: false,
+    },
+  ];
+
+  const [activeLanguage, setActiveLanguage] = useState<LanguageItem>(
+    languages[0],
+  );
 
   const pathname = usePathname();
   const router = useRouter();
@@ -109,11 +134,6 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
     "Vaccination Services": <Syringe size={20} strokeWidth={1.5} />,
   };
 
-  const languages = [
-    { label: "Bahasa Indonesia", code: "ID", active: true },
-    { label: "English", code: "EN", active: false },
-  ];
-
   const handleHomeClick = (e: React.MouseEvent) => {
     if (pathname === "/") {
       e.preventDefault();
@@ -126,7 +146,9 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
   };
 
   const renderDropdownContent = (
-    items: Array<string | { label: string; code?: string; active?: boolean }>,
+    items: Array<
+      string | { label: string; code?: string; active?: boolean; flag?: string }
+    >,
     widthClass: string = "w-72",
   ) => {
     // --- LOGIKA BARU: Cek jika item banyak, kita buat 2 kolom ---
@@ -147,7 +169,9 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
           className={`py-2 grid ${isLargeMenu ? "grid-cols-2" : "grid-cols-1"}`}
         >
           {items.map((item) => {
-            const title = typeof item === "string" ? item : item.label;
+            const isObject = typeof item !== "string";
+            const title = isObject ? item.label : item;
+            const flag = isObject ? (item as LanguageItem).flag : undefined;
             let itemHref = "/";
 
             if (title === "Dokter Kami") itemHref = "/dokter#section-dokter";
@@ -194,6 +218,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                   title={title}
                   href={itemHref}
                   icon={serviceIcons[title as keyof typeof serviceIcons]}
+                  flag={flag}
                 />
               </div>
             );
@@ -215,7 +240,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
           <div className="hidden md:flex gap-4 items-center text-[15px] font-normal text-gray-700">
             <Link
               href="/kontak-kami"
-              className="hover:text-[#009C96] hover:underline"
+              className="hover:text-[#003159] hover:underline"
             >
               Kontak
             </Link>
@@ -224,7 +249,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
             <Link
               href="/syarat-ketentuan"
-              className="hover:text-[#009C96] hover:underline"
+              className="hover:text-[#003159] hover:underline"
             >
               Syarat & Ketentuan
             </Link>
@@ -250,9 +275,9 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
       </div>
 
       {/* --- Bottom Navbar --- */}
-      <div className="hidden md:block relative w-full bg-[#006360] text-white z-30">
+      <div className="hidden md:block relative w-full bg-[#004684] text-white z-30">
         <div
-          className="absolute right-0 top-0 h-full w-[38%] bg-[#009C96] hidden lg:block"
+          className="absolute right-0 top-0 h-full w-[38%] bg-[#003159] hidden lg:block"
           style={{ clipPath: "polygon(40px 0, 100% 0, 100% 100%, 0% 100%)" }}
         />
 
@@ -370,9 +395,15 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               onMouseEnter={() => setActiveMenu("Lang")}
               onMouseLeave={() => setActiveMenu(null)}
             >
-              <div className="flex items-center gap-1 px-1 py-1">
-                <Globe size={18} />
-                <span className="font-medium">ID</span>
+              <div className="flex items-center gap-2 px-1 py-1">
+                <Image
+                  src={activeLanguage.flag}
+                  alt={activeLanguage.code}
+                  width={24}
+                  height={16}
+                  className="rounded-sm object-cover"
+                />
+                <span className="font-medium">{activeLanguage.code}</span>
               </div>
 
               <div
@@ -425,7 +456,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               <div className="flex flex-col p-4">
                 <button
                   onClick={handleHomeClick}
-                  className="text-left p-4 font-semibold text-[#006360] border-b text-lg"
+                  className="text-left p-4 font-semibold text-[#004684] border-b text-lg"
                 >
                   Beranda
                 </button>
@@ -434,7 +465,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                   onClick={() =>
                     setActiveMenu(activeMenu === "Profil" ? null : "Profil")
                   }
-                  className="w-full text-left p-4 font-semibold text-[#006360] flex justify-between items-center text-lg border-b"
+                  className="w-full text-left p-4 font-semibold text-[#004684] flex justify-between items-center text-lg border-b"
                 >
                   Profil
                   <motion.span
@@ -471,7 +502,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                               setIsMobileMenuOpen(false);
                               setActiveMenu(null);
                             }}
-                            className="block p-4 pl-8 text-gray-600 border-b text-sm hover:bg-[#009C96]/10 hover:text-[#009C96] transition-colors"
+                            className="block p-4 pl-8 text-gray-600 border-b text-sm hover:bg-[#003159]/10 hover:text-[#003159] transition-colors"
                           >
                             {subitem}
                           </Link>
@@ -484,7 +515,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                 <Link
                   href="/dokter#section-dokter"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-left p-4 font-semibold text-[#006360] border-b text-lg"
+                  className="text-left p-4 font-semibold text-[#004684] border-b text-lg"
                 >
                   Dokter Kami
                 </Link>
@@ -492,7 +523,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                 <Link
                   href="/jadwal-dokter"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-left p-4 font-semibold text-[#006360] border-b text-lg"
+                  className="text-left p-4 font-semibold text-[#004684] border-b text-lg"
                 >
                   Jadwal Dokter
                 </Link>
@@ -505,7 +536,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                         onClick={() =>
                           setActiveMenu(activeMenu === item ? null : item)
                         }
-                        className="w-full text-left p-4 font-semibold text-[#006360] flex justify-between items-center text-lg"
+                        className="w-full text-left p-4 font-semibold text-[#004684] flex justify-between items-center text-lg"
                       >
                         {item}
 
@@ -573,7 +604,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                                     setIsMobileMenuOpen(false);
                                     setActiveMenu(null);
                                   }}
-                                  className="block p-4 pl-8 text-gray-600 border-b text-sm hover:bg-[#009C96]/10 hover:text-[#009C96] transition-colors"
+                                  className="block p-4 pl-8 text-gray-600 border-b text-sm hover:bg-[#003159]/10 hover:text-[#003159] transition-colors"
                                 >
                                   {subitem}
                                 </Link>
@@ -608,7 +639,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
         {/* Left Menu - Medical Checkup */}
         <Link
           href="/services/medical-checkup"
-          className="flex-1 bg-[#006360] text-white font-semibold text-center text-xs flex items-center justify-center gap-2 hover:bg-[#003d39] transition-colors"
+          className="flex-1 bg-[#004684] text-white font-semibold text-center text-xs flex items-center justify-center gap-2 hover:bg-[#003d39] transition-colors"
         >
           <Stethoscope size={16} />
           Medical Checkup
@@ -644,7 +675,7 @@ function AuthArea({
         href="/admin/dashboard"
         onClick={onClick}
         className={`flex items-center gap-2 font-medium ${
-          isMobile ? "text-[#006360] text-lg" : "text-white text-sm "
+          isMobile ? "text-[#004684] text-lg" : "text-white text-sm "
         }`}
         title="Panel Admin"
       >

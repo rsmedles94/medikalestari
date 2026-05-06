@@ -8,14 +8,14 @@ export default function LayananGawatDarurat() {
       <div className="max-w-4xl mx-auto px-4">
         <Link
           href="/"
-          className="flex items-center gap-2 text-[#015A85] hover:text-[#006360] mb-8"
+          className="flex items-center gap-2 text-[#015A85] hover:text-[#004684] mb-8"
         >
           <ArrowLeft size={20} />
           Kembali ke Beranda
         </Link>
 
         <div className="bg-white rounded-lg shadow-lg p-8">
-          <h1 className="text-4xl font-bold text-[#006360] mb-4">
+          <h1 className="text-4xl font-bold text-[#004684] mb-4">
             Layanan Gawat Darurat
           </h1>
 
@@ -32,7 +32,7 @@ export default function LayananGawatDarurat() {
 
           <div className="grid md:grid-cols-2 gap-6">
             <div className="bg-blue-50 p-4 rounded-lg">
-              <h3 className="font-semibold text-[#006360] mb-2">Layanan UGD</h3>
+              <h3 className="font-semibold text-[#004684] mb-2">Layanan UGD</h3>
               <ul className="text-sm text-gray-700 space-y-1">
                 <li>✓ Triase 24 jam</li>
                 <li>✓ Kamar stabilisasi</li>
@@ -40,7 +40,7 @@ export default function LayananGawatDarurat() {
               </ul>
             </div>
             <div className="bg-blue-50 p-4 rounded-lg">
-              <h3 className="font-semibold text-[#006360] mb-2">
+              <h3 className="font-semibold text-[#004684] mb-2">
                 Kontak Darurat
               </h3>
               <p className="text-sm text-gray-700">Telepon: (XXX) XXXX-XXXX</p>

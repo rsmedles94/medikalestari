@@ -8,14 +8,14 @@ export default function RawatInap() {
       <div className="max-w-4xl mx-auto px-4">
         <Link
           href="/"
-          className="flex items-center gap-2 text-[#015A85] hover:text-[#006360] mb-8"
+          className="flex items-center gap-2 text-[#015A85] hover:text-[#004684] mb-8"
         >
           <ArrowLeft size={20} />
           Kembali ke Beranda
         </Link>
 
         <div className="bg-white rounded-lg shadow-lg p-8">
-          <h1 className="text-4xl font-bold text-[#006360] mb-4">Rawat Inap</h1>
+          <h1 className="text-4xl font-bold text-[#004684] mb-4">Rawat Inap</h1>
 
           <div className="mb-6">
             <h2 className="text-2xl font-semibold text-gray-800 mb-4">
@@ -30,7 +30,7 @@ export default function RawatInap() {
 
           <div className="grid md:grid-cols-2 gap-6">
             <div className="bg-blue-50 p-4 rounded-lg">
-              <h3 className="font-semibold text-[#006360] mb-2">Fasilitas</h3>
+              <h3 className="font-semibold text-[#004684] mb-2">Fasilitas</h3>
               <ul className="text-sm text-gray-700 space-y-1">
                 <li>✓ Kamar nyaman</li>
                 <li>✓ Monitoring 24/7</li>
@@ -38,7 +38,7 @@ export default function RawatInap() {
               </ul>
             </div>
             <div className="bg-blue-50 p-4 rounded-lg">
-              <h3 className="font-semibold text-[#006360] mb-2">
+              <h3 className="font-semibold text-[#004684] mb-2">
                 Pendampingan
               </h3>
               <ul className="text-sm text-gray-700 space-y-1">
