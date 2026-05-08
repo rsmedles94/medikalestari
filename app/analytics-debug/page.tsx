@@ -40,7 +40,7 @@ export default function AnalyticsDebugPage() {
       const response = await fetch("/api/admin/analytics?type=stats");
       const data = await response.json();
       setResult(
-        `✅ Supabase connected! Data: ${JSON.stringify(data, null, 2)}`
+        `✅ Supabase connected! Data: ${JSON.stringify(data, null, 2)}`,
       );
     } catch (error) {
       setResult(`❌ Supabase Error: ${error}`);

@@ -242,21 +242,6 @@ const Analytics = () => {
             )}
           </div>
         </div>
-
-        {/* Setup Instructions */}
-        <div className="mt-8 bg-blue-50 border border-blue-200 rounded-2xl p-6">
-          <h3 className="font-semibold text-blue-900 mb-3">
-            ℹ️ Informasi Analytics
-          </h3>
-          <p className="text-blue-800 text-[14px]">
-            Analytics tracking sudah siap digunakan. Silakan lihat dokumentasi
-            di{" "}
-            <code className="bg-white px-2 py-1 rounded">
-              ANALYTICS_SETUP.md
-            </code>{" "}
-            untuk setup tracking di halaman dan button.
-          </p>
-        </div>
       </div>
     </div>
   );

@@ -23,7 +23,7 @@ export async function trackEvent(
 ) {
   try {
     // Client-side tracking via API
-    await fetch("/api/admin/analytics/track", {
+    await fetch("/api/admin/analytics", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
