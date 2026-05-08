@@ -3,55 +3,55 @@
 import React, { useState, useRef } from "react";
 import Image from "next/image";
 
-// Data Demo dengan referensi ke public/promo/
+// Data Demo
 const PROMO_DATA = [
   {
     id: 1,
     title: "Vaksin Influenza & Prevenar",
     description:
-      "Lindungi diri dan keluarga dari virus Influenza dan bakteri Pneumonia dengan paket vaksinasi komprehensif untuk menjaga daya tahan tubuh tetap optimal.",
+      "Lindungi diri dan keluarga dari virus Influenza dan bakteri Pneumonia dengan paket vaksinasi komprehensif.",
     image: "/promo/paket1.jpeg",
   },
   {
     id: 2,
     title: "Sirkumsisi Anak (Khitan)",
     description:
-      "Layanan khitan anak dengan metode modern yang minim nyeri, proses penyembuhan cepat, dan ditangani langsung oleh tim medis profesional berpengalaman.",
+      "Layanan khitan anak dengan metode modern yang minim nyeri, proses penyembuhan cepat.",
     image: "/promo/paket2.jpeg",
   },
   {
     id: 3,
     title: "Skrining Batu Empedu",
     description:
-      "Deteksi dini adanya batu empedu melalui pemeriksaan radiologi dan laboratorium untuk mencegah komplikasi dan menentukan langkah penanganan yang tepat.",
+      "Deteksi dini adanya batu empedu melalui pemeriksaan radiologi dan laboratorium.",
     image: "/promo/paket3.jpeg",
   },
   {
     id: 4,
     title: "Persalinan Bunda",
     description:
-      "Wujudkan momen kelahiran buah hati yang aman dan nyaman dengan paket persalinan lengkap yang didukung oleh fasilitas medis modern dan tenaga ahli.",
+      "Wujudkan momen kelahiran buah hati yang aman dan nyaman dengan paket persalinan lengkap.",
     image: "/promo/paket4.jpeg",
   },
   {
     id: 5,
     title: "Persalinan ERACS",
     description:
-      "Metode persalinan caesar ERACS untuk pemulihan yang jauh lebih cepat, memungkinkan Bunda untuk segera beraktivitas dan menggendong si kecil pasca operasi.",
+      "Metode persalinan caesar ERACS untuk pemulihan yang jauh lebih cepat.",
     image: "/promo/paket5.jpeg",
   },
   {
     id: 6,
     title: "Operasi Mata Katarak",
     description:
-      "Kembalikan kejernihan penglihatan Anda dengan prosedur operasi katarak menggunakan teknologi Phacoemulsification tanpa jahit dan pemulihan cepat.",
+      "Kembalikan kejernihan penglihatan Anda dengan prosedur operasi katarak teknologi Phacoemulsification.",
     image: "/promo/paket6.jpeg",
   },
   {
     id: 7,
     title: "Medical Checkup Jamaah Haji",
     description:
-      "Pemeriksaan kesehatan menyeluruh bagi calon jamaah haji untuk memastikan kondisi fisik prima dan memenuhi persyaratan medis keberangkatan ke tanah suci.",
+      "Pemeriksaan kesehatan menyeluruh bagi calon jamaah haji untuk memastikan kondisi fisik prima.",
     image: "/promo/paket7.jpeg",
   },
 ];
@@ -62,7 +62,6 @@ function SkeletonCard() {
       <div className="relative aspect-square w-full bg-gray-100 overflow-hidden">
         <div className="absolute inset-0 bg-linear-to-r from-gray-200 via-gray-100 to-gray-200 animate-[shimmer_1.2s_infinite]" />
       </div>
-
       <div className="p-4 md:p-5 flex flex-col grow text-center">
         <div className="h-5 bg-gray-200 rounded w-3/4 mx-auto mb-3 animate-pulse" />
         <div className="h-3 bg-gray-200 rounded w-11/12 mx-auto mb-2 animate-pulse" />
@@ -89,13 +88,13 @@ const PromoKesehatan = () => {
     return () => clearTimeout(t);
   }, []);
 
-  // Fungsi toggle dengan logic scroll
+  // Fungsi toggle tanpa animasi scroll (langsung lompat ke atas)
   const handleToggle = () => {
     if (showAll) {
-      // Jika saat ini sedang tampil semua, maka scroll ke atas saat ditutup
       setShowAll(false);
+      // Menggunakan auto atau langsung scroll agar tidak ada animasi meluncur
       sectionRef.current?.scrollIntoView({
-        behavior: "smooth",
+        behavior: "auto",
         block: "start",
       });
     } else {
