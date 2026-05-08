@@ -8,7 +8,6 @@ import {
   Search,
   Menu,
   X,
-  Globe,
   UserCircle,
   LayoutDashboard,
   Stethoscope,
@@ -431,7 +430,37 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               onMouseLeave={() => setActiveMenu(null)}
             >
               <div className="flex items-center gap-1 px-1 py-1">
-                <Globe size={18} />
+                <svg
+                  width={18}
+                  height={18}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="rounded-full"
+                >
+                  {/* Circular background */}
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="12"
+                    fill="#E5E7EB"
+                    stroke="#D1D5DB"
+                    strokeWidth="0.5"
+                  />
+
+                  {/* Indonesia flag in circle */}
+                  {/* Red top half */}
+                  <path
+                    d="M 2 12 C 2 6.48 6.48 2 12 2 C 17.52 2 22 6.48 22 12 L 12 12 Z"
+                    fill="#FF0000"
+                  />
+
+                  {/* White bottom half */}
+                  <path
+                    d="M 2 12 L 12 12 C 17.52 12 22 17.52 22 12 C 22 17.52 17.52 22 12 22 C 6.48 22 2 17.52 2 12 Z"
+                    fill="#FFFFFF"
+                  />
+                </svg>
 
                 <span className="font-medium">ID</span>
               </div>
