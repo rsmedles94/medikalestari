@@ -129,7 +129,7 @@ export default function KamarPerawatan() {
       {/* Container Utama */}
       <div className="max-w-5xl mx-auto px-4">
         {/* Navigasi Breadcrumb - Posisi Tetap */}
-        <div className="pt-4 md:pt-16 pb-2 md:-mt-16">
+        <div className="pt-4 md:pt-16 pb-2 md:pb-4  md:-mt-8">
           <nav className="flex items-center gap-1 text-[14px] font-normal text-gray-300 mb-4">
             <Link
               href="/"
@@ -138,7 +138,7 @@ export default function KamarPerawatan() {
               Beranda
             </Link>
             <ChevronRight size={12} className="text-black/60" />
-            <span className="font-normal text-gray-800">Kamar Perawatan</span>
+            <span className="font-normal text-gray-300">Kamar Perawatan</span>
           </nav>
         </div>
 

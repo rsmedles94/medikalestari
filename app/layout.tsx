@@ -136,7 +136,7 @@ function LayoutContent({
         <>
           <Navbar />
           <MobileBottomNavbar />
-          <main className="min-h-screen pt-20 md:pt-26 md:pb-10 pb-22">
+          <main className="min-h-screen pt-28 md:pt-26 md:pb-10 pb-22">
             {children}
           </main>
           <EmergencyWA />
