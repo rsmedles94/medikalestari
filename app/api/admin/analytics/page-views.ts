@@ -10,7 +10,7 @@ interface EventCount {
 const getDateRange = (period: Period): { from: Date; to: Date } => {
   const to = new Date();
   to.setUTCHours(23, 59, 59, 999); // End of day in UTC
-  
+
   const from = new Date();
   from.setUTCHours(0, 0, 0, 0); // Start of today
 
@@ -75,7 +75,7 @@ export async function getVisitorStats() {
     // Helper function to count events in a date range
     const countEvents = async (period: Period) => {
       const { from, to } = getDateRange(period);
-      
+
       // Debug logging
       console.log(`[Analytics] Counting ${period} events:`, {
         from: from.toISOString(),
@@ -83,7 +83,7 @@ export async function getVisitorStats() {
         fromUTC: from.toUTCString(),
         toUTC: to.toUTCString(),
       });
-      
+
       const { count, error } = await supabase
         .from("analytics_events")
         .select("id", { count: "exact", head: true })
@@ -95,7 +95,7 @@ export async function getVisitorStats() {
         console.error(`Error counting ${period} events:`, error);
         return 0;
       }
-      
+
       console.log(`[Analytics] ${period} count: ${count}`);
       return count || 0;
     };
