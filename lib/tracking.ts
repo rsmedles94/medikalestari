@@ -1,0 +1,51 @@
+import { supabase } from "./supabase";
+
+export type EventType = "page_view" | "button_click" | "form_submit";
+export type Metadata = Record<
+  string,
+  string | number | boolean | null | undefined
+>;
+
+const getWindowPath = (): string | null => {
+  if (globalThis.window === undefined) return null;
+  return globalThis.window.location.pathname;
+};
+
+const getUserAgent = (): string | null => {
+  if (globalThis.navigator === undefined) return null;
+  return globalThis.navigator.userAgent;
+};
+
+export async function trackEvent(
+  eventType: EventType,
+  eventName: string,
+  metadata?: Metadata,
+) {
+  try {
+    // Client-side tracking via API
+    await fetch("/api/admin/analytics/track", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        event_type: eventType,
+        event_name: eventName,
+        page_path: getWindowPath(),
+        metadata: metadata || {},
+      }),
+    });
+  } catch (err) {
+    console.error("Error tracking event:", err);
+  }
+}
+
+export async function trackPageView(pagePath: string) {
+  await trackEvent("page_view", pagePath, {
+    userAgent: getUserAgent(),
+  });
+}
+
+export async function trackButtonClick(buttonName: string, pagePath?: string) {
+  await trackEvent("button_click", buttonName, {
+    page: pagePath || getWindowPath(),
+  });
+}

@@ -4,6 +4,7 @@ import DoctorScheduleSkeleton from "@/components/DoctorScheduleSkeleton";
 import { fetchAllDoctorsWithSchedules } from "@/lib/api";
 import { ArrowRight, ChevronRight } from "lucide-react";
 import Link from "next/link";
+import { PageTracker } from "@/components/PageTracker";
 
 export const metadata = {
   title: "Jadwal Dokter",
@@ -24,6 +25,7 @@ async function DoctorScheduleContent() {
 export default function DoctorSchedulePage() {
   return (
     <div className="w-full min-h-screen bg-white">
+      <PageTracker pagePath="/jadwal-dokter" />
       {/* MAIN CONTENT AREA */}
       <main className="max-w-[1175px] mx-auto px-4 md:px-8 py-12">
         {/* BREADCRUMB */}

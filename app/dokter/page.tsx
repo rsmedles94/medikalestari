@@ -1,4 +1,5 @@
 import DoctorSection from "@/components/DoctorSection";
+import { PageTracker } from "@/components/PageTracker";
 
 interface DoctorPageProps {
   readonly searchParams: Promise<{
@@ -20,6 +21,7 @@ export default async function DoctorPage({
   const params = await searchParams;
   return (
     <div className="w-full min-h-screen bg-white">
+      <PageTracker pagePath="/dokter" />
       <DoctorSection
         initialSearch={params.search}
         initialSpecialty={params.specialty}

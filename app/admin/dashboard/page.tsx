@@ -162,10 +162,10 @@ const AdminDashboard = () => {
               Jadwal
             </ScaleButton>
             <ScaleButton
-              onClick={() => router.push("/admin/mcu")}
+              onClick={() => router.push("/admin/analytics")}
               className="bg-blue-600"
             >
-              Paket MCU
+              Analitik Web
             </ScaleButton>
           </div>
         </div>
