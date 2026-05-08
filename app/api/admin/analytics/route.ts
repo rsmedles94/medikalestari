@@ -47,17 +47,29 @@ export async function POST(request: NextRequest) {
     }
 
     const supabase = createServerSupabaseClient();
+    const createdAt = new Date().toISOString();
+
+    console.log("[Analytics Track] Inserting event:", {
+      event_type,
+      event_name,
+      page_path,
+      created_at: createdAt,
+    });
 
     const { error } = await supabase.from("analytics_events").insert({
       event_type,
       event_name,
       page_path,
       metadata: metadata || {},
-      created_at: new Date().toISOString(),
+      created_at: createdAt,
     });
 
-    if (error) throw error;
+    if (error) {
+      console.error("[Analytics Track] Insert error:", error);
+      throw error;
+    }
 
+    console.log("[Analytics Track] Event inserted successfully");
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Track API error:", error);

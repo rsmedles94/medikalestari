@@ -9,20 +9,25 @@ interface EventCount {
 
 const getDateRange = (period: Period): { from: Date; to: Date } => {
   const to = new Date();
+  to.setUTCHours(23, 59, 59, 999); // End of day in UTC
+  
   const from = new Date();
+  from.setUTCHours(0, 0, 0, 0); // Start of today
 
   switch (period) {
     case "today":
-      from.setHours(0, 0, 0, 0);
+      from.setUTCHours(0, 0, 0, 0);
       break;
     case "week":
-      from.setDate(from.getDate() - 7);
+      from.setUTCDate(from.getUTCDate() - 7);
+      from.setUTCHours(0, 0, 0, 0);
       break;
     case "month":
-      from.setMonth(from.getMonth() - 1);
+      from.setUTCMonth(from.getUTCMonth() - 1);
+      from.setUTCHours(0, 0, 0, 0);
       break;
     case "all":
-      from.setFullYear(2000); // Very old date
+      from.setUTCFullYear(2000); // Very old date
       break;
   }
 
@@ -70,6 +75,15 @@ export async function getVisitorStats() {
     // Helper function to count events in a date range
     const countEvents = async (period: Period) => {
       const { from, to } = getDateRange(period);
+      
+      // Debug logging
+      console.log(`[Analytics] Counting ${period} events:`, {
+        from: from.toISOString(),
+        to: to.toISOString(),
+        fromUTC: from.toUTCString(),
+        toUTC: to.toUTCString(),
+      });
+      
       const { count, error } = await supabase
         .from("analytics_events")
         .select("id", { count: "exact", head: true })
@@ -81,6 +95,8 @@ export async function getVisitorStats() {
         console.error(`Error counting ${period} events:`, error);
         return 0;
       }
+      
+      console.log(`[Analytics] ${period} count: ${count}`);
       return count || 0;
     };
 
