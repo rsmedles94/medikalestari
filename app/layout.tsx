@@ -9,6 +9,7 @@ import AdminSidebar from "@/components/AdminSidebar";
 import PopupDisplay from "@/components/PopupDisplay";
 import EmergencyWA from "@/components/EmergencyWA";
 import MobileBottomNavbar from "@/components/MobileBottomNavbar";
+import { PageTracker } from "@/components/PageTracker";
 import { usePathname } from "next/navigation";
 
 const geistSans = Geist({
@@ -125,6 +126,7 @@ function LayoutContent({
 
   return (
     <>
+      <PageTracker pagePath={pathname || "/"} />
       {isAdminPage ? (
         <div className="min-h-screen bg-gray-100 md:ml-64">
           <AdminSidebar />
