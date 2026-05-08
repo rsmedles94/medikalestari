@@ -114,9 +114,101 @@ export default function KamarPerawatan() {
   if (loading) {
     return (
       <div className="min-h-screen bg-white font-sans">
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="h-5 w-32 bg-gray-200 mb-8 animate-pulse"></div>
-          <div className="bg-gray-100 h-80 animate-pulse"></div>
+        <div className="max-w-5xl mx-auto px-4 pt-4 md:pt-16">
+          {/* Skeleton Card dengan Shimmer Effect */}
+          <div className="bg-white rounded-none shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-gray-100 overflow-hidden">
+            <div className="flex flex-col md:flex-row md:min-h-[450px] items-stretch">
+              {/* Skeleton Image Left */}
+              <div className="md:w-1/2 relative bg-gradient-to-r from-gray-100 via-gray-50 to-gray-100 min-h-[280px] md:min-h-full overflow-hidden">
+                <div
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent"
+                  style={{
+                    animation: "shimmer 2s infinite",
+                  }}
+                />
+              </div>
+
+              {/* Skeleton Content Right */}
+              <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between bg-white">
+                <div>
+                  {/* Skeleton Title */}
+                  <div className="mb-6">
+                    <div className="h-8 bg-gradient-to-r from-gray-100 via-gray-50 to-gray-100 rounded mb-3 relative overflow-hidden">
+                      <div
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent"
+                        style={{
+                          animation: "shimmer 2s infinite",
+                        }}
+                      />
+                    </div>
+                    <div className="h-6 bg-gradient-to-r from-gray-100 via-gray-50 to-gray-100 rounded w-2/3 relative overflow-hidden">
+                      <div
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent"
+                        style={{
+                          animation: "shimmer 2s infinite",
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Skeleton Description */}
+                  <div className="mb-6 space-y-2">
+                    {[...Array(4)].map((_, i) => (
+                      <div
+                        key={i}
+                        className="h-4 bg-gradient-to-r from-gray-100 via-gray-50 to-gray-100 rounded relative overflow-hidden"
+                      >
+                        <div
+                          className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent"
+                          style={{
+                            animation: "shimmer 2s infinite",
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Skeleton Facilities */}
+                  <div className="mb-6">
+                    <div className="h-4 bg-gradient-to-r from-gray-100 via-gray-50 to-gray-100 rounded w-1/3 mb-3 relative overflow-hidden">
+                      <div
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent"
+                        style={{
+                          animation: "shimmer 2s infinite",
+                        }}
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-y-2 gap-x-4">
+                      {[...Array(4)].map((_, i) => (
+                        <div
+                          key={i}
+                          className="h-4 bg-gradient-to-r from-gray-100 via-gray-50 to-gray-100 rounded relative overflow-hidden"
+                        >
+                          <div
+                            className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent"
+                            style={{
+                              animation: "shimmer 2s infinite",
+                            }}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <style>{`
+            @keyframes shimmer {
+              0% {
+                transform: translateX(-100%);
+              }
+              100% {
+                transform: translateX(100%);
+              }
+            }
+          `}</style>
         </div>
       </div>
     );
