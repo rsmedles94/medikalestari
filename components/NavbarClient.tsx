@@ -116,9 +116,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
     "Vaccination Services": <Syringe size={20} strokeWidth={1.5} />,
   };
 
-  const languages = [
-    { label: "Bahasa Indonesia", code: "ID", active: true },
-  ];
+  const languages = [{ label: "Bahasa Indonesia", code: "ID", active: true }];
 
   const handleHomeClick = (e: React.MouseEvent) => {
     if (pathname === "/") {
@@ -387,7 +385,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               onMouseEnter={() => setActiveMenu("Lang")}
               onMouseLeave={() => setActiveMenu(null)}
             >
-              <div className="flex items-center gap-1 px-1 py-1">
+              <div className="flex items-center gap-1 px-1 -py-1 border border-white rounded-full">
                 <svg
                   width={18}
                   height={18}
