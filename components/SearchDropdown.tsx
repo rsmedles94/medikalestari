@@ -115,7 +115,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({ isOpen, onClose }) => {
               <div className="mb-8">
                 {searchResults.length > 0 ? (
                   <div>
-                    <h3 className="text-sm font-bold text-[#004684] uppercase tracking-widest mb-4">
+                    <h3 className="text-sm font-semibold text-[#004684] mb-4">
                       Hasil Pencarian ({searchResults.length})
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -125,7 +125,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({ isOpen, onClose }) => {
                           onClick={() => handleDoctorClick(doctor.id)}
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className="group flex gap-4 p-4 bg-white hover:shadow-md transition-all rounded-lg text-left border border-gray-200 hover:border"
+                          className="group flex gap-4 p-4 bg-white hover:shadow-md transition-all text-left border border-gray-200 hover:border"
                         >
                           <div className="w-16 h-16 rounded-full overflow-hidden shrink-0 bg-gray-200">
                             <Image
