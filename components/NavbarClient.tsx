@@ -44,15 +44,32 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
 
+  const [isVisible, setIsVisible] = useState(true);
+
+  const [lastScrollY, setLastScrollY] = useState(0);
+
   const pathname = usePathname();
 
   const router = useRouter();
 
   /* ===============================
 
-     LOCK BODY SCROLL SAAT MENU MOBILE AKTIF
+     SCROLL CONTROL UNTUK TOP NAVBAR
 
   =============================== */
+
+  useEffect(() => {
+    const controlNavbar = () => {
+      if (window.scrollY > lastScrollY && window.scrollY > 50) {
+        setIsVisible(false);
+      } else {
+        setIsVisible(true);
+      }
+      setLastScrollY(window.scrollY);
+    };
+    window.addEventListener("scroll", controlNavbar);
+    return () => window.removeEventListener("scroll", controlNavbar);
+  }, [lastScrollY]);
 
   useEffect(() => {
     if (isMobileMenuOpen) {
@@ -213,55 +230,65 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
   };
 
   return (
-    <nav className="w-full font-sans fixed top-0 left-0 right-0 z-50 bg-white shadow-md">
-      {/* --- Top Navbar --- */}
+    <nav className="w-full font-sans fixed top-0 left-0 right-0 z-50">
+      {/* --- Top Navbar (Animated Hide/Show) --- */}
 
-      <div className="bg-white py-2 relative">
-        <div className="max-w-[1200px] mx-auto px-4 md:px-8 flex justify-between items-center">
-          <Link href="/" className="flex items-center">
-            {logoNode}
-          </Link>
-
-          <div className="hidden md:flex gap-4 items-center text-[15px] font-normal text-gray-700">
-            <Link
-              href="/kontak-kami"
-              className="hover:text-[#003159] hover:underline"
-            >
-              Kontak
+      <motion.div
+        initial={{ height: "auto", opacity: 1 }}
+        animate={{
+          height: isVisible ? "auto" : 0,
+          opacity: isVisible ? 1 : 0,
+        }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+        className="bg-white overflow-hidden shadow-sm"
+      >
+        <div className="py-2 relative">
+          <div className="max-w-[1200px] mx-auto px-4 md:px-8 flex justify-between items-center">
+            <Link href="/" className="flex items-center">
+              {logoNode}
             </Link>
 
-            <span className="text-gray-300">|</span>
+            <div className="hidden md:flex gap-4 items-center text-[15px] font-normal text-gray-700">
+              <Link
+                href="/kontak-kami"
+                className="hover:text-[#003159] hover:underline"
+              >
+                Kontak
+              </Link>
 
-            <Link
-              href="/syarat-ketentuan"
-              className="hover:text-[#003159] hover:underline"
-            >
-              Syarat & Ketentuan
-            </Link>
-          </div>
+              <span className="text-gray-300">|</span>
 
-          <div className="md:hidden flex items-center gap-3 p-2 text-gray-700 relative z-[110]">
-            <button
-              onClick={() => setIsMobileSearchOpen(true)}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-              title="Cari dokter"
-            >
-              <Search size={24} />
-            </button>
+              <Link
+                href="/syarat-ketentuan"
+                className="hover:text-[#003159] hover:underline"
+              >
+                Syarat & Ketentuan
+              </Link>
+            </div>
 
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
+            <div className="md:hidden flex items-center gap-3 p-2 text-gray-700 relative z-[110]">
+              <button
+                onClick={() => setIsMobileSearchOpen(true)}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                title="Cari dokter"
+              >
+                <Search size={24} />
+              </button>
+
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
-      {/* --- Bottom Navbar --- */}
+      {/* --- Bottom Navbar (Tetap Muncul / Sticky) --- */}
 
-      <div className="hidden md:block relative w-full bg-[#004684] text-white z-30">
+      <div className="hidden md:block relative w-full bg-[#004684] text-white z-30 shadow-md">
         <div
           className="absolute right-0 top-0 h-full w-[38%] bg-[#003159] hidden lg:block"
           style={{ clipPath: "polygon(40px 0, 100% 0, 100% 100%, 0% 100%)" }}
@@ -659,7 +686,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
       {/* Mobile Quick Action Menu */}
 
-      <div className="md:hidden flex h-10">
+      <div className="md:hidden flex h-10 shadow-lg">
         {/* Left Menu - Medical Checkup */}
 
         <Link
