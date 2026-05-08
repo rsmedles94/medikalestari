@@ -136,7 +136,9 @@ function LayoutContent({
         <>
           <Navbar />
           <MobileBottomNavbar />
-          <main className="min-h-screen">{children}</main>
+          <main className="min-h-screen pt-20 md:pt-28 md:pb-10 pb-22">
+            {children}
+          </main>
           <EmergencyWA />
           <PopupDisplay />
           <Footer />

@@ -217,10 +217,10 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
   };
 
   return (
-    <nav className="w-full font-sans sticky top-0 z-[100] bg-white shadow-sm">
+    <nav className="w-full font-sans fixed top-0 left-0 right-0 z-50 bg-white shadow-md">
       {/* --- Top Navbar --- */}
 
-      <div className="bg-white py-2 relative z-[101] sticky top-0">
+      <div className="bg-white py-2 relative">
         <div className="max-w-[1200px] mx-auto px-4 md:px-8 flex justify-between items-center">
           <Link href="/" className="flex items-center">
             {logoNode}

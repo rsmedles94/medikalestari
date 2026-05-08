@@ -160,7 +160,7 @@ const MobileBottomNavbar = () => {
         </div>
       </nav>
 
-      <div className="md:hidden h-18" />
+      <div className="md:hidden" />
     </>
   );
 };
