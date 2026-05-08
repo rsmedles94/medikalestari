@@ -24,17 +24,6 @@ const ServiceSection = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  const scrollToSection = (id: string | null) => {
-    if (!id) return;
-    const element = document.getElementById(id);
-    if (!element) return;
-
-    const headerOffset = 150;
-    const elementPosition =
-      element.getBoundingClientRect().top + window.pageYOffset - headerOffset;
-    window.scrollTo({ top: elementPosition, behavior: "smooth" });
-  };
-
   const serviceData: ServiceItem[] = [
     {
       id: 1,
@@ -48,7 +37,7 @@ const ServiceSection = () => {
     {
       id: 2,
       image: "/dokter-kami.png",
-      title: "Dokter Kami",
+      title: "Dokter Spesialis",
       description:
         "Tim dokter spesialis berpengalaman yang siap melayani Anda.",
       targetId: null,
@@ -63,116 +52,91 @@ const ServiceSection = () => {
       targetId: null,
       href: "/jadwal-dokter",
     },
-    {
-      id: 4,
-      image: "/mcu.png",
-      title: "Medical Checkup",
-      description: "Informasi lengkap layanan Medical Check-Up (MCU).",
-      targetId: null,
-      href: "/services/medical-checkup",
-    },
   ];
 
-  const handleServiceClick = (item: ServiceItem) => {
-    if (item.href) {
-      router.push(item.href);
-      return;
-    }
-    if (!item.targetId) return;
-
-    const el = document.getElementById(item.targetId);
-    if (el) {
-      scrollToSection(item.targetId);
-    } else {
-      router.push(`/dokter#${item.targetId}`);
-    }
+  const handleServiceClick = (href: string | null) => {
+    if (href) router.push(href);
   };
 
   return (
-    <section className="w-full bg-white font-sans text-slate-800 relative py-20 overflow-hidden">
-      <div className="relative z-10 max-w-290 mx-auto px-4 md:px-8 -mt-10">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-4 pb-5 border-b border-slate-100"
-        >
-          <div>
-            <h2 className="text-3xl md:text-4xl font-light text-slate-900 mt-10 md:mt-1 uppercase tracking-tight text-center md:text-left">
-              Pusat Pelayanan
-            </h2>
-          </div>
-
-          <p className="text-slate-500 max-w-sm text-sm text-center mx-auto md:text-left md:mx-0 md:max-w-none">
+    <section className="w-full bg-slate-50 font-sans py-20">
+      <div className="max-w-[1400px] mx-auto px-4 md:px-8">
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10 pb-5 border-b border-slate-200">
+          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 uppercase tracking-tight">
+            Pusat Pelayanan
+          </h2>
+          <p className="text-slate-500 max-w-sm text-sm">
             Akses informasi fasilitas, jadwal tenaga medis, dan operasional
             rumah sakit
           </p>
-        </motion.div>
+        </div>
 
-        <div className="relative">
-          <div className="relative z-10 py-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {isLoading
-              ? Array.from({ length: 4 }).map((_, index) => (
-                  <ServiceSkeletonShimmer
-                    key={`service-skeleton-${index + 1}`}
-                  />
-                ))
-              : serviceData.map((item, index) => (
-                  <motion.div
-                    key={item.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                    onClick={() => handleServiceClick(item)}
-                    className="group relative aspect-3/4.5 flex flex-col overflow-hidden bg-white border border-slate-200 shadow-sm cursor-pointer transition-transform duration-300 ease-in-out hover:scale-105 transform-gpu"
-                  >
-                    <div className="absolute inset-0">
+        {/* Grid System - Landscape (3 Kolom) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {isLoading
+            ? Array.from({ length: 3 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="aspect-[4/3] bg-gray-200 animate-pulse rounded-xl"
+                />
+              ))
+            : serviceData.map((item, index) => (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  onClick={() => handleServiceClick(item.href)}
+                  className="group relative aspect-[4/3] flex flex-col overflow-hidden bg-white rounded-xl shadow-md border border-slate-100 cursor-pointer"
+                >
+                  {/* Background Image - Low Opacity */}
+                  <div className="absolute inset-0 z-0">
+                    <Image
+                      src={item.image}
+                      alt={item.title}
+                      fill
+                      className="object-cover opacity-10 group-hover:opacity-20 transition-opacity duration-500"
+                    />
+                    <div className="absolute inset-0 bg-linear-to-b from-white/80 via-transparent to-white/10" />
+                  </div>
+
+                  {/* Content Container */}
+                  <div className="relative z-10 p-8 h-full flex flex-col items-center text-center">
+                    {/* Logo - Simetris Tengah */}
+                    <div className="mb-6 h-12 w-full relative flex justify-center items-center">
                       <Image
-                        src={item.image}
-                        alt={item.title}
-                        fill
-                        className="object-cover"
+                        src="/logo.png"
+                        alt="Logo Center"
+                        width={140}
+                        height={60}
+                        className="object-contain"
                       />
                     </div>
 
-                    <div className="absolute inset-x-0 bottom-0 h-[65%] bg-linear-to-t from-[#004684] via-[#004684]/85 to-transparent z-10" />
+                    <h3 className="text-xl font-bold text-[#004684] mb-4 leading-tight transition-colors group-hover:text-[#003159]">
+                      {item.title}
+                    </h3>
 
-                    <div
-                      className="relative z-20 mt-auto p-7 flex flex-col items-start"
-                      style={{ backfaceVisibility: "hidden" }}
-                    >
-                      <h3 className="text-xl font-bold text-white mb-2 leading-tight">
-                        {item.title}
-                      </h3>
-                      <p className="text-blue-50/90 text-sm leading-relaxed pr-6">
-                        {item.description}
-                      </p>
-                    </div>
+                    <p className="text-slate-500 text-sm leading-relaxed mb-6 line-clamp-3">
+                      {item.description}
+                    </p>
 
-                    <div className="absolute bottom-0 right-0 z-30 w-0 h-0 border-solid border-t-[70px] border-r-[70px] border-t-transparent border-r-[#00403d] transition-all duration-300 opacity-0 group-hover:opacity-100" />
-
-                    <div className="absolute bottom-0 right-0 z-40 w-0 h-0 border-solid border-b-[65px] border-l-[65px] border-b-white border-l-transparent translate-x-20 translate-y-20 transition-transform duration-300 group-hover:translate-x-0 group-hover:translate-y-0 shadow-[-4px_-4px_10px_rgba(0,0,0,0.2)]" />
-
-                    <div className="absolute bottom-3 right-2 z-50 opacity-0 scale-50 transition-all duration-500 delay-100 group-hover:opacity-100 group-hover:scale-100">
-                      <svg
-                        className="w-7 h-7 text-[#004684]"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        strokeWidth={2.5}
+                    <div className="mt-auto">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleServiceClick(item.href);
+                        }}
+                        className="bg-[#004684] hover:bg-[#003159] text-white px-8 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all duration-300 shadow-lg shadow-blue-900/10 active:scale-95"
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
-                        />
-                      </svg>
+                        Read more
+                      </button>
                     </div>
-                  </motion.div>
-                ))}
-          </div>
+                  </div>
+                </motion.div>
+              ))}
         </div>
       </div>
     </section>
