@@ -203,31 +203,31 @@ const MadingSection = () => {
                       </div>
                     ) : (
                       /* --- Event --- */
-                      <div className="bg-white overflow-hidden border border-gray-100 flex flex-col group transition-all hover:shadow-md h-full">
+                      <div className="bg-white overflow-hidden border border-gray-100 flex flex-col group transition-all hover:shadow-md">
                         <a
                           href={item.link || "#"}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="aspect-[16/10] overflow-hidden block"
+                          className="block overflow-hidden bg-gray-100"
                         >
                           <img
                             src={item.image_url}
                             alt=""
-                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            className="w-full h-auto transition-transform duration-300 group-hover:scale-105"
                           />
                         </a>
 
                         <div className="p-3 md:p-4 flex flex-col flex-grow">
-                          <span className="text-slate-500 text-[8px] md:text-[10px] font-bold uppercase mb-1 md:mb-2 tracking-widest">
+                          <span className="text-slate-500 text-[8px] md:text-[9px] font-bold uppercase mb-1 md:mb-2 tracking-widest">
                             EVENT
                           </span>
                           <h3 className="text-xs md:text-sm font-bold text-slate-900 mb-1 md:mb-2 leading-snug group-hover:text-[#004684] transition-colors line-clamp-2">
                             {item.title}
                           </h3>
-                          <p className="text-[10px] md:text-[11px] text-slate-500 mb-3 md:mb-4 flex-grow leading-relaxed line-clamp-2 md:line-clamp-none">
+                          <p className="text-[9px] md:text-[10px] text-slate-500 mb-2 md:mb-3 flex-grow leading-relaxed line-clamp-1 md:line-clamp-2">
                             {item.description}
                           </p>
-                          <div className="flex items-center gap-1 md:gap-2 text-gray-500 font-bold text-[8px] md:text-[10px] mb-3 md:mb-4 uppercase">
+                          <div className="flex items-center gap-1 md:gap-2 text-gray-500 font-bold text-[8px] md:text-[9px] mb-2 md:mb-3 uppercase">
                             <Calendar size={10} />{" "}
                             {item.start_date || item.date}
                           </div>
@@ -235,7 +235,7 @@ const MadingSection = () => {
                           <a
                             href={item.link || "#"}
                             target="_blank"
-                            className="flex items-center gap-1 md:gap-2 text-gray-500 font-bold text-[10px] md:text-[12px] group-hover:text-[#004684]"
+                            className="flex items-center gap-1 md:gap-2 text-gray-500 font-bold text-[9px] md:text-[11px] group-hover:text-[#004684]"
                           >
                             <span>Baca Selengkapnya</span>
                             <ChevronRight
