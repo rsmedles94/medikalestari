@@ -23,7 +23,7 @@ const PopupDisplay = () => {
     popupsRef.current = popups;
   }, [popups]);
 
-  // ===== Behavior Tracking (Simple AI-like logic) =====
+  // ===== Behavior Tracking =====
   const getBehavior = () => {
     const raw = localStorage.getItem(BEHAVIOR_KEY);
     return raw ? JSON.parse(raw) : { quickClose: 0, engaged: 0 };
@@ -31,25 +31,19 @@ const PopupDisplay = () => {
 
   const updateBehavior = (viewDuration: number) => {
     const behavior = getBehavior();
-
     if (viewDuration < 2000) {
       behavior.quickClose += 1;
     } else {
       behavior.engaged += 1;
     }
-
     localStorage.setItem(BEHAVIOR_KEY, JSON.stringify(behavior));
   };
 
   const getDynamicCooldown = () => {
     const behavior = getBehavior();
-
-    // Kalau user sering close cepat → tambah cooldown
     if (behavior.quickClose >= 3) {
-      return FIVE_MINUTES * 2; // 10 menit
+      return FIVE_MINUTES * 2;
     }
-
-    // Normal
     return FIVE_MINUTES;
   };
 
@@ -57,7 +51,6 @@ const PopupDisplay = () => {
     const now = Date.now();
     const lastExit = localStorage.getItem(POPUP_KEY);
     const hasSeenThisSession = sessionStorage.getItem(SESSION_KEY);
-
     const cooldown = getDynamicCooldown();
 
     if (!hasSeenThisSession) {
@@ -68,7 +61,7 @@ const PopupDisplay = () => {
     }
 
     if (lastExit && now - parseInt(lastExit) < cooldown) {
-      return; // ❗ kurang dari cooldown → jangan tampil
+      return;
     }
 
     setIsVisible(true);
@@ -84,12 +77,10 @@ const PopupDisplay = () => {
 
   useEffect(() => {
     let mounted = true;
-
     const loadPopups = async () => {
       try {
         const popupData = await fetchPopups();
         if (!mounted) return;
-
         if (popupData?.length) {
           preloadImages(popupData);
           setPopups(popupData);
@@ -99,9 +90,7 @@ const PopupDisplay = () => {
         console.error("Error loading popups:", error);
       }
     };
-
     loadPopups();
-
     return () => {
       mounted = false;
     };
@@ -110,7 +99,6 @@ const PopupDisplay = () => {
   useEffect(() => {
     const handleVisibilityChange = () => {
       const now = Date.now();
-
       if (document.hidden) {
         tabLeftTimeRef.current = now;
       } else {
@@ -123,7 +111,6 @@ const PopupDisplay = () => {
         tabLeftTimeRef.current = null;
       }
     };
-
     document.addEventListener("visibilitychange", handleVisibilityChange);
     return () =>
       document.removeEventListener("visibilitychange", handleVisibilityChange);
@@ -132,9 +119,7 @@ const PopupDisplay = () => {
   const closePopup = useCallback(() => {
     const now = Date.now();
     const duration = now - openTimeRef.current;
-
     updateBehavior(duration);
-
     requestAnimationFrame(() => {
       setIsVisible(false);
       setCurrentIndex(0);
@@ -150,9 +135,7 @@ const PopupDisplay = () => {
     }
   }, [currentIndex, closePopup]);
 
-  const handleForceClose = useCallback(() => {
-    closePopup();
-  }, [closePopup]);
+  // handleForceClose dihapus/tidak digunakan di overlay agar area luar tidak menutup popup
 
   useEffect(() => {
     document.body.style.overflow = isVisible ? "hidden" : "";
@@ -164,15 +147,12 @@ const PopupDisplay = () => {
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-6">
-      {/* Overlay */}
-      <div
-        className="absolute inset-0 bg-black/80 backdrop-blur-sm will-change-opacity"
-        onClick={handleForceClose}
-      />
+      {/* Overlay - onClick dihapus agar tidak close saat dipencet area lain */}
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm will-change-opacity" />
 
       {/* Container */}
       <div className="relative flex flex-col items-center animate-in fade-in zoom-in duration-300 max-w-[85%] md:max-w-[500px] will-change-transform">
-        {/* Close */}
+        {/* Close Button - Satu-satunya cara untuk menutup atau lanjut ke popup berikutnya */}
         <button
           onClick={handleAction}
           className="absolute -top-8 -right-2 text-white/50 hover:text-white transition-colors p-1"
@@ -180,7 +160,7 @@ const PopupDisplay = () => {
           <X size={18} strokeWidth={3} />
         </button>
 
-        {/* Image */}
+        {/* Image Content */}
         <div
           className="relative cursor-pointer flex justify-center items-center overflow-hidden shadow-2xl"
           onClick={handleAction}
