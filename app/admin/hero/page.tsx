@@ -93,9 +93,14 @@ const AdminHeroBannersPage = () => {
         device_type: formData.device_type,
       };
 
+      console.log("Submitting banner data:", bannerData);
+      console.log("Edit mode:", !!editingId, "ID:", editingId);
+
       if (editingId) {
+        console.log("Updating banner...");
         await updateHeroBanner(editingId, bannerData);
       } else {
+        console.log("Creating new banner...");
         await createHeroBanner(bannerData);
       }
 

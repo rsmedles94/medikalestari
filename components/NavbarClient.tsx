@@ -24,17 +24,11 @@ import {
   Dumbbell,
   Syringe,
 } from "lucide-react";
-
 import { motion, AnimatePresence } from "framer-motion";
-
 import { useAuth } from "@/context/AuthProvider";
-
 import SearchDropdown from "./SearchDropdown";
-
 import MobileSearchModal from "./MobileSearchModal";
-
 import DropdownMenuItem from "./DropdownMenuItem";
-
 import { usePathname, useRouter } from "next/navigation";
 
 interface NavbarClientProps {
@@ -63,29 +57,20 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
   useEffect(() => {
     if (isMobileMenuOpen) {
       document.body.style.overflow = "hidden";
-
       document.body.style.touchAction = "none";
-
       document.documentElement.style.overflow = "hidden";
-
       document.documentElement.style.touchAction = "none";
     } else {
       document.body.style.overflow = "";
-
       document.body.style.touchAction = "";
-
       document.documentElement.style.overflow = "";
-
       document.documentElement.style.touchAction = "";
     }
 
     return () => {
       document.body.style.overflow = "";
-
       document.body.style.touchAction = "";
-
       document.documentElement.style.overflow = "";
-
       document.documentElement.style.touchAction = "";
     };
   }, [isMobileMenuOpen]);
@@ -93,37 +78,23 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
   const menuData: Record<string, string[]> = {
     "Fasilitas & Layanan": [
       "Emergency",
-
       "Farmasi",
-
       "Fisioterapi",
-
       "Kamar Perawatan",
-
       "Laboratory Testing",
-
       "Layanan gawat darurat",
-
       "Medical Checkup",
-
       "Poli Klinik",
-
       "Radiologi",
-
       "Rawat Inap",
-
       "Rehabilitasi Medik",
-
       "Vaccination Services",
     ],
 
     "Informasi Pasien": [
       "Tarif Kamar",
-
       "Alur Pendaftaran",
-
       "Asuransi & Rekanan",
-
       "Panduan Kunjungan",
     ],
 
@@ -132,27 +103,16 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
   const serviceIcons: Record<string, React.ReactNode> = {
     Emergency: <Ambulance size={20} strokeWidth={1.5} />,
-
     Farmasi: <Pill size={20} strokeWidth={1.5} />,
-
     Fisioterapi: <Activity size={20} strokeWidth={1.5} />,
-
     "Kamar Perawatan": <Hotel size={20} strokeWidth={1.5} />,
-
     "Laboratory Testing": <Microscope size={20} strokeWidth={1.5} />,
-
     "Layanan gawat darurat": <Siren size={20} strokeWidth={1.5} />,
-
     "Medical Checkup": <Heart size={20} strokeWidth={1.5} />,
-
     "Poli Klinik": <Stethoscope size={20} strokeWidth={1.5} />,
-
     Radiologi: <Radio size={20} strokeWidth={1.5} />,
-
     "Rawat Inap": <Bed size={20} strokeWidth={1.5} />,
-
     "Rehabilitasi Medik": <Dumbbell size={20} strokeWidth={1.5} />,
-
     "Vaccination Services": <Syringe size={20} strokeWidth={1.5} />,
   };
 

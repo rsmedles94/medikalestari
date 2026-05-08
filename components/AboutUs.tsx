@@ -47,7 +47,7 @@ const AboutUs = () => {
   ];
 
   return (
-    <section className="bg-white text-slate-900 scroll -mt-12 pb-20">
+    <section className="bg-white text-slate-900 scroll md:-mt-12 pb-20">
       {/* 1. SECTION FOTO & JUDUL */}
       <div className="max-w-[1159px] mx-auto px-6 py-12 md:py-20">
         <div className="mb-8 md:mb-12 border-b border-slate-100 pb-6">

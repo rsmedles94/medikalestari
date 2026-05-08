@@ -113,7 +113,7 @@ export default function KamarPerawatan() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white py-8 font-sans">
+      <div className="min-h-screen bg-white font-sans">
         <div className="max-w-5xl mx-auto px-4">
           <div className="h-5 w-32 bg-gray-200 mb-8 animate-pulse"></div>
           <div className="bg-gray-100 h-80 animate-pulse"></div>
@@ -125,11 +125,11 @@ export default function KamarPerawatan() {
   if (!currentKamar) return null;
 
   return (
-    <div className="min-h-screen bg-white py-8">
+    <div className="min-h-screen bg-white">
       {/* Container Utama */}
       <div className="max-w-5xl mx-auto px-4">
         {/* Navigasi Breadcrumb - Posisi Tetap */}
-        <div className="pt-16 pb-2 -mt-16">
+        <div className="pt-4 md:pt-16 pb-2 md:-mt-16">
           <nav className="flex items-center gap-1 text-[14px] font-normal text-gray-300 mb-4">
             <Link
               href="/"

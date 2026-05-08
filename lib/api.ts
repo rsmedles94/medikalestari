@@ -352,6 +352,8 @@ export async function createHeroBanner(
   banner: Omit<HeroBanner, "id" | "created_at">,
 ) {
   try {
+    console.log("Creating new banner with data:", banner);
+
     const { data, error } = await supabase
       .from("hero_banners")
       .insert([banner])
@@ -361,6 +363,8 @@ export async function createHeroBanner(
       console.error("Error creating hero banner:", error);
       throw new Error(`Supabase error: ${error.message}`);
     }
+
+    console.log("Create result:", data);
 
     if (!data || data.length === 0) {
       throw new Error("Tidak ada data yang dikembalikan dari server");
@@ -378,6 +382,9 @@ export async function updateHeroBanner(
   banner: Partial<Omit<HeroBanner, "id" | "created_at">>,
 ) {
   try {
+    console.log("Updating banner with ID:", id);
+    console.log("Banner data to update:", banner);
+
     const { data, error } = await supabase
       .from("hero_banners")
       .update(banner)
@@ -389,8 +396,31 @@ export async function updateHeroBanner(
       throw new Error(`Supabase error: ${error.message}`);
     }
 
+    console.log("Update result:", data);
+
     if (!data || data.length === 0) {
-      throw new Error("Tidak ada data yang dikembalikan dari server");
+      console.warn(
+        "No data returned from update, attempting to fetch updated record",
+      );
+      // Try to fetch the updated record separately
+      const { data: fetchedData, error: fetchError } = await supabase
+        .from("hero_banners")
+        .select()
+        .eq("id", id)
+        .single();
+
+      if (fetchError) {
+        console.error("Error fetching updated banner:", fetchError);
+        throw new Error(
+          `Record mungkin tidak ditemukan atau gagal di-update: ${fetchError.message}`,
+        );
+      }
+
+      if (!fetchedData) {
+        throw new Error("Record tidak ditemukan setelah update");
+      }
+
+      return fetchedData;
     }
 
     return data[0];

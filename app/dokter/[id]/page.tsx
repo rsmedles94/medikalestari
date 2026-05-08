@@ -64,7 +64,7 @@ const DoctorDetailPage = () => {
     <div className="min-h-screen bg-white text-[#1A1A1A]">
       <div className="max-w-6xl mx-auto px-6 py-12">
         {/* BREADCRUMB & TITLE SECTION */}
-        <div className="pt-16 pb-12 -mt-20">
+        <div className="pt-4 md:pt-16 pb-12 md:-mt-20">
           <nav className="flex items-center gap-2 text-[14px] font-normal text-gray-600 mb-6">
             <Link
               href="/"

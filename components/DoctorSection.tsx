@@ -393,9 +393,9 @@ const DoctorSection = ({
         )}
       </AnimatePresence>
 
-      <div className="max-w-293.75 mx-auto px-4 md:px-8 -mt-8">
+      <div className="max-w-293.75 mx-auto px-4 md:px-8 md:-mt-8">
         {/* BREADCRUMB & TITLE SECTION */}
-        <div className="pt-16 pb-12">
+        <div className="pt-4 md:pt-16 pb-12">
           <nav className="flex items-center gap-1 text-[14px] font-normal text-gray-300 mb-4">
             <Link
               href="/"
