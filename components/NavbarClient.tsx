@@ -230,7 +230,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
   };
 
   return (
-    <nav className="w-full font-sans fixed top-0 left-0 right-0 z-50">
+    <nav className="w-full font-sans fixed top-0 left-0 right-0 z-50 bg-white">
       {/* --- Top Navbar (Animated Hide/Show) --- */}
 
       <motion.div
@@ -239,8 +239,8 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
           height: isVisible ? "auto" : 0,
           opacity: isVisible ? 1 : 0,
         }}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
-        className="bg-white overflow-hidden shadow-sm"
+        transition={{ duration: 0.4, ease: "easeInOut" }}
+        className="bg-white overflow-hidden will-change-[height,opacity]"
       >
         <div className="py-2 relative">
           <div className="max-w-[1200px] mx-auto px-4 md:px-8 flex justify-between items-center">
@@ -288,7 +288,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
       {/* --- Bottom Navbar (Tetap Muncul / Sticky) --- */}
 
-      <div className="hidden md:block relative w-full bg-[#004684] text-white z-30 shadow-md">
+      <div className="hidden md:block relative w-full bg-[#004684] text-white z-30 shadow-lg border-b-4 border-[#003159]">
         <div
           className="absolute right-0 top-0 h-full w-[38%] bg-[#003159] hidden lg:block"
           style={{ clipPath: "polygon(40px 0, 100% 0, 100% 100%, 0% 100%)" }}
