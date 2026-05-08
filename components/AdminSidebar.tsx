@@ -19,13 +19,21 @@ import {
 import { useRouter, usePathname } from "next/navigation";
 
 const AdminSidebar = () => {
-  const { logout } = useAuth();
+  const { logout, isAuthenticated, loading: authLoading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
   // default desktop buka, mobile tutup
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+
+  // detect mobile / desktop - ONLY RUNS ONCE
+  useEffect(() => {
+    // Check authentication first
+    if (!authLoading && !isAuthenticated) {
+      router.push("/admin/login");
+    }
+  }, [isAuthenticated, authLoading, router]);
 
   // detect mobile / desktop - ONLY RUNS ONCE
   useEffect(() => {
@@ -92,15 +100,15 @@ const AdminSidebar = () => {
 
   const isActive = (path: string) => pathname === path;
 
-  // Compute sidebar width classes
-  let sidebarWidthClass = "w-20 translate-x-0";
-  if (isMobile) {
-    sidebarWidthClass = isOpen
-      ? "w-64 translate-x-0"
-      : "w-64 -translate-x-full";
-  } else if (isOpen) {
-    sidebarWidthClass = "w-64 translate-x-0";
+  // Jangan render sidebar jika sedang loading atau belum authenticated
+  if (authLoading || !isAuthenticated) {
+    return null;
   }
+
+  // Compute sidebar width classes for mobile
+  const mobileSidebarWidthClass = isOpen
+    ? "w-64 translate-x-0"
+    : "w-64 -translate-x-full";
 
   return (
     <>
@@ -116,24 +124,25 @@ const AdminSidebar = () => {
 
       {/* OVERLAY MOBILE */}
       {isMobile && isOpen && (
-        <div
+        <button
           className="fixed inset-0 bg-black/30 z-40 cursor-pointer"
           onClick={() => setIsOpen(false)}
           onKeyDown={(e) => {
             if (e.key === "Escape") setIsOpen(false);
           }}
-          role="button"
-          tabIndex={-1}
+          type="button"
+          aria-label="Close sidebar"
         />
       )}
 
       {/* SIDEBAR */}
       <aside
         className={`
-          fixed top-0 left-0 h-screen bg-white border-r border-slate-100 z-50
+          ${isMobile ? "fixed top-0 left-0 z-50" : "relative"}
+          h-screen bg-white border-r border-slate-100
           transition-all duration-300 ease-in-out
           flex flex-col overflow-hidden
-          ${sidebarWidthClass}
+          ${isMobile ? mobileSidebarWidthClass : "w-64"}
         `}
       >
         {/* HEADER */}
