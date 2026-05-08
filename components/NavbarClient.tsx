@@ -666,7 +666,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
         <Link
           href="/services/medical-checkup"
-          className="flex-1 bg-[#004684] text-white font-semibold text-center text-xs flex items-center justify-center gap-2 hover:bg-[#003d39] transition-colors"
+          className="flex-1 bg-[#004684] text-white font-semibold text-center text-xs flex items-center justify-center gap-2 hover:bg-[#003159] transition-colors"
         >
           <Stethoscope size={16} />
           Medical Checkup
