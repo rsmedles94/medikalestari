@@ -108,7 +108,7 @@ const ServicesMenu: React.FC = () => {
   };
 
   return (
-    <section className="py-12 px-4 bg-white mt-10">
+    <section className="py-12 px-4 bg-white mt-10 mb-10">
       <div className="max-w-7xl mx-auto">
         <motion.div
           className="grid grid-cols-3 lg:grid-cols-6 gap-y-10 gap-x-4"
