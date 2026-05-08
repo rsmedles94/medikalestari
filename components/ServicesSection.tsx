@@ -59,7 +59,7 @@ const ServiceSection = () => {
   };
 
   return (
-    <section className="w-full bg-white py-10">
+    <section className="w-full bg-[#004684]/5 py-10">
       <div className="max-w-[1400px] mx-auto px-4 md:px-8">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10 pb-5 border-b border-slate-200">
