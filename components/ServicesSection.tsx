@@ -59,11 +59,11 @@ const ServiceSection = () => {
   };
 
   return (
-    <section className="w-full bg-slate-50 font-sans py-20">
+    <section className="w-full bg-slate-50 py-20">
       <div className="max-w-[1400px] mx-auto px-4 md:px-8">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10 pb-5 border-b border-slate-200">
-          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 uppercase tracking-tight">
+          <h2 className="text-2xl md:text-3xl font-semibold text-slate-900 uppercase tracking-tight">
             Pusat Pelayanan
           </h2>
           <p className="text-slate-500 max-w-sm text-sm">
@@ -131,7 +131,7 @@ const ServiceSection = () => {
                         }}
                         className="bg-[#004684] hover:bg-[#003159] text-white px-8 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all duration-300 shadow-lg shadow-blue-900/10 active:scale-95"
                       >
-                        Read more
+                        Selengkapnya
                       </button>
                     </div>
                   </div>
