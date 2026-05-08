@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import ServiceSkeletonShimmer from "./ServiceSkeletonShimmer";
 
 interface ServiceItem {
   id: number;
@@ -75,10 +76,7 @@ const ServiceSection = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
           {isLoading
             ? Array.from({ length: 3 }).map((_, index) => (
-                <div
-                  key={index}
-                  className="aspect-[1/1] bg-gray-200 animate-pulse"
-                />
+                <ServiceSkeletonShimmer key={index} />
               ))
             : serviceData.map((item, index) => (
                 <motion.div

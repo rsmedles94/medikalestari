@@ -31,25 +31,42 @@ const ServiceSkeletonShimmer = () => {
         }
       `}</style>
 
-      <div className="relative aspect-3/4.5 flex flex-col overflow-hidden bg-white border border-slate-200 shadow-sm">
-        {/* Image skeleton shimmer */}
-        <div className="absolute inset-0">
+      {/* Service Card Skeleton */}
+      <div className="group relative aspect-square flex flex-col overflow-hidden bg-white shadow-md rounded-sm">
+        {/* Background Shimmer Layer */}
+        <div className="absolute inset-0 z-0">
           <div className="w-full h-full skeleton-shimmer" />
         </div>
 
-        {/* Gradasi overlay skeleton */}
-        <div className="absolute inset-x-0 bottom-0 h-[65%] bg-linear-to-t from-slate-300 via-slate-250 to-transparent z-10" />
+        {/* Overlay Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-slate-300/80 to-slate-400 opacity-80 z-10" />
 
-        {/* Content skeleton area */}
-        <div className="relative z-20 mt-auto p-7 flex flex-col items-start w-full gap-4">
-          {/* Title skeleton */}
-          <div className="w-3/4 h-7 skeleton-shimmer skeleton-rounded" />
+        {/* Content Container */}
+        <div className="relative z-20 p-8 h-full flex flex-col items-start text-left">
+          {/* Logo Skeleton - Rata Kiri */}
+          <div className="mb-4 h-16 w-28 flex justify-start items-center">
+            <div className="h-12 w-24 skeleton-shimmer skeleton-rounded" />
+          </div>
 
-          {/* Description skeleton */}
-          <div className="flex flex-col gap-3 w-full">
-            <div className="w-full h-3 skeleton-shimmer skeleton-rounded" />
-            <div className="w-5/6 h-3 skeleton-shimmer skeleton-rounded" />
-            <div className="w-4/5 h-3 skeleton-shimmer skeleton-rounded" />
+          {/* Judul & Deskripsi Container */}
+          <div className="flex-grow flex flex-col justify-center w-full">
+            {/* Title Skeleton */}
+            <div className="mb-3 space-y-2">
+              <div className="h-8 w-3/4 skeleton-shimmer skeleton-rounded" />
+              <div className="h-7 w-2/3 skeleton-shimmer skeleton-rounded" />
+            </div>
+
+            {/* Description Skeleton - 3 Lines */}
+            <div className="space-y-2 mt-4">
+              <div className="h-3 w-full skeleton-shimmer skeleton-rounded" />
+              <div className="h-3 w-full skeleton-shimmer skeleton-rounded" />
+              <div className="h-3 w-4/5 skeleton-shimmer skeleton-rounded" />
+            </div>
+          </div>
+
+          {/* Button Skeleton */}
+          <div className="mt-6 w-32">
+            <div className="h-9 w-32 skeleton-shimmer skeleton-rounded" />
           </div>
         </div>
       </div>

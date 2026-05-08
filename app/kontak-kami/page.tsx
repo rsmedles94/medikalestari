@@ -2,9 +2,8 @@
 
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { motion } from "framer-motion";
-import { ChevronRight, Send } from "lucide-react";
+import { ChevronRight, Send, Phone, Mail, MapPin } from "lucide-react";
 
 const KontakKami = () => {
   const [formData, setFormData] = useState({
@@ -17,7 +16,7 @@ const KontakKami = () => {
   const contactInfo = [
     {
       id: 1,
-      img: "/icons/telephone.png",
+      icon: <Phone size={28} strokeWidth={1.5} />,
       title: "Telepon",
       details: "(021) 585 4858",
       subtitle: "Layanan Umum",
@@ -25,7 +24,7 @@ const KontakKami = () => {
     },
     {
       id: 2,
-      img: "/icons/email.png",
+      icon: <Mail size={28} strokeWidth={1.5} />,
       title: "Email",
       details: "marketing@rsmedikalestari.com",
       subtitle: "Korespondensi",
@@ -36,7 +35,7 @@ const KontakKami = () => {
     },
     {
       id: 3,
-      img: "/icons/map.png",
+      icon: <MapPin size={28} strokeWidth={1.5} />,
       title: "Lokasi",
       details: "Jl. HOS Cokroaminoto No.1",
       subtitle: "Ciledug, Tangerang",
@@ -104,28 +103,21 @@ const KontakKami = () => {
           medis, jadwal dokter, atau informasi fasilitas kesehatan lainnya.
         </p>
 
-        {/* INFO CARDS */}
+        {/* INFO CARDS - CLEAN DESIGN */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20">
           {contactInfo.map((item) => (
             <motion.div
               key={item.id}
               whileHover={{ y: -8 }}
               onClick={item.action}
-              className="flex flex-col items-center justify-center p-10 bg-white/80 backdrop-blur-sm border border-white cursor-pointer transition-all duration-300 shadow-xl shadow-blue-900/5 hover:shadow-2xl hover:bg-white text-center"
+              className="flex flex-col items-center justify-center p-10 bg-white border border-slate-200 cursor-pointer transition-all duration-300  hover:shadow-lg hover:shadow-blue-900/5 text-center"
             >
-              <div className="relative w-14 h-14 mb-6">
-                <Image
-                  src={item.img}
-                  alt={item.title}
-                  fill
-                  className="object-contain"
-                />
-              </div>
-              <h3 className="text-xs font-bold uppercase mb-2 text-slate-500">
+              <div className="text-[#005cb3] mb-6">{item.icon}</div>
+              <h3 className="text-xs font-bold uppercase mb-2 text-slate-400 tracking-widest">
                 {item.title}
               </h3>
               <p className="text-lg font-bold text-black">{item.details}</p>
-              <p className="text-xs text-black/60">{item.subtitle}</p>
+              <p className="text-xs text-slate-500 mt-1">{item.subtitle}</p>
             </motion.div>
           ))}
         </div>
@@ -206,10 +198,9 @@ const KontakKami = () => {
             </form>
           </div>
 
-          {/* DAFTAR EKSTENSI (DESAIN MODERN DIPERTAHANKAN) */}
+          {/* DAFTAR EKSTENSI */}
           <div className="lg:col-span-5">
             <div className="bg-[#004684] text-white p-10 shadow-2xl relative overflow-hidden">
-              {/* Overlay dekorasi lingkaran */}
               <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 -mr-16 -mt-16 rounded-full" />
 
               <h2 className="text-xl font-bold uppercase mb-8 border-b border-white/20 pb-4">
