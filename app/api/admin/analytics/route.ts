@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ error: "Invalid type" }, { status: 400 });
   } catch (error) {
-    console.error("Analytics API error:", error);
+    console.error("[Analytics GET] API error:", error);
     return NextResponse.json(
       { error: "Failed to fetch analytics" },
       { status: 500 },
@@ -37,9 +37,14 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { event_type, event_name, page_path, metadata } = body;
+    const { event_type, event_name, page_path, session_id, metadata } = body;
 
+    // Validasi required fields
     if (!event_type || !event_name) {
+      console.warn("[Analytics POST] Missing required fields:", {
+        event_type,
+        event_name,
+      });
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 },
@@ -49,30 +54,33 @@ export async function POST(request: NextRequest) {
     const supabase = createServerSupabaseClient();
     const createdAt = new Date().toISOString();
 
-    console.log("[Analytics Track] Inserting event:", {
+    console.log("[Analytics POST] Inserting event:", {
       event_type,
       event_name,
       page_path,
+      session_id,
       created_at: createdAt,
+      metadata,
     });
 
     const { error } = await supabase.from("analytics_events").insert({
       event_type,
       event_name,
       page_path,
+      session_id: session_id || "unknown",
       metadata: metadata || {},
       created_at: createdAt,
     });
 
     if (error) {
-      console.error("[Analytics Track] Insert error:", error);
+      console.error("[Analytics POST] Insert error:", error);
       throw error;
     }
 
-    console.log("[Analytics Track] Event inserted successfully");
+    console.log("[Analytics POST] ✓ Event inserted successfully");
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Track API error:", error);
+    console.error("[Analytics POST] Track API error:", error);
     return NextResponse.json(
       { error: "Failed to track event" },
       { status: 500 },

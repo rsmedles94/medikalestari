@@ -16,13 +16,31 @@ const getUserAgent = (): string | null => {
   return globalThis.navigator.userAgent;
 };
 
+// Get or create a unique session ID for this user
+const getSessionId = (): string => {
+  if (globalThis.window === undefined) return "unknown";
+
+  const sessionKey = "_analytics_session_id";
+  let sessionId = sessionStorage.getItem(sessionKey);
+
+  if (!sessionId) {
+    sessionId = `${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    sessionStorage.setItem(sessionKey, sessionId);
+  }
+
+  return sessionId;
+};
+
 export async function trackEvent(
   eventType: EventType,
   eventName: string,
   metadata?: Metadata,
 ) {
   try {
-    // Client-side tracking via API
+    // Fallback timeout untuk memastikan tracking tidak hanging
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
     const response = await fetch("/api/admin/analytics", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -30,28 +48,37 @@ export async function trackEvent(
         event_type: eventType,
         event_name: eventName,
         page_path: getWindowPath(),
+        session_id: getSessionId(),
         metadata: metadata || {},
       }),
+      signal: controller.signal,
     });
+
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       console.warn(
-        `Track API error: ${response.status} ${response.statusText}`,
+        `[Track] API error: ${response.status} ${response.statusText}`,
       );
+    } else {
+      console.log(`[Track] ✓ ${eventType}: ${eventName}`);
     }
   } catch (err) {
-    console.error("Error tracking event:", err);
+    console.error("[Track] Error:", err);
+    // Jangan gagal silent - log ke console untuk debugging
   }
 }
 
 export async function trackPageView(pagePath: string) {
   await trackEvent("page_view", pagePath, {
     userAgent: getUserAgent(),
+    timestamp: new Date().toISOString(),
   });
 }
 
 export async function trackButtonClick(buttonName: string, pagePath?: string) {
   await trackEvent("button_click", buttonName, {
     page: pagePath || getWindowPath(),
+    timestamp: new Date().toISOString(),
   });
 }
