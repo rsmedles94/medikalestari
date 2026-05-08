@@ -58,7 +58,7 @@ const ServiceSection = () => {
   };
 
   return (
-    <section className="w-full bg-slate-50 py-10">
+    <section className="w-full bg-white py-10">
       <div className="max-w-[1400px] mx-auto px-4 md:px-8">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10 pb-5 border-b border-slate-200">
@@ -77,7 +77,7 @@ const ServiceSection = () => {
             ? Array.from({ length: 3 }).map((_, index) => (
                 <div
                   key={index}
-                  className="aspect-[1/1] bg-gray-200 animate-pulse rounded-xl"
+                  className="aspect-[1/1] bg-gray-200 animate-pulse"
                 />
               ))
             : serviceData.map((item, index) => (
@@ -88,7 +88,7 @@ const ServiceSection = () => {
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   onClick={() => handleServiceClick(item.href)}
-                  className="group relative aspect-[1/1] flex flex-col overflow-hidden bg-white shadow-md border border-slate-100 cursor-pointer"
+                  className="group relative aspect-[1/1] flex flex-col overflow-hidden bg-white shadow-md"
                 >
                   {/* Background Layer */}
                   <div className="absolute inset-0 z-0">
@@ -136,7 +136,7 @@ const ServiceSection = () => {
                           e.stopPropagation();
                           handleServiceClick(item.href);
                         }}
-                        className="bg-white text-[#004684] px-8 py-2.5 rounded-2xl text-xs font-bold uppercase tracking-widest shadow-lg active:scale-95 transition-all"
+                        className="bg-white text-[#004684] px-8 py-2.5 rounded-2xl text-xs font-bold uppercase tracking-widest shadow-lg active:scale-95 transition-all cursor-pointer"
                       >
                         Selengkapnya
                       </button>
