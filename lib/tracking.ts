@@ -23,7 +23,7 @@ export async function trackEvent(
 ) {
   try {
     // Client-side tracking via API
-    await fetch("/api/admin/analytics", {
+    const response = await fetch("/api/admin/analytics", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -33,6 +33,10 @@ export async function trackEvent(
         metadata: metadata || {},
       }),
     });
+
+    if (!response.ok) {
+      console.warn(`Track API error: ${response.status} ${response.statusText}`);
+    }
   } catch (err) {
     console.error("Error tracking event:", err);
   }

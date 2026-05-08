@@ -50,6 +50,7 @@ const Analytics = () => {
   const [topPages, setTopPages] = useState<PageData[]>([]);
   const [topClicks, setTopClicks] = useState<PageData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [period, setPeriod] = useState<"today" | "week" | "month" | "all">(
     "all",
@@ -60,14 +61,20 @@ const Analytics = () => {
   const loadAnalytics = async () => {
     try {
       setLoading(true);
+      setError(null);
       const [statsRes, pagesRes, clicksRes] = await Promise.all([
-        fetch("/api/admin/analytics?type=stats").then((r) => r.json()),
-        fetch(`/api/admin/analytics?type=pages&period=${period}`).then((r) =>
-          r.json(),
-        ),
-        fetch(`/api/admin/analytics?type=clicks&period=${period}`).then((r) =>
-          r.json(),
-        ),
+        fetch("/api/admin/analytics?type=stats").then((r) => {
+          if (!r.ok) throw new Error(`Stats API error: ${r.status}`);
+          return r.json();
+        }),
+        fetch(`/api/admin/analytics?type=pages&period=${period}`).then((r) => {
+          if (!r.ok) throw new Error(`Pages API error: ${r.status}`);
+          return r.json();
+        }),
+        fetch(`/api/admin/analytics?type=clicks&period=${period}`).then((r) => {
+          if (!r.ok) throw new Error(`Clicks API error: ${r.status}`);
+          return r.json();
+        }),
       ]);
 
       setStats(statsRes);
@@ -75,7 +82,9 @@ const Analytics = () => {
       setTopClicks(clicksRes.slice(0, 10));
       setLastUpdated(new Date());
     } catch (error) {
-      console.error("Error loading analytics:", error);
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      console.error("Error loading analytics:", errorMsg);
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -109,6 +118,16 @@ const Analytics = () => {
   return (
     <div className="min-h-screen bg-[#F2F2F2] text-black font-sans">
       <div className="max-w-[1220px] mx-auto px-6 md:px-12 py-12">
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-800 text-sm">
+              ⚠️ Error: {error}
+            </p>
+            <p className="text-red-600 text-xs mt-2">
+              Buka DevTools (F12) → Console untuk lihat detail error
+            </p>
+          </div>
+        )}
         <div className="mb-8">
           <div className="flex justify-between items-start mb-4">
             <h1 className="text-[40px] font-medium">Analitik Web</h1>
