@@ -4,7 +4,6 @@ import React from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import ServiceSkeletonShimmer from "./ServiceSkeletonShimmer";
 
 interface ServiceItem {
   id: number;
@@ -72,13 +71,13 @@ const ServiceSection = () => {
           </p>
         </div>
 
-        {/* Grid System - Landscape (3 Kolom) */}
+        {/* Grid System */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {isLoading
             ? Array.from({ length: 3 }).map((_, index) => (
                 <div
                   key={index}
-                  className="aspect-[4/3] bg-gray-200 animate-pulse rounded-xl"
+                  className="aspect-[1/1] bg-gray-200 animate-pulse rounded-xl"
                 />
               ))
             : serviceData.map((item, index) => (
@@ -89,47 +88,55 @@ const ServiceSection = () => {
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   onClick={() => handleServiceClick(item.href)}
-                  className="group relative aspect-[4/3] flex flex-col overflow-hidden bg-white rounded-xl shadow-md border border-slate-100 cursor-pointer"
+                  className="group relative aspect-[1/1] flex flex-col overflow-hidden bg-white rounded-xl shadow-md border border-slate-100 cursor-pointer"
                 >
-                  {/* Background Image - Low Opacity */}
+                  {/* Background Layer */}
                   <div className="absolute inset-0 z-0">
                     <Image
                       src={item.image}
                       alt={item.title}
                       fill
-                      className="object-cover opacity-10 group-hover:opacity-20 transition-opacity duration-500"
+                      className="object-cover opacity-30 transition-opacity duration-500 md:group-hover:opacity-40"
                     />
-                    <div className="absolute inset-0 bg-linear-to-b from-white/80 via-transparent to-white/10" />
+
+                    {/* Default Overlay: Di mobile lebih gelap/biru, di desktop putih bersih */}
+                    <div className="absolute inset-0 bg-white/60 md:bg-white/80 md:group-hover:opacity-0 transition-opacity duration-500" />
+
+                    {/* Hover Gradient Overlay: Muncul otomatis di Mobile, Hover di Desktop */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-[#004684]/80 to-[#004684] opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 z-10" />
                   </div>
 
                   {/* Content Container */}
-                  <div className="relative z-10 p-8 h-full flex flex-col items-center text-center">
-                    {/* Logo - Simetris Tengah */}
-                    <div className="mb-6 h-12 w-full relative flex justify-center items-center">
+                  <div className="relative z-20 p-8 h-full flex flex-col items-start text-left">
+                    {/* Logo - Rata Kiri */}
+                    <div className="mb-4 h-16 w-full relative flex justify-start items-center transition-all duration-500 invert brightness-0 md:invert-0 md:brightness-100 md:group-hover:brightness-0 md:group-hover:invert">
                       <Image
                         src="/logo.png"
-                        alt="Logo Center"
+                        alt="Logo"
                         width={140}
-                        height={60}
+                        height={50}
                         className="object-contain"
                       />
                     </div>
 
-                    <h3 className="text-xl font-bold text-[#004684] mb-4 leading-tight transition-colors group-hover:text-[#003159]">
-                      {item.title}
-                    </h3>
+                    {/* Judul & Deskripsi - Left Justify */}
+                    <div className="flex-grow flex flex-col justify-center">
+                      <h3 className="text-[30px] font-bold text-white md:text-black mb-3 leading-tight transition-colors duration-500 md:group-hover:text-white">
+                        {item.title}
+                      </h3>
+                      <p className="text-white/90 md:text-slate-500 text-sm leading-relaxed text-justify line-clamp-3 transition-colors duration-500 md:group-hover:text-white/90">
+                        {item.description}
+                      </p>
+                    </div>
 
-                    <p className="text-slate-500 text-sm leading-relaxed mb-6 line-clamp-3">
-                      {item.description}
-                    </p>
-
-                    <div className="mt-auto">
+                    {/* Button Read More: Selalu ada di Mobile, Hover di Desktop */}
+                    <div className="mt-6 opacity-100 translate-y-0 md:opacity-0 md:translate-y-4 md:group-hover:opacity-100 md:group-hover:translate-y-0 transition-all duration-500">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleServiceClick(item.href);
                         }}
-                        className="bg-[#004684] hover:bg-[#003159] text-white px-8 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all duration-300 shadow-lg shadow-blue-900/10 active:scale-95"
+                        className="bg-white text-[#004684] px-8 py-2.5 rounded-2xl text-xs font-bold uppercase tracking-widest shadow-lg active:scale-95 transition-all"
                       >
                         Selengkapnya
                       </button>
