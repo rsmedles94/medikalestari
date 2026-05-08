@@ -1,24 +1,29 @@
 # 🔍 Analytics Production Issues Troubleshooting
 
 ## Masalah
+
 Di `https://medikalestari.vercel.app/admin/analytics`, analytics menunjukkan 0 atau tidak terbaca data setelah login.
 
 ## Penyebab Kemungkinan
 
 ### 1. **Environment Variables tidak benar di Vercel**
-- `NEXT_PUBLIC_SUPABASE_URL` 
+
+- `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
 
 ### 2. **Supabase RLS (Row Level Security) terlalu ketat**
+
 - Policy untuk read analytics mungkin tidak allow
 
 ### 3. **Tracking tidak ter-kirim di production**
+
 - Network error atau timeout
 - CORS issue
 - API endpoint error
 
 ### 4. **Database query error**
+
 - Table `analytics_events` struktur tidak match
 - Index issue
 
@@ -63,7 +68,7 @@ Di `https://medikalestari.vercel.app/admin/analytics`, analytics menunjukkan 0 a
 SELECT * FROM pg_policies WHERE tablename = 'analytics_events';
 
 -- Pastikan ada policy untuk read yang benar
-SELECT * FROM information_schema.role_table_grants 
+SELECT * FROM information_schema.role_table_grants
 WHERE table_name='analytics_events';
 ```
 
@@ -96,11 +101,13 @@ CREATE POLICY "Allow service role" ON analytics_events
 ### Step 6: Check Logs
 
 **Vercel Logs:**
+
 1. Vercel Dashboard → "Logs" → "Function Logs"
 2. Filter untuk `/api/admin/analytics`
 3. Lihat error messages
 
 **Supabase Logs:**
+
 1. Supabase Dashboard → "Logs"
 2. Filter untuk errors
 3. Lihat database query errors
@@ -108,6 +115,7 @@ CREATE POLICY "Allow service role" ON analytics_events
 ## Code Changes Untuk Debugging
 
 File `app/admin/analytics/page.tsx` sudah update dengan:
+
 - ✅ Error state tracking
 - ✅ Error display di UI
 - ✅ Better error messages
@@ -117,6 +125,7 @@ Sekarang error akan ditampilkan di halaman analytics untuk debugging lebih mudah
 ## Common Fixes
 
 ### Fix 1: Missing Service Role Key
+
 ```
 Error: Missing required environment variables for Supabase server client
 ```
@@ -124,6 +133,7 @@ Error: Missing required environment variables for Supabase server client
 **Solusi:** Add `SUPABASE_SERVICE_ROLE_KEY` ke Vercel environment variables
 
 ### Fix 2: RLS Policy Too Strict
+
 ```
 Error: Failed to fetch analytics
 ```
@@ -131,11 +141,13 @@ Error: Failed to fetch analytics
 **Solusi:** Update RLS policy dengan code di Step 4
 
 ### Fix 3: Tracking API 500 Error
+
 ```
 Track API error: error
 ```
 
-**Solusi:** 
+**Solusi:**
+
 - Check Supabase logs
 - Pastikan table `analytics_events` struktur benar
 - Rebuild & redeploy

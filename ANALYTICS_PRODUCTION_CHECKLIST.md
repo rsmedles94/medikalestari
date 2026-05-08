@@ -13,6 +13,7 @@
 ### 🔍 Apa yang perlu dicek di Vercel
 
 #### 1. Cek Environment Variables
+
 ```
 Go to: Vercel Dashboard → Project → Settings → Environment Variables
 
@@ -46,6 +47,7 @@ CREATE POLICY "Allow service role" ON analytics_events
 #### 3. Test & Debug
 
 **Test di Production:**
+
 1. Buka: `https://medikalestari.vercel.app/analytics-debug`
 2. Klik "Check Supabase connection"
 3. Lihat response:
@@ -53,6 +55,7 @@ CREATE POLICY "Allow service role" ON analytics_events
    - ❌ `❌ Supabase Error: ...` = Ada error (catat error)
 
 **Test di Analytics Page:**
+
 1. Buka: `https://medikalestari.vercel.app/admin/analytics`
 2. Login
 3. Lihat apakah ada error merah di atas
@@ -61,12 +64,12 @@ CREATE POLICY "Allow service role" ON analytics_events
 
 ### 🐛 Common Issues & Fixes
 
-| Issue | Penyebab | Fix |
-|-------|---------|-----|
-| "Failed to fetch analytics" | RLS policy salah | Reset policies (lihat Step 2) |
-| Empty data (0 everywhere) | Service key salah | Update SUPABASE_SERVICE_ROLE_KEY di Vercel |
-| API 500 error | Environment vars missing | Check Step 1 |
-| Network error | CORS or URL salah | Verify NEXT_PUBLIC_SUPABASE_URL |
+| Issue                       | Penyebab                 | Fix                                        |
+| --------------------------- | ------------------------ | ------------------------------------------ |
+| "Failed to fetch analytics" | RLS policy salah         | Reset policies (lihat Step 2)              |
+| Empty data (0 everywhere)   | Service key salah        | Update SUPABASE_SERVICE_ROLE_KEY di Vercel |
+| API 500 error               | Environment vars missing | Check Step 1                               |
+| Network error               | CORS or URL salah        | Verify NEXT_PUBLIC_SUPABASE_URL            |
 
 ### 📝 Langkah-langkah Redeploy
 
@@ -87,6 +90,7 @@ Push ke repo untuk auto-deploy
 ### 🎯 Expected Result
 
 Setelah semua setup benar di production:
+
 - ✅ Analytics page tampil dengan data real
 - ✅ Data otomatis update setiap 30 detik
 - ✅ Public pages ter-track (dokter, jadwal, kontak, dll)
@@ -95,5 +99,6 @@ Setelah semua setup benar di production:
 ---
 
 **Files updated:**
+
 - ✅ `lib/tracking.ts` - Better error handling
 - ✅ `app/admin/analytics/page.tsx` - Error state & display

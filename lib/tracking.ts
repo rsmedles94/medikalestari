@@ -35,7 +35,9 @@ export async function trackEvent(
     });
 
     if (!response.ok) {
-      console.warn(`Track API error: ${response.status} ${response.statusText}`);
+      console.warn(
+        `Track API error: ${response.status} ${response.statusText}`,
+      );
     }
   } catch (err) {
     console.error("Error tracking event:", err);

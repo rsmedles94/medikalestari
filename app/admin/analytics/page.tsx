@@ -120,9 +120,7 @@ const Analytics = () => {
       <div className="max-w-[1220px] mx-auto px-6 md:px-12 py-12">
         {error && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-red-800 text-sm">
-              ⚠️ Error: {error}
-            </p>
+            <p className="text-red-800 text-sm">⚠️ Error: {error}</p>
             <p className="text-red-600 text-xs mt-2">
               Buka DevTools (F12) → Console untuk lihat detail error
             </p>
