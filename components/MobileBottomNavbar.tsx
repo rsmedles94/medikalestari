@@ -40,7 +40,7 @@ const MobileBottomNavbar = () => {
       ),
     },
     {
-      label: "Jadwal",
+      label: "Jadwal Dokter",
       href: "/jadwal-dokter",
       outline: (
         <g>
@@ -61,7 +61,7 @@ const MobileBottomNavbar = () => {
       ),
     },
     {
-      label: "Kamar",
+      label: "Kama Perawatan",
       href: "/services/kamar-perawatan",
       outline: (
         <g>
