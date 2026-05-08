@@ -3,7 +3,7 @@ import React from "react";
 import Image from "next/image";
 import NavbarClient from "./NavbarClient";
 
-const Navbar = () => {
+const Navbar = ({ locale = "id" }: { locale?: string }) => {
   const logoNode = (
     <Image
       src="/logo.png"
@@ -16,7 +16,7 @@ const Navbar = () => {
     />
   );
 
-  return <NavbarClient logoNode={logoNode} />;
+  return <NavbarClient logoNode={logoNode} locale={locale} />;
 };
 
 export default Navbar;

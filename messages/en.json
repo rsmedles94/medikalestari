@@ -1,0 +1,41 @@
+{
+  "navbar": {
+    "home": "Home",
+    "profile": "Profile",
+    "aboutUs": "About Us",
+    "qualityIndicator": "Quality Indicator",
+    "partners": "Partners",
+    "careers": "Careers",
+    "doctors": "Doctors",
+    "ourDoctors": "Our Doctors",
+    "doctorSchedule": "Doctor Schedule",
+    "servicesAndFacilities": "Services & Facilities",
+    "patientInfo": "Patient Information",
+    "roomRates": "Room Rates",
+    "registrationFlow": "Registration Flow",
+    "insurance": "Insurance & Partners",
+    "visitGuide": "Visit Guide",
+    "services": {
+      "emergency": "Emergency",
+      "pharmacy": "Pharmacy",
+      "physiotherapy": "Physiotherapy",
+      "rooms": "Rooms",
+      "laboratory": "Laboratory Testing",
+      "emergencyService": "Emergency Service",
+      "medicalCheckup": "Medical Checkup",
+      "clinic": "Clinic",
+      "radiology": "Radiology",
+      "hospitalization": "Hospitalization",
+      "medicalRehab": "Medical Rehabilitation",
+      "vaccination": "Vaccination Services"
+    },
+    "search": "Search Our Doctors",
+    "language": "EN",
+    "contact": "Contact",
+    "terms": "Terms & Conditions",
+    "login": "Login",
+    "dashboard": "ADMIN DASHBOARD",
+    "medicalCheckupBtn": "Medical Checkup",
+    "phone": "(021) 585 4858"
+  }
+}

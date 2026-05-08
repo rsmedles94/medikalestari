@@ -2,14 +2,7 @@
 
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import AdminSidebar from "@/components/AdminSidebar";
-import PopupDisplay from "@/components/PopupDisplay";
-import EmergencyWA from "@/components/EmergencyWA";
-import MobileBottomNavbar from "@/components/MobileBottomNavbar";
 import { AuthProvider } from "@/context/AuthProvider";
-import { usePathname } from "next/navigation";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,11 +19,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const pathname = usePathname();
-
-  const isAdminPage = pathname?.startsWith("/admin");
-  const isLoginPage = pathname === "/admin/login";
-
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Hospital",
@@ -59,8 +47,8 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head>
         {/* SEO Metadata */}
@@ -111,26 +99,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full bg-white text-black">
-        <AuthProvider>
-          {isAdminPage && !isLoginPage ? (
-            <div className="flex min-h-screen">
-              <AdminSidebar />
-              <main className="flex-1 md:ml-64 bg-[#F2F2F2] min-h-screen">
-                {children}
-              </main>
-            </div>
-          ) : (
-            <div className="flex flex-col min-h-screen">
-              {!isAdminPage && <Navbar />}
-              <main className="flex-1">{children}</main>
-              {!isAdminPage && <PopupDisplay />}
-              <EmergencyWA />
-              {!isAdminPage && <MobileBottomNavbar />}
-              {!isAdminPage && <Footer />}
-              {isLoginPage && children}
-            </div>
-          )}
-        </AuthProvider>
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

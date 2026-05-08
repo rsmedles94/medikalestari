@@ -32,16 +32,17 @@ import { usePathname, useRouter } from "next/navigation";
 
 interface NavbarClientProps {
   logoNode: React.ReactNode;
+  locale: string;
 }
 
 interface LanguageItem {
   label: string;
   code: string;
+  locale: string;
   flag: string;
-  active: boolean;
 }
 
-const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
+const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode, locale }) => {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -50,23 +51,33 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
     {
       label: "Bahasa Indonesia",
       code: "ID",
+      locale: "id",
       flag: "https://flagcdn.com/w40/id.png",
-      active: true,
     },
     {
       label: "English",
       code: "EN",
+      locale: "en",
       flag: "https://flagcdn.com/w40/gb.png",
-      active: false,
     },
   ];
 
-  const [activeLanguage, setActiveLanguage] = useState<LanguageItem>(
-    languages[0],
-  );
+  const currentLanguage =
+    languages.find((lang) => lang.locale === locale) || languages[0];
 
   const pathname = usePathname();
   const router = useRouter();
+
+  const handleLanguageChange = (newLocale: string) => {
+    // Remove locale from pathname and add new locale
+    const pathWithoutLocale = pathname.replace(/^\/(id|en)/, "") || "/";
+    const newPathname = `/${newLocale}${pathWithoutLocale}`;
+    console.log("Changing language from:", locale, "to:", newLocale);
+    console.log("Current pathname:", pathname);
+    console.log("New pathname:", newPathname);
+    router.push(newPathname);
+    setActiveMenu(null);
+  };
 
   /* ===============================
      LOCK BODY SCROLL SAAT MENU MOBILE AKTIF
@@ -135,11 +146,11 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
   };
 
   const handleHomeClick = (e: React.MouseEvent) => {
-    if (pathname === "/") {
+    if (pathname === `/${locale}` || pathname === "/") {
       e.preventDefault();
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
-      router.push("/");
+      router.push(`/${locale}`);
     }
 
     setIsMobileMenuOpen(false);
@@ -174,37 +185,46 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
             const flag = isObject ? (item as LanguageItem).flag : undefined;
             let itemHref = "/";
 
-            if (title === "Dokter Kami") itemHref = "/dokter#section-dokter";
-            else if (title === "Jadwal Dokter") itemHref = "/jadwal-dokter";
-            else if (title === "Tentang Kami") itemHref = "/tentang-kami";
-            else if (title === "Indikator Mutu") itemHref = "/indikator-mutu";
-            else if (title === "Rekanan Kami") itemHref = "/rekanan-kami";
-            else if (title === "Karir") itemHref = "/careers";
+            if (title === "Dokter Kami")
+              itemHref = `/${locale}/dokter#section-dokter`;
+            else if (title === "Jadwal Dokter")
+              itemHref = `/${locale}/jadwal-dokter`;
+            else if (title === "Tentang Kami")
+              itemHref = `/${locale}/tentang-kami`;
+            else if (title === "Indikator Mutu")
+              itemHref = `/${locale}/indikator-mutu`;
+            else if (title === "Rekanan Kami")
+              itemHref = `/${locale}/rekanan-kami`;
+            else if (title === "Karir") itemHref = `/${locale}/careers`;
             else if (
               title === "Profil RS Medika Lestari" ||
               title === "Visi & Misi"
             )
-              itemHref = "/tentang-kami";
-            else if (title === "Emergency") itemHref = "/services/emergency";
-            else if (title === "Farmasi") itemHref = "/services/farmasi";
+              itemHref = `/${locale}/tentang-kami`;
+            else if (title === "Emergency")
+              itemHref = `/${locale}/services/emergency`;
+            else if (title === "Farmasi")
+              itemHref = `/${locale}/services/farmasi`;
             else if (title === "Fisioterapi")
-              itemHref = "/services/fisioterapi";
+              itemHref = `/${locale}/services/fisioterapi`;
             else if (title === "Kamar Perawatan")
-              itemHref = "/services/kamar-perawatan";
+              itemHref = `/${locale}/services/kamar-perawatan`;
             else if (title === "Laboratory Testing")
-              itemHref = "/services/laboratory-testing";
+              itemHref = `/${locale}/services/laboratory-testing`;
             else if (title === "Layanan gawat darurat")
-              itemHref = "/services/layanan-gawat-darurat";
+              itemHref = `/${locale}/services/layanan-gawat-darurat`;
             else if (title === "Medical Checkup")
-              itemHref = "/services/medical-checkup";
+              itemHref = `/${locale}/services/medical-checkup`;
             else if (title === "Poli Klinik")
-              itemHref = "/services/poli-klinik";
-            else if (title === "Radiologi") itemHref = "/services/radiologi";
-            else if (title === "Rawat Inap") itemHref = "/services/rawat-inap";
+              itemHref = `/${locale}/services/poli-klinik`;
+            else if (title === "Radiologi")
+              itemHref = `/${locale}/services/radiologi`;
+            else if (title === "Rawat Inap")
+              itemHref = `/${locale}/services/rawat-inap`;
             else if (title === "Rehabilitasi Medik")
-              itemHref = "/services/rehabilitasi-medik";
+              itemHref = `/${locale}/services/rehabilitasi-medik`;
             else if (title === "Vaccination Services")
-              itemHref = "/services/vaccination-services";
+              itemHref = `/${locale}/services/vaccination-services`;
 
             return (
               <div
@@ -233,13 +253,13 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
       {/* --- Top Navbar --- */}
       <div className="bg-white py-2 relative z-[101]">
         <div className="max-w-[1200px] mx-auto px-4 md:px-8 flex justify-between items-center">
-          <Link href="/" className="flex items-center">
+          <Link href={`/${locale}`} className="flex items-center">
             {logoNode}
           </Link>
 
           <div className="hidden md:flex gap-4 items-center text-[15px] font-normal text-gray-700">
             <Link
-              href="/kontak-kami"
+              href={`/${locale}/kontak-kami`}
               className="hover:text-[#003159] hover:underline"
             >
               Kontak
@@ -248,7 +268,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
             <span className="text-gray-300">|</span>
 
             <Link
-              href="/syarat-ketentuan"
+              href={`/${locale}/syarat-ketentuan`}
               className="hover:text-[#003159] hover:underline"
             >
               Syarat & Ketentuan
@@ -397,13 +417,13 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
             >
               <div className="flex items-center gap-2 px-1 py-1">
                 <Image
-                  src={activeLanguage.flag}
-                  alt={activeLanguage.code}
+                  src={currentLanguage.flag}
+                  alt={currentLanguage.code}
                   width={24}
                   height={16}
                   className="rounded-sm object-cover"
                 />
-                <span className="font-medium">{activeLanguage.code}</span>
+                <span className="font-medium">{currentLanguage.code}</span>
               </div>
 
               <div
@@ -415,8 +435,38 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               />
 
               <AnimatePresence>
-                {activeMenu === "Lang" &&
-                  renderDropdownContent(languages, "right-0 w-48")}
+                {activeMenu === "Lang" && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="absolute top-full right-0 mt-0 w-48 bg-white shadow-lg rounded-lg overflow-hidden z-50"
+                  >
+                    {languages.map((lang) => (
+                      <button
+                        key={lang.locale}
+                        onClick={() => handleLanguageChange(lang.locale)}
+                        className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${
+                          lang.locale === locale
+                            ? "bg-[#003159] text-white"
+                            : "text-gray-700 hover:bg-gray-100"
+                        }`}
+                      >
+                        <Image
+                          src={lang.flag}
+                          alt={lang.code}
+                          width={24}
+                          height={16}
+                          className="rounded-sm object-cover"
+                        />
+                        <div>
+                          <div className="font-medium">{lang.label}</div>
+                          <div className="text-xs opacity-75">{lang.code}</div>
+                        </div>
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
               </AnimatePresence>
             </div>
 
@@ -487,12 +537,13 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                         let itemHref = "/";
 
                         if (subitem === "Tentang Kami")
-                          itemHref = "/tentang-kami";
+                          itemHref = `/${locale}/tentang-kami`;
                         else if (subitem === "Indikator Mutu")
-                          itemHref = "/indikator-mutu";
+                          itemHref = `/${locale}/indikator-mutu`;
                         else if (subitem === "Rekanan Kami")
-                          itemHref = "/rekanan-kami";
-                        else if (subitem === "Karir") itemHref = "/careers";
+                          itemHref = `/${locale}/rekanan-kami`;
+                        else if (subitem === "Karir")
+                          itemHref = `/${locale}/careers`;
 
                         return (
                           <Link
@@ -513,7 +564,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                 </AnimatePresence>
 
                 <Link
-                  href="/dokter#section-dokter"
+                  href={`/${locale}/dokter#section-dokter`}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="text-left p-4 font-semibold text-[#004684] border-b text-lg"
                 >
@@ -521,7 +572,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                 </Link>
 
                 <Link
-                  href="/jadwal-dokter"
+                  href={`/${locale}/jadwal-dokter`}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="text-left p-4 font-semibold text-[#004684] border-b text-lg"
                 >
@@ -559,42 +610,42 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                               let itemHref = "/";
 
                               if (subitem === "Tentang Kami")
-                                itemHref = "/tentang-kami";
+                                itemHref = `/${locale}/tentang-kami`;
                               else if (subitem === "Indikator Mutu")
-                                itemHref = "/indikator-mutu";
+                                itemHref = `/${locale}/indikator-mutu`;
                               else if (subitem === "Rekanan Kami")
-                                itemHref = "/rekanan-kami";
+                                itemHref = `/${locale}/rekanan-kami`;
                               else if (subitem === "Karir")
-                                itemHref = "/careers";
+                                itemHref = `/${locale}/careers`;
                               else if (
                                 subitem === "Profil RS Medika Lestari" ||
                                 subitem === "Visi & Misi"
                               )
-                                itemHref = "/tentang-kami";
+                                itemHref = `/${locale}/tentang-kami`;
                               else if (subitem === "Emergency")
-                                itemHref = "/services/emergency";
+                                itemHref = `/${locale}/services/emergency`;
                               else if (subitem === "Farmasi")
-                                itemHref = "/services/farmasi";
+                                itemHref = `/${locale}/services/farmasi`;
                               else if (subitem === "Fisioterapi")
-                                itemHref = "/services/fisioterapi";
+                                itemHref = `/${locale}/services/fisioterapi`;
                               else if (subitem === "Kamar Perawatan")
-                                itemHref = "/services/kamar-perawatan";
+                                itemHref = `/${locale}/services/kamar-perawatan`;
                               else if (subitem === "Laboratory Testing")
-                                itemHref = "/services/laboratory-testing";
+                                itemHref = `/${locale}/services/laboratory-testing`;
                               else if (subitem === "Layanan gawat darurat")
-                                itemHref = "/services/layanan-gawat-darurat";
+                                itemHref = `/${locale}/services/layanan-gawat-darurat`;
                               else if (subitem === "Medical Checkup")
-                                itemHref = "/services/medical-checkup";
+                                itemHref = `/${locale}/services/medical-checkup`;
                               else if (subitem === "Poli Klinik")
-                                itemHref = "/services/poli-klinik";
+                                itemHref = `/${locale}/services/poli-klinik`;
                               else if (subitem === "Radiologi")
-                                itemHref = "/services/radiologi";
+                                itemHref = `/${locale}/services/radiologi`;
                               else if (subitem === "Rawat Inap")
-                                itemHref = "/services/rawat-inap";
+                                itemHref = `/${locale}/services/rawat-inap`;
                               else if (subitem === "Rehabilitasi Medik")
-                                itemHref = "/services/rehabilitasi-medik";
+                                itemHref = `/${locale}/services/rehabilitasi-medik`;
                               else if (subitem === "Vaccination Services")
-                                itemHref = "/services/vaccination-services";
+                                itemHref = `/${locale}/services/vaccination-services`;
 
                               return (
                                 <Link
@@ -616,11 +667,48 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                     </div>
                   ))}
 
-                <div className="mt-6 px-4">
-                  <AuthArea
-                    isMobile
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  />
+                <div className="mt-6 border-t pt-4">
+                  {/* Mobile Language Selector */}
+                  <div className="px-4 py-3">
+                    <p className="text-sm font-semibold text-gray-600 mb-3">
+                      Bahasa
+                    </p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {languages.map((lang) => (
+                        <button
+                          key={lang.locale}
+                          onClick={() => {
+                            handleLanguageChange(lang.locale);
+                            setIsMobileMenuOpen(false);
+                          }}
+                          className={`flex items-center gap-2 p-3 rounded-lg transition-colors ${
+                            lang.locale === locale
+                              ? "bg-[#003159] text-white"
+                              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                          }`}
+                        >
+                          <Image
+                            src={lang.flag}
+                            alt={lang.code}
+                            width={20}
+                            height={14}
+                            className="rounded-sm object-cover"
+                          />
+                          <span className="text-xs font-medium">
+                            {lang.label}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Auth Area */}
+                  <div className="px-4 py-3 border-t">
+                    <AuthArea
+                      isMobile
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    />
+                  </div>
                 </div>
               </div>
             </motion.div>

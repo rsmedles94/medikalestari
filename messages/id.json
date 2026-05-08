@@ -1,0 +1,42 @@
+{
+  "navbar": {
+    "beranda": "Beranda",
+    "profil": "Profil",
+    "dokter": "Dokter",
+    "fasilitas": "Fasilitas & Layanan",
+    "informasi": "Informasi Pasien",
+    "kontak": "Kontak",
+    "syaratKetentuan": "Syarat & Ketentuan",
+    "cariDokter": "Cari Dokter Kami",
+    "login": "Login",
+    "dashboardAdmin": "DASHBOARD ADMIN"
+  },
+  "menu": {
+    "dokterKami": "Dokter Kami",
+    "jadwalDokter": "Jadwal Dokter",
+    "tentangKami": "Tentang Kami",
+    "indikatorMutu": "Indikator Mutu",
+    "rekanKami": "Rekanan Kami",
+    "karir": "Karir",
+    "tarifKamar": "Tarif Kamar",
+    "alurPendaftaran": "Alur Pendaftaran",
+    "asuransiRekanan": "Asuransi & Rekanan",
+    "panduanKunjungan": "Panduan Kunjungan",
+    "emergency": "Emergency",
+    "farmasi": "Farmasi",
+    "fisioterapi": "Fisioterapi",
+    "kamarPerawatan": "Kamar Perawatan",
+    "laboratoryTesting": "Laboratory Testing",
+    "layananGawatDarurat": "Layanan gawat darurat",
+    "medicalCheckup": "Medical Checkup",
+    "poliKlinik": "Poli Klinik",
+    "radiologi": "Radiologi",
+    "rawatInap": "Rawat Inap",
+    "rehabilitasiMedik": "Rehabilitasi Medik",
+    "vaccinationServices": "Vaccination Services"
+  },
+  "language": {
+    "bahasaIndonesia": "Bahasa Indonesia",
+    "english": "English"
+  }
+}
