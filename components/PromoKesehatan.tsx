@@ -58,7 +58,10 @@ const PROMO_DATA = [
 
 function SkeletonCard() {
   return (
-    <div className="bg-white border border-gray-100 flex flex-col h-full shadow-sm overflow-hidden">
+    <div
+      className="bg-white border border-gray-100 flex flex-col h-full shadow-sm overflow-hidden"
+      aria-hidden="true"
+    >
       <div className="relative aspect-square w-full bg-gray-100 overflow-hidden">
         <div className="absolute inset-0 bg-linear-to-r from-gray-200 via-gray-100 to-gray-200 animate-[shimmer_1.2s_infinite]" />
       </div>
@@ -77,8 +80,6 @@ function SkeletonCard() {
 const PromoKesehatan = () => {
   const [showAll, setShowAll] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-
-  // Ref untuk menargetkan bagian atas section
   const sectionRef = useRef<HTMLElement>(null);
 
   const visibleData = showAll ? PROMO_DATA : PROMO_DATA.slice(0, 4);
@@ -88,11 +89,9 @@ const PromoKesehatan = () => {
     return () => clearTimeout(t);
   }, []);
 
-  // Fungsi toggle tanpa animasi scroll (langsung lompat ke atas)
   const handleToggle = () => {
     if (showAll) {
       setShowAll(false);
-      // Menggunakan auto atau langsung scroll agar tidak ada animasi meluncur
       sectionRef.current?.scrollIntoView({
         behavior: "auto",
         block: "start",
@@ -106,62 +105,75 @@ const PromoKesehatan = () => {
     <section
       ref={sectionRef}
       className="bg-[#004684]/5 py-12 px-4 sm:px-6 lg:px-8 min-h-screen mt-10"
+      aria-labelledby="promo-title"
     >
-      <div className="relative z-10 max-w-290 mx-auto md:px-8">
+      <div className="relative z-10 max-w-[1180px] mx-auto md:px-8">
         {/* Header Section */}
-        <div className="text-center mb-12">
-          <h2 className="text-2xl md:text-3xl font-bold text-black uppercase tracking-widest">
+        <header className="text-center mb-12">
+          <h2
+            id="promo-title"
+            className="text-2xl md:text-3xl font-bold text-black uppercase tracking-widest"
+          >
             PROMO PAKET KESEHATAN
           </h2>
           <p className="mt-4 text-gray-600 max-w-3xl mx-auto text-sm md:text-base leading-relaxed">
             Kenali jenis pemeriksaan yang Anda butuhkan melalui pilihan paket
             Kesehatan Medika Lestari.
           </p>
-        </div>
+        </header>
 
-        {/* Grid System */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        {/* Grid */}
+        <ul
+          className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 list-none p-0"
+          aria-busy={isLoading}
+        >
           {isLoading
             ? Array.from({ length: 4 }).map((_, idx) => (
-                <SkeletonCard key={"skeleton-" + idx} />
+                <li key={"skeleton-" + idx}>
+                  <SkeletonCard />
+                </li>
               ))
             : visibleData.map((item) => (
-                <div
-                  key={item.id}
-                  className="bg-white border border-gray-100 flex flex-col h-full shadow-sm overflow-hidden"
-                >
-                  <div className="relative aspect-square w-full">
-                    <Image
-                      src={item.image}
-                      alt={item.title}
-                      width={1600}
-                      height={1600}
-                      className="object-cover w-full h-full"
-                      priority={item.id <= 4}
-                    />
-                  </div>
-
-                  <div className="p-4 md:p-5 flex flex-col grow text-center">
-                    <h3 className="text-sm md:text-lg font-bold text-[#004684] mb-3 min-h-12 flex items-center justify-center leading-tight">
-                      {item.title}
-                    </h3>
-                    <p className="text-[10px] md:text-sm text-gray-500 leading-relaxed mb-6 line-clamp-4">
-                      {item.description}
-                    </p>
-                    <div className="mt-auto">
-                      <button className="w-full py-2 border border-[#004684] text-[#004684] text-[10px] md:text-xs font-bold uppercase tracking-wider transition-colors hover:bg-gray-50">
-                        Selengkapnya
-                      </button>
+                <li key={item.id}>
+                  <article className="bg-white border border-gray-100 flex flex-col h-full shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                    <div className="relative aspect-square w-full">
+                      <Image
+                        src={item.image}
+                        alt={`Promo ${item.title}`}
+                        width={800}
+                        height={800}
+                        className="object-cover w-full h-full"
+                        priority={item.id <= 4}
+                      />
                     </div>
-                  </div>
-                </div>
+
+                    <div className="p-4 md:p-5 flex flex-col grow text-center">
+                      <h3 className="text-sm md:text-lg font-bold text-[#004684] mb-3 min-h-12 flex items-center justify-center leading-tight">
+                        {item.title}
+                      </h3>
+                      <p className="text-[10px] md:text-sm text-gray-500 leading-relaxed mb-6 line-clamp-4">
+                        {item.description}
+                      </p>
+                      <div className="mt-auto">
+                        <button
+                          type="button"
+                          className="w-full py-2 border border-[#004684] text-[#004684] text-[10px] md:text-xs font-bold uppercase tracking-wider transition-colors hover:bg-[#004684] hover:text-white"
+                        >
+                          Selengkapnya
+                        </button>
+                      </div>
+                    </div>
+                  </article>
+                </li>
               ))}
-        </div>
+        </ul>
 
         {/* Toggle Text Link */}
         <div className="mt-12 text-center">
           <button
+            type="button"
             onClick={handleToggle}
+            aria-expanded={showAll}
             className="text-[#004684] text-xs md:text-sm font-bold uppercase tracking-widest underline underline-offset-4 decoration-2 transition-opacity hover:opacity-70"
           >
             {showAll ? "Tampilkan Lebih Sedikit" : "Lihat Semua"}

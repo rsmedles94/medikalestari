@@ -31,8 +31,12 @@ const ServiceSkeletonShimmer = () => {
         }
       `}</style>
 
-      {/* Service Card Skeleton */}
-      <div className="group relative aspect-square flex flex-col overflow-hidden bg-white shadow-md rounded-sm">
+
+      <article
+        className="group relative aspect-square flex flex-col overflow-hidden bg-white shadow-md rounded-sm"
+        aria-busy="true"
+        aria-hidden="true"
+      >
         {/* Background Shimmer Layer */}
         <div className="absolute inset-0 z-0">
           <div className="w-full h-full skeleton-shimmer" />
@@ -43,7 +47,7 @@ const ServiceSkeletonShimmer = () => {
 
         {/* Content Container */}
         <div className="relative z-20 p-8 h-full flex flex-col items-start text-left">
-          {/* Logo Skeleton - Rata Kiri */}
+          {/* Logo Skeleton */}
           <div className="mb-4 h-16 w-28 flex justify-start items-center">
             <div className="h-12 w-24 skeleton-shimmer skeleton-rounded" />
           </div>
@@ -56,7 +60,7 @@ const ServiceSkeletonShimmer = () => {
               <div className="h-7 w-2/3 skeleton-shimmer skeleton-rounded" />
             </div>
 
-            {/* Description Skeleton - 3 Lines */}
+            {/* Description Skeleton */}
             <div className="space-y-2 mt-4">
               <div className="h-3 w-full skeleton-shimmer skeleton-rounded" />
               <div className="h-3 w-full skeleton-shimmer skeleton-rounded" />
@@ -69,7 +73,7 @@ const ServiceSkeletonShimmer = () => {
             <div className="h-9 w-32 skeleton-shimmer skeleton-rounded" />
           </div>
         </div>
-      </div>
+      </article>
     </>
   );
 };

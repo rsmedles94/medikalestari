@@ -138,7 +138,7 @@ const AdminSidebar = () => {
       {/* SIDEBAR */}
       <aside
         className={`
-          ${isMobile ? "fixed top-0 left-0 z-50" : "relative"}
+          ${isMobile ? "fixed top-0 left-0 z-50" : "fixed top-0 left-0 z-40"}
           h-screen bg-white border-r border-slate-100
           transition-all duration-300 ease-in-out
           flex flex-col overflow-hidden

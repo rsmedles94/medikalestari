@@ -126,7 +126,7 @@ function LayoutContent({
   return (
     <>
       {isAdminPage ? (
-        <div className="flex min-h-screen bg-gray-100">
+        <div className="min-h-screen bg-gray-100 md:ml-64">
           <AdminSidebar />
           <div className="flex-1 flex flex-col">
             <div className="flex-1 overflow-auto">{children}</div>

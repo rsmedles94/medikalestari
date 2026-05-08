@@ -53,7 +53,7 @@ const MobileBottomNavbar = () => {
           <circle cx="12" cy="12" r="10" />
           <path
             d="M12 6v6l4 2"
-            stroke="#004684" // Memberikan warna kontras di dalam solid icon
+            stroke="#004684"
             strokeWidth="1.8"
             strokeLinecap="round"
           />
@@ -61,7 +61,7 @@ const MobileBottomNavbar = () => {
       ),
     },
     {
-      label: "Kama Perawatan",
+      label: "Kamar Perawatan",
       href: "/services/kamar-perawatan",
       outline: (
         <g>
@@ -85,82 +85,90 @@ const MobileBottomNavbar = () => {
 
   return (
     <>
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[#004684] z-50 border-t border-white/5 pb-safe">
-        <div className="flex justify-around items-stretch h-18">
+      <nav
+        className="md:hidden fixed bottom-0 left-0 right-0 bg-[#004684] z-50 border-t border-white/5 pb-safe"
+        aria-label="Mobile Navigation Bar"
+      >
+        <ul className="flex justify-around items-stretch h-18 list-none p-0 m-0">
           {navItems.map((item) => {
             const isItemActive = pathname === item.href;
 
             return (
-              <Link
-                key={item.label}
-                href={item.href}
-                prefetch={true}
-                onClick={(e) => {
-                  if (isItemActive) {
-                    e.preventDefault();
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                  }
-                }}
-                className="flex flex-col items-center justify-center w-1/4 relative tap-highlight-transparent overflow-hidden"
-              >
-                {/* Indikator Atas menggunakan GPU Acceleration (Framer Motion) */}
-                {isItemActive && (
-                  <motion.div
-                    layoutId="navIndicator"
-                    className="absolute top-0 w-12 h-[3px] bg-white rounded-b-full z-10"
-                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                  />
-                )}
-
-                <motion.div
-                  className="relative flex flex-col items-center"
-                  whileTap={{ scale: 0.9 }} // Visual feedback instan
+              <li key={item.label} className="w-1/4 flex">
+                <Link
+                  href={item.href}
+                  prefetch={true}
+                  aria-current={isItemActive ? "page" : undefined}
+                  onClick={(e) => {
+                    if (isItemActive) {
+                      e.preventDefault();
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }
+                  }}
+                  className="flex flex-col items-center justify-center w-full relative tap-highlight-transparent overflow-hidden"
                 >
-                  <div className="relative h-6 w-6">
-                    <svg
-                      viewBox="0 0 24 24"
-                      className={`w-6 h-6 transition-colors duration-300 ${
-                        isItemActive ? "text-white" : "text-white/60"
-                      }`}
-                      // Agar ikon solid tidak menutupi detail garis dalam
-                      fill={isItemActive ? "white" : "none"}
-                      stroke="currentColor"
-                      strokeWidth={isItemActive ? "0.5" : "1.8"}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      style={{ transform: "translateZ(0)" }} // Force GPU rendering
-                    >
-                      <AnimatePresence mode="wait">
-                        <motion.g
-                          key={isItemActive ? "solid" : "outline"}
-                          initial={{ opacity: 0, scale: 0.8 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0.8 }}
-                          transition={{ duration: 0.15 }}
-                        >
-                          {isItemActive ? item.solid : item.outline}
-                        </motion.g>
-                      </AnimatePresence>
-                    </svg>
-                  </div>
+                  {/* Indikator Atas menggunakan GPU Acceleration */}
+                  {isItemActive && (
+                    <motion.div
+                      layoutId="navIndicator"
+                      className="absolute top-0 w-12 h-[3px] bg-white rounded-b-full z-10"
+                      transition={{
+                        type: "spring",
+                        stiffness: 380,
+                        damping: 30,
+                      }}
+                    />
+                  )}
 
-                  <span
-                    className={`text-[10px] mt-1 transition-all duration-300 ${
-                      isItemActive
-                        ? "text-white font-bold opacity-100"
-                        : "text-white/60 font-medium opacity-90"
-                    }`}
+                  <motion.div
+                    className="relative flex flex-col items-center"
+                    whileTap={{ scale: 0.9 }}
                   >
-                    {item.label}
-                  </span>
-                </motion.div>
-              </Link>
+                    <div className="relative h-6 w-6">
+                      <svg
+                        viewBox="0 0 24 24"
+                        className={`w-6 h-6 transition-colors duration-300 ${
+                          isItemActive ? "text-white" : "text-white/60"
+                        }`}
+                        fill={isItemActive ? "white" : "none"}
+                        stroke="currentColor"
+                        strokeWidth={isItemActive ? "0.5" : "1.8"}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        style={{ transform: "translateZ(0)" }}
+                      >
+                        <AnimatePresence mode="wait">
+                          <motion.g
+                            key={isItemActive ? "solid" : "outline"}
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.8 }}
+                            transition={{ duration: 0.15 }}
+                          >
+                            {isItemActive ? item.solid : item.outline}
+                          </motion.g>
+                        </AnimatePresence>
+                      </svg>
+                    </div>
+
+                    <span
+                      className={`text-[10px] mt-1 transition-all duration-300 ${
+                        isItemActive
+                          ? "text-white font-bold opacity-100"
+                          : "text-white/60 font-medium opacity-90"
+                      }`}
+                    >
+                      {item.label}
+                    </span>
+                  </motion.div>
+                </Link>
+              </li>
             );
           })}
-        </div>
+        </ul>
       </nav>
 
-      <div className="md:hidden" />
+      <div className="md:hidden" aria-hidden="true" />
     </>
   );
 };

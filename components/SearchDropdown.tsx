@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState, useEffect, useMemo } from "react";
 import { ArrowRight, Search as SearchIcon, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -18,7 +19,6 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({ isOpen, onClose }) => {
   const [allDoctors, setAllDoctors] = useState<Doctor[]>([]);
   const router = useRouter();
 
-  // Load semua dokter saat komponen mount
   useEffect(() => {
     const loadDoctors = async () => {
       try {
@@ -31,7 +31,6 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({ isOpen, onClose }) => {
     loadDoctors();
   }, []);
 
-  // Filter dokter berdasarkan search query menggunakan useMemo
   const searchResults = useMemo(() => {
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
@@ -64,15 +63,16 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({ isOpen, onClose }) => {
       router.push(`/dokter?specialty=${encodeURIComponent(specialty)}`);
     }
     setSearchQuery("");
-    if (onClose) {
-      onClose();
-    }
+    if (onClose) onClose();
   };
 
   return (
     <AnimatePresence>
       {isOpen && (
         <motion.div
+          /* Menggunakan peran dialog untuk aksesibilitas */
+          role="dialog"
+          aria-label="Pencarian Dokter"
           initial={{ height: 0, opacity: 0 }}
           animate={{ height: "auto", opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
@@ -80,12 +80,17 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({ isOpen, onClose }) => {
           className="absolute top-full left-0 w-full bg-[#f4f4f4] z-[-1] overflow-hidden hidden md:block border-b border-gray-200 shadow-2xl"
         >
           <div className="max-w-[1180px] mx-auto px-4 md:px-8 py-10">
-            {/* Input Section */}
+            {/* Search Input Section */}
             <form
+              role="search"
               onSubmit={handleSearch}
               className="relative w-full flex items-center border-b border-gray-300 pb-2 mb-8"
             >
+              <label htmlFor="doctor-search" className="sr-only">
+                Cari dokter atau spesialis
+              </label>
               <input
+                id="doctor-search"
                 type="text"
                 placeholder="Masukkan nama dokter atau spesialisasi..."
                 value={searchQuery}
@@ -96,6 +101,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({ isOpen, onClose }) => {
               {searchQuery && (
                 <button
                   type="button"
+                  aria-label="Bersihkan pencarian"
                   onClick={() => setSearchQuery("")}
                   className="text-gray-400 hover:text-gray-600 mr-4"
                 >
@@ -104,6 +110,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({ isOpen, onClose }) => {
               )}
               <button
                 type="submit"
+                aria-label="Cari"
                 className="text-[#004684] hover:translate-x-3 transition-transform duration-300"
               >
                 <ArrowRight size={48} strokeWidth={1} />
@@ -112,47 +119,46 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({ isOpen, onClose }) => {
 
             {/* Hasil Pencarian */}
             {searchQuery.trim() && (
-              <div className="mb-8">
+              <nav className="mb-8" aria-label="Hasil pencarian dokter">
                 {searchResults.length > 0 ? (
                   <div>
                     <h3 className="text-sm font-semibold text-[#004684] mb-4">
                       Hasil Pencarian ({searchResults.length})
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 list-none p-0">
                       {searchResults.map((doctor) => (
-                        <motion.button
-                          key={doctor.id}
-                          onClick={() => handleDoctorClick(doctor.id)}
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          className="group flex gap-4 p-4 bg-white hover:shadow-md transition-all text-left border border-gray-200 hover:border"
-                        >
-                          <div className="w-16 h-16 rounded-full overflow-hidden shrink-0 bg-gray-200">
-                            <Image
-                              src={
-                                doctor.image_url ||
-                                "https://images.unsplash.com/photo-1612349317150-e539c59dc62a?w=100&h=100&fit=crop"
-                              }
-                              alt={doctor.name}
-                              width={64}
-                              height={64}
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                          <div className="flex-1">
-                            <h4 className="text-sm font-bold text-[#004684] group-hover:text-[#015A85] transition-colors">
-                              {doctor.name}
-                            </h4>
-                            <p className="text-xs text-gray-500 font-medium">
-                              {doctor.specialty}
-                            </p>
-                          </div>
-                        </motion.button>
+                        <li key={doctor.id}>
+                          <button
+                            onClick={() => handleDoctorClick(doctor.id)}
+                            className="w-full group flex gap-4 p-4 bg-white hover:shadow-md transition-all text-left border border-gray-200 hover:border-[#004684]"
+                          >
+                            <div className="w-16 h-16 rounded-full overflow-hidden shrink-0 bg-gray-200">
+                              <Image
+                                src={
+                                  doctor.image_url ||
+                                  "https://images.unsplash.com/photo-1612349317150-e539c59dc62a?w=100&h=100&fit=crop"
+                                }
+                                alt={`Foto ${doctor.name}`}
+                                width={64}
+                                height={64}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="text-sm font-bold text-[#004684] group-hover:text-[#015A85] transition-colors">
+                                {doctor.name}
+                              </h4>
+                              <p className="text-xs text-gray-500 font-medium">
+                                {doctor.specialty}
+                              </p>
+                            </div>
+                          </button>
+                        </li>
                       ))}
-                    </div>
+                    </ul>
                   </div>
                 ) : (
-                  <div className="text-center py-6">
+                  <div className="text-center py-6" role="status">
                     <SearchIcon
                       size={24}
                       className="mx-auto text-gray-300 mb-2"
@@ -163,27 +169,30 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({ isOpen, onClose }) => {
                     </p>
                   </div>
                 )}
-              </div>
+              </nav>
             )}
 
-            {/* Tautan Khusus */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-4">
-              {SPECIALTY_CATEGORIES.filter((s) => s !== "Semua Spesialis").map(
-                (specialty) => (
-                  <button
-                    key={specialty}
-                    onClick={() => handleSpecialtyClick(specialty)}
-                    className="group flex justify-between items-center text-[13px] text-[#004684] font-medium hover:text-[#003159] transition-colors border-b border-transparent hover:border-[#004684] pb-1 text-left"
-                  >
-                    <span>{specialty}</span>
-                    <ArrowRight
-                      size={14}
-                      className="text-[#004684] opacity-0 group-hover:opacity-100 transition-all transform -translate-x-2 group-hover:translate-x-0"
-                    />
-                  </button>
-                ),
-              )}
-            </div>
+            {/* Kategori Spesialis */}
+            <nav aria-label="Kategori Spesialisasi">
+              <ul className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-4 list-none p-0">
+                {SPECIALTY_CATEGORIES.filter(
+                  (s) => s !== "Semua Spesialis",
+                ).map((specialty) => (
+                  <li key={specialty}>
+                    <button
+                      onClick={() => handleSpecialtyClick(specialty)}
+                      className="w-full group flex justify-between items-center text-[13px] text-[#004684] font-medium hover:text-[#003159] transition-colors border-b border-transparent hover:border-[#004684] pb-1 text-left"
+                    >
+                      <span>{specialty}</span>
+                      <ArrowRight
+                        size={14}
+                        className="text-[#004684] opacity-0 group-hover:opacity-100 transition-all transform -translate-x-2 group-hover:translate-x-0"
+                      />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </nav>
           </div>
         </motion.div>
       )}

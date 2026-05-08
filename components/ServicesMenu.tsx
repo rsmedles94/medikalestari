@@ -15,7 +15,6 @@ import {
   Bed,
   Dumbbell,
   Syringe,
-  Newspaper, // Ganti LayoutTextWindow yang sering error
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -26,7 +25,6 @@ interface ServiceItem {
 }
 
 const ServicesMenu: React.FC = () => {
-  // Menggunakan semua logic data asli kamu
   const services: ServiceItem[] = [
     {
       label: "Emergency",
@@ -110,35 +108,37 @@ const ServicesMenu: React.FC = () => {
   return (
     <section className="py-12 px-4 bg-white mt-10 mb-10">
       <div className="max-w-7xl mx-auto">
-        <motion.div
-          className="grid grid-cols-3 lg:grid-cols-6 gap-y-10 gap-x-4"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-        >
-          {services.map((service) => (
-            <motion.div
-              key={service.label}
-              variants={itemVariants}
-              whileHover={{ scale: 1.1 }} // Hover scale sesuai permintaan
-              whileTap={{ scale: 0.95 }} // Active scale
-              className="flex flex-col items-center"
-            >
-              <Link
-                href={service.href}
-                className="flex flex-col items-center group w-full"
+        <nav aria-label="Layanan Kami">
+          <motion.ul
+            className="grid grid-cols-3 lg:grid-cols-6 gap-y-10 gap-x-4 list-none p-0"
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+          >
+            {services.map((service) => (
+              <motion.li
+                key={service.label}
+                variants={itemVariants}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex flex-col items-center"
               >
-                <div className="mb-3 text-[#004684] transition-colors">
-                  {service.icon}
-                </div>
-                <span className="text-center text-[10px] md:text-sm font-medium text-gray-600 leading-tight group-hover:text-[#003159]">
-                  {service.label}
-                </span>
-              </Link>
-            </motion.div>
-          ))}
-        </motion.div>
+                <Link
+                  href={service.href}
+                  className="flex flex-col items-center group w-full"
+                >
+                  <div className="mb-3 text-[#004684] transition-colors">
+                    {service.icon}
+                  </div>
+                  <span className="text-center text-[10px] md:text-sm font-medium text-gray-600 leading-tight group-hover:text-[#003159]">
+                    {service.label}
+                  </span>
+                </Link>
+              </motion.li>
+            ))}
+          </motion.ul>
+        </nav>
       </div>
     </section>
   );
