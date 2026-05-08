@@ -69,7 +69,7 @@ const MadingSection = () => {
       <div className="max-w-[1110px] mx-auto">
         {/* Header Navigation */}
         <div className="flex items-center justify-between mb-8 border-b border-gray-100">
-          <h2 className="font-sans text-4xl md:text-4xl font-thin text-slate-800 uppercase tracking-tighter leading-none pb-4">
+          <h2 className="text-2xl md:text-3xl font-semibold text-slate-900 uppercase tracking-tight">
             Informasi & Event
           </h2>
 
