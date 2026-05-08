@@ -34,7 +34,7 @@ const CallCenter = () => {
           priority
         />
       </div>
-      <div className="absolute inset-0 bg-black/40 z-10" />
+      <div className="absolute inset-0 bg-black/70 z-10" />
       <div className="relative z-20 max-w-290 mx-auto px-6 md:px-10 w-full grid grid-cols-1 md:grid-cols-2 gap-16 py-24 items-center">
         <motion.div
           initial={{ opacity: 0, x: -50 }}
