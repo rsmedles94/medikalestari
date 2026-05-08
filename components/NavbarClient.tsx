@@ -118,8 +118,6 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
   const languages = [
     { label: "Bahasa Indonesia", code: "ID", active: true },
-
-    { label: "English", code: "EN", active: false },
   ];
 
   const handleHomeClick = (e: React.MouseEvent) => {
