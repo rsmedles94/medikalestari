@@ -3,6 +3,13 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthProvider";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import AdminSidebar from "@/components/AdminSidebar";
+import PopupDisplay from "@/components/PopupDisplay";
+import EmergencyWA from "@/components/EmergencyWA";
+import MobileBottomNavbar from "@/components/MobileBottomNavbar";
+import { usePathname } from "next/navigation";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -46,7 +53,7 @@ export default function RootLayout({
 
   return (
     <html
-      lang="en"
+      lang="id"
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
@@ -99,8 +106,42 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full bg-white text-black">
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <LayoutContent>{children}</LayoutContent>
+        </AuthProvider>
       </body>
     </html>
+  );
+}
+
+function LayoutContent({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  const pathname = usePathname();
+
+  const isAdminPage = pathname?.startsWith(`/admin`);
+
+  return (
+    <>
+      {isAdminPage ? (
+        <div className="flex min-h-screen bg-gray-100">
+          <AdminSidebar />
+          <div className="flex-1 flex flex-col">
+            <div className="flex-1 overflow-auto">{children}</div>
+          </div>
+        </div>
+      ) : (
+        <>
+          <Navbar />
+          <MobileBottomNavbar />
+          <main className="min-h-screen">{children}</main>
+          <EmergencyWA />
+          <PopupDisplay />
+          <Footer />
+        </>
+      )}
+    </>
   );
 }

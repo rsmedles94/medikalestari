@@ -1,4 +1,1 @@
-export const routing = {
-  locales: ["id", "en"],
-  defaultLocale: "id",
-};
+// Routing configuration removed - using standard locale (id)
