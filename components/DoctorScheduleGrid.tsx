@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef, useCallback } from "react";
 import { Doctor, Schedule } from "@/lib/types";
 import { Search, Loader2, Stethoscope, CalendarDays } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -17,12 +17,14 @@ interface DoctorScheduleGridProps {
 }
 
 const DAYS = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
+const ITEMS_PER_PAGE = 10;
 
 export default function DoctorScheduleGrid({
   doctorsWithSchedules = [],
   loading = false,
 }: Readonly<DoctorScheduleGridProps>) {
   const router = useRouter();
+  const sectionRef = useRef<HTMLDivElement>(null);
   const [selectedSpecialty, setSelectedSpecialty] = useState<string | null>(
     null,
   );
@@ -31,6 +33,8 @@ export default function DoctorScheduleGrid({
     useState(false);
   const [showMobileDayModal, setShowMobileDayModal] = useState(false);
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isPaging, setIsPaging] = useState(false);
 
   const specialties = useMemo(() => {
     if (!doctorsWithSchedules) return [];
@@ -64,6 +68,34 @@ export default function DoctorScheduleGrid({
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [doctorsWithSchedules, selectedSpecialty, searchDoctor, selectedDay]);
 
+  const totalPages = Math.ceil(filteredDoctors.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedDoctors = filteredDoctors.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE,
+  );
+
+  const jumpToTop = useCallback(() => {
+    if (sectionRef.current) {
+      const yOffset = -150;
+      const elementTop =
+        sectionRef.current.getBoundingClientRect().top + window.pageYOffset;
+      window.scrollTo({ top: elementTop + yOffset });
+    }
+  }, []);
+
+  const handlePageChange = (newPage: number) => {
+    setIsPaging(true);
+    setCurrentPage(newPage);
+    jumpToTop();
+    setTimeout(() => setIsPaging(false), 400);
+  };
+
+  const skeletonKeys = useMemo(
+    () => Array.from({ length: 3 }).map((_, i) => `skeleton-${i}`),
+    [],
+  );
+
   const getScheduleForCell = (
     day: string,
     row: number,
@@ -88,7 +120,7 @@ export default function DoctorScheduleGrid({
   }
 
   return (
-    <div className="w-full space-y-6">
+    <div className="w-full space-y-6" ref={sectionRef}>
       {/* SEARCH & FILTER SECTION */}
       <div className="space-y-4">
         {/* MOBILE FILTER BAR */}
@@ -297,7 +329,7 @@ export default function DoctorScheduleGrid({
                   router.push(`/dokter/${doctor.id}`);
                 }
               }}
-              className="bg-white shadow-lg overflow-hidden cursor-pointer transition-all hover:shadow-lg border border-slate-200 hover:border-blue-200 hover:shadow-md hover:shadow-[#004684] text-left"
+              className="bg-white shadow-lg overflow-hidden cursor-pointer transition-all border border-slate-200 hover:border-blue-200 hover:shadow-xl hover:shadow-[#004684] text-left"
             >
               {/* Doctor Header */}
               <div className="bg-slate-50 p-4 border-b border-slate-200">
@@ -396,91 +428,181 @@ export default function DoctorScheduleGrid({
       {/* TABLE VIEW - MOBILE/TABLET */}
       {filteredDoctors.length > 0 && (
         <div className="lg:hidden flex flex-col gap-6">
-          {filteredDoctors.map((doctor) => (
-            <div
-              key={doctor.id}
-              onClick={() => router.push(`/dokter/${doctor.id}`)}
-              className="bg-white border border-slate-200 shadow-sm overflow-hidden active:scale-[0.99] transition-transform"
+          {isPaging ? (
+            // Skeleton loading saat pagination
+            <motion.div
+              key="skeleton-mobile"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="space-y-4"
             >
-              {/* Bagian Atas: Profil Dokter */}
-              <div className="p-4 flex items-center gap-4 bg-slate-50/50">
-                {doctor.image_url && (
-                  <div className="relative w-14 h-14 rounded-full overflow-hidden shrink-0 border-2 border-white shadow-md bg-slate-200">
-                    <Image
-                      src={doctor.image_url}
-                      alt={doctor.name}
-                      fill
-                      className="object-cover"
-                    />
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div
+                  key={skeletonKeys[i]}
+                  className="bg-white border border-slate-200 shadow-sm overflow-hidden animate-pulse"
+                >
+                  <div className="p-4 flex items-center gap-4 bg-slate-50/50">
+                    <div className="relative w-14 h-14 rounded-full bg-slate-300" />
+                    <div className="flex-1">
+                      <div className="h-4 bg-slate-300 rounded mb-2" />
+                      <div className="h-3 bg-slate-200 rounded w-2/3" />
+                    </div>
                   </div>
-                )}
-                <div className="flex-1">
-                  <h3 className="font-semibold text-slate-900 leading-tight">
-                    {doctor.name}
-                  </h3>
-                  <p className="text-sm text-gray-400 font-normal mt-0.5">
-                    {doctor.specialty}
-                  </p>
+                  <div className="border-t border-slate-100 p-4 h-16 bg-slate-50" />
                 </div>
+              ))}
+            </motion.div>
+          ) : (
+            <motion.div
+              key="mobile-list"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-6"
+            >
+              {paginatedDoctors.map((doctor) => (
+                <button
+                  key={doctor.id}
+                  onClick={() => router.push(`/dokter/${doctor.id}`)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      router.push(`/dokter/${doctor.id}`);
+                    }
+                  }}
+                  className="bg-white border border-slate-200 shadow-sm overflow-hidden active:scale-[0.99] transition-transform text-left"
+                >
+                  {/* Bagian Atas: Profil Dokter */}
+                  <div className="p-4 flex items-center gap-4 bg-slate-50/50">
+                    {doctor.image_url && (
+                      <div className="relative w-14 h-14 rounded-full overflow-hidden shrink-0 border-2 border-white shadow-md bg-slate-200">
+                        <Image
+                          src={doctor.image_url}
+                          alt={doctor.name}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    )}
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-slate-900 leading-tight">
+                        {doctor.name}
+                      </h3>
+                      <p className="text-sm text-gray-400 font-normal mt-0.5">
+                        {doctor.specialty}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Bagian Bawah: Tabel Jadwal Ringkas */}
+                  <div className="border-t border-slate-100">
+                    <table className="w-full table-fixed border-collapse">
+                      <thead>
+                        <tr className="bg-slate-50/80">
+                          {DAYS.map((day) => (
+                            <th
+                              key={day}
+                              className="py-2 text-[10px] font-bold text-slate-500 uppercase border-r border-slate-100 last:border-0"
+                            >
+                              {day.substring(0, 3)}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          {DAYS.map((day) => {
+                            const s1 = getScheduleForCell(
+                              day,
+                              1,
+                              doctor.schedules,
+                            );
+                            const s2 = getScheduleForCell(
+                              day,
+                              2,
+                              doctor.schedules,
+                            );
+                            const isAvailable = s1.length > 0 || s2.length > 0;
+
+                            return (
+                              <td
+                                key={`${doctor.id}-${day}`}
+                                className={`py-3 px-0.5 text-center border-r border-slate-100 last:border-0 ${
+                                  isAvailable ? "bg-white" : "bg-slate-50/30"
+                                }`}
+                              >
+                                <div className="flex flex-col items-center justify-center gap-1.5 min-h-10">
+                                  {/* Sesi 1 */}
+                                  {s1.length > 0 && (
+                                    <span className="text-[11px] font-bold text-slate-800">
+                                      {s1[0].start_time.substring(0, 5)}
+                                    </span>
+                                  )}
+                                  {s1.length === 0 && s2.length === 0 && (
+                                    <span className="text-slate-300 text-xs">
+                                      —
+                                    </span>
+                                  )}
+
+                                  {/* Sesi 2 - Menumpuk Langsung di Bawahnya */}
+                                  {s2.length > 0 && (
+                                    <span className="text-[11px] font-bold text-slate-800 ">
+                                      {s2[0].start_time.substring(0, 5)}
+                                    </span>
+                                  )}
+                                </div>
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </button>
+              ))}
+            </motion.div>
+          )}
+
+          {/* PAGINATION CONTROLS - MOBILE */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 mt-12 pt-8">
+              {currentPage > 1 && (
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  className="h-11 px-3 flex items-center justify-center text-slate-600 border border-slate-200 hover:bg-slate-50 transition-all font-bold text-xs gap-1"
+                >
+                  ←<span>PREV</span>
+                </button>
+              )}
+
+              <div className="flex flex-wrap justify-center gap-2">
+                {new Array(totalPages).fill(null).map((_, i) => (
+                  <button
+                    key={`page-${i + 1}`}
+                    onClick={() => handlePageChange(i + 1)}
+                    className={`w-11 h-11 flex items-center justify-center font-bold text-xs transition-all ${
+                      currentPage === i + 1
+                        ? "bg-[#004684] text-white border border-[#004684]"
+                        : "text-slate-500 border border-slate-200 hover:bg-slate-50"
+                    }`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
               </div>
 
-              {/* Bagian Bawah: Tabel Jadwal Ringkas */}
-              <div className="border-t border-slate-100">
-                <table className="w-full table-fixed border-collapse">
-                  <thead>
-                    <tr className="bg-slate-50/80">
-                      {DAYS.map((day) => (
-                        <th
-                          key={day}
-                          className="py-2 text-[10px] font-bold text-slate-500 uppercase border-r border-slate-100 last:border-0"
-                        >
-                          {day.substring(0, 3)}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      {DAYS.map((day) => {
-                        const s1 = getScheduleForCell(day, 1, doctor.schedules);
-                        const s2 = getScheduleForCell(day, 2, doctor.schedules);
-                        const isAvailable = s1.length > 0 || s2.length > 0;
-
-                        return (
-                          <td
-                            key={`${doctor.id}-${day}`}
-                            className={`py-3 px-0.5 text-center border-r border-slate-100 last:border-0 ${
-                              isAvailable ? "bg-white" : "bg-slate-50/30"
-                            }`}
-                          >
-                            <div className="flex flex-col items-center justify-center gap-1.5 min-h-[40px]">
-                              {/* Sesi 1 */}
-                              {s1.length > 0 ? (
-                                <span className="text-[11px] font-bold text-slate-800">
-                                  {s1[0].start_time.substring(0, 5)}
-                                </span>
-                              ) : s2.length === 0 ? (
-                                <span className="text-slate-300 text-xs">
-                                  —
-                                </span>
-                              ) : null}
-
-                              {/* Sesi 2 - Menumpuk Langsung di Bawahnya */}
-                              {s2.length > 0 && (
-                                <span className="text-[11px] font-bold text-slate-800 ">
-                                  {s2[0].start_time.substring(0, 5)}
-                                </span>
-                              )}
-                            </div>
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+              {currentPage < totalPages && (
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  className="h-11 px-3 flex items-center justify-center text-slate-600 border border-slate-200 hover:bg-slate-50 transition-all font-bold text-xs gap-1"
+                >
+                  <span>NEXT</span>→
+                </button>
+              )}
             </div>
-          ))}
+          )}
         </div>
       )}
 
@@ -497,7 +619,7 @@ export default function DoctorScheduleGrid({
 
       {/* LEGEND */}
       {filteredDoctors.length > 0 && (
-        <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+        <div className="p-4 bg-blue-50  border border-blue-200">
           <p className="text-sm font-semibold text-slate-800 mb-2">
             Keterangan:
           </p>
