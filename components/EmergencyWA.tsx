@@ -60,7 +60,7 @@ const EmergencyWA = () => {
             damping: 30,
             mass: 0.8,
           }}
-          className="fixed right-0 top-[50%] z-[9999] cursor-grab active:cursor-grabbing touch-none select-none"
+          className="fixed right-4 top-[50%] z-[9999] cursor-grab active:cursor-grabbing touch-none select-none"
         >
           <motion.div
             className="relative flex items-center"
