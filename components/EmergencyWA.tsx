@@ -36,20 +36,19 @@ const EmergencyWA = () => {
     <AnimatePresence>
       {!isFooterVisible && (
         <motion.div
-          // Menggunakan right-4 sesuai permintaan agar tidak menempel ke tembok layar
-          className="fixed right-4 top-0 h-screen w-[100px] z-[9999] flex items-center justify-end pointer-events-none"
+          // AREA DETEKSI (Invisible Zone)
+          // Menggunakan onPan agar instan saat jari bergerak, tanpa perlu 'grab'
+          onPan={(_, info) => {
+            if (info.offset.x > 15) {
+              setIsHiddenBySwipe(true);
+              setShowTooltip(false);
+            } else if (info.offset.x < -15) {
+              setIsHiddenBySwipe(false);
+            }
+          }}
+          className="fixed right-4 top-0 h-screen w-[120px] z-[9999] flex items-center justify-end touch-none select-none pointer-events-none"
         >
-          <motion.div
-            className="pointer-events-auto touch-none select-none flex flex-col items-center"
-            drag="x"
-            dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={0.1}
-            onDragEnd={(_, info) => {
-              // Sangat responsif: threshold hanya 10px
-              if (info.offset.x > 10) setIsHiddenBySwipe(true);
-              if (info.offset.x < -10) setIsHiddenBySwipe(false);
-            }}
-          >
+          <div className="pointer-events-auto flex flex-col items-center">
             {/* Tooltip Vertikal */}
             <AnimatePresence>
               {showTooltip && !isHiddenBySwipe && (
@@ -69,13 +68,12 @@ const EmergencyWA = () => {
             {/* Visual Badge WhatsApp */}
             <motion.div
               animate={{
-                // x: 120% memastikan tombol benar-benar keluar dari pandangan saat disembunyikan
-                x: isHiddenBySwipe ? "120%" : "0%",
+                x: isHiddenBySwipe ? "110%" : "0%",
                 opacity: isHiddenBySwipe ? 0.4 : 1,
               }}
               transition={{
                 type: "spring",
-                stiffness: 600,
+                stiffness: 700, // Sangat kaku agar instan
                 damping: 40,
               }}
               className="relative flex items-center"
@@ -85,9 +83,9 @@ const EmergencyWA = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 whileTap={{ scale: 0.9 }}
-                // Tetap menggunakan origin-right dan -rotate-90 untuk desain vertikal
                 className="flex items-center gap-2 bg-[#25D366] text-white py-1.5 px-3.5 no-underline shadow-2xl origin-right -rotate-90"
                 onClick={(e) => {
+                  // Jika sedang sembunyi, klik pertama memunculkan kembali
                   if (isHiddenBySwipe) {
                     e.preventDefault();
                     setIsHiddenBySwipe(false);
@@ -107,7 +105,7 @@ const EmergencyWA = () => {
                 </span>
               </motion.a>
             </motion.div>
-          </motion.div>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>
