@@ -17,27 +17,9 @@ export default function Fisioterapi() {
           </Link>
         </div>
 
-        <h1 className="text-3xl font-semibold mb-4">
-          Sedang dalam pengembangan
+        <h1 className="text-2xl font-semibold mb-4">
+          Maaf saat ini halaman sedang dalam pengembangan
         </h1>
-        <p className="text-slate-500 text-base leading-relaxed mb-8">
-          Halaman Fisioterapi RS Medika Lestari sedang diperbarui untuk
-          meningkatkan sistem penjadwalan terapi Anda.
-        </p>
-
-        <div className="h-px bg-slate-200 w-full mb-8" />
-
-        <div className="flex flex-col gap-4">
-          <a
-            href="tel:+622112345678"
-            className="text-slate-400 hover:text-slate-600 text-sm flex items-center justify-center gap-2 transition-colors"
-          >
-            <PhoneCall size={14} /> Hubungi Layanan Fisioterapi
-          </a>
-          <span className="text-slate-400 text-xs font-medium">
-            RS Medika Lestari &copy; 2026
-          </span>
-        </div>
       </div>
     </div>
   );
