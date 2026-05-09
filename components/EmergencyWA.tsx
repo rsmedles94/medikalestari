@@ -11,7 +11,7 @@ const EmergencyWA = () => {
   const [showTooltip, setShowTooltip] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowTooltip(false), 6000);
+    const timer = setTimeout(() => setShowTooltip(false), 5000);
     const footer =
       document.querySelector("footer") || document.getElementById("footer");
 
@@ -36,19 +36,21 @@ const EmergencyWA = () => {
     <AnimatePresence>
       {!isFooterVisible && (
         <motion.div
-          // AREA DETEKSI (Invisible Zone)
-          // Menggunakan onPan agar instan saat jari bergerak, tanpa perlu 'grab'
+          // AREA SENSITIF: Tetap di tempat (fixed) agar swipe selalu terdeteksi
+          // h-screen memastikan kamu bisa swipe dari atas sampai bawah layar kanan
+          className="fixed right-0 top-0 h-screen w-[100px] z-[9999] flex items-center justify-end touch-none select-none pointer-events-none"
           onPan={(_, info) => {
-            if (info.offset.x > 15) {
+            // Deteksi Swipe Kanan (Hide) atau Kiri (Show)
+            // Menggunakan velocity (kecepatan) agar flick cepat langsung bekerja
+            if (info.offset.x > 10 || info.velocity.x > 100) {
               setIsHiddenBySwipe(true);
               setShowTooltip(false);
-            } else if (info.offset.x < -15) {
+            } else if (info.offset.x < -10 || info.velocity.x < -100) {
               setIsHiddenBySwipe(false);
             }
           }}
-          className="fixed right-4 top-0 h-screen w-[120px] z-[9999] flex items-center justify-end touch-none select-none pointer-events-none"
         >
-          <div className="pointer-events-auto flex flex-col items-center">
+          <div className="pointer-events-auto flex flex-col items-center mr-4">
             {/* Tooltip Vertikal */}
             <AnimatePresence>
               {showTooltip && !isHiddenBySwipe && (
@@ -56,11 +58,12 @@ const EmergencyWA = () => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
-                  className="absolute bottom-[110%] flex flex-col items-center"
+                  className="absolute bottom-[115%] flex flex-col items-center"
                 >
-                  <div className="bg-[#005cb3] text-white text-[9px] py-2 px-1 rounded-sm [writing-mode:vertical-lr] rotate-180 font-bold tracking-tighter shadow-lg">
+                  <div className="bg-[#005cb3] text-white text-[9px] py-2 px-1.5 rounded-sm [writing-mode:vertical-lr] rotate-180 font-bold tracking-tighter shadow-xl border border-white/20">
                     SWIPE HIDE
                   </div>
+                  <div className="w-2 h-2 bg-[#005cb3] rotate-45 -mt-1 shadow-xl"></div>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -68,15 +71,16 @@ const EmergencyWA = () => {
             {/* Visual Badge WhatsApp */}
             <motion.div
               animate={{
-                x: isHiddenBySwipe ? "110%" : "0%",
-                opacity: isHiddenBySwipe ? 0.4 : 1,
+                x: isHiddenBySwipe ? "130%" : "0%",
+                opacity: isHiddenBySwipe ? 0.3 : 1,
+                scale: isHiddenBySwipe ? 0.8 : 1,
               }}
               transition={{
                 type: "spring",
-                stiffness: 700, // Sangat kaku agar instan
-                damping: 40,
+                stiffness: 1000, // Speed maksimal
+                damping: 50,
+                mass: 0.5,
               }}
-              className="relative flex items-center"
             >
               <motion.a
                 href="https://wa.me/6282246232527"
@@ -85,7 +89,6 @@ const EmergencyWA = () => {
                 whileTap={{ scale: 0.9 }}
                 className="flex items-center gap-2 bg-[#25D366] text-white py-1.5 px-3.5 no-underline shadow-2xl origin-right -rotate-90"
                 onClick={(e) => {
-                  // Jika sedang sembunyi, klik pertama memunculkan kembali
                   if (isHiddenBySwipe) {
                     e.preventDefault();
                     setIsHiddenBySwipe(false);
