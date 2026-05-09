@@ -721,7 +721,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
       {/* Mobile Quick Action Menu */}
 
-      <div className="md:hidden flex h-10 shadow-lg">
+      <div className="md:hidden flex h-10 ">
         {/* Left Menu - Medical Checkup */}
 
         <Link
