@@ -736,7 +736,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
         <a
           href="tel:021-585-4858"
-          className="flex-1 bg-[#b80600] text-white font-semibold text-center text-xs flex items-center justify-center gap-2 hover:bg-red-700 transition-colors"
+          className="flex-1 bg-red-600 text-white font-semibold text-center text-xs flex items-center justify-center gap-2 hover:bg-red-700 transition-colors"
         >
           <Phone size={16} />
           (021) 585 4858
