@@ -556,11 +556,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                   className="w-full text-left p-4 font-semibold text-[#004684] flex justify-between items-center text-lg border-b"
                 >
                   Profil
-                  <motion.span
-                    animate={{ rotate: activeMenu === "Profil" ? 180 : 0 }}
-                  >
-                    ▼
-                  </motion.span>
+                  <span>{activeMenu === "Profil" ? "−" : "+"}</span>
                 </button>
 
                 <AnimatePresence>
@@ -631,11 +627,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                       >
                         {item}
 
-                        <motion.span
-                          animate={{ rotate: activeMenu === item ? 180 : 0 }}
-                        >
-                          ▼
-                        </motion.span>
+                        <span>{activeMenu === item ? "−" : "+"}</span>
                       </button>
 
                       <AnimatePresence>
