@@ -8,8 +8,12 @@ const EmergencyWA = () => {
   const pathname = usePathname();
   const [isFooterVisible, setIsFooterVisible] = useState(false);
   const [isHiddenBySwipe, setIsHiddenBySwipe] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(true);
 
   useEffect(() => {
+    // Tooltip hilang otomatis setelah 5 detik
+    const timer = setTimeout(() => setShowTooltip(false), 5000);
+
     const footer =
       document.querySelector("footer") || document.getElementById("footer");
     if (!footer) return;
@@ -22,7 +26,10 @@ const EmergencyWA = () => {
     );
 
     observer.observe(footer);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      clearTimeout(timer);
+    };
   }, [pathname]);
 
   if (pathname !== "/") return null;
@@ -33,48 +40,53 @@ const EmergencyWA = () => {
     <AnimatePresence>
       {showButton && (
         <motion.div
-          // Kontrol Drag Sumbu X
           drag="x"
-          // Batasi drag ke kanan agar tidak hilang total, dan ke kiri agar tidak melewati batas awal
-          dragConstraints={{ left: -20, right: 150 }}
-          dragElastic={0.1}
+          // Batasi drag: kiri sedikit (-50), kanan cukup lebar (200)
+          dragConstraints={{ left: -50, right: 200 }}
+          dragElastic={0.05}
+          onDragStart={() => setShowTooltip(false)}
           onDragEnd={(_, info) => {
-            // Sensitivitas responsif: geser sedikit saja langsung bereaksi
-            if (info.offset.x > 20) {
+            // Sensitivitas tinggi: geser sedikit (15px) langsung bereaksi
+            if (info.offset.x > 15) {
               setIsHiddenBySwipe(true);
-            } else if (info.offset.x < -20) {
+            } else if (info.offset.x < -15) {
               setIsHiddenBySwipe(false);
             }
           }}
           initial={{ opacity: 0, x: 50 }}
           animate={{
             opacity: 1,
-            // Menggunakan nilai persentase agar responsif di berbagai lebar layar
-            x: isHiddenBySwipe ? "85%" : "0%",
+            // 70% agar tetap menyisakan bagian yang mudah ditarik
+            x: isHiddenBySwipe ? "70%" : "0%",
           }}
           exit={{ opacity: 0, x: 50 }}
-          // Transisi Spring yang lebih responsif (stiffness tinggi, damping pas)
-          transition={{
-            type: "spring",
-            stiffness: 400,
-            damping: 30,
-            mass: 0.8,
-          }}
-          className="fixed right-4 top-[50%] z-[9999] cursor-grab active:cursor-grabbing touch-none select-none"
+          transition={{ type: "spring", stiffness: 500, damping: 40 }}
+          className="fixed right-0 top-[50%] z-[9999] cursor-grab active:cursor-grabbing touch-none select-none p-4" // p-4 memperluas area tangkapan jari
         >
-          <motion.div
-            className="relative flex items-center"
-            // Efek feedback saat ditarik
-            whileTap={{ scale: 0.9 }}
-          >
+          <div className="relative flex items-center justify-end">
+            {/* Tooltip Swipe */}
+            <AnimatePresence>
+              {showTooltip && !isHiddenBySwipe && (
+                <motion.div
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="absolute right-[110%] top-[-30px] bg-black/70 text-white text-[10px] py-1 px-2 rounded-md whitespace-nowrap"
+                >
+                  Swipe kanan untuk hide →
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             <motion.a
               href="https://wa.me/6282246232527"
               target="_blank"
               rel="noopener noreferrer"
+              whileTap={{ scale: 0.9 }}
               className={`
                 flex items-center gap-2 bg-[#25D366] text-white py-1.5 px-3.5 
-                no-underline shadow-2xl origin-right -rotate-90 transition-opacity duration-300
-                ${isHiddenBySwipe ? "opacity-60" : "opacity-100"}
+                no-underline shadow-xl origin-right -rotate-90 transition-all
+                ${isHiddenBySwipe ? "opacity-80 scale-95" : "opacity-100 scale-100"}
               `}
               onClick={(e) => {
                 if (isHiddenBySwipe) {
@@ -96,7 +108,7 @@ const EmergencyWA = () => {
                 Customer Care
               </span>
             </motion.a>
-          </motion.div>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>
