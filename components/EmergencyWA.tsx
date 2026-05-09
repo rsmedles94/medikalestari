@@ -47,7 +47,7 @@ const EmergencyWA = () => {
             else if (info.offset.x < -20) setIsHiddenBySwipe(false);
           }}
           // Container ini menutupi sisi kanan layar agar bisa di-swipe dari mana saja
-          className="fixed right-0 top-0 h-screen w-[80px] z-[9999] flex items-center justify-end touch-none select-none"
+          className="fixed right-4 top-0 h-screen w-[80px] z-[9999] flex items-center justify-end touch-none select-none"
         >
           {/* VISUAL TOMBOL */}
           <motion.div
