@@ -7,50 +7,31 @@ interface EventCount {
   count: number;
 }
 
-const getDateRange = (period: Period): { from: string; to: string } => {
-  const now = new Date();
+const getDateRange = (period: Period): { from: Date; to: Date } => {
+  const to = new Date();
+  to.setUTCHours(23, 59, 59, 999); // End of day in UTC
 
-  // Gunakan timezone lokal server, bukan UTC
-  // untuk match dengan waktu user yang mengakses dari berbagai timezone
-
-  let from = new Date(now);
+  const from = new Date();
+  from.setUTCHours(0, 0, 0, 0); // Start of today
 
   switch (period) {
     case "today":
-      // Mulai dari jam 00:00:00 hari ini
-      from.setHours(0, 0, 0, 0);
+      from.setUTCHours(0, 0, 0, 0);
       break;
     case "week":
-      // 7 hari terakhir
-      from.setDate(from.getDate() - 7);
-      from.setHours(0, 0, 0, 0);
+      from.setUTCDate(from.getUTCDate() - 7);
+      from.setUTCHours(0, 0, 0, 0);
       break;
     case "month":
-      // 30 hari terakhir
-      from.setDate(from.getDate() - 30);
-      from.setHours(0, 0, 0, 0);
+      from.setUTCMonth(from.getUTCMonth() - 1);
+      from.setUTCHours(0, 0, 0, 0);
       break;
     case "all":
-      // Semua data
-      from = new Date("2020-01-01");
+      from.setUTCFullYear(2000); // Very old date
       break;
   }
 
-  // Pastikan end date adalah akhir hari ini
-  const to = new Date(now);
-  to.setHours(23, 59, 59, 999);
-
-  console.log(`[Analytics] Date range for period "${period}":`, {
-    from: from.toISOString(),
-    to: to.toISOString(),
-    fromLocal: from.toString(),
-    toLocal: to.toString(),
-  });
-
-  return {
-    from: from.toISOString(),
-    to: to.toISOString(),
-  };
+  return { from, to };
 };
 
 export async function getPageViews(
@@ -60,19 +41,14 @@ export async function getPageViews(
     const supabase = createServerSupabaseClient();
     const { from, to } = getDateRange(period);
 
-    console.log(`[Analytics] Fetching page views for period: ${period}`);
-
     const { data, error } = await supabase
       .from("analytics_events")
-      .select("event_name", { count: "exact" })
+      .select("event_name")
       .eq("event_type", "page_view")
-      .gte("created_at", from)
-      .lte("created_at", to);
+      .gte("created_at", from.toISOString())
+      .lte("created_at", to.toISOString());
 
-    if (error) {
-      console.error("[Analytics] Error fetching page views:", error);
-      throw error;
-    }
+    if (error) throw error;
 
     // Group by event_name and count
     const grouped = data.reduce(
@@ -83,12 +59,9 @@ export async function getPageViews(
       {},
     );
 
-    const result = Object.entries(grouped)
+    return Object.entries(grouped)
       .map(([event_name, count]) => ({ event_name, count }))
       .sort((a, b) => b.count - a.count);
-
-    console.log(`[Analytics] Page views found: ${result.length}`);
-    return result;
   } catch (error) {
     console.error("Error fetching page views:", error);
     return [];
@@ -103,19 +76,27 @@ export async function getVisitorStats() {
     const countEvents = async (period: Period) => {
       const { from, to } = getDateRange(period);
 
+      // Debug logging
+      console.log(`[Analytics] Counting ${period} events:`, {
+        from: from.toISOString(),
+        to: to.toISOString(),
+        fromUTC: from.toUTCString(),
+        toUTC: to.toUTCString(),
+      });
+
       const { count, error } = await supabase
         .from("analytics_events")
         .select("id", { count: "exact", head: true })
         .eq("event_type", "page_view")
-        .gte("created_at", from)
-        .lte("created_at", to);
+        .gte("created_at", from.toISOString())
+        .lte("created_at", to.toISOString());
 
       if (error) {
-        console.error(`[Analytics] Error counting ${period} events:`, error);
+        console.error(`Error counting ${period} events:`, error);
         return 0;
       }
 
-      console.log(`[Analytics] ${period} page views: ${count || 0}`);
+      console.log(`[Analytics] ${period} count: ${count}`);
       return count || 0;
     };
 
@@ -140,19 +121,14 @@ export async function getButtonClicks(
     const supabase = createServerSupabaseClient();
     const { from, to } = getDateRange(period);
 
-    console.log(`[Analytics] Fetching button clicks for period: ${period}`);
-
     const { data, error } = await supabase
       .from("analytics_events")
-      .select("event_name", { count: "exact" })
+      .select("event_name")
       .eq("event_type", "button_click")
-      .gte("created_at", from)
-      .lte("created_at", to);
+      .gte("created_at", from.toISOString())
+      .lte("created_at", to.toISOString());
 
-    if (error) {
-      console.error("[Analytics] Error fetching button clicks:", error);
-      throw error;
-    }
+    if (error) throw error;
 
     // Group by event_name and count
     const grouped = data.reduce(
@@ -163,12 +139,9 @@ export async function getButtonClicks(
       {},
     );
 
-    const result = Object.entries(grouped)
+    return Object.entries(grouped)
       .map(([event_name, count]) => ({ event_name, count }))
       .sort((a, b) => b.count - a.count);
-
-    console.log(`[Analytics] Button clicks found: ${result.length}`);
-    return result;
   } catch (error) {
     console.error("Error fetching button clicks:", error);
     return [];

@@ -288,7 +288,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
       {/* --- Bottom Navbar (Tetap Muncul / Sticky) --- */}
 
-      <div className="hidden md:block relative w-full bg-[#004684] text-white z-30 shadow-lg border-b-4 border-[#003159]">
+      <div className="hidden md:block relative w-full bg-[#004684] text-white z-30 ">
         <div
           className="absolute right-0 top-0 h-full w-[38%] bg-[#003159] hidden lg:block"
           style={{ clipPath: "polygon(40px 0, 100% 0, 100% 100%, 0% 100%)" }}
@@ -396,7 +396,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
             >
               <Search size={20} strokeWidth={2.5} />
 
-              <span className="font-medium">Cari Dokter Kami</span>
+              <span className="font-medium">Cari Dokter Spesialis</span>
 
               <div
                 className={`absolute bottom-0 left-3 right-3 h-1 bg-white rounded-t-full transition-transform duration-300 ${
