@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, TouchEvent, MouseEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const EmergencyWA = () => {
@@ -10,8 +10,8 @@ const EmergencyWA = () => {
   const [isHiddenBySwipe, setIsHiddenBySwipe] = useState(false);
   const [showTooltip, setShowTooltip] = useState(true);
 
-  // Ref untuk mendeteksi posisi awal sentuhan
-  const touchStart = useRef(null);
+  // Ref dengan tipe number untuk menyimpan koordinat X
+  const touchStart = useRef<number | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => setShowTooltip(false), 5000);
@@ -33,25 +33,30 @@ const EmergencyWA = () => {
     };
   }, [pathname]);
 
-  // Logika Swipe Manual yang sangat sensitif
-  const handleTouchStart = (e) => {
-    touchStart.current = e.targetTouches[0].clientX;
+  // Handler dengan tipe data React.TouchEvent
+  const handleStart = (e: TouchEvent<HTMLDivElement>) => {
+    touchStart.current = e.touches[0].clientX;
   };
 
-  const handleTouchMove = (e) => {
-    if (!touchStart.current) return;
-    const touchEnd = e.targetTouches[0].clientX;
+  const handleMove = (e: TouchEvent<HTMLDivElement>) => {
+    if (touchStart.current === null) return;
+
+    const touchEnd = e.touches[0].clientX;
     const distance = touchStart.current - touchEnd;
 
-    // Geser ke kanan (Hide) - Sensitivitas 5px
+    // Geser kanan (Hide) - Threshold sangat rendah agar sensitif
     if (distance < -5) {
       setIsHiddenBySwipe(true);
       setShowTooltip(false);
     }
-    // Geser ke kiri (Show) - Sensitivitas 5px
+    // Geser kiri (Show)
     if (distance > 5) {
       setIsHiddenBySwipe(false);
     }
+  };
+
+  const handleEnd = () => {
+    touchStart.current = null;
   };
 
   if (pathname !== "/") return null;
@@ -60,30 +65,13 @@ const EmergencyWA = () => {
     <AnimatePresence>
       {!isFooterVisible && (
         <div
-          // AREA SENSOR: Menggunakan native touch agar super instan
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onMouseDown={(e) => {
-            // Support Mouse Swipe juga di Desktop
-            const startX = e.clientX;
-            const handleMouseMove = (moveEvent) => {
-              const diff = startX - moveEvent.clientX;
-              if (diff < -5) setIsHiddenBySwipe(true);
-              if (diff > 5) setIsHiddenBySwipe(false);
-            };
-            window.addEventListener("mousemove", handleMouseMove);
-            window.addEventListener(
-              "mouseup",
-              () => {
-                window.removeEventListener("mousemove", handleMouseMove);
-              },
-              { once: true },
-            );
-          }}
+          onTouchStart={handleStart}
+          onTouchMove={handleMove}
+          onTouchEnd={handleEnd}
           className="fixed right-0 top-0 h-screen w-[120px] z-[9999] flex items-center justify-end pointer-events-none touch-none"
         >
           <div className="pointer-events-auto flex flex-col items-center mr-4">
-            {/* Tooltip Vertikal */}
+            {/* Tooltip */}
             <AnimatePresence>
               {showTooltip && !isHiddenBySwipe && (
                 <motion.div
@@ -104,13 +92,12 @@ const EmergencyWA = () => {
             <motion.div
               animate={{
                 x: isHiddenBySwipe ? "130%" : "0%",
-                opacity: isHiddenBySwipe ? 0.3 : 1,
+                opacity: isHiddenBySwipe ? 0.4 : 1,
               }}
               transition={{
                 type: "spring",
                 stiffness: 400,
                 damping: 35,
-                mass: 0.5,
               }}
             >
               <motion.a
@@ -119,7 +106,7 @@ const EmergencyWA = () => {
                 rel="noopener noreferrer"
                 whileTap={{ scale: 0.9 }}
                 className="flex items-center gap-2 bg-[#25D366] text-white py-1.5 px-3.5 no-underline shadow-2xl origin-right -rotate-90"
-                onClick={(e) => {
+                onClick={(e: MouseEvent<HTMLAnchorElement>) => {
                   if (isHiddenBySwipe) {
                     e.preventDefault();
                     setIsHiddenBySwipe(false);
