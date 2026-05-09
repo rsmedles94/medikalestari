@@ -1,24 +1,19 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useState, useRef, TouchEvent, MouseEvent } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const EmergencyWA = () => {
   const pathname = usePathname();
   const [isFooterVisible, setIsFooterVisible] = useState(false);
-  const [isHiddenBySwipe, setIsHiddenBySwipe] = useState(false);
-  const [showTooltip, setShowTooltip] = useState(true);
-
-  // Ref dengan tipe number untuk menyimpan koordinat X
-  const touchStart = useRef<number | null>(null);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowTooltip(false), 5000);
     const footer =
       document.querySelector("footer") || document.getElementById("footer");
-
     if (!footer) return;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         setIsFooterVisible(entry.isIntersecting);
@@ -27,106 +22,79 @@ const EmergencyWA = () => {
     );
 
     observer.observe(footer);
-    return () => {
-      observer.disconnect();
-      clearTimeout(timer);
-    };
+    return () => observer.disconnect();
   }, [pathname]);
-
-  // Handler dengan tipe data React.TouchEvent
-  const handleStart = (e: TouchEvent<HTMLDivElement>) => {
-    touchStart.current = e.touches[0].clientX;
-  };
-
-  const handleMove = (e: TouchEvent<HTMLDivElement>) => {
-    if (touchStart.current === null) return;
-
-    const touchEnd = e.touches[0].clientX;
-    const distance = touchStart.current - touchEnd;
-
-    // Geser kanan (Hide) - Threshold sangat rendah agar sensitif
-    if (distance < -5) {
-      setIsHiddenBySwipe(true);
-      setShowTooltip(false);
-    }
-    // Geser kiri (Show)
-    if (distance > 5) {
-      setIsHiddenBySwipe(false);
-    }
-  };
-
-  const handleEnd = () => {
-    touchStart.current = null;
-  };
 
   if (pathname !== "/") return null;
 
   return (
     <AnimatePresence>
       {!isFooterVisible && (
-        <div
-          onTouchStart={handleStart}
-          onTouchMove={handleMove}
-          onTouchEnd={handleEnd}
-          className="fixed right-0 top-0 h-screen w-[120px] z-[9999] flex items-center justify-end pointer-events-none touch-none"
-        >
-          <div className="pointer-events-auto flex flex-col items-center mr-4">
-            {/* Tooltip */}
-            <AnimatePresence>
-              {showTooltip && !isHiddenBySwipe && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                  className="absolute bottom-[115%] flex flex-col items-center"
-                >
-                  <div className="bg-[#005cb3] text-white text-[9px] py-2 px-1.5 rounded-sm [writing-mode:vertical-lr] rotate-180 font-bold tracking-tighter shadow-xl">
-                    SWIPE HIDE
-                  </div>
-                  <div className="w-2 h-2 bg-[#005cb3] rotate-45 -mt-1 shadow-xl"></div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* Badge WhatsApp */}
-            <motion.div
-              animate={{
-                x: isHiddenBySwipe ? "130%" : "0%",
-                opacity: isHiddenBySwipe ? 0.4 : 1,
-              }}
-              transition={{
-                type: "spring",
-                stiffness: 400,
-                damping: 35,
-              }}
+        <div className="fixed right-4 top-1/2 -translate-y-1/2 z-[9999] flex flex-col items-end">
+          {/* Tombol Chevron - Tetap instan saat diklik */}
+          <motion.button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            animate={{
+              x: isCollapsed ? 12 : 0,
+            }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="w-5 h-5 bg-black/20 text-white flex items-center justify-center rounded-full  border border-white/20 active:scale-90 z-20 -mb-3 mr-1"
+          >
+            <motion.span
+              animate={{ rotate: isCollapsed ? 180 : 0 }}
+              transition={{ duration: 0.3 }} // Kecepatan putaran chevron
+              className="flex items-center justify-center"
             >
-              <motion.a
-                href="https://wa.me/6282246232527"
-                target="_blank"
-                rel="noopener noreferrer"
-                whileTap={{ scale: 0.9 }}
-                className="flex items-center gap-2 bg-[#25D366] text-white py-1.5 px-3.5 no-underline shadow-2xl origin-right -rotate-90"
-                onClick={(e: MouseEvent<HTMLAnchorElement>) => {
-                  if (isHiddenBySwipe) {
-                    e.preventDefault();
-                    setIsHiddenBySwipe(false);
-                  }
-                }}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className="w-5 h-5"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="white"
-                  className="w-4 h-4"
-                >
-                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72.937 3.659 1.432 5.631 1.433h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-                </svg>
-                <span className="text-[12px] font-bold tracking-wider uppercase whitespace-nowrap">
-                  Customer Care
-                </span>
-              </motion.a>
-            </motion.div>
-          </div>
+                <path
+                  fillRule="evenodd"
+                  d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </motion.span>
+          </motion.button>
+
+          {/* Badge WhatsApp - Menunggu chevron selesai baru gerak */}
+          <motion.div
+            initial={false}
+            animate={{
+              x: isCollapsed ? 100 : 0,
+              opacity: isCollapsed ? 0.6 : 1,
+            }}
+            transition={{
+              type: "spring",
+              stiffness: 200, // Sedikit lebih lambat/smooth
+              damping: 25,
+              // Memberikan delay 0.2 detik saat sembunyi agar chevron muter dulu
+              delay: isCollapsed ? 0.2 : 0,
+            }}
+            className="z-10"
+          >
+            <a
+              href="https://wa.me/6282246232527"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 bg-[#25D366] text-white py-1.5 px-3.5 no-underline  origin-right -rotate-90 whitespace-nowrap rounded-t-lg"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="white"
+                className="w-4 h-4"
+              >
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72.937 3.659 1.432 5.631 1.433h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+              </svg>
+              <span className="text-[12px] font-bold tracking-wider uppercase">
+                Customer Care
+              </span>
+            </a>
+          </motion.div>
         </div>
       )}
     </AnimatePresence>
