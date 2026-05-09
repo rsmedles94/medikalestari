@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const EmergencyWA = () => {
@@ -9,6 +9,9 @@ const EmergencyWA = () => {
   const [isFooterVisible, setIsFooterVisible] = useState(false);
   const [isHiddenBySwipe, setIsHiddenBySwipe] = useState(false);
   const [showTooltip, setShowTooltip] = useState(true);
+
+  // Ref untuk mendeteksi posisi awal sentuhan
+  const touchStart = useRef(null);
 
   useEffect(() => {
     const timer = setTimeout(() => setShowTooltip(false), 5000);
@@ -30,25 +33,54 @@ const EmergencyWA = () => {
     };
   }, [pathname]);
 
+  // Logika Swipe Manual yang sangat sensitif
+  const handleTouchStart = (e) => {
+    touchStart.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchMove = (e) => {
+    if (!touchStart.current) return;
+    const touchEnd = e.targetTouches[0].clientX;
+    const distance = touchStart.current - touchEnd;
+
+    // Geser ke kanan (Hide) - Sensitivitas 5px
+    if (distance < -5) {
+      setIsHiddenBySwipe(true);
+      setShowTooltip(false);
+    }
+    // Geser ke kiri (Show) - Sensitivitas 5px
+    if (distance > 5) {
+      setIsHiddenBySwipe(false);
+    }
+  };
+
   if (pathname !== "/") return null;
 
   return (
     <AnimatePresence>
       {!isFooterVisible && (
-        <motion.div
-          // AREA SENSITIF: Tetap di tempat (fixed) agar swipe selalu terdeteksi
-          // h-screen memastikan kamu bisa swipe dari atas sampai bawah layar kanan
-          className="fixed right-0 top-0 h-screen w-[100px] z-[9999] flex items-center justify-end touch-none select-none pointer-events-none"
-          onPan={(_, info) => {
-            // Deteksi Swipe Kanan (Hide) atau Kiri (Show)
-            // Menggunakan velocity (kecepatan) agar flick cepat langsung bekerja
-            if (info.offset.x > 10 || info.velocity.x > 100) {
-              setIsHiddenBySwipe(true);
-              setShowTooltip(false);
-            } else if (info.offset.x < -10 || info.velocity.x < -100) {
-              setIsHiddenBySwipe(false);
-            }
+        <div
+          // AREA SENSOR: Menggunakan native touch agar super instan
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onMouseDown={(e) => {
+            // Support Mouse Swipe juga di Desktop
+            const startX = e.clientX;
+            const handleMouseMove = (moveEvent) => {
+              const diff = startX - moveEvent.clientX;
+              if (diff < -5) setIsHiddenBySwipe(true);
+              if (diff > 5) setIsHiddenBySwipe(false);
+            };
+            window.addEventListener("mousemove", handleMouseMove);
+            window.addEventListener(
+              "mouseup",
+              () => {
+                window.removeEventListener("mousemove", handleMouseMove);
+              },
+              { once: true },
+            );
           }}
+          className="fixed right-0 top-0 h-screen w-[120px] z-[9999] flex items-center justify-end pointer-events-none touch-none"
         >
           <div className="pointer-events-auto flex flex-col items-center mr-4">
             {/* Tooltip Vertikal */}
@@ -60,7 +92,7 @@ const EmergencyWA = () => {
                   exit={{ opacity: 0 }}
                   className="absolute bottom-[115%] flex flex-col items-center"
                 >
-                  <div className="bg-[#005cb3] text-white text-[9px] py-2 px-1.5 rounded-sm [writing-mode:vertical-lr] rotate-180 font-bold tracking-tighter shadow-xl border border-white/20">
+                  <div className="bg-[#005cb3] text-white text-[9px] py-2 px-1.5 rounded-sm [writing-mode:vertical-lr] rotate-180 font-bold tracking-tighter shadow-xl">
                     SWIPE HIDE
                   </div>
                   <div className="w-2 h-2 bg-[#005cb3] rotate-45 -mt-1 shadow-xl"></div>
@@ -68,17 +100,16 @@ const EmergencyWA = () => {
               )}
             </AnimatePresence>
 
-            {/* Visual Badge WhatsApp */}
+            {/* Badge WhatsApp */}
             <motion.div
               animate={{
                 x: isHiddenBySwipe ? "130%" : "0%",
                 opacity: isHiddenBySwipe ? 0.3 : 1,
-                scale: isHiddenBySwipe ? 0.8 : 1,
               }}
               transition={{
                 type: "spring",
-                stiffness: 1000, // Speed maksimal
-                damping: 50,
+                stiffness: 400,
+                damping: 35,
                 mass: 0.5,
               }}
             >
@@ -109,7 +140,7 @@ const EmergencyWA = () => {
               </motion.a>
             </motion.div>
           </div>
-        </motion.div>
+        </div>
       )}
     </AnimatePresence>
   );
