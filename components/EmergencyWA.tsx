@@ -36,52 +36,57 @@ const EmergencyWA = () => {
     <AnimatePresence>
       {!isFooterVisible && (
         <motion.div
-          // Area Tangkap Vertikal di Sisi Kanan
-          drag="x"
-          dragConstraints={{ left: 0, right: 0 }} // Memaksa kembali ke posisi "right-0"
-          dragSnapToOrigin={true} // KUNCI: Agar setelah swipe tidak nyangkut di tengah
-          dragElastic={0.05}
-          onDragStart={() => setShowTooltip(false)}
-          onDragEnd={(_, info) => {
-            // Langsung swipe tanpa jeda
-            if (info.offset.x > 20) setIsHiddenBySwipe(true);
-            else if (info.offset.x < -20) setIsHiddenBySwipe(false);
-          }}
-          className="fixed right-4 top-0 h-screen w-[80px] z-[9999] flex items-center justify-end touch-none select-none"
+          // Menggunakan right-4 sesuai permintaan agar tidak menempel ke tembok layar
+          className="fixed right-4 top-0 h-screen w-[100px] z-[9999] flex items-center justify-end pointer-events-none"
         >
-          <div className="relative flex flex-col items-center">
-            {/* Tooltip Vertikal di Atas Badge */}
+          <motion.div
+            className="pointer-events-auto touch-none select-none flex flex-col items-center"
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.1}
+            onDragEnd={(_, info) => {
+              // Sangat responsif: threshold hanya 10px
+              if (info.offset.x > 10) setIsHiddenBySwipe(true);
+              if (info.offset.x < -10) setIsHiddenBySwipe(false);
+            }}
+          >
+            {/* Tooltip Vertikal */}
             <AnimatePresence>
               {showTooltip && !isHiddenBySwipe && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
-                  // Posisikan vertikal di atas tombol
-                  className="absolute bottom-[110%] right-3 flex flex-col items-center"
+                  className="absolute bottom-[110%] flex flex-col items-center"
                 >
-                  <div className="bg-black/80 text-white text-[10px] py-2 px-1 rounded-md [writing-mode:vertical-lr] rotate-180 flex items-center gap-1">
-                    <span>SWIPE HIDE</span>
-                    <span className="animate-bounce">↓</span>
+                  <div className="bg-[#005cb3] text-white text-[9px] py-2 px-1 rounded-sm [writing-mode:vertical-lr] rotate-180 font-bold tracking-tighter shadow-lg">
+                    SWIPE HIDE
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
 
-            {/* Visual Tombol */}
+            {/* Visual Badge WhatsApp */}
             <motion.div
               animate={{
-                x: isHiddenBySwipe ? "75%" : "0%",
-                opacity: isHiddenBySwipe ? 0.6 : 1,
+                // x: 120% memastikan tombol benar-benar keluar dari pandangan saat disembunyikan
+                x: isHiddenBySwipe ? "120%" : "0%",
+                opacity: isHiddenBySwipe ? 0.4 : 1,
               }}
-              transition={{ type: "spring", stiffness: 500, damping: 40 }}
+              transition={{
+                type: "spring",
+                stiffness: 600,
+                damping: 40,
+              }}
+              className="relative flex items-center"
             >
               <motion.a
                 href="https://wa.me/6282246232527"
                 target="_blank"
                 rel="noopener noreferrer"
                 whileTap={{ scale: 0.9 }}
-                className="flex items-center gap-2 bg-[#25D366] text-white py-1.5 px-3.5 no-underline shadow-2xl origin-right -rotate-90 transition-transform"
+                // Tetap menggunakan origin-right dan -rotate-90 untuk desain vertikal
+                className="flex items-center gap-2 bg-[#25D366] text-white py-1.5 px-3.5 no-underline shadow-2xl origin-right -rotate-90"
                 onClick={(e) => {
                   if (isHiddenBySwipe) {
                     e.preventDefault();
@@ -102,7 +107,7 @@ const EmergencyWA = () => {
                 </span>
               </motion.a>
             </motion.div>
-          </div>
+          </motion.div>
         </motion.div>
       )}
     </AnimatePresence>
