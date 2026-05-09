@@ -79,12 +79,12 @@ const MadingSection = () => {
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`pb-4 px-1 text-xs md:text-sm font-normal transition-all relative ${
-                  activeTab === tab ? "text-[#004684]" : "text-gray-400"
+                  activeTab === tab ? "text-[#003366]" : "text-gray-400"
                 }`}
               >
                 {tab.toUpperCase()}
                 {activeTab === tab && (
-                  <span className="absolute bottom-0 left-0 w-full h-[3px] bg-[#004684]" />
+                  <span className="absolute bottom-0 left-0 w-full h-[3px] bg-[#003366]" />
                 )}
               </button>
             ))}
@@ -194,7 +194,7 @@ const MadingSection = () => {
                             <a
                               href={item.link || "#"}
                               target="_blank"
-                              className="text-[11px] md:text-[13px] font-semibold text-[#004684] hover:underline"
+                              className="text-[11px] md:text-[13px] font-semibold text-[#003366] hover:underline"
                             >
                               Selengkapnya...
                             </a>
@@ -221,7 +221,7 @@ const MadingSection = () => {
                           <span className="text-slate-500 text-[8px] md:text-[9px] font-bold uppercase mb-1 md:mb-2 tracking-widest">
                             EVENT
                           </span>
-                          <h3 className="text-xs md:text-sm font-bold text-slate-900 mb-1 md:mb-2 leading-snug group-hover:text-[#004684] transition-colors line-clamp-2">
+                          <h3 className="text-xs md:text-sm font-bold text-slate-900 mb-1 md:mb-2 leading-snug group-hover:text-[#003366] transition-colors line-clamp-2">
                             {item.title}
                           </h3>
                           <p className="text-[9px] md:text-[10px] text-slate-500 mb-2 md:mb-3 flex-grow leading-relaxed line-clamp-1 md:line-clamp-2">
@@ -235,7 +235,7 @@ const MadingSection = () => {
                           <a
                             href={item.link || "#"}
                             target="_blank"
-                            className="flex items-center gap-1 md:gap-2 text-gray-500 font-bold text-[9px] md:text-[11px] group-hover:text-[#004684]"
+                            className="flex items-center gap-1 md:gap-2 text-gray-500 font-bold text-[9px] md:text-[11px] group-hover:text-[#003366]"
                           >
                             <span>Baca Selengkapnya</span>
                             <ChevronRight

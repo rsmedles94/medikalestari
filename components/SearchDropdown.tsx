@@ -111,7 +111,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({ isOpen, onClose }) => {
               <button
                 type="submit"
                 aria-label="Cari"
-                className="text-[#004684] hover:translate-x-3 transition-transform duration-300"
+                className="text-[#003366] hover:translate-x-3 transition-transform duration-300"
               >
                 <ArrowRight size={48} strokeWidth={1} />
               </button>
@@ -122,7 +122,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({ isOpen, onClose }) => {
               <nav className="mb-8" aria-label="Hasil pencarian dokter">
                 {searchResults.length > 0 ? (
                   <div>
-                    <h3 className="text-sm font-semibold text-[#004684] mb-4">
+                    <h3 className="text-sm font-semibold text-[#003366] mb-4">
                       Hasil Pencarian ({searchResults.length})
                     </h3>
                     <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 list-none p-0">
@@ -130,7 +130,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({ isOpen, onClose }) => {
                         <li key={doctor.id}>
                           <button
                             onClick={() => handleDoctorClick(doctor.id)}
-                            className="w-full group flex gap-4 p-4 bg-white hover:shadow-md transition-all text-left border border-gray-200 hover:border-[#004684]"
+                            className="w-full group flex gap-4 p-4 bg-white hover:shadow-md transition-all text-left border border-gray-200 hover:border-[#003366]"
                           >
                             <div className="w-16 h-16 rounded-full overflow-hidden shrink-0 bg-gray-200">
                               <Image
@@ -145,7 +145,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({ isOpen, onClose }) => {
                               />
                             </div>
                             <div className="flex-1">
-                              <h4 className="text-sm font-bold text-[#004684] group-hover:text-[#015A85] transition-colors">
+                              <h4 className="text-sm font-bold text-[#003366] group-hover:text-[#015A85] transition-colors">
                                 {doctor.name}
                               </h4>
                               <p className="text-xs text-gray-500 font-medium">
@@ -181,12 +181,12 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({ isOpen, onClose }) => {
                   <li key={specialty}>
                     <button
                       onClick={() => handleSpecialtyClick(specialty)}
-                      className="w-full group flex justify-between items-center text-[13px] text-[#004684] font-medium hover:text-[#003159] transition-colors border-b border-transparent hover:border-[#004684] pb-1 text-left"
+                      className="w-full group flex justify-between items-center text-[13px] text-[#003366] font-medium hover:text-[#001e3d] transition-colors border-b border-transparent hover:border-[#003366] pb-1 text-left"
                     >
                       <span>{specialty}</span>
                       <ArrowRight
                         size={14}
-                        className="text-[#004684] opacity-0 group-hover:opacity-100 transition-all transform -translate-x-2 group-hover:translate-x-0"
+                        className="text-[#003366] opacity-0 group-hover:opacity-100 transition-all transform -translate-x-2 group-hover:translate-x-0"
                       />
                     </button>
                   </li>

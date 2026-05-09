@@ -33,7 +33,7 @@ export const MCUForm: React.FC<MCUFormProps> = ({
 }) => {
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-6 max-w-2xl">
-      <h2 className="text-2xl font-bold text-[#004684] mb-6">
+      <h2 className="text-2xl font-bold text-[#003366] mb-6">
         {isEditing ? "Ubah Paket MCU" : "Tambah Paket MCU"}
       </h2>
 

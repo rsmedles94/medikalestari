@@ -17,7 +17,7 @@ export const MCUHeader: React.FC<MCUHeaderProps> = ({ onBackClick }) => {
         <ChevronLeft size={24} className="text-gray-700" />
       </button>
       <div>
-        <h1 className="text-3xl font-bold text-[#004684]">Kelola Paket MCU</h1>
+        <h1 className="text-3xl font-bold text-[#003366]">Kelola Paket MCU</h1>
         <p className="text-gray-600">
           Tambah, ubah, atau hapus paket Medical Checkup
         </p>

@@ -104,7 +104,7 @@ const PromoKesehatan = () => {
   return (
     <section
       ref={sectionRef}
-      className="bg-[#004684]/5 py-12 px-4 sm:px-6 lg:px-8 min-h-screen mt-10"
+      className="bg-[#003366]/5 py-12 px-4 sm:px-6 lg:px-8 min-h-screen mt-10"
       aria-labelledby="promo-title"
     >
       <div className="relative z-10 max-w-[1180px] mx-auto md:px-8">
@@ -148,7 +148,7 @@ const PromoKesehatan = () => {
                     </div>
 
                     <div className="p-4 md:p-5 flex flex-col grow text-center">
-                      <h3 className="text-sm md:text-lg font-bold text-[#004684] mb-3 min-h-12 flex items-center justify-center leading-tight">
+                      <h3 className="text-sm md:text-lg font-bold text-[#003366] mb-3 min-h-12 flex items-center justify-center leading-tight">
                         {item.title}
                       </h3>
                       <p className="text-[10px] md:text-sm text-gray-500 leading-relaxed mb-6 line-clamp-4">
@@ -157,7 +157,7 @@ const PromoKesehatan = () => {
                       <div className="mt-auto">
                         <button
                           type="button"
-                          className="w-full py-2 border border-[#004684] text-[#004684] text-[10px] md:text-xs font-bold uppercase tracking-wider transition-colors hover:bg-[#004684] hover:text-white"
+                          className="w-full py-2 border border-[#003366] text-[#003366] text-[10px] md:text-xs font-bold uppercase tracking-wider transition-colors hover:bg-[#003366] hover:text-white"
                         >
                           Selengkapnya
                         </button>
@@ -174,7 +174,7 @@ const PromoKesehatan = () => {
             type="button"
             onClick={handleToggle}
             aria-expanded={showAll}
-            className="text-[#004684] text-xs md:text-sm font-bold uppercase tracking-widest underline underline-offset-4 decoration-2 transition-opacity hover:opacity-70"
+            className="text-[#003366] text-xs md:text-sm font-bold uppercase tracking-widest underline underline-offset-4 decoration-2 transition-opacity hover:opacity-70"
           >
             {showAll ? "Tampilkan Lebih Sedikit" : "Lihat Semua"}
           </button>

@@ -14,7 +14,7 @@ const Privasi = () => {
       <Breadcrumb items={breadcrumbs} />
 
       {/* Header */}
-      <section className="bg-gradient-to-r from-[#004684] to-[#004684] text-white py-8 px-6">
+      <section className="bg-gradient-to-r from-[#003366] to-[#003366] text-white py-8 px-6">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold">Kebijakan Privasi</h1>
         </div>
@@ -25,7 +25,7 @@ const Privasi = () => {
         <div className="max-w-4xl mx-auto">
           <div className="prose prose-blue max-w-none space-y-8">
             <div>
-              <h2 className="text-2xl font-bold text-[#004684] mb-4">
+              <h2 className="text-2xl font-bold text-[#003366] mb-4">
                 Pendahuluan
               </h2>
               <p className="text-gray-700 leading-relaxed">
@@ -37,7 +37,7 @@ const Privasi = () => {
             </div>
 
             <div>
-              <h2 className="text-2xl font-bold text-[#004684] mb-4">
+              <h2 className="text-2xl font-bold text-[#003366] mb-4">
                 1. Jenis Data yang Kami Kumpulkan
               </h2>
               <div className="space-y-4">
@@ -79,7 +79,7 @@ const Privasi = () => {
             </div>
 
             <div>
-              <h2 className="text-2xl font-bold text-[#004684] mb-4">
+              <h2 className="text-2xl font-bold text-[#003366] mb-4">
                 2. Penggunaan Data
               </h2>
               <p className="text-gray-700 leading-relaxed mb-4">
@@ -95,7 +95,7 @@ const Privasi = () => {
             </div>
 
             <div>
-              <h2 className="text-2xl font-bold text-[#004684] mb-4">
+              <h2 className="text-2xl font-bold text-[#003366] mb-4">
                 3. Perlindungan Data
               </h2>
               <p className="text-gray-700 leading-relaxed mb-4">
@@ -112,7 +112,7 @@ const Privasi = () => {
             </div>
 
             <div>
-              <h2 className="text-2xl font-bold text-[#004684] mb-4">
+              <h2 className="text-2xl font-bold text-[#003366] mb-4">
                 4. Berbagi Data dengan Pihak Ketiga
               </h2>
               <p className="text-gray-700 leading-relaxed mb-4">
@@ -127,8 +127,8 @@ const Privasi = () => {
               </ul>
             </div>
 
-            <div className="bg-blue-50 border-l-4 border-[#004684] p-6 rounded">
-              <h3 className="text-lg font-bold text-[#004684] mb-3">
+            <div className="bg-blue-50 border-l-4 border-[#003366] p-6 rounded">
+              <h3 className="text-lg font-bold text-[#003366] mb-3">
                 Hak-Hak Anda
               </h3>
               <ul className="text-gray-700 space-y-2">
@@ -141,7 +141,7 @@ const Privasi = () => {
             </div>
 
             <div>
-              <h2 className="text-2xl font-bold text-[#004684] mb-4">
+              <h2 className="text-2xl font-bold text-[#003366] mb-4">
                 5. Kontak Kami
               </h2>
               <p className="text-gray-700 leading-relaxed">
@@ -166,7 +166,7 @@ const Privasi = () => {
           <div className="mt-12 flex justify-between items-center pt-6 border-t">
             <Link
               href="/syarat-ketentuan/hak-kewajiban"
-              className="text-[#004684] hover:text-[#003159] font-semibold flex items-center"
+              className="text-[#003366] hover:text-[#001e3d] font-semibold flex items-center"
             >
               <svg
                 className="w-4 h-4 mr-2"
@@ -185,7 +185,7 @@ const Privasi = () => {
             </Link>
             <Link
               href="/syarat-ketentuan/pembayaran"
-              className="text-[#004684] hover:text-[#003159] font-semibold flex items-center"
+              className="text-[#003366] hover:text-[#001e3d] font-semibold flex items-center"
             >
               Selanjutnya
               <svg

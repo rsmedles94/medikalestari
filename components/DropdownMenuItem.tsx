@@ -33,15 +33,15 @@ const DropdownMenuItem = ({ title, href, icon, flag }: DropdownItemProps) => {
             {flag}
           </div>
         )}
-        {!flag && icon && <div className="text-[#004684] shrink-0">{icon}</div>}
+        {!flag && icon && <div className="text-[#003366] shrink-0">{icon}</div>}
 
         {/* PANAH KIRI */}
         <div className="w-0 opacity-0 -ml-4 group-hover:w-5 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300 ease-out">
-          <ArrowRight size={18} style={{ color: "#004684" }} />
+          <ArrowRight size={18} style={{ color: "#003366" }} />
         </div>
 
         {/* TEKS */}
-        <span className="text-[14px] text-gray-700 group-hover:text-[#004684] group-hover:font-medium transition-colors duration-300">
+        <span className="text-[14px] text-gray-700 group-hover:text-[#003366] group-hover:font-medium transition-colors duration-300">
           {title}
         </span>
       </div>

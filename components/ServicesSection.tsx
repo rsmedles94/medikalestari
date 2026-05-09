@@ -59,7 +59,7 @@ const ServiceSection = () => {
   };
 
   return (
-    <section className="w-full bg-[#004684]/5 py-10">
+    <section className="w-full bg-[#003366]/5 py-10">
       <div className="max-w-[1400px] mx-auto px-4 md:px-8">
         {/* Header Section */}
         <header className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10 pb-5 border-b border-slate-200">
@@ -105,7 +105,7 @@ const ServiceSection = () => {
 
                     {/* Overlays */}
                     <div className="absolute inset-0 bg-white/60 md:bg-white/80 md:group-hover:opacity-0 transition-opacity duration-500" />
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-[#004684]/80 to-[#004684] opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 z-10" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-[#003366]/80 to-[#003366] opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 z-10" />
                   </div>
 
                   {/* Content Container */}
@@ -139,7 +139,7 @@ const ServiceSection = () => {
                           e.stopPropagation();
                           handleServiceClick(item.href);
                         }}
-                        className="group/btn flex items-center gap-2 bg-white text-[#004684] px-8 py-2.5 rounded-2xl text-xs font-bold uppercase tracking-widest shadow-lg active:scale-95 transition-all cursor-pointer overflow-hidden"
+                        className="group/btn flex items-center gap-2 bg-white text-[#003366] px-8 py-2.5 rounded-2xl text-xs font-bold uppercase tracking-widest shadow-lg active:scale-95 transition-all cursor-pointer overflow-hidden"
                       >
                         <span>Selengkapnya</span>
                         <svg

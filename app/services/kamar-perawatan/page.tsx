@@ -270,7 +270,7 @@ export default function KamarPerawatan() {
               }}
               className={`pb-4 text-sm md:text-base font-medium transition-all relative ${
                 activeTab === room.name
-                  ? "text-[#003159]"
+                  ? "text-[#001e3d]"
                   : "text-gray-400 hover:text-gray-600"
               }`}
             >
@@ -278,7 +278,7 @@ export default function KamarPerawatan() {
               {activeTab === room.name && (
                 <motion.div
                   layoutId="activeTabUnderline"
-                  className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#003159]"
+                  className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#001e3d]"
                 />
               )}
             </button>
@@ -361,7 +361,7 @@ export default function KamarPerawatan() {
             <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between bg-white">
               <div>
                 <div className="mb-4">
-                  <h1 className="text-2xl md:text-3xl font-bold text-[#003159] mb-1 leading-tight">
+                  <h1 className="text-2xl md:text-3xl font-bold text-[#001e3d] mb-1 leading-tight">
                     {currentKamar.name}
                   </h1>
                   <p className="text-lg md:text-xl font-bold text-gray-700">
@@ -385,7 +385,7 @@ export default function KamarPerawatan() {
                   <div className="grid grid-cols-2 gap-y-2 gap-x-4">
                     {currentKamar.facilities.map((facility, idx) => (
                       <div key={idx} className="flex items-center gap-2">
-                        <div className="w-[5px] h-[5px] rounded-full bg-[#003159] shrink-0" />
+                        <div className="w-[5px] h-[5px] rounded-full bg-[#001e3d] shrink-0" />
                         <span className="text-[13px] text-gray-600 font-medium truncate">
                           {facility}
                         </span>
@@ -397,22 +397,22 @@ export default function KamarPerawatan() {
 
               {/* Bagian Share */}
               <div className="pt-6 border-t border-gray-100 flex items-center gap-5 mt-auto">
-                <button className="text-gray-400 hover:text-[#003159] transition-colors">
+                <button className="text-gray-400 hover:text-[#001e3d] transition-colors">
                   <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
                     <path d="M22.675 0h-21.35C.595 0 0 .595 0 1.326v21.348C0 23.405.595 24 1.326 24H12.82v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116c.73 0 1.323-.595 1.323-1.326V1.326C24 .595 23.405 0 22.675 0z" />
                   </svg>
                 </button>
-                <button className="text-gray-400 hover:text-[#003159] transition-colors">
+                <button className="text-gray-400 hover:text-[#001e3d] transition-colors">
                   <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
                     <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
                   </svg>
                 </button>
-                <button className="text-gray-400 hover:text-[#003159] transition-colors">
+                <button className="text-gray-400 hover:text-[#001e3d] transition-colors">
                   <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
                     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                   </svg>
                 </button>
-                <button className="text-gray-400 hover:text-[#003159] transition-colors">
+                <button className="text-gray-400 hover:text-[#001e3d] transition-colors">
                   <LinkIcon size={18} />
                 </button>
               </div>

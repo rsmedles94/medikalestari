@@ -226,7 +226,7 @@ const HeroSection = () => {
             >
               {/* NAMA DOKTER */}
               <div className="flex-1 px-5 py-4 border-b md:px-8 md:border-b-0 md:border-r border-gray-100">
-                <p className="text-xs text-[#004684] font-semibold mb-1">
+                <p className="text-xs text-[#003366] font-semibold mb-1">
                   Nama Dokter
                 </p>
                 <div className="flex items-center gap-2">
@@ -243,7 +243,7 @@ const HeroSection = () => {
 
               {/* SPESIALIS */}
               <div className="flex-1 px-5 py-4 border-b md:border-b-0 md:border-r border-gray-100">
-                <p className="text-xs text-[#004684] font-semibold mb-1">
+                <p className="text-xs text-[#003366] font-semibold mb-1">
                   Spesialis
                 </p>
                 <div className="flex items-center gap-2">
@@ -264,7 +264,7 @@ const HeroSection = () => {
 
               {/* HARI */}
               <div className="flex-1 px-5 py-4 border-b md:border-b-0 md:border-r border-gray-100">
-                <p className="text-xs text-[#004684] font-semibold mb-1">
+                <p className="text-xs text-[#003366] font-semibold mb-1">
                   Pilih Hari
                 </p>
                 <div className="flex items-center gap-2">
@@ -295,7 +295,7 @@ const HeroSection = () => {
                       `/dokter?${params.toString()}`,
                     );
                   }}
-                  className="w-full md:w-14 h-12 md:h-14 rounded-full md:rounded-full bg-[#004684] flex items-center justify-center gap-2 text-white active:scale-95 transition cursor-pointer"
+                  className="w-full md:w-14 h-12 md:h-14 rounded-full md:rounded-full bg-[#003366] flex items-center justify-center gap-2 text-white active:scale-95 transition cursor-pointer"
                 >
                   <Search className="w-5 h-5 md:w-10 md:h-8" />
                   <span className="font-semibold md:hidden">Cari Dokter</span>
@@ -448,7 +448,7 @@ const HeroSection = () => {
           >
             {/* NAMA DOKTER */}
             <div className="flex-1 px-5 py-4 border-b md:px-8 md:border-b-0 md:border-r border-gray-100">
-              <p className="text-xs text-[#004684] font-semibold mb-1">
+              <p className="text-xs text-[#003366] font-semibold mb-1">
                 Nama Dokter
               </p>
               <div className="flex items-center gap-2">
@@ -465,7 +465,7 @@ const HeroSection = () => {
 
             {/* SPESIALIS */}
             <div className="flex-1 px-5 py-4 border-b md:border-b-0 md:border-r border-gray-100">
-              <p className="text-xs text-[#004684] font-semibold mb-1">
+              <p className="text-xs text-[#003366] font-semibold mb-1">
                 Spesialis
               </p>
               <div className="flex items-center gap-2 relative">
@@ -499,7 +499,7 @@ const HeroSection = () => {
 
             {/* HARI */}
             <div className="flex-1 px-5 py-4 border-b md:border-b-0 md:border-r border-gray-100">
-              <p className="text-xs text-[#004684] font-semibold mb-1">
+              <p className="text-xs text-[#003366] font-semibold mb-1">
                 Pilih Hari
               </p>
               <div className="flex items-center gap-2 relative">
@@ -541,7 +541,7 @@ const HeroSection = () => {
                     globalThis.window.location.href = `/dokter?${params.toString()}`;
                   }
                 }}
-                className="w-full md:w-14 h-12 md:h-14 rounded-full md:rounded-full bg-[#004684] flex items-center justify-center gap-2 text-white active:scale-95 transition cursor-pointer"
+                className="w-full md:w-14 h-12 md:h-14 rounded-full md:rounded-full bg-[#003366] flex items-center justify-center gap-2 text-white active:scale-95 transition cursor-pointer"
               >
                 <Search className="w-5 h-5 md:w-10 md:h-8" />
                 <span className="font-semibold md:hidden">Cari Dokter</span>
