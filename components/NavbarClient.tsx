@@ -268,12 +268,12 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               <span className="text-gray-300">|</span>
               {/* Social Media Icons */}
               <div className="flex items-center gap-2">
-                {/* WhatsApp */}
+                {/* WhatsApp - Ijo Original */}
                 <a
-                  href="https://wa.me/6282246232527"
+                  href="https://wa.me/6215858585858"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-7 h-7 bg-[#004684] rounded-full flex items-center justify-center transition-all active:scale-95"
+                  className="w-7 h-7 bg-[#25D366] hover:bg-[#20ba5a] rounded-full flex items-center justify-center transition-all active:scale-95 shadow-sm"
                   title="WhatsApp RS Medika Lestari"
                 >
                   <svg className="w-4 h-4 fill-white" viewBox="0 0 24 24">
@@ -281,12 +281,12 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                   </svg>
                 </a>
 
-                {/* Instagram */}
+                {/* Instagram - Rainbow Gradient */}
                 <a
                   href="https://www.instagram.com/rsmedikalestari"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-7 h-7 bg-[#004684] rounded-full flex items-center justify-center transition-all active:scale-95"
+                  className="w-7 h-7 bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] rounded-full flex items-center justify-center transition-all active:scale-95 shadow-sm hover:brightness-110"
                   title="Instagram RS Medika Lestari"
                 >
                   <svg className="w-4 h-4 fill-white" viewBox="0 0 24 24">
@@ -294,12 +294,12 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                   </svg>
                 </a>
 
-                {/* YouTube */}
+                {/* YouTube - Merah */}
                 <a
                   href="https://www.youtube.com/@rsmedikalestari"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-7 h-7 bg-[#004684] rounded-full flex items-center justify-center transition-all active:scale-95"
+                  className="w-7 h-7 bg-[#FF0000] hover:bg-[#e60000] rounded-full flex items-center justify-center transition-all active:scale-95 shadow-sm"
                   title="YouTube RS Medika Lestari"
                 >
                   <svg className="w-4 h-4 fill-white" viewBox="0 0 24 24">
