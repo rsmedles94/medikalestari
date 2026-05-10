@@ -176,7 +176,7 @@ const PromoKesehatan = () => {
             aria-expanded={showAll}
             className="text-[#014f86] text-xs md:text-sm font-bold uppercase tracking-widest underline underline-offset-4 decoration-2 transition-opacity hover:opacity-70"
           >
-            {showAll ? "Tampilkan Lebih Sedikit" : "Lihat Semua"}
+            {showAll ? "Tampilkan Lebih Sedikit" : "Promo Lainnya"}
           </button>
         </div>
       </div>
