@@ -1,10 +1,7 @@
 "use client";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
 import {
-  Play,
-  Pause,
   Search,
   User,
   Stethoscope,
@@ -15,6 +12,44 @@ import {
 } from "lucide-react";
 import { fetchHeroBanners } from "@/lib/api";
 import { HeroBanner } from "@/lib/types";
+
+// Desktop Chevron Button Component
+interface DesktopChevronButtonProps {
+  direction: "left" | "right";
+  onClick: () => void;
+  disabled: boolean;
+  isHovering: boolean;
+}
+
+const DesktopChevronButton: React.FC<DesktopChevronButtonProps> = ({
+  direction,
+  onClick,
+  disabled,
+  isHovering,
+}) => {
+  const isLeft = direction === "left";
+  const isDisabled = disabled;
+  const shouldShow = !isDisabled && isHovering;
+  const baseOpacity = isDisabled ? "opacity-0 cursor-not-allowed" : "opacity-0";
+  const hoverOpacity = shouldShow
+    ? "opacity-70 hover:opacity-100 cursor-pointer"
+    : baseOpacity;
+
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={`${isLeft ? "Previous" : "Next"} slide`}
+      className={`absolute ${isLeft ? "-left-2" : "-right-2"} top-1/2 -translate-y-1/2 z-40 p-2 bg-black/40 backdrop-blur transition-all duration-300 ${hoverOpacity}`}
+    >
+      {isLeft ? (
+        <ChevronLeft size={30} className="text-white" />
+      ) : (
+        <ChevronRight size={30} className="text-white" />
+      )}
+    </button>
+  );
+};
 
 // Shimmer gradient animation untuk skeleton loading
 const shimmerStyle = `
@@ -44,7 +79,7 @@ if (typeof document !== "undefined") {
   const style = document.createElement("style");
   style.textContent = shimmerStyle;
   if (!document.head.querySelector("style[data-shimmer]")) {
-    style.setAttribute("data-shimmer", "true");
+    style.dataset.shimmer = "true";
     document.head.appendChild(style);
   }
 }
@@ -52,7 +87,6 @@ if (typeof document !== "undefined") {
 const HeroSection = () => {
   const [slides, setSlides] = useState<HeroBanner[]>([]);
   const [page, setPage] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(true);
   const [loading, setLoading] = useState(true);
   const [currentDeviceType, setCurrentDeviceType] = useState<
     "desktop" | "mobile"
@@ -181,7 +215,10 @@ const HeroSection = () => {
   const mobileSlides = slides.filter((slide) => slide.device_type === "mobile");
   const filteredSlides =
     currentDeviceType === "desktop" ? desktopSlides : mobileSlides;
-  const currentSlide = Math.abs(page % (filteredSlides.length || 1));
+
+  // Calculate current slide - ensure it's always valid
+  const validSlideCount = filteredSlides.length > 0 ? filteredSlides.length : 1;
+  const currentSlide = Math.abs(page) % validSlideCount;
 
   const paginate = useCallback(
     (newDirection: number) => {
@@ -192,13 +229,13 @@ const HeroSection = () => {
 
   useEffect(() => {
     let slideInterval: NodeJS.Timeout;
-    if (isPlaying && filteredSlides.length > 0) {
+    if (filteredSlides.length > 0) {
       slideInterval = setInterval(() => {
         paginate(1);
       }, 5000);
     }
     return () => clearInterval(slideInterval);
-  }, [paginate, isPlaying, filteredSlides.length]);
+  }, [paginate, filteredSlides.length]);
 
   const handleImageLoaded = (id?: string | number) => {
     if (id === undefined || id === null) return;
@@ -210,10 +247,10 @@ const HeroSection = () => {
     return (
       <section className="relative w-full bg-transparent overflow-hidden">
         {/* Empty state untuk desktop */}
-        <div className="hidden md:block relative w-full aspect-[1900/720] bg-gray-200" />
+        <div className="hidden md:block relative w-full aspect-1900/720 bg-gray-200" />
 
         {/* Empty state untuk mobile */}
-        <div className="md:hidden relative w-full aspect-[2208/2760] bg-gray-200" />
+        <div className="md:hidden relative w-full aspect-2208/2760 bg-gray-200" />
         {/* SEARCH BAR  */}
         <div className="relative w-full px-4 py-8 md:py-0 md:-mt-14 md:z-50 bg-transparent">
           <div className="max-w-5xl mx-auto">
@@ -314,88 +351,90 @@ const HeroSection = () => {
   return (
     <section className="relative w-full bg-transparent overflow-hidden">
       {/* BANNER AREA - Desktop */}
-      <div
-        className="hidden md:block relative w-full aspect-[1900/780] bg-black"
+      <section
+        aria-label="Hero banner carousel"
+        className="hidden md:block relative w-full aspect-1900/780 bg-black"
         onMouseEnter={() => setIsHoveringBanner(true)}
         onMouseLeave={() => setIsHoveringBanner(false)}
       >
-        {desktopSlides.map((slide, index) => {
-          const key = String(slide.id);
-          const isLoaded = !!loadedSlides[key];
-          return (
-            <div
-              key={slide.id}
-              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-                index === currentSlide ? "opacity-100 z-10" : "opacity-0 z-0"
-              }`}
-            >
-              {/* Skeleton shimmer shown until image loads */}
-              {!isLoaded && (
-                <div className="absolute inset-0 skeleton-shimmer" />
-              )}
+        {desktopSlides.length > 0 ? (
+          <>
+            {desktopSlides.map((slide, index) => {
+              const key = String(slide.id);
+              const isLoaded = !!loadedSlides[key];
+              const isActive = index === currentSlide;
+              return (
+                <div
+                  key={slide.id}
+                  className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                    isActive ? "opacity-100 z-10" : "opacity-0 z-0"
+                  }`}
+                >
+                  {/* Skeleton shimmer shown until image loads */}
+                  {!isLoaded && (
+                    <div className="absolute inset-0 skeleton-shimmer" />
+                  )}
 
-              <Image
-                src={slide.image_url}
-                alt={`Slide ${index}`}
-                fill
-                priority={index === 0}
-                onLoadingComplete={() => handleImageLoaded(slide.id)}
-                className={`object-cover object-center transition-opacity duration-700 ${
-                  isLoaded ? "opacity-100" : "opacity-0"
-                }`}
-              />
-            </div>
-          );
-        })}
+                  <Image
+                    src={slide.image_url}
+                    alt={`Slide ${index}`}
+                    fill
+                    priority={index === 0}
+                    onLoadingComplete={() => handleImageLoaded(slide.id)}
+                    className={`object-cover object-center transition-opacity duration-700 ${
+                      isLoaded ? "opacity-100" : "opacity-0"
+                    }`}
+                  />
+                </div>
+              );
+            })}
 
-        {/* Chevron Left */}
-        <button
-          onClick={() => paginate(-1)}
-          disabled={desktopSlides.length <= 1}
-          className={`absolute -left-2 top-1/2 -translate-y-1/2 z-40 p-2 bg-black/40 backdrop-blur transition-all duration-300 ${
-            desktopSlides.length <= 1
-              ? "opacity-0 cursor-not-allowed"
-              : isHoveringBanner
-                ? "opacity-70 hover:opacity-100 cursor-pointer"
-                : "opacity-0"
-          }`}
-        >
-          <ChevronLeft size={30} className="text-white" />
-        </button>
-
-        {/* Chevron Right */}
-        <button
-          onClick={() => paginate(1)}
-          disabled={desktopSlides.length <= 1}
-          className={`absolute -right-2 top-1/2 -translate-y-1/2 z-40 p-2 bg-black/40 backdrop-blur transition-all duration-300 ${
-            desktopSlides.length <= 1
-              ? "opacity-0 cursor-not-allowed"
-              : isHoveringBanner
-                ? "opacity-70 hover:opacity-100 cursor-pointer"
-                : "opacity-0"
-          }`}
-        >
-          <ChevronRight size={30} className="text-white" />
-        </button>
-
-        {/* IMAGE INDICATORS - Desktop */}
-        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1">
-          {desktopSlides.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setPage(index)}
-              className={`h-1 transition-all duration-300 ${
-                index === currentSlide
-                  ? "bg-white/20 w-10"
-                  : "bg-white bg-opacity-50 w-10"
-              }`}
+            {/* Chevron Left */}
+            <DesktopChevronButton
+              direction="left"
+              onClick={() => paginate(-1)}
+              disabled={desktopSlides.length <= 1}
+              isHovering={isHoveringBanner}
             />
-          ))}
-        </div>
-      </div>
+
+            {/* Chevron Right */}
+            <DesktopChevronButton
+              direction="right"
+              onClick={() => paginate(1)}
+              disabled={desktopSlides.length <= 1}
+              isHovering={isHoveringBanner}
+            />
+
+            {/* IMAGE INDICATORS - Desktop */}
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1">
+              {desktopSlides.map((slide) => (
+                <button
+                  key={`indicator-${slide.id}`}
+                  onClick={() => {
+                    const index = desktopSlides.findIndex(
+                      (s) => s.id === slide.id,
+                    );
+                    setPage(index);
+                  }}
+                  className={`h-1 transition-all duration-300 ${
+                    desktopSlides.findIndex((s) => s.id === slide.id) ===
+                    currentSlide
+                      ? "bg-white/20 w-10"
+                      : "bg-white bg-opacity-50 w-10"
+                  }`}
+                />
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className="absolute inset-0 bg-gray-300 flex items-center justify-center">
+            <p className="text-gray-500">No desktop banner available</p>
+          </div>
+        )}
+      </section>
 
       {/* BANNER AREA - Mobile */}
-      <div className="md:hidden relative w-full aspect-[2208/2760] bg-black">
+      <div className="md:hidden relative w-full aspect-2208/2760 bg-black">
         {mobileSlides.map((slide, index) => {
           const key = String(slide.id);
           const isLoaded = !!loadedSlides[key];
@@ -426,12 +465,16 @@ const HeroSection = () => {
 
         {/* IMAGE INDICATORS - Mobile */}
         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-40 flex items-center gap-1">
-          {mobileSlides.map((_, index) => (
+          {mobileSlides.map((slide) => (
             <button
-              key={index}
-              onClick={() => setPage(index)}
+              key={`mobile-indicator-${slide.id}`}
+              onClick={() => {
+                const index = mobileSlides.findIndex((s) => s.id === slide.id);
+                setPage(index);
+              }}
               className={`h-1 transition-all duration-300 ${
-                index === currentSlide
+                mobileSlides.findIndex((s) => s.id === slide.id) ===
+                currentSlide
                   ? "bg-white w-6"
                   : "bg-white bg-opacity-50 w-2"
               }`}
