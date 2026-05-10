@@ -21,6 +21,63 @@ function getAdminClient() {
   return createClient(supabaseUrl, supabaseServiceKey);
 }
 
+function getPublicClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    throw new Error("Missing Supabase environment variables");
+  }
+
+  return createClient(supabaseUrl, supabaseAnonKey);
+}
+
+// GET - Fetch hero banners (public read)
+export async function GET(request: Request) {
+  try {
+    const publicClient = getPublicClient();
+    const { searchParams } = new URL(request.url);
+    const deviceType = searchParams.get("device_type");
+
+    let query = publicClient
+      .from("hero_banners")
+      .select("*")
+      .eq("is_active", true)
+      .order("order", { ascending: true });
+
+    if (deviceType) {
+      query = query.eq("device_type", deviceType);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error("Error fetching hero banners:", error);
+      return NextResponse.json(
+        {
+          error: "Gagal mengambil banner",
+          details: error.message,
+        },
+        { status: 500 },
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: data || [],
+    });
+  } catch (error) {
+    console.error("Error in GET /api/admin/hero-banners:", error);
+    return NextResponse.json(
+      {
+        error: "Internal server error",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 },
+    );
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const adminClient = getAdminClient();

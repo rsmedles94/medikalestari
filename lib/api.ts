@@ -321,23 +321,35 @@ export async function deleteMadingContent(id: string) {
 export async function fetchHeroBanners(
   deviceType?: "desktop" | "mobile",
 ): Promise<HeroBanner[]> {
-  let query = supabase
-    .from("hero_banners")
-    .select("*")
-    .order("order", { ascending: true });
+  try {
+    // Build query params
+    const params = new URLSearchParams();
+    if (deviceType) {
+      params.append("device_type", deviceType);
+    }
 
-  if (deviceType) {
-    query = query.eq("device_type", deviceType);
-  }
+    const response = await fetch(
+      `/api/admin/hero-banners?${params.toString()}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        cache: "no-store", // Disable cache untuk always fresh data
+      },
+    );
 
-  const { data, error } = await query;
+    if (!response.ok) {
+      console.error("Error fetching hero banners:", response.statusText);
+      return [];
+    }
 
-  if (error) {
+    const result = await response.json();
+    return result.data || [];
+  } catch (error) {
     console.error("Error fetching hero banners:", error);
     return [];
   }
-
-  return data || [];
 }
 
 export async function fetchHeroBannersForDesktop(): Promise<HeroBanner[]> {
