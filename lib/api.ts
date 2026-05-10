@@ -354,23 +354,27 @@ export async function createHeroBanner(
   try {
     console.log("Creating new banner with data:", banner);
 
-    const { data, error } = await supabase
-      .from("hero_banners")
-      .insert([banner])
-      .select();
+    const response = await fetch("/api/admin/hero-banners", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(banner),
+    });
 
-    if (error) {
-      console.error("Error creating hero banner:", error);
-      throw new Error(`Supabase error: ${error.message}`);
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.details || "Gagal membuat banner di server");
     }
 
-    console.log("Create result:", data);
+    const result = await response.json();
 
-    if (!data || data.length === 0) {
+    if (!result.success || !result.data) {
       throw new Error("Tidak ada data yang dikembalikan dari server");
     }
 
-    return data[0];
+    console.log("Create result:", result.data);
+    return result.data;
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     throw new Error(`Gagal membuat banner: ${message}`);
@@ -385,45 +389,27 @@ export async function updateHeroBanner(
     console.log("Updating banner with ID:", id);
     console.log("Banner data to update:", banner);
 
-    const { data, error } = await supabase
-      .from("hero_banners")
-      .update(banner)
-      .eq("id", id)
-      .select();
+    const response = await fetch("/api/admin/hero-banners", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id, ...banner }),
+    });
 
-    if (error) {
-      console.error("Error updating hero banner:", error);
-      throw new Error(`Supabase error: ${error.message}`);
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.details || "Gagal mengupdate banner di server");
     }
 
-    console.log("Update result:", data);
+    const result = await response.json();
 
-    if (!data || data.length === 0) {
-      console.warn(
-        "No data returned from update, attempting to fetch updated record",
-      );
-      // Try to fetch the updated record separately
-      const { data: fetchedData, error: fetchError } = await supabase
-        .from("hero_banners")
-        .select()
-        .eq("id", id)
-        .single();
-
-      if (fetchError) {
-        console.error("Error fetching updated banner:", fetchError);
-        throw new Error(
-          `Record mungkin tidak ditemukan atau gagal di-update: ${fetchError.message}`,
-        );
-      }
-
-      if (!fetchedData) {
-        throw new Error("Record tidak ditemukan setelah update");
-      }
-
-      return fetchedData;
+    if (!result.success || !result.data) {
+      throw new Error("Tidak ada data yang dikembalikan dari server");
     }
 
-    return data[0];
+    console.log("Update result:", result.data);
+    return result.data;
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     throw new Error(`Gagal memperbarui banner: ${message}`);
@@ -432,12 +418,25 @@ export async function updateHeroBanner(
 
 export async function deleteHeroBanner(id: string) {
   try {
-    const { error } = await supabase.from("hero_banners").delete().eq("id", id);
+    const response = await fetch(`/api/admin/hero-banners?id=${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-    if (error) {
-      console.error("Error deleting hero banner:", error);
-      throw new Error(`Supabase error: ${error.message}`);
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.details || "Gagal menghapus banner di server");
     }
+
+    const result = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.message || "Gagal menghapus banner");
+    }
+
+    console.log("Delete result:", result.message);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     throw new Error(`Gagal menghapus banner: ${message}`);
