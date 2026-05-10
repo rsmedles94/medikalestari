@@ -26,9 +26,34 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ error: "Invalid type" }, { status: 400 });
   } catch (error) {
-    console.error("Analytics API error:", error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("[Analytics API GET] Error:", {
+      type,
+      period,
+      error: errorMessage,
+      stack: error instanceof Error ? error.stack : undefined,
+    });
+
+    // Check if it's an environment variable error
+    if (
+      errorMessage.includes("SUPABASE_SERVICE_ROLE_KEY") ||
+      errorMessage.includes("environment variable")
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Server configuration error: Missing SUPABASE_SERVICE_ROLE_KEY",
+          details: errorMessage,
+        },
+        { status: 500 },
+      );
+    }
+
     return NextResponse.json(
-      { error: "Failed to fetch analytics" },
+      {
+        error: "Failed to fetch analytics",
+        details: errorMessage,
+      },
       { status: 500 },
     );
   }
@@ -41,7 +66,7 @@ export async function POST(request: NextRequest) {
 
     if (!event_type || !event_name) {
       return NextResponse.json(
-        { error: "Missing required fields" },
+        { error: "Missing required fields: event_type and event_name" },
         { status: 400 },
       );
     }
@@ -72,9 +97,28 @@ export async function POST(request: NextRequest) {
     console.log("[Analytics Track] Event inserted successfully");
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Track API error:", error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("[Analytics API POST] Error:", {
+      error: errorMessage,
+      stack: error instanceof Error ? error.stack : undefined,
+    });
+
+    if (errorMessage.includes("SUPABASE_SERVICE_ROLE_KEY")) {
+      return NextResponse.json(
+        {
+          error:
+            "Server configuration error: Missing SUPABASE_SERVICE_ROLE_KEY",
+          details: errorMessage,
+        },
+        { status: 500 },
+      );
+    }
+
     return NextResponse.json(
-      { error: "Failed to track event" },
+      {
+        error: "Failed to track event",
+        details: errorMessage,
+      },
       { status: 500 },
     );
   }

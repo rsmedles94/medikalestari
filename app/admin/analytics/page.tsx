@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthProvider";
 import { AdminPageSkeleton } from "@/components/AdminSkeleton";
@@ -58,21 +58,39 @@ const Analytics = () => {
   const router = useRouter();
   const { loading: authLoading, isAuthenticated } = useAuth();
 
-  const loadAnalytics = async () => {
+  const loadAnalytics = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
       const [statsRes, pagesRes, clicksRes] = await Promise.all([
         fetch("/api/admin/analytics?type=stats").then((r) => {
-          if (!r.ok) throw new Error(`Stats API error: ${r.status}`);
+          if (!r.ok) {
+            return r.json().then((data) => {
+              throw new Error(
+                `Stats API error: ${r.status} - ${data.error || r.statusText}`,
+              );
+            });
+          }
           return r.json();
         }),
         fetch(`/api/admin/analytics?type=pages&period=${period}`).then((r) => {
-          if (!r.ok) throw new Error(`Pages API error: ${r.status}`);
+          if (!r.ok) {
+            return r.json().then((data) => {
+              throw new Error(
+                `Pages API error: ${r.status} - ${data.error || r.statusText}`,
+              );
+            });
+          }
           return r.json();
         }),
         fetch(`/api/admin/analytics?type=clicks&period=${period}`).then((r) => {
-          if (!r.ok) throw new Error(`Clicks API error: ${r.status}`);
+          if (!r.ok) {
+            return r.json().then((data) => {
+              throw new Error(
+                `Clicks API error: ${r.status} - ${data.error || r.statusText}`,
+              );
+            });
+          }
           return r.json();
         }),
       ]);
@@ -83,12 +101,15 @@ const Analytics = () => {
       setLastUpdated(new Date());
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : String(error);
-      console.error("Error loading analytics:", errorMsg);
+      console.error("[Analytics Page] Error loading analytics:", {
+        error: errorMsg,
+        stack: error instanceof Error ? error.stack : undefined,
+      });
       setError(errorMsg);
     } finally {
       setLoading(false);
     }
-  };
+  }, [period]);
 
   useEffect(() => {
     const load = async () => {
@@ -109,7 +130,7 @@ const Analytics = () => {
     }, 30000);
 
     return () => clearInterval(interval);
-  }, [authLoading, isAuthenticated, period, router]);
+  }, [authLoading, isAuthenticated, period, router, loadAnalytics]);
 
   if (loading) {
     return <AdminPageSkeleton title="Analitik Web" />;
@@ -120,9 +141,7 @@ const Analytics = () => {
       <div className="max-w-[1220px] mx-auto px-6 md:px-12 py-12">
         {error && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-red-800 text-sm">
-              ⚠️ Error: {error}
-            </p>
+            <p className="text-red-800 text-sm">⚠️ Error: {error}</p>
             <p className="text-red-600 text-xs mt-2">
               Buka DevTools (F12) → Console untuk lihat detail error
             </p>

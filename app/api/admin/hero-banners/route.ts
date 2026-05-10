@@ -6,23 +6,24 @@ import { createClient } from "@supabase/supabase-js";
  * Menggunakan service role key untuk bypass RLS di production
  */
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+function getAdminClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-// Create admin client dengan service role key
-const adminClient = createClient(supabaseUrl || "", supabaseServiceKey || "");
+  if (!supabaseUrl) {
+    throw new Error("NEXT_PUBLIC_SUPABASE_URL is not set");
+  }
+
+  if (!supabaseServiceKey) {
+    throw new Error("SUPABASE_SERVICE_ROLE_KEY is not set");
+  }
+
+  return createClient(supabaseUrl, supabaseServiceKey);
+}
 
 export async function POST(request: Request) {
   try {
-    if (!supabaseUrl || !supabaseServiceKey) {
-      return NextResponse.json(
-        {
-          error: "Missing environment variables",
-          details: "SUPABASE_SERVICE_ROLE_KEY tidak ditemukan di environment",
-        },
-        { status: 500 },
-      );
-    }
+    const adminClient = getAdminClient();
 
     const body = await request.json();
     const { image_url, order, is_active, device_type } = body;
@@ -79,6 +80,7 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
+    const adminClient = getAdminClient();
     const body = await request.json();
     const { id, image_url, order, is_active, device_type } = body;
 
@@ -132,6 +134,7 @@ export async function PUT(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
+    const adminClient = getAdminClient();
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
