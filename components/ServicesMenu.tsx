@@ -84,7 +84,7 @@ const ServicesMenu: React.FC = () => {
 
   return (
     <section className="py-16 px-4 bg-white">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-[1332px] mx-auto">
         <nav aria-label="Layanan Utama">
           <motion.ul
             className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-px bg-gray-100 border border-gray-100 list-none p-0"
