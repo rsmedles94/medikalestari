@@ -69,6 +69,9 @@ const HeroSection = () => {
   const [isSpecialtyOpen, setIsSpecialtyOpen] = useState(false);
   const [isDayOpen, setIsDayOpen] = useState(false);
 
+  // BANNER HOVER STATE
+  const [isHoveringBanner, setIsHoveringBanner] = useState(false);
+
   const SPECIALTY_CATEGORIES = [
     "Semua Spesialis",
     "Spesialis Penyakit Dalam",
@@ -311,7 +314,11 @@ const HeroSection = () => {
   return (
     <section className="relative w-full bg-transparent overflow-hidden">
       {/* BANNER AREA - Desktop */}
-      <div className="hidden md:block relative w-full aspect-[1900/780] bg-black">
+      <div
+        className="hidden md:block relative w-full aspect-[1900/780] bg-black"
+        onMouseEnter={() => setIsHoveringBanner(true)}
+        onMouseLeave={() => setIsHoveringBanner(false)}
+      >
         {desktopSlides.map((slide, index) => {
           const key = String(slide.id);
           const isLoaded = !!loadedSlides[key];
@@ -341,35 +348,35 @@ const HeroSection = () => {
           );
         })}
 
-        {/* CONTROLS - Bottom Left */}
-        <div className="absolute bottom-8 left-10 z-40 flex items-center gap-4">
-          <div className="flex items-center gap-1">
-            {" "}
-            <button
-              onClick={() => paginate(-1)}
-              disabled={desktopSlides.length <= 1}
-              className={`p-1 rounded-full transition-all duration-300 ${
-                desktopSlides.length <= 1
-                  ? "opacity-30 cursor-not-allowed"
-                  : "opacity-60 hover:opacity-100 cursor-pointer"
-              }`}
-            >
-              <ChevronLeft size={70} className="text-white" />
-            </button>
-            {/* Right Chevron */}
-            <button
-              onClick={() => paginate(1)}
-              disabled={desktopSlides.length <= 1}
-              className={`p-1 rounded-full transition-all duration-300 ${
-                desktopSlides.length <= 1
-                  ? "opacity-30 cursor-not-allowed"
-                  : "opacity-60 hover:opacity-100 cursor-pointer"
-              }`}
-            >
-              <ChevronRight size={70} className="text-white" />
-            </button>
-          </div>
-        </div>
+        {/* Chevron Left */}
+        <button
+          onClick={() => paginate(-1)}
+          disabled={desktopSlides.length <= 1}
+          className={`absolute -left-2 top-1/2 -translate-y-1/2 z-40 p-2 bg-black/40 backdrop-blur transition-all duration-300 ${
+            desktopSlides.length <= 1
+              ? "opacity-0 cursor-not-allowed"
+              : isHoveringBanner
+                ? "opacity-70 hover:opacity-100 cursor-pointer"
+                : "opacity-0"
+          }`}
+        >
+          <ChevronLeft size={30} className="text-white" />
+        </button>
+
+        {/* Chevron Right */}
+        <button
+          onClick={() => paginate(1)}
+          disabled={desktopSlides.length <= 1}
+          className={`absolute -right-2 top-1/2 -translate-y-1/2 z-40 p-2 bg-black/40 backdrop-blur transition-all duration-300 ${
+            desktopSlides.length <= 1
+              ? "opacity-0 cursor-not-allowed"
+              : isHoveringBanner
+                ? "opacity-70 hover:opacity-100 cursor-pointer"
+                : "opacity-0"
+          }`}
+        >
+          <ChevronRight size={30} className="text-white" />
+        </button>
 
         {/* IMAGE INDICATORS - Desktop */}
         <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1">
