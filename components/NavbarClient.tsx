@@ -115,7 +115,14 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
       "Panduan Kunjungan",
     ],
 
-    Profil: ["Tentang Kami", "Indikator Mutu", "Rekanan Kami", "Karir"],
+    Profil: [
+      "Tentang Kami",
+      "Indikator Mutu",
+      "Rekanan Kami",
+      "Karir",
+      "Kontak",
+      "Syarat & Ketentuan",
+    ],
   };
 
   const serviceIcons: Record<string, React.ReactNode> = {
@@ -181,6 +188,9 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
             else if (title === "Indikator Mutu") itemHref = "/indikator-mutu";
             else if (title === "Rekanan Kami") itemHref = "/rekanan-kami";
             else if (title === "Karir") itemHref = "/careers";
+            else if (title === "Kontak") itemHref = "/kontak-kami";
+            else if (title === "Syarat & Ketentuan")
+              itemHref = "/syarat-ketentuan";
             else if (
               title === "Profil RS Medika Lestari" ||
               title === "Visi & Misi"
@@ -248,66 +258,53 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               {logoNode}
             </Link>
 
-            <div className="hidden md:flex gap-4 items-center text-[15px] font-normal text-gray-700">
+            <div className="hidden md:flex gap-2 items-center text-[15px] font-normal text-gray-700">
               {/* Social Media Icons - Kiri */}
-              <div className="flex items-center gap-2">
-                {/* WhatsApp - Ijo Original */}
-                <a
-                  href="https://wa.me/6215858585858"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-5 h-5 bg-[#25D366] hover:bg-[#20ba5a] rounded-full flex items-center justify-center transition-all active:scale-95 shadow-sm"
-                  title="WhatsApp RS Medika Lestari"
-                >
-                  <svg className="w-3 h-3 fill-white" viewBox="0 0 24 24">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.438 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72.938 3.659 1.432 5.631 1.433h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
-                  </svg>
-                </a>
-
-                {/* Instagram - Rainbow Gradient */}
-                <a
-                  href="https://www.instagram.com/rsmedikalestari"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-5 h-5 bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] rounded-full flex items-center justify-center transition-all active:scale-95 shadow-sm hover:brightness-110"
-                  title="Instagram RS Medika Lestari"
-                >
-                  <svg className="w-3 h-3 fill-white" viewBox="0 0 24 24">
-                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12s.014 3.667.072 4.947c.2 4.353 2.62 6.77 6.98 6.97 1.28.058 1.688.072 4.948.072 3.26 0 3.668-.014 4.948-.072 4.354-.2 6.77-2.62 6.97-6.97.058-1.28.072-1.689.072-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.77-6.97-6.97C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
-                  </svg>
-                </a>
-
-                {/* YouTube - Merah */}
+              <div className="flex items-center gap-4">
+                {/* YouTube */}
                 <a
                   href="https://www.youtube.com/@rsmedikalestari"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-5 h-5 bg-[#FF0000] hover:bg-[#e60000] rounded-full flex items-center justify-center transition-all active:scale-95 shadow-sm"
-                  title="YouTube RS Medika Lestari"
+                  className="flex items-center gap-1 transition-opacity hover:opacity-70 active:scale-95"
                 >
-                  <svg className="w-3 h-3 fill-white" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 fill-[#013a63]" viewBox="0 0 24 24">
                     <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
                   </svg>
+
+                  <span className="text-xs text-gray-500">Medika Lestari</span>
+                </a>
+
+                {/* WhatsApp */}
+                <a
+                  href="https://wa.me/6215858585858"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 transition-opacity hover:opacity-70 active:scale-95"
+                >
+                  <svg className="w-3 h-3 fill-[#013a63]" viewBox="0 0 24 24">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.438 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72.938 3.659 1.432 5.631 1.433h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+                  </svg>
+
+                  <span className="text-xs text-gray-500">+62815858585858</span>
+                </a>
+
+                {/* Instagram */}
+                <a
+                  href="https://www.instagram.com/rsmedikalestari"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 transition-opacity hover:opacity-70 active:scale-95"
+                >
+                  <svg className="w-3 h-3 fill-[#013a63]" viewBox="0 0 24 24">
+                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12s.014 3.667.072 4.947c.2 4.353 2.62 6.77 6.98 6.97 1.28.058 1.688.072 4.948.072 3.26 0 3.668-.014 4.948-.072 4.354-.2 6.77-2.62 6.97-6.97.058-1.28.072-1.689.072-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.77-6.97-6.97C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+                  </svg>
+
+                  <span className="text-xs text-gray-500">
+                    @rsmedikalestari
+                  </span>
                 </a>
               </div>
-
-              <span className="text-gray-300">|</span>
-
-              <Link
-                href="/kontak-kami"
-                className="hover:text-[#001e3d] hover:underline"
-              >
-                Kontak
-              </Link>
-
-              <span className="text-gray-300">|</span>
-
-              <Link
-                href="/syarat-ketentuan"
-                className="hover:text-[#001e3d] hover:underline"
-              >
-                Syarat & Ketentuan
-              </Link>
             </div>
 
             <div className="md:hidden flex items-center gap-3 p-2 text-gray-700 relative z-[110]">
@@ -332,10 +329,10 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
       {/* --- Bottom Navbar (Tetap Muncul / Sticky) --- */}
 
-      <div className="hidden md:block relative w-full bg-[#003366] text-white z-30 ">
+      <div className="hidden md:block relative w-full bg-[#014f86] text-white z-30 ">
         <div
-          className="absolute right-0 top-0 h-full w-[38%] bg-[#001e3d] hidden lg:block"
-          style={{ clipPath: "polygon(40px 0, 100% 0, 100% 100%, 0% 100%)" }}
+          className="absolute right-0 top-0 h-full w-[37%] bg-[#013a63] hidden lg:block"
+          style={{ clipPath: "polygon(46px 0, 100% 0, 100% 100%, 0% 100%)" }}
         />
 
         <div className="max-w-[1220px] mx-auto px-4 md:px-8 flex justify-between items-center h-12 relative z-10">
@@ -545,7 +542,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               <div className="flex flex-col p-4">
                 <button
                   onClick={handleHomeClick}
-                  className="text-left p-4 font-semibold text-[#003366] border-b text-lg"
+                  className="text-left p-4 font-semibold text-[#014f86] border-b text-lg"
                 >
                   Beranda
                 </button>
@@ -554,7 +551,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                   onClick={() =>
                     setActiveMenu(activeMenu === "Profil" ? null : "Profil")
                   }
-                  className="w-full text-left p-4 font-semibold text-[#003366] flex justify-between items-center text-lg border-b"
+                  className="w-full text-left p-4 font-semibold text-[#014f86] flex justify-between items-center text-lg border-b"
                 >
                   Profil
                   <span>{activeMenu === "Profil" ? "−" : "+"}</span>
@@ -578,6 +575,10 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                         else if (subitem === "Rekanan Kami")
                           itemHref = "/rekanan-kami";
                         else if (subitem === "Karir") itemHref = "/careers";
+                        else if (subitem === "Kontak")
+                          itemHref = "/kontak-kami";
+                        else if (subitem === "Syarat & Ketentuan")
+                          itemHref = "/syarat-ketentuan";
 
                         return (
                           <Link
@@ -588,7 +589,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
                               setActiveMenu(null);
                             }}
-                            className="block p-4 pl-8 text-gray-600 border-b text-sm hover:bg-[#001e3d]/10 hover:text-[#001e3d] transition-colors"
+                            className="block p-4 pl-8 text-gray-600 border-b text-sm hover:bg-[#013a63]/10 hover:text-[#013a63] transition-colors"
                           >
                             {subitem}
                           </Link>
@@ -601,7 +602,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                 <Link
                   href="/dokter#section-dokter"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-left p-4 font-semibold text-[#003366] border-b text-lg"
+                  className="text-left p-4 font-semibold text-[#014f86] border-b text-lg"
                 >
                   Dokter Kami
                 </Link>
@@ -609,7 +610,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                 <Link
                   href="/jadwal-dokter"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-left p-4 font-semibold text-[#003366] border-b text-lg"
+                  className="text-left p-4 font-semibold text-[#014f86] border-b text-lg"
                 >
                   Jadwal Dokter
                 </Link>
@@ -624,7 +625,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                         onClick={() =>
                           setActiveMenu(activeMenu === item ? null : item)
                         }
-                        className="w-full text-left p-4 font-semibold text-[#003366] flex justify-between items-center text-lg"
+                        className="w-full text-left p-4 font-semibold text-[#014f86] flex justify-between items-center text-lg"
                       >
                         {item}
 
@@ -689,7 +690,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
                                     setActiveMenu(null);
                                   }}
-                                  className="block p-4 pl-8 text-gray-600 border-b text-sm hover:bg-[#001e3d]/10 hover:text-[#001e3d] transition-colors"
+                                  className="block p-4 pl-8 text-gray-600 border-b text-sm hover:bg-[#013a63]/10 hover:text-[#013a63] transition-colors"
                                 >
                                   {subitem}
                                 </Link>
@@ -727,7 +728,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
         <Link
           href="/services/medical-checkup"
-          className="flex-1 bg-[#003366] text-white font-semibold text-center text-xs flex items-center justify-center gap-2 hover:bg-[#001e3d] transition-colors"
+          className="flex-1 bg-[#014f86] text-white font-semibold text-center text-xs flex items-center justify-center gap-2 hover:bg-[#013a63] transition-colors"
         >
           <Stethoscope size={16} />
           Medical Checkup
@@ -766,7 +767,7 @@ function AuthArea({
         href="/admin/dashboard"
         onClick={onClick}
         className={`flex items-center gap-2 font-medium ${
-          isMobile ? "text-[#003366] text-lg" : "text-white text-sm "
+          isMobile ? "text-[#014f86] text-lg" : "text-white text-sm "
         }`}
         title="Panel Admin"
       >

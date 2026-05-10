@@ -53,7 +53,7 @@ const MobileBottomNavbar = () => {
           <circle cx="12" cy="12" r="10" />
           <path
             d="M12 6v6l4 2"
-            stroke="#003366"
+            stroke="#014f86"
             strokeWidth="1.8"
             strokeLinecap="round"
           />
@@ -77,7 +77,7 @@ const MobileBottomNavbar = () => {
           <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18H6Z" />
           <path d="M2 14a2 2 0 0 1 2-2h2v10H4a2 2 0 0 1-2-2v-6Z" />
           <path d="M18 9a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2V9Z" />
-          <path stroke="#003366" strokeWidth="1.5" d="M9 7h6M9 11h6M9 15h6" />
+          <path stroke="#014f86" strokeWidth="1.5" d="M9 7h6M9 11h6M9 15h6" />
         </g>
       ),
     },
@@ -86,7 +86,7 @@ const MobileBottomNavbar = () => {
   return (
     <>
       <nav
-        className="md:hidden fixed bottom-0 left-0 right-0 bg-[#003366] z-50 border-t border-white/5 pb-safe"
+        className="md:hidden fixed bottom-0 left-0 right-0 bg-[#014f86] z-50 border-t border-white/5 pb-safe"
         aria-label="Mobile Navigation Bar"
       >
         <ul className="flex justify-around items-stretch h-18 list-none p-0 m-0">

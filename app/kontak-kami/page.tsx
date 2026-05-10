@@ -141,7 +141,7 @@ const KontakKami = () => {
                     name="nama"
                     value={formData.nama}
                     onChange={handleChange}
-                    className="w-full bg-white border border-slate-200 p-3 text-sm text-black focus:border-[#003366] outline-none"
+                    className="w-full bg-white border border-slate-200 p-3 text-sm text-black focus:border-[#014f86] outline-none"
                     placeholder="Nama anda"
                   />
                 </div>
@@ -155,7 +155,7 @@ const KontakKami = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full bg-white border border-slate-200 p-3 text-sm text-black focus:border-[#003366] outline-none"
+                    className="w-full bg-white border border-slate-200 p-3 text-sm text-black focus:border-[#014f86] outline-none"
                     placeholder="email@domain.com"
                   />
                 </div>
@@ -170,7 +170,7 @@ const KontakKami = () => {
                   name="subjek"
                   value={formData.subjek}
                   onChange={handleChange}
-                  className="w-full bg-white border border-slate-200 p-3 text-sm text-black focus:border-[#003366] outline-none"
+                  className="w-full bg-white border border-slate-200 p-3 text-sm text-black focus:border-[#014f86] outline-none"
                   placeholder="Tujuan pesan"
                 />
               </div>
@@ -184,14 +184,14 @@ const KontakKami = () => {
                   name="pesan"
                   value={formData.pesan}
                   onChange={handleChange}
-                  className="w-full bg-white border border-slate-200 p-3 text-sm text-black focus:border-[#003366] outline-none resize-none"
+                  className="w-full bg-white border border-slate-200 p-3 text-sm text-black focus:border-[#014f86] outline-none resize-none"
                   placeholder="Tulis pesan anda..."
                 />
               </div>
 
               <button
                 type="submit"
-                className="bg-[#003366] text-white px-8 py-4 text-xs font-bold uppercase hover:bg-[#003366]/90 transition-all flex items-center gap-3 cursor-pointer hover:scale-95"
+                className="bg-[#014f86] text-white px-8 py-4 text-xs font-bold uppercase hover:bg-[#014f86]/90 transition-all flex items-center gap-3 cursor-pointer hover:scale-95"
               >
                 Kirim Sekarang <Send size={14} />
               </button>
@@ -200,7 +200,7 @@ const KontakKami = () => {
 
           {/* DAFTAR EKSTENSI */}
           <div className="lg:col-span-5">
-            <div className="bg-[#003366] text-white p-10 shadow-2xl relative overflow-hidden">
+            <div className="bg-[#014f86] text-white p-10 shadow-2xl relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 -mr-16 -mt-16 rounded-full" />
 
               <h2 className="text-xl font-bold uppercase mb-8 border-b border-white/20 pb-4">

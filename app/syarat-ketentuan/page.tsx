@@ -51,7 +51,7 @@ const SyaratKetentuan = () => {
       <Breadcrumb />
 
       {/* Header Section */}
-      <section className="bg-gradient-to-r from-[#003366] to-[#003366] text-white py-12 px-6">
+      <section className="bg-gradient-to-r from-[#014f86] to-[#014f86] text-white py-12 px-6">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             Syarat & Ketentuan
@@ -69,12 +69,12 @@ const SyaratKetentuan = () => {
           <div className="grid gap-6">
             {sections.map((section) => (
               <Link key={section.id} href={section.href}>
-                <div className="p-6 border border-gray-200 rounded-lg hover:shadow-lg hover:border-[#003366] transition-all cursor-pointer group">
-                  <h3 className="text-xl font-bold text-[#003366] group-hover:text-[#003366] mb-2">
+                <div className="p-6 border border-gray-200 rounded-lg hover:shadow-lg hover:border-[#014f86] transition-all cursor-pointer group">
+                  <h3 className="text-xl font-bold text-[#014f86] group-hover:text-[#014f86] mb-2">
                     {section.title}
                   </h3>
                   <p className="text-gray-600">{section.content}</p>
-                  <div className="flex items-center mt-4 text-[#003366] font-semibold">
+                  <div className="flex items-center mt-4 text-[#014f86] font-semibold">
                     Baca Selengkapnya
                     <svg
                       className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform"
@@ -96,33 +96,33 @@ const SyaratKetentuan = () => {
           </div>
 
           {/* Summary Section */}
-          <div className="mt-12 p-6 bg-blue-50 border-l-4 border-[#003366] rounded">
-            <h3 className="text-lg font-bold text-[#003366] mb-4">
+          <div className="mt-12 p-6 bg-blue-50 border-l-4 border-[#014f86] rounded">
+            <h3 className="text-lg font-bold text-[#014f86] mb-4">
               Ringkasan Penting
             </h3>
             <ul className="space-y-2 text-gray-700">
               <li className="flex items-start">
-                <span className="text-[#003366] font-bold mr-3">✓</span>
+                <span className="text-[#014f86] font-bold mr-3">✓</span>
                 <span>
                   Pasien berhak mendapatkan informasi lengkap tentang layanan
                   kesehatan
                 </span>
               </li>
               <li className="flex items-start">
-                <span className="text-[#003366] font-bold mr-3">✓</span>
+                <span className="text-[#014f86] font-bold mr-3">✓</span>
                 <span>
                   Data pribadi dan medis pasien dilindungi dengan ketat
                 </span>
               </li>
               <li className="flex items-start">
-                <span className="text-[#003366] font-bold mr-3">✓</span>
+                <span className="text-[#014f86] font-bold mr-3">✓</span>
                 <span>
                   Pembayaran dapat dilakukan melalui berbagai metode yang
                   tersedia
                 </span>
               </li>
               <li className="flex items-start">
-                <span className="text-[#003366] font-bold mr-3">✓</span>
+                <span className="text-[#014f86] font-bold mr-3">✓</span>
                 <span>
                   Pembatalan dapat dilakukan dengan ketentuan dan waktu tertentu
                 </span>
