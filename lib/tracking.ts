@@ -38,7 +38,6 @@ export async function trackEvent(
   //       metadata: metadata || {},
   //     }),
   //   });
-
   //   if (!response.ok) {
   //     console.warn(
   //       `Track API error: ${response.status} ${response.statusText}`,
