@@ -148,7 +148,7 @@ const AdminDashboard = () => {
           <p className="text-slate-400 font-semibold text-[30px] mb-10 -mt-10">
             Kelola Konten
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <ScaleButton
               onClick={() => router.push("/admin/doctors")}
               className="bg-blue-600"
@@ -160,12 +160,6 @@ const AdminDashboard = () => {
               className="bg-blue-600"
             >
               Jadwal
-            </ScaleButton>
-            <ScaleButton
-              onClick={() => router.push("/admin/analytics")}
-              className="bg-blue-600"
-            >
-              Analitik Web
             </ScaleButton>
           </div>
         </div>

@@ -1,4 +1,5 @@
-import { supabase } from "./supabase";
+// Analytics feature disabled - requires Vercel Pro
+// import { supabase } from "./supabase";
 
 export type EventType = "page_view" | "button_click" | "form_submit";
 export type Metadata = Record<
@@ -17,31 +18,35 @@ const getUserAgent = (): string | null => {
 };
 
 export async function trackEvent(
-  eventType: EventType,
-  eventName: string,
-  metadata?: Metadata,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _eventType: EventType,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _eventName: string,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _metadata?: Metadata,
 ) {
-  try {
-    // Client-side tracking via API
-    const response = await fetch("/api/admin/analytics", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        event_type: eventType,
-        event_name: eventName,
-        page_path: getWindowPath(),
-        metadata: metadata || {},
-      }),
-    });
+  // Analytics feature disabled - requires Vercel Pro
+  // try {
+  //   // Client-side tracking via API
+  //   const response = await fetch("/api/admin/analytics", {
+  //     method: "POST",
+  //     headers: { "Content-Type": "application/json" },
+  //     body: JSON.stringify({
+  //       event_type: eventType,
+  //       event_name: eventName,
+  //       page_path: getWindowPath(),
+  //       metadata: metadata || {},
+  //     }),
+  //   });
 
-    if (!response.ok) {
-      console.warn(
-        `Track API error: ${response.status} ${response.statusText}`,
-      );
-    }
-  } catch (err) {
-    console.error("Error tracking event:", err);
-  }
+  //   if (!response.ok) {
+  //     console.warn(
+  //       `Track API error: ${response.status} ${response.statusText}`,
+  //     );
+  //   }
+  // } catch (err) {
+  //   console.error("Error tracking event:", err);
+  // }
 }
 
 export async function trackPageView(pagePath: string) {
