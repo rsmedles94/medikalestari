@@ -9,14 +9,15 @@ DROP POLICY IF EXISTS "Allow public read hero_banners" ON hero_banners;
 DROP POLICY IF EXISTS "Allow service role create hero_banners" ON hero_banners;
 DROP POLICY IF EXISTS "Allow service role update hero_banners" ON hero_banners;
 DROP POLICY IF EXISTS "Allow service role delete hero_banners" ON hero_banners;
+DROP POLICY IF EXISTS "Allow anon read hero_banners" ON hero_banners;
 
--- 3. Create public read policy
-CREATE POLICY "Allow public read hero_banners"
+-- 3. Create public read policy - Allow anon to read active banners
+CREATE POLICY "Allow anon read hero_banners"
 ON hero_banners
 FOR SELECT
 USING (is_active = true);
 
--- 4. Create service role policies
+-- 4. Create service role policies (untuk admin operasi)
 CREATE POLICY "Allow service role create hero_banners"
 ON hero_banners
 FOR INSERT

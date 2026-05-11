@@ -151,14 +151,20 @@ const HeroSection = () => {
 
         // Only set slides if banners exist, otherwise keep empty
         if (banners && banners.length > 0) {
-          console.log(`Loaded ${banners.length} ${deviceType} banners`);
+          console.log(
+            `✅ Loaded ${banners.length} ${deviceType} banners:`,
+            banners,
+          );
           setSlides(banners);
         } else {
-          console.log(`No ${deviceType} banners found`);
+          console.warn(
+            `❌ No ${deviceType} banners found. Device type: ${deviceType}`,
+          );
+          console.warn(`Full response was:`, banners);
           setSlides([]);
         }
       } catch (error) {
-        console.error("Error loading hero banners:", error);
+        console.error("❌ Error loading hero banners:", error);
         setSlides([]);
       } finally {
         setLoading(false);
@@ -215,6 +221,24 @@ const HeroSection = () => {
   const mobileSlides = slides.filter((slide) => slide.device_type === "mobile");
   const filteredSlides =
     currentDeviceType === "desktop" ? desktopSlides : mobileSlides;
+
+  // Debug log untuk melihat filtering
+  useEffect(() => {
+    console.log("🔍 Slide filtering debug:", {
+      totalSlides: slides.length,
+      currentDeviceType,
+      desktopSlidesCount: desktopSlides.length,
+      mobileSlidesCount: mobileSlides.length,
+      filteredSlidesCount: filteredSlides.length,
+      allSlides: slides.map((s) => ({ id: s.id, device_type: s.device_type })),
+    });
+  }, [
+    slides,
+    currentDeviceType,
+    desktopSlides.length,
+    mobileSlides.length,
+    filteredSlides.length,
+  ]);
 
   // Calculate current slide - ensure it's always valid
   const validSlideCount = filteredSlides.length > 0 ? filteredSlides.length : 1;
