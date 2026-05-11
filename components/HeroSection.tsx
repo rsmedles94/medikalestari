@@ -404,7 +404,9 @@ const HeroSection = () => {
                     alt={`Slide ${index}`}
                     fill
                     priority={index === 0}
+                    sizes="(max-width: 768px) 100vw, 100vw"
                     onLoadingComplete={() => handleImageLoaded(slide.id)}
+                    onError={() => handleImageLoaded(slide.id)}
                     className={`object-cover object-center transition-opacity duration-700 ${
                       isLoaded ? "opacity-100" : "opacity-0"
                     }`}
@@ -478,7 +480,9 @@ const HeroSection = () => {
                 alt={`Slide ${index}`}
                 fill
                 priority={index === 0}
+                sizes="(max-width: 768px) 100vw, 100vw"
                 onLoadingComplete={() => handleImageLoaded(slide.id)}
+                onError={() => handleImageLoaded(slide.id)}
                 className={`object-cover object-center transition-opacity duration-700 ${
                   isLoaded ? "opacity-100" : "opacity-0"
                 }`}
