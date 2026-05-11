@@ -1,6 +1,7 @@
 # 🔧 FIX: SUPABASE_SERVICE_ROLE_KEY is not set
 
 ## ❌ MASALAH
+
 ```
 Error: Gagal menghapus banner: SUPABASE_SERVICE_ROLE_KEY is not set
 ```
@@ -22,6 +23,7 @@ SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
 **Ganti `YOUR_PROJECT`, `ANON_KEY`, dan `SERVICE_ROLE_KEY` dari Supabase:**
+
 1. Buka: https://app.supabase.com
 2. Login → Pilih project
 3. Settings → API
