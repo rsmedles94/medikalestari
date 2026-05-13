@@ -185,7 +185,8 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
             let itemHref = "/";
 
-            if (title === "Dokter Kami") itemHref = "/dokter#section-dokter";
+            if (title === "Dokter Spesialis")
+              itemHref = "/dokter#section-dokter";
             else if (title === "Jadwal Dokter") itemHref = "/jadwal-dokter";
             else if (title === "Tentang Kami") itemHref = "/tentang-kami";
             else if (title === "Indikator Mutu") itemHref = "/indikator-mutu";
@@ -410,20 +411,20 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
             <div
               className="relative h-full flex items-center"
-              onMouseEnter={() => setActiveMenu("Dokter")}
+              onMouseEnter={() => setActiveMenu("Dokter Kami")}
               onMouseLeave={() => setActiveMenu(null)}
             >
               <button className="flex items-center h-full px-6 transition-colors font-medium relative group gap-2">
-                Dokter
+                Dokter Kami
                 <ChevronDown
                   size={18}
                   className={`transition-transform duration-300 ${
-                    activeMenu === "Dokter" ? "rotate-180" : ""
+                    activeMenu === "Dokter Kami" ? "rotate-180" : ""
                   }`}
                 />
                 <div
                   className={`absolute bottom-0 left-6 right-6 h-1 bg-white rounded-t-full transition-transform duration-300 ${
-                    activeMenu === "Dokter"
+                    activeMenu === "Dokter Kami"
                       ? "scale-x-100"
                       : "scale-x-0 group-hover:scale-x-100"
                   }`}
@@ -431,9 +432,9 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               </button>
 
               <AnimatePresence>
-                {activeMenu === "Dokter" &&
+                {activeMenu === "Dokter Kami" &&
                   renderDropdownContent(
-                    ["Dokter Kami", "Jadwal Dokter"],
+                    ["Dokter Spesialis", "Jadwal Dokter"],
 
                     "left-0 w-56",
                   )}
@@ -660,7 +661,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="text-left p-4 font-semibold text-[#014f86] border-b text-lg"
                 >
-                  Dokter Kami
+                  Dokter Spesialis
                 </Link>
 
                 <Link
@@ -704,7 +705,9 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                             {menuData[item].map((subitem) => {
                               let itemHref = "/";
 
-                              if (subitem === "Tentang Kami")
+                              if (subitem === "Dokter Spesialis")
+                                itemHref = "/dokter#section-dokter";
+                              else if (subitem === "Tentang Kami")
                                 itemHref = "/tentang-kami";
                               else if (subitem === "Indikator Mutu")
                                 itemHref = "/indikator-mutu";
