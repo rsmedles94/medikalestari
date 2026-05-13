@@ -158,10 +158,12 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
     items: Array<string | { label: string; code?: string; active?: boolean }>,
 
     widthClass: string = "w-72",
+    category?: string,
   ) => {
     // --- LOGIKA BARU: Cek jika item banyak, kita buat 2 kolom ---
 
     const isLargeMenu = items.length > 6;
+    const isFasilitasLayanan = category === "Fasilitas & Layanan";
 
     return (
       <motion.div
@@ -229,7 +231,11 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                 <DropdownMenuItem
                   title={title}
                   href={itemHref}
-                  icon={serviceIcons[title as keyof typeof serviceIcons]}
+                  icon={
+                    isFasilitasLayanan
+                      ? undefined
+                      : serviceIcons[title as keyof typeof serviceIcons]
+                  }
                 />
               </div>
             );
@@ -446,7 +452,11 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
                   <AnimatePresence>
                     {activeMenu === item &&
-                      renderDropdownContent(menuData[item], "left-0 w-72")}
+                      renderDropdownContent(
+                        menuData[item],
+                        "left-0 w-72",
+                        item,
+                      )}
                   </AnimatePresence>
                 </div>
               ))}
