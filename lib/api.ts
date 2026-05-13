@@ -322,30 +322,25 @@ export async function fetchHeroBanners(
   deviceType?: "desktop" | "mobile",
 ): Promise<HeroBanner[]> {
   try {
-    // Build query params
-    const params = new URLSearchParams();
+    // Gunakan supabase client langsung untuk query (bukan fetch API)
+    let query = supabase
+      .from("hero_banners")
+      .select("*")
+      .eq("is_active", true)
+      .order("order", { ascending: true });
+
     if (deviceType) {
-      params.append("device_type", deviceType);
+      query = query.eq("device_type", deviceType);
     }
 
-    const response = await fetch(
-      `/api/admin/hero-banners?${params.toString()}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        cache: "no-store", // Disable cache untuk always fresh data
-      },
-    );
+    const { data, error } = await query;
 
-    if (!response.ok) {
-      console.error("Error fetching hero banners:", response.statusText);
+    if (error) {
+      console.error("Error fetching hero banners:", error);
       return [];
     }
 
-    const result = await response.json();
-    return result.data || [];
+    return data || [];
   } catch (error) {
     console.error("Error fetching hero banners:", error);
     return [];
