@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { AdminPageSkeleton } from "@/components/AdminSkeleton";
 import {
-  fetchHeroBanners,
+  fetchAllHeroBannersForAdmin,
   createHeroBanner,
   updateHeroBanner,
   deleteHeroBanner,
@@ -27,12 +27,14 @@ const AdminHeroBannersPage = () => {
     is_active: true,
     device_type: "desktop" as "desktop" | "mobile",
   });
+  const [submitting, setSubmitting] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const router = useRouter();
   const { loading: authLoading, isAuthenticated } = useAuth();
 
   const fetchBanners = useCallback(async () => {
     try {
-      const data = await fetchHeroBanners();
+      const data = await fetchAllHeroBannersForAdmin();
       setBanners(data);
     } catch (error) {
       console.error("Error fetching hero banners:", error);
@@ -62,10 +64,16 @@ const AdminHeroBannersPage = () => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setUploading(true);
       setImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
+        setUploading(false);
+      };
+      reader.onerror = () => {
+        setUploading(false);
+        alert("Gagal membaca file gambar");
       };
       reader.readAsDataURL(file);
     }
@@ -73,6 +81,7 @@ const AdminHeroBannersPage = () => {
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setSubmitting(true);
 
     try {
       let imageUrl = formData.image_url;
@@ -83,6 +92,7 @@ const AdminHeroBannersPage = () => {
 
       if (!imageUrl) {
         alert("Gambar harus dipilih");
+        setSubmitting(false);
         return;
       }
 
@@ -104,8 +114,10 @@ const AdminHeroBannersPage = () => {
         await createHeroBanner(bannerData);
       }
 
+      // Fetch banners BEFORE resetting form so loading state is clear
+      await fetchBanners();
+
       resetForm();
-      fetchBanners();
       setShowModal(false);
       alert("Banner berhasil disimpan!");
     } catch (error) {
@@ -122,6 +134,8 @@ const AdminHeroBannersPage = () => {
       }
 
       alert(`Error: ${errorMsg}`);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -313,13 +327,20 @@ const AdminHeroBannersPage = () => {
                 </label>
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
                   {imagePreview ? (
-                    <div className="relative w-full h-40 mx-auto">
-                      <Image
-                        src={imagePreview}
-                        alt="Preview"
-                        fill
-                        className="object-cover rounded-lg"
-                      />
+                    <div>
+                      <div className="relative w-full h-40 mx-auto">
+                        <Image
+                          src={imagePreview}
+                          alt="Preview"
+                          fill
+                          className="object-cover rounded-lg"
+                        />
+                      </div>
+                      {uploading && (
+                        <p className="text-center text-blue-600 text-sm mt-2">
+                          ⏳ Loading preview...
+                        </p>
+                      )}
                     </div>
                   ) : (
                     <div className="text-center">
@@ -338,10 +359,11 @@ const AdminHeroBannersPage = () => {
                     accept="image/*"
                     className="hidden"
                     id="banner-image"
+                    disabled={uploading}
                   />
                   <label htmlFor="banner-image" className="cursor-pointer">
                     <div className="mt-2 text-center text-sm text-blue-600 hover:text-blue-700">
-                      Pilih Gambar
+                      {uploading ? "Loading..." : "Pilih Gambar"}
                     </div>
                   </label>
                 </div>
@@ -450,9 +472,18 @@ const AdminHeroBannersPage = () => {
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold mt-6"
+                disabled={submitting || uploading}
+                className={`w-full py-3 rounded-lg transition-colors font-semibold mt-6 ${
+                  submitting || uploading
+                    ? "bg-gray-400 text-gray-200 cursor-not-allowed"
+                    : "bg-blue-600 text-white hover:bg-blue-700"
+                }`}
               >
-                {editingId ? "Perbarui Banner" : "Tambah Banner"}
+                {submitting
+                  ? "⏳ Sedang menyimpan..."
+                  : editingId
+                    ? "Perbarui Banner"
+                    : "Tambah Banner"}
               </button>
             </form>
           </div>

@@ -405,6 +405,58 @@ export async function fetchHeroBannersForMobile(): Promise<HeroBanner[]> {
   return fetchHeroBanners("mobile");
 }
 
+/**
+ * Fetch all hero banners for admin panel
+ * Shows both active and inactive banners
+ * Uses admin endpoint which bypasses RLS in production
+ */
+export async function fetchAllHeroBannersForAdmin(): Promise<HeroBanner[]> {
+  try {
+    console.log(
+      "[fetchAllHeroBannersForAdmin] Fetching all banners for admin...",
+    );
+
+    const response = await fetch("/api/admin/hero-banners", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        errorData.details || "Gagal mengambil banner dari server",
+      );
+    }
+
+    const result = await response.json();
+
+    if (!result.success || !result.data) {
+      console.warn(
+        "[fetchAllHeroBannersForAdmin] No banners found or error in response",
+      );
+      return [];
+    }
+
+    console.log(
+      "[fetchAllHeroBannersForAdmin] ✅ Fetched",
+      result.data.length,
+      "banners",
+      result.data.map((b: HeroBanner) => ({
+        id: b.id,
+        device_type: b.device_type,
+        is_active: b.is_active,
+      })),
+    );
+
+    return result.data;
+  } catch (error) {
+    console.error("[fetchAllHeroBannersForAdmin] Error:", error);
+    return [];
+  }
+}
+
 export async function createHeroBanner(
   banner: Omit<HeroBanner, "id" | "created_at">,
 ) {

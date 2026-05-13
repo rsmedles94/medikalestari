@@ -25,33 +25,20 @@ function getAdminClient() {
   return createClient(normalized, supabaseServiceKey);
 }
 
-function getPublicClient() {
-  const raw = process.env.NEXT_PUBLIC_SUPABASE_URL || null;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  const normalized = raw?.replace(/\/+$/g, "")?.replace(/\/rest\/v1$/i, "");
-
-  if (!normalized || !supabaseAnonKey) {
-    console.error("[hero-banners-public] Missing Supabase env", { raw });
-    throw new Error("Missing Supabase environment variables");
-  }
-
-  return createClient(normalized, supabaseAnonKey);
-}
-
-// GET - Fetch hero banners (public read)
+// GET - Fetch hero banners (use admin client to bypass RLS in production)
 export async function GET(request: Request) {
   try {
-    const publicClient = getPublicClient();
+    const adminClient = getAdminClient();
     const { searchParams } = new URL(request.url);
     const deviceType = searchParams.get("device_type");
 
-    let query = publicClient
+    let query = adminClient
       .from("hero_banners")
       .select("*")
-      .eq("is_active", true)
       .order("order", { ascending: true });
 
+    // Don't filter by is_active in GET for admin panel - show all banners
+    // This allows admins to see and manage inactive banners too
     if (deviceType) {
       query = query.eq("device_type", deviceType);
     }
