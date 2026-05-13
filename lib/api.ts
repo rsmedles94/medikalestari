@@ -351,7 +351,6 @@ export async function fetchHeroBanners(
       console.error("[fetchHeroBanners] Supabase Query Error:", {
         message: error.message,
         code: error.code,
-        status: error.status,
       });
       return [];
     }
