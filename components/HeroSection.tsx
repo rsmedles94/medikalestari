@@ -146,25 +146,26 @@ const HeroSection = () => {
         const deviceType = isMobileDevice ? "mobile" : "desktop";
         setCurrentDeviceType(deviceType);
 
-        console.log(`Loading ${deviceType} banners...`);
+        console.log(`[HeroSection] Loading ${deviceType} banners...`);
         const banners = await fetchHeroBanners(deviceType);
 
         // Only set slides if banners exist, otherwise keep empty
         if (banners && banners.length > 0) {
           console.log(
-            `✅ Loaded ${banners.length} ${deviceType} banners:`,
-            banners,
+            `[HeroSection] ✅ Loaded ${banners.length} ${deviceType} banners`,
           );
           setSlides(banners);
         } else {
           console.warn(
-            `❌ No ${deviceType} banners found. Device type: ${deviceType}`,
+            `[HeroSection] ⚠️ No ${deviceType} banners found in database. Check:
+            1. hero_banners table exists
+            2. is_active = true for ${deviceType} banners
+            3. At least one ${deviceType} banner exists`,
           );
-          console.warn(`Full response was:`, banners);
           setSlides([]);
         }
       } catch (error) {
-        console.error("❌ Error loading hero banners:", error);
+        console.error("[HeroSection] Error loading hero banners:", error);
         setSlides([]);
       } finally {
         setLoading(false);

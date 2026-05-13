@@ -336,22 +336,31 @@ export async function fetchHeroBanners(
     const { data, error } = await query;
 
     if (error) {
-      console.error("Error fetching hero banners:", error);
+      console.error("[fetchHeroBanners] Error:", error.message);
       return [];
     }
 
-    // add defensive logging to help production debugging
-    try {
-      console.log("[fetchHeroBanners] fetched count:", (data || []).length, {
-        deviceType,
-      });
-    } catch {
-      // ignore logging failure
+    // Jika data kosong, log warning
+    if (!data || data.length === 0) {
+      console.warn(
+        `[fetchHeroBanners] No active banners found for device_type: ${deviceType || "all"}`,
+      );
+      return [];
     }
 
-    return data || [];
+    console.log(
+      "[fetchHeroBanners] Success - fetched",
+      data.length,
+      "banners",
+      {
+        deviceType,
+        ids: data.map((d) => d.id),
+      },
+    );
+
+    return data;
   } catch (error) {
-    console.error("Error fetching hero banners:", error);
+    console.error("[fetchHeroBanners] Unexpected error:", error);
     return [];
   }
 }
