@@ -322,6 +322,18 @@ export async function fetchHeroBanners(
   deviceType?: "desktop" | "mobile",
 ): Promise<HeroBanner[]> {
   try {
+    // Debug info
+    const debug = {
+      supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ? "SET" : "MISSING",
+      supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+        ? "SET"
+        : "MISSING",
+      deviceType,
+      environment: process.env.NODE_ENV,
+    };
+
+    console.log("[fetchHeroBanners] Starting fetch with config:", debug);
+
     // Gunakan supabase client langsung untuk query (bukan fetch API)
     let query = supabase
       .from("hero_banners")
@@ -336,31 +348,52 @@ export async function fetchHeroBanners(
     const { data, error } = await query;
 
     if (error) {
-      console.error("[fetchHeroBanners] Error:", error.message);
+      console.error("[fetchHeroBanners] Supabase Query Error:", {
+        message: error.message,
+        code: error.code,
+        status: error.status,
+      });
       return [];
     }
 
     // Jika data kosong, log warning
     if (!data || data.length === 0) {
       console.warn(
-        `[fetchHeroBanners] No active banners found for device_type: ${deviceType || "all"}`,
+        `[fetchHeroBanners] ⚠️ No active banners found for device_type: ${deviceType || "all"}`,
       );
       return [];
     }
 
+    // Validate image URLs sebelum return
+    const validBanners = data.filter((banner) => {
+      const isValidUrl =
+        banner.image_url &&
+        (banner.image_url.startsWith("http") ||
+          banner.image_url.startsWith("/"));
+      if (!isValidUrl) {
+        console.warn(
+          `[fetchHeroBanners] Invalid image URL for banner ${banner.id}: ${banner.image_url}`,
+        );
+      }
+      return isValidUrl;
+    });
+
     console.log(
-      "[fetchHeroBanners] Success - fetched",
-      data.length,
-      "banners",
+      "[fetchHeroBanners] ✅ Success - fetched",
+      validBanners.length,
+      "valid banners",
       {
         deviceType,
-        ids: data.map((d) => d.id),
+        ids: validBanners.map((d) => ({ id: d.id, url: d.image_url })),
       },
     );
 
-    return data;
+    return validBanners;
   } catch (error) {
-    console.error("[fetchHeroBanners] Unexpected error:", error);
+    console.error("[fetchHeroBanners] Unexpected error:", {
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return [];
   }
 }

@@ -146,26 +146,39 @@ const HeroSection = () => {
         const deviceType = isMobileDevice ? "mobile" : "desktop";
         setCurrentDeviceType(deviceType);
 
-        console.log(`[HeroSection] Loading ${deviceType} banners...`);
+        console.log(`[HeroSection] 🔄 Loading ${deviceType} banners...`);
+        console.log("[HeroSection] Environment check:", {
+          supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ? "SET" : "MISSING",
+          supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+            ? "SET"
+            : "MISSING",
+        });
+
         const banners = await fetchHeroBanners(deviceType);
 
         // Only set slides if banners exist, otherwise keep empty
         if (banners && banners.length > 0) {
           console.log(
             `[HeroSection] ✅ Loaded ${banners.length} ${deviceType} banners`,
+            banners.map((b) => ({ id: b.id, url: b.image_url })),
           );
           setSlides(banners);
         } else {
           console.warn(
-            `[HeroSection] ⚠️ No ${deviceType} banners found in database. Check:
-            1. hero_banners table exists
-            2. is_active = true for ${deviceType} banners
-            3. At least one ${deviceType} banner exists`,
+            `[HeroSection] ⚠️ No ${deviceType} banners found. Checklist:
+            1. ✓ hero_banners table exists in Supabase
+            2. ✓ is_active = true for ${deviceType} banners
+            3. ✓ At least one ${deviceType} banner exists
+            4. ✓ NEXT_PUBLIC_SUPABASE_URL is set
+            5. ✓ NEXT_PUBLIC_SUPABASE_ANON_KEY is set`,
           );
           setSlides([]);
         }
       } catch (error) {
-        console.error("[HeroSection] Error loading hero banners:", error);
+        console.error("[HeroSection] ❌ Error loading hero banners:", {
+          message: error instanceof Error ? error.message : String(error),
+          stack: error instanceof Error ? error.stack : undefined,
+        });
         setSlides([]);
       } finally {
         setLoading(false);
