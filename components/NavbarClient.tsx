@@ -110,19 +110,19 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
     ],
 
     "Informasi Pasien": [
-      "Tarif Kamar",
       "Alur Pendaftaran",
       "Asuransi & Rekanan",
       "Panduan Kunjungan",
+      "Tarif Kamar",
     ],
 
     Profil: [
-      "Tentang Kami",
       "Indikator Mutu",
-      "Rekanan Kami",
       "Karir",
       "Kontak",
+      "Rekanan Kami",
       "Syarat & Ketentuan",
+      "Tentang Kami",
     ],
   };
 
