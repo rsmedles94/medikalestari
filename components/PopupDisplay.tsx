@@ -147,15 +147,15 @@ const PopupDisplay = () => {
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-6">
-      {/* Overlay - onClick dihapus agar tidak close saat dipencet area lain */}
+      {/* area bg */}
       <div className="absolute inset-0 bg-black/80 backdrop-blur-sm will-change-opacity" />
 
       {/* Container */}
       <div className="relative flex flex-col items-center animate-in fade-in zoom-in duration-300 max-w-[85%] md:max-w-[500px] will-change-transform">
-        {/* Close Button - Satu-satunya cara untuk menutup atau lanjut ke popup berikutnya */}
+        {/* close button  */}
         <button
           onClick={handleAction}
-          className="absolute -top-8 -right-2 text-white/50 hover:text-white transition-colors p-1"
+          className="absolute -top-6 -right-6 bg-white rounded-full text-black transition-colors p-1 active:scale-95"
         >
           <X size={18} strokeWidth={3} />
         </button>
