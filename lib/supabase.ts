@@ -1,10 +1,27 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+function normalizeSupabaseUrl(raw?: string | null): string | null {
+  if (!raw) return null;
+  // remove trailing slashes
+  let normalized = raw.replace(/\/+$|\s+$/g, "");
+  // if someone mistakenly included /rest/v1, strip it
+  normalized = normalized.replace(/\/rest\/v1$/i, "");
+  return normalized;
+}
+
+const rawSupabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || null;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || null;
+
+const supabaseUrl = normalizeSupabaseUrl(rawSupabaseUrl);
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error("Missing Supabase environment variables");
+  console.error("[Supabase] Missing or invalid configuration:", {
+    NEXT_PUBLIC_SUPABASE_URL: rawSupabaseUrl,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: supabaseAnonKey ? "SET" : "MISSING",
+  });
+  throw new Error(
+    "Missing Supabase environment variables. Ensure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY are set and NEXT_PUBLIC_SUPABASE_URL does NOT include /rest/v1",
+  );
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
@@ -12,7 +29,8 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 // Server-side Supabase client
 // Priority: Service Role Key (untuk production/admin) → fallback ke Anon Key (untuk development)
 export function createServerSupabaseClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const urlRaw = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const url = normalizeSupabaseUrl(urlRaw);
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 

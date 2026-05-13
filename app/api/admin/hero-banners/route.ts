@@ -7,29 +7,36 @@ import { createClient } from "@supabase/supabase-js";
  */
 
 function getAdminClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const raw = process.env.NEXT_PUBLIC_SUPABASE_URL || null;
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-  if (!supabaseUrl) {
-    throw new Error("NEXT_PUBLIC_SUPABASE_URL is not set");
+  const normalized = raw?.replace(/\/+$/g, "")?.replace(/\/rest\/v1$/i, "");
+
+  if (!normalized) {
+    console.error("[hero-banners] invalid NEXT_PUBLIC_SUPABASE_URL", { raw });
+    throw new Error("NEXT_PUBLIC_SUPABASE_URL is not set or invalid");
   }
 
   if (!supabaseServiceKey) {
+    console.error("[hero-banners] SUPABASE_SERVICE_ROLE_KEY missing");
     throw new Error("SUPABASE_SERVICE_ROLE_KEY is not set");
   }
 
-  return createClient(supabaseUrl, supabaseServiceKey);
+  return createClient(normalized, supabaseServiceKey);
 }
 
 function getPublicClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const raw = process.env.NEXT_PUBLIC_SUPABASE_URL || null;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  if (!supabaseUrl || !supabaseAnonKey) {
+  const normalized = raw?.replace(/\/+$/g, "")?.replace(/\/rest\/v1$/i, "");
+
+  if (!normalized || !supabaseAnonKey) {
+    console.error("[hero-banners-public] Missing Supabase env", { raw });
     throw new Error("Missing Supabase environment variables");
   }
 
-  return createClient(supabaseUrl, supabaseAnonKey);
+  return createClient(normalized, supabaseAnonKey);
 }
 
 // GET - Fetch hero banners (public read)

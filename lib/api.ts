@@ -340,6 +340,15 @@ export async function fetchHeroBanners(
       return [];
     }
 
+    // add defensive logging to help production debugging
+    try {
+      console.log("[fetchHeroBanners] fetched count:", (data || []).length, {
+        deviceType,
+      });
+    } catch {
+      // ignore logging failure
+    }
+
     return data || [];
   } catch (error) {
     console.error("Error fetching hero banners:", error);
