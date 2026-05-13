@@ -23,6 +23,7 @@ import {
   Bed,
   Dumbbell,
   Syringe,
+  ChevronDown,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthProvider";
@@ -384,8 +385,14 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               onMouseEnter={() => setActiveMenu("Profil")}
               onMouseLeave={() => setActiveMenu(null)}
             >
-              <button className="flex items-center h-full px-6 transition-colors font-medium relative group">
+              <button className="flex items-center h-full px-6 transition-colors font-medium relative group gap-2">
                 Profil
+                <ChevronDown
+                  size={18}
+                  className={`transition-transform duration-300 ${
+                    activeMenu === "Profil" ? "rotate-180" : ""
+                  }`}
+                />
                 <div
                   className={`absolute bottom-0 left-6 right-6 h-1 bg-white rounded-t-full transition-transform duration-300 ${
                     activeMenu === "Profil"
@@ -406,8 +413,14 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               onMouseEnter={() => setActiveMenu("Dokter")}
               onMouseLeave={() => setActiveMenu(null)}
             >
-              <button className="flex items-center h-full px-6 transition-colors font-medium relative group">
+              <button className="flex items-center h-full px-6 transition-colors font-medium relative group gap-2">
                 Dokter
+                <ChevronDown
+                  size={18}
+                  className={`transition-transform duration-300 ${
+                    activeMenu === "Dokter" ? "rotate-180" : ""
+                  }`}
+                />
                 <div
                   className={`absolute bottom-0 left-6 right-6 h-1 bg-white rounded-t-full transition-transform duration-300 ${
                     activeMenu === "Dokter"
@@ -438,8 +451,14 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                   onMouseEnter={() => setActiveMenu(item)}
                   onMouseLeave={() => setActiveMenu(null)}
                 >
-                  <button className="flex items-center h-full px-6 transition-colors font-medium relative group">
+                  <button className="flex items-center h-full px-6 transition-colors font-medium relative group gap-2">
                     {item}
+                    <ChevronDown
+                      size={18}
+                      className={`transition-transform duration-300 ${
+                        activeMenu === item ? "rotate-180" : ""
+                      }`}
+                    />
 
                     <div
                       className={`absolute bottom-0 left-6 right-6 h-1 bg-white rounded-t-full transition-transform duration-300 ${
@@ -586,7 +605,12 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                   className="w-full text-left p-4 font-semibold text-[#014f86] flex justify-between items-center text-lg border-b"
                 >
                   Profil
-                  <span>{activeMenu === "Profil" ? "−" : "+"}</span>
+                  <ChevronDown
+                    size={20}
+                    className={`transition-transform duration-300 ${
+                      activeMenu === "Profil" ? "rotate-180" : ""
+                    }`}
+                  />
                 </button>
 
                 <AnimatePresence>
@@ -661,7 +685,12 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                       >
                         {item}
 
-                        <span>{activeMenu === item ? "−" : "+"}</span>
+                        <ChevronDown
+                          size={20}
+                          className={`transition-transform duration-300 ${
+                            activeMenu === item ? "rotate-180" : ""
+                          }`}
+                        />
                       </button>
 
                       <AnimatePresence>
