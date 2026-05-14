@@ -334,7 +334,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
       {/* --- Bottom Navbar --- */}
 
-      <div className="hidden md:block relative w-full bg-white border-t border-gray-200 z-30">
+      <div className="hidden md:block relative w-full bg-white border-t border-gray-200 z-30 shadow-md">
         <div className="max-w-[1220px] mx-auto px-4 md:px-8 flex justify-between items-center h-16 relative z-10">
           <div className="flex h-full text-[15px] text-gray-700">
             <button
