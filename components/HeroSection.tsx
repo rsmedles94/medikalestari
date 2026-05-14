@@ -136,6 +136,8 @@ const HeroSection = () => {
   useEffect(() => {
     const loadBanners = async () => {
       try {
+        setLoading(true);
+
         // Determine if we're on mobile based on window width
         const isMobileDevice =
           typeof globalThis !== "undefined" &&
@@ -185,23 +187,39 @@ const HeroSection = () => {
       }
     };
 
+    // Initial load with debounce
+    let resizeTimeout: NodeJS.Timeout | null = null;
+    let isFirstLoad = true;
+
+    const loadWithDebounce = () => {
+      if (isFirstLoad) {
+        loadBanners();
+        isFirstLoad = false;
+      } else {
+        // Debounce subsequent loads (resize events)
+        if (resizeTimeout) {
+          clearTimeout(resizeTimeout);
+        }
+        resizeTimeout = setTimeout(() => {
+          loadBanners();
+        }, 300);
+      }
+    };
+
     // Initial load
-    loadBanners();
+    loadWithDebounce();
 
     // Handle window resize to switch between desktop and mobile banners
-    let resizeTimeout: NodeJS.Timeout;
     const handleResize = () => {
-      // Debounce the resize event
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(() => {
-        loadBanners();
-      }, 300);
+      loadWithDebounce();
     };
 
     globalThis.window?.addEventListener("resize", handleResize);
     return () => {
       globalThis.window?.removeEventListener("resize", handleResize);
-      clearTimeout(resizeTimeout);
+      if (resizeTimeout) {
+        clearTimeout(resizeTimeout);
+      }
     };
   }, []);
 

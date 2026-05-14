@@ -48,6 +48,7 @@ const MadingSection = () => {
   useEffect(() => {
     const loadContent = async () => {
       try {
+        setLoading(true);
         const content = await fetchMadingContent();
         setAllData(content);
       } catch (error) {
@@ -57,6 +58,7 @@ const MadingSection = () => {
         setLoading(false);
       }
     };
+
     loadContent();
   }, []);
 

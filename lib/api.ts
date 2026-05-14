@@ -1,33 +1,64 @@
 import { supabase } from "./supabase";
-import {
-  constructSupabaseImageUrl,
-  debugSupabaseImageUrl,
-} from "./image-url-helper";
+import { debugSupabaseImageUrl } from "./image-url-helper";
 import { Doctor, Schedule, MadingContent, HeroBanner } from "./types";
+import { deduplicateRequest } from "./request-cache";
+
+// UTILITY: Retry mechanism untuk handle connection pooling issues
+async function withRetry<T>(
+  fn: () => Promise<T>,
+  maxRetries: number = 3,
+  delayMs: number = 500,
+): Promise<T> {
+  let lastError: unknown;
+
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error;
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      const isLockError = errorMessage.includes("Lock broken");
+
+      if (isLockError && i < maxRetries - 1) {
+        // Exponential backoff for lock errors
+        const waitTime = delayMs * Math.pow(2, i);
+        await new Promise((resolve) => setTimeout(resolve, waitTime));
+        continue;
+      }
+
+      throw error;
+    }
+  }
+
+  throw lastError;
+}
 
 // DOCTOR OPERATIONS
 export async function fetchDoctors(
   specialty?: string,
   searchName?: string,
 ): Promise<Doctor[]> {
-  let query = supabase.from("doctors").select("*");
+  return withRetry(async () => {
+    let query = supabase.from("doctors").select("*");
 
-  if (specialty && specialty !== "Semua Spesialis") {
-    query = query.eq("specialty", specialty);
-  }
+    if (specialty && specialty !== "Semua Spesialis") {
+      query = query.eq("specialty", specialty);
+    }
 
-  if (searchName) {
-    query = query.ilike("name", `%${searchName}%`);
-  }
+    if (searchName) {
+      query = query.ilike("name", `%${searchName}%`);
+    }
 
-  const { data, error } = await query;
+    const { data, error } = await query;
 
-  if (error) {
-    console.error("Error fetching doctors:", error);
-    return [];
-  }
+    if (error) {
+      console.error("Error fetching doctors:", error);
+      return [];
+    }
 
-  return data || [];
+    return data || [];
+  });
 }
 
 export async function fetchDoctorById(id: string): Promise<Doctor | null> {
@@ -259,23 +290,25 @@ export async function uploadDoctorImage(file: File): Promise<string> {
 export async function fetchMadingContent(
   type?: "edukasi" | "event",
 ): Promise<MadingContent[]> {
-  let query = supabase
-    .from("mading_content")
-    .select("*")
-    .order("order", { ascending: true });
+  return withRetry(async () => {
+    let query = supabase
+      .from("mading_content")
+      .select("*")
+      .order("order", { ascending: true });
 
-  if (type) {
-    query = query.eq("type", type);
-  }
+    if (type) {
+      query = query.eq("type", type);
+    }
 
-  const { data, error } = await query;
+    const { data, error } = await query;
 
-  if (error) {
-    console.error("Error fetching mading content:", error);
-    return [];
-  }
+    if (error) {
+      console.error("Error fetching mading content:", error);
+      return [];
+    }
 
-  return data || [];
+    return data || [];
+  });
 }
 
 export async function createMadingContent(
@@ -325,103 +358,110 @@ export async function deleteMadingContent(id: string) {
 export async function fetchHeroBanners(
   deviceType?: "desktop" | "mobile",
 ): Promise<HeroBanner[]> {
-  try {
-    // Debug info
-    const debug = {
-      supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ? "SET" : "MISSING",
-      supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-        ? "SET"
-        : "MISSING",
-      deviceType,
-      environment: process.env.NODE_ENV,
-    };
+  // Use deduplication to prevent multiple concurrent requests for same device type
+  const cacheKey = `hero_banners:${deviceType || "all"}`;
 
-    console.log("[fetchHeroBanners] Starting fetch with config:", debug);
-
-    // Gunakan supabase client langsung untuk query (bukan fetch API)
-    let query = supabase
-      .from("hero_banners")
-      .select("*")
-      .eq("is_active", true)
-      .order("order", { ascending: true });
-
-    if (deviceType) {
-      query = query.eq("device_type", deviceType);
-    }
-
-    const { data, error } = await query;
-
-    if (error) {
-      console.error("[fetchHeroBanners] Supabase Query Error:", {
-        message: error.message,
-        code: error.code,
-      });
-      return [];
-    }
-
-    // Jika data kosong, log warning
-    if (!data || data.length === 0) {
-      console.warn(
-        `[fetchHeroBanners] ⚠️ No active banners found for device_type: ${deviceType || "all"}`,
-      );
-      return [];
-    }
-
-    // Validate and normalize image URLs sebelum return
-    const validBanners = data
-      .map((banner) => {
-        let url = banner.image_url;
-
-        // Jika URL tidak lengkap, konstruksi URL publik Supabase
-        if (url && !url.startsWith("http")) {
-          // Jika path dimulai dengan /, tambahkan base URL Supabase
-          const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-          if (supabaseUrl) {
-            url = `${supabaseUrl}/storage/v1/object/public${url}`;
-          }
-        }
-
-        // Debug log untuk URL construction
-        if (process.env.NODE_ENV === "development" && url) {
-          debugSupabaseImageUrl(url);
-        }
-
-        return {
-          ...banner,
-          image_url: url,
+  return deduplicateRequest(cacheKey, () =>
+    withRetry(async () => {
+      try {
+        // Debug info
+        const debug = {
+          supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ? "SET" : "MISSING",
+          supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+            ? "SET"
+            : "MISSING",
+          deviceType,
+          environment: process.env.NODE_ENV,
         };
-      })
-      .filter((banner) => {
-        const isValidUrl =
-          banner.image_url &&
-          (banner.image_url.startsWith("http") ||
-            banner.image_url.startsWith("/"));
-        if (!isValidUrl) {
-          console.warn(
-            `[fetchHeroBanners] Invalid image URL for banner ${banner.id}: ${banner.image_url}`,
-          );
+
+        console.log("[fetchHeroBanners] Starting fetch with config:", debug);
+
+        // Gunakan supabase client langsung untuk query (bukan fetch API)
+        let query = supabase
+          .from("hero_banners")
+          .select("*")
+          .eq("is_active", true)
+          .order("order", { ascending: true });
+
+        if (deviceType) {
+          query = query.eq("device_type", deviceType);
         }
-        return isValidUrl;
-      });
 
-    console.log(
-      "[fetchHeroBanners] ✅ Success - fetched",
-      validBanners.length,
-      "valid banners",
-      {
-        deviceType,
-        ids: validBanners.map((d) => ({ id: d.id, url: d.image_url })),
-      },
-    );
+        const { data, error } = await query;
 
-    return validBanners;
-  } catch (error) {
-    console.error("[fetchHeroBanners] Unexpected error:", {
-      message: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : undefined,
-    });
-    return [];
-  }
+        if (error) {
+          console.error("[fetchHeroBanners] Supabase Query Error:", {
+            message: error.message,
+            code: error.code,
+          });
+          return [];
+        }
+
+        // Jika data kosong, log warning
+        if (!data || data.length === 0) {
+          console.warn(
+            `[fetchHeroBanners] ⚠️ No active banners found for device_type: ${deviceType || "all"}`,
+          );
+          return [];
+        }
+
+        // Validate and normalize image URLs sebelum return
+        const validBanners = data
+          .map((banner) => {
+            let url = banner.image_url;
+
+            // Jika URL tidak lengkap, konstruksi URL publik Supabase
+            if (url && !url.startsWith("http")) {
+              // Jika path dimulai dengan /, tambahkan base URL Supabase
+              const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+              if (supabaseUrl) {
+                url = `${supabaseUrl}/storage/v1/object/public${url}`;
+              }
+            }
+
+            // Debug log untuk URL construction
+            if (process.env.NODE_ENV === "development" && url) {
+              debugSupabaseImageUrl(url);
+            }
+
+            return {
+              ...banner,
+              image_url: url,
+            };
+          })
+          .filter((banner) => {
+            const isValidUrl =
+              banner.image_url &&
+              (banner.image_url.startsWith("http") ||
+                banner.image_url.startsWith("/"));
+            if (!isValidUrl) {
+              console.warn(
+                `[fetchHeroBanners] Invalid image URL for banner ${banner.id}: ${banner.image_url}`,
+              );
+            }
+            return isValidUrl;
+          });
+
+        console.log(
+          "[fetchHeroBanners] ✅ Success - fetched",
+          validBanners.length,
+          "valid banners",
+          {
+            deviceType,
+            ids: validBanners.map((d) => ({ id: d.id, url: d.image_url })),
+          },
+        );
+
+        return validBanners;
+      } catch (error) {
+        console.error("[fetchHeroBanners] Unexpected error:", {
+          message: error instanceof Error ? error.message : String(error),
+          stack: error instanceof Error ? error.stack : undefined,
+        });
+        return [];
+      }
+    }),
+  );
 }
 
 export async function fetchHeroBannersForDesktop(): Promise<HeroBanner[]> {
