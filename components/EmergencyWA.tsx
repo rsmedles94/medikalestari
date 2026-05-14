@@ -8,6 +8,29 @@ const EmergencyWA = () => {
   const pathname = usePathname();
   const [isFooterVisible, setIsFooterVisible] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [hasAutoCollapsed, setHasAutoCollapsed] = useState(false);
+
+  // Check if mobile on mount
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  // Auto-hide after 5 seconds (only on first visit mobile)
+  useEffect(() => {
+    if (isMobile && !hasAutoCollapsed) {
+      const timer = setTimeout(() => {
+        setIsCollapsed(true);
+        setHasAutoCollapsed(true);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [isMobile, hasAutoCollapsed]);
 
   useEffect(() => {
     const footer =
@@ -27,10 +50,13 @@ const EmergencyWA = () => {
 
   if (pathname !== "/") return null;
 
+  // Only show on mobile
+  if (!isMobile) return null;
+
   return (
     <AnimatePresence>
       {!isFooterVisible && (
-        <div className="fixed right-4 top-1/2 -translate-y-1/2 z-[9999] flex flex-col items-end">
+        <div className="fixed right-4 top-1/2 -translate-y-1/2 z-9999 flex flex-col items-end">
           {/* Tombol Chevron - Tetap instan saat diklik */}
           <motion.button
             onClick={() => setIsCollapsed(!isCollapsed)}
