@@ -2,8 +2,10 @@
 
 import React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const Footer = () => {
+  const pathname = usePathname();
   // --- Kumpulan Ikon ---
   const WhatsAppIcon = (
     <path
@@ -65,6 +67,90 @@ const Footer = () => {
     },
   ];
 
+  // Cek apakah ini halaman beranda
+  const isHomePage = pathname === "/";
+
+  // Jika bukan halaman beranda, jangan tampilkan footer di mobile
+  if (!isHomePage) {
+    return (
+      <footer className="hidden lg:block w-full font-sans">
+        <svg width="0" height="0" className="absolute">
+          <defs>
+            <linearGradient
+              id="instaGradientFooter"
+              x1="0%"
+              y1="100%"
+              x2="100%"
+              y2="0%"
+            >
+              <stop offset="0%" stopColor="#f09433" />
+              <stop offset="25%" stopColor="#e6683c" />
+              <stop offset="50%" stopColor="#dc2743" />
+              <stop offset="75%" stopColor="#cc2366" />
+              <stop offset="100%" stopColor="#bc1888" />
+            </linearGradient>
+          </defs>
+        </svg>
+
+        {/* --- MAIN FOOTER (DESKTOP ONLY) --- */}
+        <div className="relative bg-[#014f86] text-white overflow-hidden ">
+          <div className="relative max-w-[1140px] mx-auto px-5 md:px-6 py-10 md:py-16 z-10 ">
+            <div className="grid grid-cols-2 md:grid-cols-12 gap-8 md:gap-12">
+              {footerLinks.map((section) => (
+                <div key={section.title} className="md:col-span-3">
+                  <h3 className="text-sm md:text-lg font-bold mb-4 uppercase">
+                    {section.title}
+                  </h3>
+                  <ul className="space-y-2">
+                    {section.links.map((link) => (
+                      <li key={link.name}>
+                        <Link
+                          href={link.href}
+                          className="text-xs md:text-sm opacity-80 hover:opacity-100 hover:underline"
+                        >
+                          {link.name}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+
+              <div className="hidden lg:block md:col-span-6 md:pl-12">
+                <h3 className="text-lg font-bold mb-6 uppercase">
+                  Media Sosial
+                </h3>
+                <div className="flex gap-4 flex-wrap">
+                  {socialMedia.map((item) => (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:scale-110 transition-all shadow-sm"
+                    >
+                      <svg viewBox="0 0 24 24" className="w-6 h-6">
+                        {item.icon}
+                      </svg>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 md:mt-12 pt-5 border-t border-white/10 text-center md:text-left mb-15 md:-mb-10">
+              <p className="text-[11px] md:text-sm opacity-70">
+                © 1994-{new Date().getFullYear()} RS Medika Lestari. Semua Hak
+                Cipta Dilindungi
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>
+    );
+  }
+
+  // Untuk halaman beranda, tampilkan footer lengkap dengan contact bar mobile
   return (
     <footer className="w-full font-sans">
       <svg width="0" height="0" className="absolute">
@@ -85,7 +171,7 @@ const Footer = () => {
         </defs>
       </svg>
 
-      {/* --- CONTACT BAR MOBILE --- */}
+      {/* --- CONTACT BAR MOBILE (HANYA DI BERANDA) --- */}
       <div className="lg:hidden bg-[#f3f3f3] border-t border-b border-gray-300">
         <div className="grid grid-cols-3 h-[58px]">
           {socialMedia.map((item, index) => (
