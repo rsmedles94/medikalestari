@@ -504,7 +504,7 @@ export default function DoctorScheduleGrid({
                           {DAYS.map((day) => (
                             <th
                               key={day}
-                              className="py-2 text-[10px] font-bold text-slate-500 uppercase border-r border-slate-100 last:border-0"
+                              className="py-2 px-0.5 text-center text-[10px] font-bold text-slate-500 uppercase border-r border-slate-100 last:border-0"
                             >
                               {day.substring(0, 3)}
                             </th>
