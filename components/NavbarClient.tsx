@@ -336,7 +336,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               </div>
             </div>
 
-            <div className="md:hidden flex items-center gap-3 p-2 text-gray-700 relative z-110">
+            <div className="md:hidden flex items-center gap-3 p-2 text-gray-700 relative z-[110]">
               <button
                 onClick={() => openSearch()}
                 className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -587,6 +587,15 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
               className="fixed inset-y-0 right-0 w-[85%] bg-white z-[100] md:hidden overflow-y-auto shadow-2xl pt-16"
             >
+              {/* Close Button */}
+              <button
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="fixed top-4 right-4 p-2 hover:bg-gray-100 rounded-lg transition-colors z-50 md:hidden"
+                title="Tutup menu"
+              >
+                <X size={24} className="text-gray-700" />
+              </button>
+
               <div className="flex flex-col p-4">
                 <button
                   onClick={handleHomeClick}
