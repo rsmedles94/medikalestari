@@ -552,7 +552,7 @@ const HeroSection = () => {
         <div className="md:pointer-events-auto bg-white rounded-md shadow-lg p-5">
           {/* TITLE */}
           <h2 className="text-lg font-bold text-[#173A87] mb-4">
-            Cari Dokter Spesialis atau Jadwal Praktek Dokter
+            Cari Dokter Spesialis atau Jadwal Praktek
           </h2>
 
           <div
