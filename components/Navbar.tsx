@@ -8,11 +8,11 @@ const Navbar = () => {
     <Image
       src="/logo.png"
       alt="RS Medika Lestari"
-      width={80}
-      height={40}
+      width={130}
+      height={25}
       className="object-contain h-auto"
       priority
-      style={{ width: "auto", maxWidth: "80px", height: "auto" }}
+      style={{ width: "auto" }}
     />
   );
 
