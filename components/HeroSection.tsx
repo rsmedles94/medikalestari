@@ -82,6 +82,26 @@ if (typeof document !== "undefined") {
     style.dataset.shimmer = "true";
     document.head.appendChild(style);
   }
+
+  // Add styles for dropdown options
+  const dropdownStyle = document.createElement("style");
+  dropdownStyle.textContent = `
+    select option {
+      color: #173A87;
+      background-color: white;
+    }
+    select option:hover {
+      background-color: #e0e7ff;
+    }
+    select option:checked {
+      background-color: #173A87;
+      color: white;
+    }
+  `;
+  if (!document.head.querySelector("style[data-dropdown]")) {
+    dropdownStyle.dataset.dropdown = "true";
+    document.head.appendChild(dropdownStyle);
+  }
 }
 
 const HeroSection = () => {
