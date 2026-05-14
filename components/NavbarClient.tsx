@@ -178,10 +178,9 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
         animate={{ opacity: 1, y: 0, height: "auto" }}
         exit={{ opacity: 0, y: -10, height: 0 }}
         transition={{ duration: 0.3, ease: "circOut" }}
-        className={`absolute top-full bg-white text-gray-800 shadow-xl overflow-hidden z-50  ${
+        className={`absolute top-full bg-white text-gray-700 shadow-xl overflow-hidden z-50 border-t border-gray-200 ${
           isLargeMenu ? "w-[600px] -left-20" : widthClass
         }`}
-        style={{ borderTopColor: "#0084BF" }}
       >
         <div
           className={`py-2 grid ${isLargeMenu ? "grid-cols-2" : "grid-cols-1"}`}
@@ -266,9 +265,9 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
         transition={{ duration: 0.4, ease: "easeInOut" }}
         className="bg-white overflow-hidden will-change-[height,opacity]"
       >
-        <div className="py-2 relative">
+        <div className="py-4 relative">
           <div className="max-w-[1200px] mx-auto px-4 md:px-8 flex justify-between items-center">
-            <Link href="/" className="flex items-center">
+            <Link href="/" className="flex items-center scale-125">
               {logoNode}
             </Link>
 
@@ -365,21 +364,16 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
       {/* --- Bottom Navbar --- */}
 
-      <div className="hidden md:block relative w-full bg-[#014f86] text-white z-30 ">
-        <div
-          className="absolute right-0 top-0 h-full w-[37%] bg-[#013a63] hidden lg:block"
-          style={{ clipPath: "polygon(46px 0, 100% 0, 100% 100%, 0% 100%)" }}
-        />
-
-        <div className="max-w-[1220px] mx-auto px-4 md:px-8 flex justify-between items-center h-12 relative z-10">
-          <div className="flex h-full text-[15px]">
+      <div className="hidden md:block relative w-full bg-white border-t border-gray-200 z-30">
+        <div className="max-w-[1220px] mx-auto px-4 md:px-8 flex justify-between items-center h-16 relative z-10">
+          <div className="flex h-full text-[15px] text-gray-700">
             <button
               onClick={handleHomeClick}
               className="flex items-center h-full px-6 transition-colors font-medium relative group cursor-pointer"
             >
               Beranda
               <div
-                className={`absolute bottom-0 left-6 right-6 h-1 bg-white rounded-t-full transition-transform duration-300 ${
+                className={`absolute bottom-0 left-6 right-6 h-1 bg-gray-400 rounded-t-full transition-transform duration-300 ${
                   pathname === "/"
                     ? "scale-x-100"
                     : "scale-x-0 group-hover:scale-x-100"
@@ -395,16 +389,16 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               }}
               onMouseLeave={() => setActiveMenu(null)}
             >
-              <button className="flex items-center h-full px-6 transition-colors font-medium relative group gap-2">
+              <button className="flex items-center h-full px-6 transition-colors font-medium relative group gap-2 text-gray-700">
                 Profil
                 <ChevronDown
                   size={18}
-                  className={`transition-transform duration-300 ${
+                  className={`transition-transform duration-300 text-gray-700 ${
                     activeMenu === "Profil" ? "rotate-180" : ""
                   }`}
                 />
                 <div
-                  className={`absolute bottom-0 left-6 right-6 h-1 bg-white rounded-t-full transition-transform duration-300 ${
+                  className={`absolute bottom-0 left-6 right-6 h-1 bg-gray-400 rounded-t-full transition-transform duration-300 ${
                     activeMenu === "Profil"
                       ? "scale-x-100"
                       : "scale-x-0 group-hover:scale-x-100"
@@ -426,16 +420,16 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               }}
               onMouseLeave={() => setActiveMenu(null)}
             >
-              <button className="flex items-center h-full px-6 transition-colors font-medium relative group gap-2">
+              <button className="flex items-center h-full px-6 transition-colors font-medium relative group gap-2 text-gray-700">
                 Dokter Kami
                 <ChevronDown
                   size={18}
-                  className={`transition-transform duration-300 ${
+                  className={`transition-transform duration-300 text-gray-700 ${
                     activeMenu === "Dokter Kami" ? "rotate-180" : ""
                   }`}
                 />
                 <div
-                  className={`absolute bottom-0 left-6 right-6 h-1 bg-white rounded-t-full transition-transform duration-300 ${
+                  className={`absolute bottom-0 left-6 right-6 h-1 bg-gray-400 rounded-t-full transition-transform duration-300 ${
                     activeMenu === "Dokter Kami"
                       ? "scale-x-100"
                       : "scale-x-0 group-hover:scale-x-100"
@@ -467,17 +461,17 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                   }}
                   onMouseLeave={() => setActiveMenu(null)}
                 >
-                  <button className="flex items-center h-full px-6 transition-colors font-medium relative group gap-2">
+                  <button className="flex items-center h-full px-6 transition-colors font-medium relative group gap-2 text-gray-700">
                     {item}
                     <ChevronDown
                       size={18}
-                      className={`transition-transform duration-300 ${
+                      className={`transition-transform duration-300 text-gray-700 ${
                         activeMenu === item ? "rotate-180" : ""
                       }`}
                     />
 
                     <div
-                      className={`absolute bottom-0 left-6 right-6 h-1 bg-white rounded-t-full transition-transform duration-300 ${
+                      className={`absolute bottom-0 left-6 right-6 h-1 bg-gray-400 rounded-t-full transition-transform duration-300 ${
                         activeMenu === item
                           ? "scale-x-100"
                           : "scale-x-0 group-hover:scale-x-100"
@@ -506,14 +500,13 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                   openSearch();
                 }
               }}
-              className="flex items-center gap-2 transition-all h-full px-3 relative group"
+              className="flex items-center gap-1 transition-all h-full px-3 relative group text-gray-700"
+              title="Cari Dokter Spesialis"
             >
               <Search size={20} strokeWidth={2.5} />
 
-              <span className="font-medium">Cari Dokter Spesialis</span>
-
               <div
-                className={`absolute bottom-0 left-3 right-3 h-1 bg-white rounded-t-full transition-transform duration-300 ${
+                className={`absolute bottom-0 left-3 right-3 h-1 bg-gray-400 rounded-t-full transition-transform duration-300 ${
                   isSearchOpen
                     ? "scale-x-100"
                     : "scale-x-0 group-hover:scale-x-100"
@@ -526,7 +519,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               onMouseEnter={() => setActiveMenu("Lang")}
               onMouseLeave={() => setActiveMenu(null)}
             >
-              <div className="flex items-center gap-1 px-1 -py-1 border border-white rounded-full">
+              <div className="flex items-center gap-1 px-1 -py-1 border border-gray-400 rounded-full">
                 <svg
                   width={18}
                   height={18}
@@ -559,11 +552,11 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                   />
                 </svg>
 
-                <span className="font-medium">ID</span>
+                <span className="font-medium text-gray-700">ID</span>
               </div>
 
               <div
-                className={`absolute bottom-0 left-3 right-3 h-1 bg-white rounded-t-full transition-transform duration-300 ${
+                className={`absolute bottom-0 left-3 right-3 h-1 bg-gray-400 rounded-t-full transition-transform duration-300 ${
                   activeMenu === "Lang"
                     ? "scale-x-100"
                     : "scale-x-0 group-hover:scale-x-100"
@@ -853,11 +846,14 @@ function AuthArea({
         href="/admin/dashboard"
         onClick={onClick}
         className={`flex items-center gap-2 font-medium ${
-          isMobile ? "text-[#014f86] text-lg" : "text-white text-sm "
+          isMobile ? "text-[#014f86] text-lg" : "text-gray-700 text-sm "
         }`}
         title="Panel Admin"
       >
-        <LayoutDashboard size={isMobile ? 24 : 20} />
+        <LayoutDashboard
+          size={isMobile ? 24 : 20}
+          className={isMobile ? "" : "text-gray-700"}
+        />
 
         {isMobile && <span>DASHBOARD ADMIN</span>}
       </Link>
@@ -869,11 +865,14 @@ function AuthArea({
       href="/admin/login"
       onClick={onClick}
       className={`flex items-center gap-2 font-medium ${
-        isMobile ? "text-gray-600 text-lg" : "text-white text-sm"
+        isMobile ? "text-gray-600 text-lg" : "text-gray-700 text-sm"
       }`}
       title="Login"
     >
-      <UserCircle size={isMobile ? 24 : 20} />
+      <UserCircle
+        size={isMobile ? 24 : 20}
+        className={isMobile ? "" : "text-gray-700"}
+      />
 
       {isMobile && <span>Login</span>}
     </Link>
