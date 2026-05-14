@@ -48,12 +48,14 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({ isOpen, onClose }) => {
     if (searchQuery.trim()) {
       router.push(`/dokter?search=${encodeURIComponent(searchQuery)}`);
       setSearchQuery("");
+      if (onClose) onClose();
     }
   };
 
   const handleDoctorClick = (doctorId: string) => {
     router.push(`/dokter/${doctorId}`);
     setSearchQuery("");
+    if (onClose) onClose();
   };
 
   const handleSpecialtyClick = (specialty: string) => {

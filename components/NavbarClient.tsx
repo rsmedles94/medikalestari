@@ -94,6 +94,11 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
     };
   }, [isMobileMenuOpen]);
 
+  // Close search dropdown when pathname changes
+  useEffect(() => {
+    closeSearch();
+  }, [pathname, closeSearch]);
+
   const menuData: Record<string, string[]> = {
     "Fasilitas & Layanan": [
       "Emergency",
@@ -384,7 +389,10 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
             <div
               className="relative h-full flex items-center"
-              onMouseEnter={() => setActiveMenu("Profil")}
+              onMouseEnter={() => {
+                setActiveMenu("Profil");
+                closeSearch();
+              }}
               onMouseLeave={() => setActiveMenu(null)}
             >
               <button className="flex items-center h-full px-6 transition-colors font-medium relative group gap-2">
@@ -412,7 +420,10 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
             <div
               className="relative h-full flex items-center"
-              onMouseEnter={() => setActiveMenu("Dokter Kami")}
+              onMouseEnter={() => {
+                setActiveMenu("Dokter Kami");
+                closeSearch();
+              }}
               onMouseLeave={() => setActiveMenu(null)}
             >
               <button className="flex items-center h-full px-6 transition-colors font-medium relative group gap-2">
@@ -450,7 +461,10 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                 <div
                   key={item}
                   className="relative h-full flex items-center"
-                  onMouseEnter={() => setActiveMenu(item)}
+                  onMouseEnter={() => {
+                    setActiveMenu(item);
+                    closeSearch();
+                  }}
                   onMouseLeave={() => setActiveMenu(null)}
                 >
                   <button className="flex items-center h-full px-6 transition-colors font-medium relative group gap-2">
@@ -485,7 +499,13 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
           <div className="flex items-center h-full gap-2 text-[15px]">
             <button
-              onClick={() => openSearch()}
+              onClick={() => {
+                if (isSearchOpen) {
+                  closeSearch();
+                } else {
+                  openSearch();
+                }
+              }}
               className="flex items-center gap-2 transition-all h-full px-3 relative group"
             >
               <Search size={20} strokeWidth={2.5} />
