@@ -569,8 +569,8 @@ const HeroSection = () => {
       </div>
 
       {/* SEARCH BAR - Desktop */}
-      <div className="hidden md:absolute md:inset-0 md:flex md:flex-col md:items-end md:justify-end md:z-20 md:pr-12 md:pb-15 md:pointer-events-none">
-        <div className="md:pointer-events-auto bg-[#173A87]/80 rounded-md shadow-lg p-5">
+      <div className="hidden md:absolute md:inset-0 md:flex md:flex-col md:items-end md:justify-end md:z-20 md:pr-180 md:pb-15 md:pointer-events-none">
+        <div className="md:pointer-events-auto bg-[#173A87] rounded-md shadow-lg p-5">
           {/* TITLE */}
           <h2 className="text-lg font-bold text-white mb-4">
             Cari Dokter Spesialis atau Jadwal Praktek
