@@ -309,14 +309,14 @@ const HeroSection = () => {
 
   if (loading || filteredSlides.length === 0) {
     return (
-      <section className="relative w-full bg-transparent overflow-hidden">
+      <section className="relative w-full bg-transparent overflow-hidden pt-8 md:pt-12">
         {/* Empty state untuk desktop */}
         <div className="hidden md:block relative w-full aspect-1900/720 bg-gray-200" />
 
         {/* Empty state untuk mobile */}
         <div className="md:hidden relative w-full aspect-2208/2760 bg-gray-200" />
         {/* SEARCH BAR  */}
-        <div className="relative w-full px-4 py-8 md:py-0 md:-mt-14 md:z-50 bg-transparent">
+        <div className="relative w-full px-4 py-8 md:py-0 md:-mt-4 md:z-50 bg-transparent">
           <div className="max-w-5xl mx-auto">
             <div
               className="
@@ -413,7 +413,7 @@ const HeroSection = () => {
   }
 
   return (
-    <section className="relative w-full bg-transparent overflow-hidden">
+    <section className="relative w-full bg-transparent overflow-hidden pt-8 md:pt-12">
       {/* BANNER AREA - Desktop */}
       <section
         aria-label="Hero banner carousel"
@@ -548,7 +548,7 @@ const HeroSection = () => {
       </div>
 
       {/* SEARCH BAR */}
-      <div className="relative w-full px-4 py-8 md:absolute md:inset-0 md:px-4 md:py-0 md:flex md:items-end md:justify-center md:z-20 md:pb-6 md:pointer-events-none">
+      <div className="relative w-full px-4 py-8 md:absolute md:inset-0 md:px-4 md:py-0 md:flex md:items-end md:justify-center md:z-20 md:pb-12 md:pointer-events-none">
         <div className="max-w-5xl mx-auto w-full md:pointer-events-auto">
           <div
             className="
