@@ -281,6 +281,14 @@ const HeroSection = () => {
     setLoadedSlides((prev) => ({ ...prev, [key]: true }));
   };
 
+  const handleImageError = (id?: string | number) => {
+    if (id === undefined || id === null) return;
+    const key = String(id);
+    console.error(`[HeroSection] ❌ Image failed to load for banner ${key}`);
+    // Mark as loaded anyway to remove skeleton
+    setLoadedSlides((prev) => ({ ...prev, [key]: true }));
+  };
+
   if (loading || filteredSlides.length === 0) {
     return (
       <section className="relative w-full bg-transparent overflow-hidden">
@@ -420,7 +428,7 @@ const HeroSection = () => {
                     priority={index === 0}
                     sizes="(max-width: 768px) 100vw, 100vw"
                     onLoadingComplete={() => handleImageLoaded(slide.id)}
-                    onError={() => handleImageLoaded(slide.id)}
+                    onError={() => handleImageError(slide.id)}
                     className={`object-cover object-center transition-opacity duration-700 ${
                       isLoaded ? "opacity-100" : "opacity-0"
                     }`}
@@ -496,7 +504,7 @@ const HeroSection = () => {
                 priority={index === 0}
                 sizes="(max-width: 768px) 100vw, 100vw"
                 onLoadingComplete={() => handleImageLoaded(slide.id)}
-                onError={() => handleImageLoaded(slide.id)}
+                onError={() => handleImageError(slide.id)}
                 className={`object-cover object-center transition-opacity duration-700 ${
                   isLoaded ? "opacity-100" : "opacity-0"
                 }`}

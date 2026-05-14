@@ -1,4 +1,8 @@
 import { supabase } from "./supabase";
+import {
+  constructSupabaseImageUrl,
+  debugSupabaseImageUrl,
+} from "./image-url-helper";
 import { Doctor, Schedule, MadingContent, HeroBanner } from "./types";
 
 // DOCTOR OPERATIONS
@@ -363,19 +367,42 @@ export async function fetchHeroBanners(
       return [];
     }
 
-    // Validate image URLs sebelum return
-    const validBanners = data.filter((banner) => {
-      const isValidUrl =
-        banner.image_url &&
-        (banner.image_url.startsWith("http") ||
-          banner.image_url.startsWith("/"));
-      if (!isValidUrl) {
-        console.warn(
-          `[fetchHeroBanners] Invalid image URL for banner ${banner.id}: ${banner.image_url}`,
-        );
-      }
-      return isValidUrl;
-    });
+    // Validate and normalize image URLs sebelum return
+    const validBanners = data
+      .map((banner) => {
+        let url = banner.image_url;
+
+        // Jika URL tidak lengkap, konstruksi URL publik Supabase
+        if (url && !url.startsWith("http")) {
+          // Jika path dimulai dengan /, tambahkan base URL Supabase
+          const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+          if (supabaseUrl) {
+            url = `${supabaseUrl}/storage/v1/object/public${url}`;
+          }
+        }
+
+        // Debug log untuk URL construction
+        if (process.env.NODE_ENV === "development" && url) {
+          debugSupabaseImageUrl(url);
+        }
+
+        return {
+          ...banner,
+          image_url: url,
+        };
+      })
+      .filter((banner) => {
+        const isValidUrl =
+          banner.image_url &&
+          (banner.image_url.startsWith("http") ||
+            banner.image_url.startsWith("/"));
+        if (!isValidUrl) {
+          console.warn(
+            `[fetchHeroBanners] Invalid image URL for banner ${banner.id}: ${banner.image_url}`,
+          );
+        }
+        return isValidUrl;
+      });
 
     console.log(
       "[fetchHeroBanners] ✅ Success - fetched",
