@@ -2,7 +2,7 @@
 
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { AuthProvider } from "@/context/AuthProvider";
+import { AuthProvider, useAuth } from "@/context/AuthProvider";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AdminSidebar from "@/components/AdminSidebar";
@@ -121,14 +121,22 @@ function LayoutContent({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
+  const { isAuthenticated, loading: authLoading } = useAuth();
 
   const isAdminPage = pathname?.startsWith(`/admin`);
+  const isLoginPage = pathname === `/admin/login`;
+
+  // Jika di halaman login atau sedang loading auth atau belum authenticated, gunakan bg-white
+  const shouldUseLightBackground =
+    isLoginPage || authLoading || !isAuthenticated;
 
   return (
     <>
       <PageTracker pagePath={pathname || "/"} />
       {isAdminPage ? (
-        <div className="min-h-screen bg-gray-100 md:ml-64">
+        <div
+          className={`min-h-screen ${shouldUseLightBackground ? "bg-white" : "bg-gray-100 md:ml-64"}`}
+        >
           <AdminSidebar />
           <div className="flex-1 flex flex-col">
             <div className="flex-1 overflow-auto">{children}</div>

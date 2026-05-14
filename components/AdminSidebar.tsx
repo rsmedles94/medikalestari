@@ -101,8 +101,12 @@ const AdminSidebar = () => {
   const isActive = (path: string) => pathname === path;
 
   // Jangan render sidebar jika sedang loading atau belum authenticated
-  if (authLoading || !isAuthenticated) {
-    return null;
+  if (authLoading) {
+    return null; // Don't render while loading
+  }
+
+  if (!isAuthenticated) {
+    return null; // Don't render if not authenticated
   }
 
   // Compute sidebar width classes for mobile
