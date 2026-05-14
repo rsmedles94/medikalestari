@@ -493,7 +493,9 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
             </button>
 
             <div
-              className="relative h-full flex items-center px-3 cursor-pointer group"
+              className={`relative h-full flex items-center px-3 cursor-pointer group transition-colors ${
+                activeMenu === "Lang" ? "bg-gray-100" : ""
+              }`}
               onMouseEnter={() => setActiveMenu("Lang")}
               onMouseLeave={() => setActiveMenu(null)}
             >
@@ -840,7 +842,7 @@ function AuthDropdown({ activeMenu, setActiveMenu }: AuthDropdownProps) {
             animate={{ opacity: 1, y: 0, height: "auto" }}
             exit={{ opacity: 0, y: -10, height: 0 }}
             transition={{ duration: 0.3, ease: "circOut" }}
-            className="absolute top-full right-1/2 translate-x-1/2 bg-[#014f86] text-white shadow-xl overflow-visible z-50 border-t border-[#014f86] w-48 mt-2 rounded-md"
+            className="absolute top-full right-0 bg-[#014f86] text-white shadow-xl overflow-visible z-50 border-t border-[#014f86] w-48 mt-2"
           >
             {/* Arrow/Triangle */}
             <div className="absolute -top-2 right-6 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-[#014f86]"></div>
@@ -849,7 +851,7 @@ function AuthDropdown({ activeMenu, setActiveMenu }: AuthDropdownProps) {
                 <Link
                   href="/admin/dashboard"
                   onClick={() => setActiveMenu(null)}
-                  className="px-4 py-4 text-white font-medium hover:bg-white hover:text-[#014f86] transition-colors flex items-center gap-2 rounded-md m-1"
+                  className="px-4 py-4 text-white font-medium hover:bg-white hover:text-[#014f86] transition-colors flex items-center gap-2 m-1"
                 >
                   Dashboard Admin
                 </Link>
@@ -857,7 +859,7 @@ function AuthDropdown({ activeMenu, setActiveMenu }: AuthDropdownProps) {
                 <Link
                   href="/admin/login"
                   onClick={() => setActiveMenu(null)}
-                  className="px-4 py-4 text-white font-medium hover:bg-white hover:text-[#014f86] transition-colors flex items-center gap-2 rounded-md m-1"
+                  className="px-4 py-4 text-white font-medium hover:bg-white hover:text-[#014f86] transition-colors flex items-center gap-2 m-1"
                 >
                   <UserCircle size={18} />
                   Login
