@@ -439,15 +439,13 @@ const HeroSection = () => {
                     <div className="absolute inset-0 skeleton-shimmer" />
                   )}
 
-                  <Image
+                  {/* Gunakan img tag langsung untuk Supabase URLs (bypass Next.js Image optimization) */}
+                  <img
                     src={slide.image_url}
                     alt={`Slide ${index}`}
-                    fill
-                    priority={index === 0}
-                    sizes="(max-width: 768px) 100vw, 100vw"
-                    onLoadingComplete={() => handleImageLoaded(slide.id)}
+                    onLoad={() => handleImageLoaded(slide.id)}
                     onError={() => handleImageError(slide.id)}
-                    className={`object-cover object-center transition-opacity duration-700 ${
+                    className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-700 ${
                       isLoaded ? "opacity-100" : "opacity-0"
                     }`}
                   />
@@ -515,15 +513,13 @@ const HeroSection = () => {
                 <div className="absolute inset-0 skeleton-shimmer" />
               )}
 
-              <Image
+              {/* Gunakan img tag langsung untuk Supabase URLs (bypass Next.js Image optimization) */}
+              <img
                 src={slide.image_url}
                 alt={`Slide ${index}`}
-                fill
-                priority={index === 0}
-                sizes="(max-width: 768px) 100vw, 100vw"
-                onLoadingComplete={() => handleImageLoaded(slide.id)}
+                onLoad={() => handleImageLoaded(slide.id)}
                 onError={() => handleImageError(slide.id)}
-                className={`object-cover object-center transition-opacity duration-700 ${
+                className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-700 ${
                   isLoaded ? "opacity-100" : "opacity-0"
                 }`}
               />

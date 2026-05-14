@@ -1,8 +1,9 @@
--- Drop tabel lama
+-- Drop tabel lama beserta RLS policies
+BEGIN;
 DROP TABLE IF EXISTS hero_banners CASCADE;
 
 -- Buat tabel baru dengan support production URL
-CREATE TABLE hero_banners (
+CREATE TABLE public.hero_banners (
   id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   image_url TEXT NOT NULL,
   device_type VARCHAR(50) NOT NULL,
@@ -13,5 +14,20 @@ CREATE TABLE hero_banners (
 );
 
 -- Index untuk query yang lebih cepat
-CREATE INDEX idx_hero_banners_active ON hero_banners(is_active);
-CREATE INDEX idx_hero_banners_order ON hero_banners("order");
+CREATE INDEX idx_hero_banners_active ON public.hero_banners(is_active);
+CREATE INDEX idx_hero_banners_order ON public.hero_banners("order");
+
+-- Enable RLS
+ALTER TABLE public.hero_banners ENABLE ROW LEVEL SECURITY;
+
+-- Policy untuk read (public)
+CREATE POLICY "hero_banners_read_policy" ON public.hero_banners
+  FOR SELECT
+  USING (is_active = true);
+
+-- Policy untuk write (admin only - via service role)
+CREATE POLICY "hero_banners_write_policy" ON public.hero_banners
+  FOR ALL
+  USING (auth.role() = 'authenticated');
+
+COMMIT;
