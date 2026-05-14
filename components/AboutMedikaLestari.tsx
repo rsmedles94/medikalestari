@@ -63,7 +63,7 @@ const AboutMedikaLestari = () => {
               {excellencePoints.map((point, index) => (
                 <li key={index} className="flex items-start">
                   <div className="flex-shrink-0 mt-1">
-                    <div className="bg-[#014f86] rounded-full p-1 shadow-sm">
+                    <div className="bg-[#173A87] rounded-full p-1 shadow-sm">
                       <svg
                         className="h-3.5 w-3.5 text-white"
                         fill="none"
@@ -106,7 +106,7 @@ const AboutMedikaLestari = () => {
 
             {/* Bagian Video Lainnya (2 Video Kecil) */}
             <div className="mt-8">
-              <h4 className="text-lg font-bold text-slate-800 mb-4 border-l-4 border-[#014f86] pl-3">
+              <h4 className="text-lg font-bold text-slate-800 mb-4 border-l-4 border-[#173A87] pl-3">
                 Video Lainnya
               </h4>
               <div className="grid grid-cols-2 gap-4">

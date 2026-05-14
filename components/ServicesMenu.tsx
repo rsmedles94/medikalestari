@@ -104,14 +104,14 @@ const ServicesMenu: React.FC = () => {
                 >
                   <Link
                     href={service.href}
-                    className="group flex flex-col items-center justify-center p-8 h-full transition-colors duration-300 hover:bg-slate-50"
+                    className="group flex flex-col items-center justify-center p-8 h-full transition-colors duration-300 hover:bg-[#173A87]"
                   >
                     {/* group-hover:-translate-y-1 dihapus agar ikon tidak gerak */}
-                    <div className="mb-4 text-slate-400 group-hover:text-[#014f86] transition-colors duration-300 transform">
+                    <div className="mb-4 text-[#173A87] group-hover:text-white transition-colors duration-300 transform">
                       <Icon size={38} strokeWidth={1.2} />
                     </div>
 
-                    <span className="text-center text-[11px] md:text-xs font-bold uppercase tracking-widest text-slate-500 group-hover:text-[#014f86] transition-colors duration-300">
+                    <span className="text-center text-[11px] md:text-xs font-bold uppercase tracking-widest text-[#173A87] group-hover:text-white transition-colors duration-300">
                       {service.label}
                     </span>
                   </Link>

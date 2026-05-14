@@ -178,12 +178,12 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
         animate={{ opacity: 1, y: 0, height: "auto" }}
         exit={{ opacity: 0, y: -10, height: 0 }}
         transition={{ duration: 0.3, ease: "circOut" }}
-        className={`absolute top-full bg-[#014f86] text-white shadow-xl overflow-visible z-50 border-t border-[#014f86] mt-2 left-1/2 transform -translate-x-1/2 ${
+        className={`absolute top-full bg-[#173A87] text-white shadow-xl overflow-visible z-50 border-t border-[#173A87] mt-2 left-1/2 transform -translate-x-1/2 ${
           isLargeMenu ? "w-[600px]" : widthClass
         }`}
       >
         {/* Arrow/Triangle */}
-        <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-[#014f86]"></div>
+        <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-[#173A87]"></div>
         <div
           className={`py-4 px-2 grid ${isLargeMenu ? "grid-cols-2" : "grid-cols-1"}`}
         >
@@ -317,7 +317,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                   href="https://wa.me/6215858585858"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="ml-6 px-4 py-2 bg-gray-500  text-white font-medium text-sm rounded-full transition-colors duration-200 active:scale-95"
+                  className="ml-6 px-4 py-2 bg-[#173A87]  text-white font-medium text-sm rounded-full transition-colors duration-200 active:scale-95"
                 >
                   Buat Janji Temu
                 </a>
@@ -595,7 +595,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               <div className="flex flex-col p-4">
                 <button
                   onClick={handleHomeClick}
-                  className="text-left p-4 font-semibold text-[#014f86] border-b text-lg"
+                  className="text-left p-4 font-semibold text-[#173A87] border-b text-lg"
                 >
                   Beranda
                 </button>
@@ -604,7 +604,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                   onClick={() =>
                     setActiveMenu(activeMenu === "Profil" ? null : "Profil")
                   }
-                  className="w-full text-left p-4 font-semibold text-[#014f86] flex justify-between items-center text-lg border-b"
+                  className="w-full text-left p-4 font-semibold text-[#173A87] flex justify-between items-center text-lg border-b"
                 >
                   Profil
                   {activeMenu === "Profil" ? (
@@ -659,7 +659,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                 <Link
                   href="/dokter#section-dokter"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-left p-4 font-semibold text-[#014f86] border-b text-lg"
+                  className="text-left p-4 font-semibold text-[#173A87] border-b text-lg"
                 >
                   Dokter Spesialis
                 </Link>
@@ -667,7 +667,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                 <Link
                   href="/jadwal-dokter"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-left p-4 font-semibold text-[#014f86] border-b text-lg"
+                  className="text-left p-4 font-semibold text-[#173A87] border-b text-lg"
                 >
                   Jadwal Dokter
                 </Link>
@@ -682,7 +682,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                         onClick={() =>
                           setActiveMenu(activeMenu === item ? null : item)
                         }
-                        className="w-full text-left p-4 font-semibold text-[#014f86] flex justify-between items-center text-lg"
+                        className="w-full text-left p-4 font-semibold text-[#173A87] flex justify-between items-center text-lg"
                       >
                         {item}
 
@@ -788,7 +788,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
         <Link
           href="/services/medical-checkup"
-          className="flex-1 bg-[#014f86] text-white font-semibold text-center text-xs flex items-center justify-center gap-2 hover:bg-[#013a63] transition-colors"
+          className="flex-1 bg-[#173A87] text-white font-semibold text-center text-xs flex items-center justify-center gap-2 hover:bg-[#013a63] transition-colors"
         >
           <Stethoscope size={16} />
           Medical Checkup
@@ -842,16 +842,16 @@ function AuthDropdown({ activeMenu, setActiveMenu }: AuthDropdownProps) {
             animate={{ opacity: 1, y: 0, height: "auto" }}
             exit={{ opacity: 0, y: -10, height: 0 }}
             transition={{ duration: 0.3, ease: "circOut" }}
-            className="absolute top-full right-0 bg-[#014f86] text-white shadow-xl overflow-visible z-50 border-t border-[#014f86] w-48 mt-2"
+            className="absolute top-full right-0 bg-[#173A87] text-white shadow-xl overflow-visible z-50 border-t border-[#173A87] w-48 mt-2"
           >
             {/* Arrow/Triangle */}
-            <div className="absolute -top-2 right-6 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-[#014f86]"></div>
+            <div className="absolute -top-2 right-6 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-[#173A87]"></div>
             <div className="py-2 px-2 grid grid-cols-1">
               {isAuthenticated ? (
                 <Link
                   href="/admin/dashboard"
                   onClick={() => setActiveMenu(null)}
-                  className="px-4 py-4 text-white font-medium hover:bg-white hover:text-[#014f86] transition-colors flex items-center gap-2 m-1"
+                  className="px-4 py-4 text-white font-medium hover:bg-white hover:text-[#173A87] transition-colors flex items-center gap-2 m-1"
                 >
                   Dashboard Admin
                 </Link>
@@ -859,7 +859,7 @@ function AuthDropdown({ activeMenu, setActiveMenu }: AuthDropdownProps) {
                 <Link
                   href="/admin/login"
                   onClick={() => setActiveMenu(null)}
-                  className="px-4 py-4 text-white font-medium hover:bg-white hover:text-[#014f86] transition-colors flex items-center gap-2 m-1"
+                  className="px-4 py-4 text-white font-medium hover:bg-white hover:text-[#173A87] transition-colors flex items-center gap-2 m-1"
                 >
                   <UserCircle size={18} />
                   Login
@@ -890,7 +890,7 @@ function AuthArea({
         href="/admin/dashboard"
         onClick={onClick}
         className={`flex items-center gap-2 font-medium ${
-          isMobile ? "text-[#014f86] text-lg" : "text-gray-700 text-sm "
+          isMobile ? "text-[#173A87] text-lg" : "text-gray-700 text-sm "
         }`}
         title="Panel Admin"
       >

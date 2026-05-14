@@ -54,7 +54,7 @@ export default function DoctorRecommendation({
         {recommendedDoctors.map((doctor) => (
           <motion.div key={doctor.id} variants={itemVariants}>
             <Link href={`/dokter/${doctor.id}`}>
-              <div className="group flex items-center p-3 bg-white border border-slate-100 rounded-xl hover:border-blue-200 hover:shadow-md hover:shadow-[#014f86] transition-all duration-200 -mt-2">
+              <div className="group flex items-center p-3 bg-white border border-slate-100 rounded-xl hover:border-blue-200 hover:shadow-md hover:shadow-[#173A87] transition-all duration-200 -mt-2">
                 {/* Avatar Bulat di Kiri */}
                 <div className="relative flex-shrink-0 w-16 h-16 rounded-full overflow-hidden bg-slate-50 border border-slate-50">
                   <Image
@@ -79,7 +79,7 @@ export default function DoctorRecommendation({
                 </div>
 
                 {/* Arrow Icon */}
-                <div className="ml-2 text-slate-300 group-hover:text-[#014f86] transition-colors">
+                <div className="ml-2 text-slate-300 group-hover:text-[#173A87] transition-colors">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="16"

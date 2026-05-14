@@ -17,7 +17,7 @@ const HakKewajiban = () => {
       <Breadcrumb items={breadcrumbs} />
 
       {/* Header */}
-      <section className="bg-gradient-to-r from-[#014f86] to-[#014f86] text-white py-8 px-6">
+      <section className="bg-gradient-to-r from-[#173A87] to-[#173A87] text-white py-8 px-6">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold">Hak dan Kewajiban Pasien</h1>
         </div>
@@ -29,12 +29,12 @@ const HakKewajiban = () => {
           <div className="space-y-12">
             {/* Hak Pasien */}
             <div>
-              <h2 className="text-3xl font-bold text-[#014f86] mb-6 pb-4 border-b-2 border-[#014f86]">
+              <h2 className="text-3xl font-bold text-[#173A87] mb-6 pb-4 border-b-2 border-[#173A87]">
                 Hak-Hak Pasien
               </h2>
 
               <div className="space-y-6">
-                <div className="p-4 bg-blue-50 border-l-4 border-[#014f86] rounded">
+                <div className="p-4 bg-blue-50 border-l-4 border-[#173A87] rounded">
                   <h3 className="text-xl font-bold text-gray-900 mb-2">
                     1. Hak atas Informasi
                   </h3>
@@ -46,7 +46,7 @@ const HakKewajiban = () => {
                   </p>
                 </div>
 
-                <div className="p-4 bg-blue-50 border-l-4 border-[#014f86] rounded">
+                <div className="p-4 bg-blue-50 border-l-4 border-[#173A87] rounded">
                   <h3 className="text-xl font-bold text-gray-900 mb-2">
                     2. Hak atas Privasi dan Kerahasiaan
                   </h3>
@@ -57,7 +57,7 @@ const HakKewajiban = () => {
                   </p>
                 </div>
 
-                <div className="p-4 bg-blue-50 border-l-4 border-[#014f86] rounded">
+                <div className="p-4 bg-blue-50 border-l-4 border-[#173A87] rounded">
                   <h3 className="text-xl font-bold text-gray-900 mb-2">
                     3. Hak atas Keselamatan
                   </h3>
@@ -68,7 +68,7 @@ const HakKewajiban = () => {
                   </p>
                 </div>
 
-                <div className="p-4 bg-blue-50 border-l-4 border-[#014f86] rounded">
+                <div className="p-4 bg-blue-50 border-l-4 border-[#173A87] rounded">
                   <h3 className="text-xl font-bold text-gray-900 mb-2">
                     4. Hak untuk Menolak Perawatan
                   </h3>
@@ -79,7 +79,7 @@ const HakKewajiban = () => {
                   </p>
                 </div>
 
-                <div className="p-4 bg-blue-50 border-l-4 border-[#014f86] rounded">
+                <div className="p-4 bg-blue-50 border-l-4 border-[#173A87] rounded">
                   <h3 className="text-xl font-bold text-gray-900 mb-2">
                     5. Hak atas Pelayanan yang Profesional
                   </h3>
@@ -89,7 +89,7 @@ const HakKewajiban = () => {
                   </p>
                 </div>
 
-                <div className="p-4 bg-blue-50 border-l-4 border-[#014f86] rounded">
+                <div className="p-4 bg-blue-50 border-l-4 border-[#173A87] rounded">
                   <h3 className="text-xl font-bold text-gray-900 mb-2">
                     6. Hak atas Keluhan dan Pengaduan
                   </h3>
@@ -104,7 +104,7 @@ const HakKewajiban = () => {
 
             {/* Kewajiban Pasien */}
             <div>
-              <h2 className="text-3xl font-bold text-[#014f86] mb-6 pb-4 border-b-2 border-[#014f86]">
+              <h2 className="text-3xl font-bold text-[#173A87] mb-6 pb-4 border-b-2 border-[#173A87]">
                 Kewajiban-Kewajiban Pasien
               </h2>
 
@@ -178,7 +178,7 @@ const HakKewajiban = () => {
           <div className="mt-12 flex justify-between items-center pt-6 border-t">
             <Link
               href="/syarat-ketentuan/umum"
-              className="text-[#014f86] hover:text-[#001e3d] font-semibold flex items-center"
+              className="text-[#173A87] hover:text-[#001e3d] font-semibold flex items-center"
             >
               <svg
                 className="w-4 h-4 mr-2"
@@ -197,7 +197,7 @@ const HakKewajiban = () => {
             </Link>
             <Link
               href="/syarat-ketentuan/privasi"
-              className="text-[#014f86] hover:text-[#001e3d] font-semibold flex items-center"
+              className="text-[#173A87] hover:text-[#001e3d] font-semibold flex items-center"
             >
               Selanjutnya
               <svg

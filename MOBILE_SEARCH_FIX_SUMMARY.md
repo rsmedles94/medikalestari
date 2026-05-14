@@ -13,7 +13,7 @@
 **Sebelum:**
 
 ```tsx
-<nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[#014f86] z-50 ...">
+<nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[#173A87] z-50 ...">
   {/* Selalu render */}
 </nav>
 ```
@@ -23,7 +23,7 @@
 ```tsx
 {
   !isSearchOpen && (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[#014f86] z-50 ...">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[#173A87] z-50 ...">
       {/* Conditional render - hide tanpa animasi */}
     </nav>
   );
