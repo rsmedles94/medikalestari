@@ -178,10 +178,12 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
         animate={{ opacity: 1, y: 0, height: "auto" }}
         exit={{ opacity: 0, y: -10, height: 0 }}
         transition={{ duration: 0.3, ease: "circOut" }}
-        className={`absolute top-full bg-white text-gray-700 shadow-xl overflow-hidden z-50 border-t border-gray-200 ${
+        className={`absolute top-full bg-white text-gray-700 shadow-xl overflow-visible z-50 border-t border-gray-200 mt-2 ${
           isLargeMenu ? "w-[600px] -left-20" : widthClass
         }`}
       >
+        {/* Arrow/Triangle */}
+        <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-gray-200"></div>
         <div
           className={`py-2 grid ${isLargeMenu ? "grid-cols-2" : "grid-cols-1"}`}
         >
@@ -345,7 +347,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               <div
                 className={`absolute bottom-0 left-6 right-6 h-1 bg-gray-400 rounded-t-full transition-transform duration-300 ${
                   pathname === "/"
-                    ? "scale-x-100"
+                    ? "scale-x-0"
                     : "scale-x-0 group-hover:scale-x-100"
                 }`}
               />
@@ -370,7 +372,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                 <div
                   className={`absolute bottom-0 left-6 right-6 h-1 bg-gray-400 rounded-t-full transition-transform duration-300 ${
                     activeMenu === "Profil"
-                      ? "scale-x-100"
+                      ? "scale-x-0"
                       : "scale-x-0 group-hover:scale-x-100"
                   }`}
                 />
@@ -401,7 +403,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                 <div
                   className={`absolute bottom-0 left-6 right-6 h-1 bg-gray-400 rounded-t-full transition-transform duration-300 ${
                     activeMenu === "Dokter Kami"
-                      ? "scale-x-100"
+                      ? "scale-x-0"
                       : "scale-x-0 group-hover:scale-x-100"
                   }`}
                 />
@@ -443,7 +445,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                     <div
                       className={`absolute bottom-0 left-6 right-6 h-1 bg-gray-400 rounded-t-full transition-transform duration-300 ${
                         activeMenu === item
-                          ? "scale-x-100"
+                          ? "scale-x-0"
                           : "scale-x-0 group-hover:scale-x-100"
                       }`}
                     />
@@ -478,7 +480,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               <div
                 className={`absolute bottom-0 left-3 right-3 h-1 bg-gray-400 rounded-t-full transition-transform duration-300 ${
                   isSearchOpen
-                    ? "scale-x-100"
+                    ? "scale-x-0"
                     : "scale-x-0 group-hover:scale-x-100"
                 }`}
               />
@@ -528,7 +530,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               <div
                 className={`absolute bottom-0 left-3 right-3 h-1 bg-gray-400 rounded-t-full transition-transform duration-300 ${
                   activeMenu === "Lang"
-                    ? "scale-x-100"
+                    ? "scale-x-0"
                     : "scale-x-0 group-hover:scale-x-100"
                 }`}
               />
@@ -819,7 +821,7 @@ function AuthDropdown({ activeMenu, setActiveMenu }: AuthDropdownProps) {
         <div
           className={`absolute bottom-0 left-3 right-3 h-1 bg-gray-400 rounded-t-full transition-transform duration-300 ${
             activeMenu === "Auth"
-              ? "scale-x-100"
+              ? "scale-x-0"
               : "scale-x-0 group-hover:scale-x-100"
           }`}
         />
@@ -832,8 +834,10 @@ function AuthDropdown({ activeMenu, setActiveMenu }: AuthDropdownProps) {
             animate={{ opacity: 1, y: 0, height: "auto" }}
             exit={{ opacity: 0, y: -10, height: 0 }}
             transition={{ duration: 0.3, ease: "circOut" }}
-            className="absolute top-full right-0 bg-white text-gray-700 shadow-xl overflow-hidden z-50 border-t border-gray-200 w-48"
+            className="absolute top-full right-0 bg-white text-gray-700 shadow-xl overflow-visible z-50 border-t border-gray-200 w-48 mt-2"
           >
+            {/* Arrow/Triangle */}
+            <div className="absolute -top-2 right-6 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-gray-200"></div>
             <div className="py-2 grid grid-cols-1">
               {isAuthenticated ? (
                 <Link
