@@ -24,6 +24,8 @@ import {
   Dumbbell,
   Syringe,
   ChevronDown,
+  Plus,
+  Minus,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthProvider";
@@ -611,12 +613,11 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                   className="w-full text-left p-4 font-semibold text-[#014f86] flex justify-between items-center text-lg border-b"
                 >
                   Profil
-                  <ChevronDown
-                    size={20}
-                    className={`transition-transform duration-300 ${
-                      activeMenu === "Profil" ? "rotate-180" : ""
-                    }`}
-                  />
+                  {activeMenu === "Profil" ? (
+                    <Minus size={20} />
+                  ) : (
+                    <Plus size={20} />
+                  )}
                 </button>
 
                 <AnimatePresence>
@@ -691,12 +692,11 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                       >
                         {item}
 
-                        <ChevronDown
-                          size={20}
-                          className={`transition-transform duration-300 ${
-                            activeMenu === item ? "rotate-180" : ""
-                          }`}
-                        />
+                        {activeMenu === item ? (
+                          <Minus size={20} />
+                        ) : (
+                          <Plus size={20} />
+                        )}
                       </button>
 
                       <AnimatePresence>
