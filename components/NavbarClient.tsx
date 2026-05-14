@@ -178,8 +178,8 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
         animate={{ opacity: 1, y: 0, height: "auto" }}
         exit={{ opacity: 0, y: -10, height: 0 }}
         transition={{ duration: 0.3, ease: "circOut" }}
-        className={`absolute top-full bg-white text-gray-700 shadow-xl overflow-visible z-50 border-t border-gray-200 mt-2 ${
-          isLargeMenu ? "w-[600px] -left-20" : widthClass
+        className={`absolute top-full bg-white text-gray-700 shadow-xl overflow-visible z-50 border-t border-gray-200 mt-2 left-1/2 transform -translate-x-1/2 ${
+          isLargeMenu ? "w-[600px]" : widthClass
         }`}
       >
         {/* Arrow/Triangle */}
@@ -380,7 +380,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
               <AnimatePresence>
                 {activeMenu === "Profil" &&
-                  renderDropdownContent(menuData["Profil"], "left-0 w-56")}
+                  renderDropdownContent(menuData["Profil"], "w-56")}
               </AnimatePresence>
             </div>
 
@@ -414,7 +414,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                   renderDropdownContent(
                     ["Dokter Spesialis", "Jadwal Dokter"],
 
-                    "left-0 w-56",
+                    "w-56",
                   )}
               </AnimatePresence>
             </div>
@@ -453,11 +453,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
                   <AnimatePresence>
                     {activeMenu === item &&
-                      renderDropdownContent(
-                        menuData[item],
-                        "left-0 w-72",
-                        item,
-                      )}
+                      renderDropdownContent(menuData[item], "w-72", item)}
                   </AnimatePresence>
                 </div>
               ))}
@@ -537,7 +533,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
               <AnimatePresence>
                 {activeMenu === "Lang" &&
-                  renderDropdownContent(languages, "right-0 w-48")}
+                  renderDropdownContent(languages, "w-48")}
               </AnimatePresence>
             </div>
 
