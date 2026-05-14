@@ -12,7 +12,9 @@ export function constructSupabaseImageUrl(
   const url = supabaseUrl || process.env.NEXT_PUBLIC_SUPABASE_URL;
 
   if (!url) {
-    console.error("[constructSupabaseImageUrl] NEXT_PUBLIC_SUPABASE_URL not set");
+    console.error(
+      "[constructSupabaseImageUrl] NEXT_PUBLIC_SUPABASE_URL not set",
+    );
     return null;
   }
 
