@@ -366,7 +366,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                 <ChevronDown
                   size={18}
                   className={`transition-transform duration-300 text-gray-700 ${
-                    activeMenu === "Profil" ? "rotate-180" : ""
+                    activeMenu === "Profil" ? "scale-y-[-1]" : ""
                   }`}
                 />
                 <div
@@ -397,7 +397,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                 <ChevronDown
                   size={18}
                   className={`transition-transform duration-300 text-gray-700 ${
-                    activeMenu === "Dokter Kami" ? "rotate-180" : ""
+                    activeMenu === "Dokter Kami" ? "scale-y-[-1]" : ""
                   }`}
                 />
                 <div
@@ -438,7 +438,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                     <ChevronDown
                       size={18}
                       className={`transition-transform duration-300 text-gray-700 ${
-                        activeMenu === item ? "rotate-180" : ""
+                        activeMenu === item ? "scale-y-[-1]" : ""
                       }`}
                     />
 
@@ -845,7 +845,6 @@ function AuthDropdown({ activeMenu, setActiveMenu }: AuthDropdownProps) {
                   onClick={() => setActiveMenu(null)}
                   className="px-4 py-3 text-gray-700 font-medium hover:bg-gray-100 transition-colors flex items-center gap-2"
                 >
-                  <LayoutDashboard size={18} />
                   Dashboard Admin
                 </Link>
               ) : (
