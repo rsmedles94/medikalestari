@@ -413,7 +413,7 @@ const HeroSection = () => {
   }
 
   return (
-    <section className="relative w-full bg-transparent overflow-hidden pt-8 md:pt-12">
+    <section className="relative w-full bg-transparent overflow-hidden pt-4 md:pt-10">
       {/* BANNER AREA - Desktop */}
       <section
         aria-label="Hero banner carousel"
