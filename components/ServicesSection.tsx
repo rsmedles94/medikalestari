@@ -139,7 +139,7 @@ const ServiceSection = () => {
                           e.stopPropagation();
                           handleServiceClick(item.href);
                         }}
-                        className="group/btn flex items-center gap-2 bg-white text-[#173A87] px-8 py-2.5 text-xs font-bold uppercase tracking-widest shadow-lg active:scale-95 transition-all cursor-pointer overflow-hidden"
+                        className="group/btn flex items-center gap-2 bg-white text-[#173A87] px-8 py-2.5 rounded-2xl text-xs font-bold uppercase tracking-widest shadow-lg active:scale-95 transition-all cursor-pointer overflow-hidden"
                       >
                         <span>Selengkapnya</span>
                         <svg
