@@ -73,7 +73,7 @@ const FooterContent = () => (
         {/* Logo */}
         <div className="shrink-0">
           <Image
-            src="/logo.png"
+            src="/logofooter.png"
             alt="Logo RS Medika Lestari"
             width={400}
             height={100}

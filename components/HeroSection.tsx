@@ -91,7 +91,8 @@ if (typeof document !== "undefined") {
       background-color: white;
     }
     select option:hover {
-      background-color: #e0e7ff;
+      background-color: #173A87;
+      color: white;
     }
     select option:checked {
       background-color: #173A87;
