@@ -197,7 +197,7 @@ const MobileSearchModal: React.FC<MobileSearchModalProps> = ({
               onClick={onClose}
               className="text-[14px] font-bold text-gray-700 whitespace-nowrap active:opacity-60 cursor-pointer"
             >
-              Batalkan
+              Batal
             </button>
           </div>
 
