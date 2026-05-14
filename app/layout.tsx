@@ -3,6 +3,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider, useAuth } from "@/context/AuthProvider";
+import { SearchModalProvider } from "@/context/SearchModalContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AdminSidebar from "@/components/AdminSidebar";
@@ -106,9 +107,11 @@ export default function RootLayout({
           referrerPolicy="no-referrer"
         />
       </head>
-      <body className="min-h-full bg-white text-black">
+      <body className="min-h-screen bg-white text-black">
         <AuthProvider>
-          <LayoutContent>{children}</LayoutContent>
+          <SearchModalProvider>
+            <LayoutContent>{children}</LayoutContent>
+          </SearchModalProvider>
         </AuthProvider>
       </body>
     </html>

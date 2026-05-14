@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthProvider";
+import { useSearchModal } from "@/context/SearchModalContext";
 import SearchDropdown from "./SearchDropdown";
 import MobileSearchModal from "./MobileSearchModal";
 import DropdownMenuItem from "./DropdownMenuItem";
@@ -41,9 +42,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-
-  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
+  const { isSearchOpen, openSearch, closeSearch } = useSearchModal();
 
   const [isVisible, setIsVisible] = useState(true);
 
@@ -337,9 +336,9 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               </div>
             </div>
 
-            <div className="md:hidden flex items-center gap-3 p-2 text-gray-700 relative z-[110]">
+            <div className="md:hidden flex items-center gap-3 p-2 text-gray-700 relative z-110">
               <button
-                onClick={() => setIsMobileSearchOpen(true)}
+                onClick={() => openSearch()}
                 className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
                 title="Cari dokter"
               >
@@ -484,7 +483,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
           <div className="flex items-center h-full gap-2 text-[15px]">
             <button
-              onClick={() => setIsSearchOpen(!isSearchOpen)}
+              onClick={() => openSearch()}
               className="flex items-center gap-2 transition-all h-full px-3 relative group"
             >
               <Search size={20} strokeWidth={2.5} />
@@ -561,10 +560,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
           </div>
         </div>
 
-        <SearchDropdown
-          isOpen={isSearchOpen}
-          onClose={() => setIsSearchOpen(false)}
-        />
+        <SearchDropdown isOpen={isSearchOpen} onClose={() => closeSearch()} />
       </div>
 
       {/* --- Mobile Menu --- */}
@@ -780,10 +776,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
       {/* Mobile Search */}
 
-      <MobileSearchModal
-        isOpen={isMobileSearchOpen}
-        onClose={() => setIsMobileSearchOpen(false)}
-      />
+      <MobileSearchModal isOpen={isSearchOpen} onClose={() => closeSearch()} />
 
       {/* Mobile Quick Action Menu */}
 

@@ -15,6 +15,7 @@ import { fetchDoctors } from "@/lib/api";
 import { Doctor } from "@/lib/types";
 import Image from "next/image";
 import { SPECIALTY_CATEGORIES } from "./DoctorSection";
+import { useSearchModal } from "@/context/SearchModalContext";
 
 interface MobileSearchModalProps {
   isOpen: boolean;
@@ -25,6 +26,12 @@ const MobileSearchModal: React.FC<MobileSearchModalProps> = ({
   isOpen,
   onClose,
 }) => {
+  const { closeSearch } = useSearchModal();
+  const handleClose = () => {
+    closeSearch();
+    onClose();
+  };
+
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [allDoctors, setAllDoctors] = useState<Doctor[]>([]);
   const randomCategories = useMemo(() => {
@@ -143,7 +150,7 @@ const MobileSearchModal: React.FC<MobileSearchModalProps> = ({
     router.push(url);
 
     setTimeout(() => {
-      onClose();
+      handleClose();
     }, 400);
   };
 
@@ -155,10 +162,10 @@ const MobileSearchModal: React.FC<MobileSearchModalProps> = ({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.1 }}
-          className="fixed inset-0 bg-white z-[999] md:hidden flex flex-col overscroll-none"
+          className="fixed inset-0 bg-white z-999 md:hidden flex flex-col overscroll-none"
         >
           {isNavigating && (
-            <div className="absolute top-0 left-0 w-full  z-[1000]" />
+            <div className="absolute top-0 left-0 w-full z-1000" />
           )}
 
           {/* Header */}
@@ -194,7 +201,7 @@ const MobileSearchModal: React.FC<MobileSearchModalProps> = ({
             </form>
 
             <button
-              onClick={onClose}
+              onClick={handleClose}
               className="text-[14px] font-bold text-gray-700 whitespace-nowrap active:opacity-60 cursor-pointer"
             >
               Batal

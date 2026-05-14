@@ -4,9 +4,11 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSearchModal } from "@/context/SearchModalContext";
 
 const MobileBottomNavbar = () => {
   const pathname = usePathname();
+  const { isSearchOpen } = useSearchModal();
 
   const navItems = [
     {
@@ -85,88 +87,90 @@ const MobileBottomNavbar = () => {
 
   return (
     <>
-      <nav
-        className="md:hidden fixed bottom-0 left-0 right-0 bg-[#014f86] z-50 border-t border-white/5 pb-safe"
-        aria-label="Mobile Navigation Bar"
-      >
-        <ul className="flex justify-around items-stretch h-18 list-none p-0 m-0">
-          {navItems.map((item) => {
-            const isItemActive = pathname === item.href;
+      {!isSearchOpen && (
+        <nav
+          className="md:hidden fixed bottom-0 left-0 right-0 bg-[#014f86] z-50 border-t border-white/5 pb-safe"
+          aria-label="Mobile Navigation Bar"
+        >
+          <ul className="flex justify-around items-stretch h-18 list-none p-0 m-0">
+            {navItems.map((item) => {
+              const isItemActive = pathname === item.href;
 
-            return (
-              <li key={item.label} className="w-1/4 flex">
-                <Link
-                  href={item.href}
-                  prefetch={true}
-                  aria-current={isItemActive ? "page" : undefined}
-                  onClick={(e) => {
-                    if (isItemActive) {
-                      e.preventDefault();
-                      window.scrollTo({ top: 0, behavior: "smooth" });
-                    }
-                  }}
-                  className="flex flex-col items-center justify-center w-full relative tap-highlight-transparent overflow-hidden"
-                >
-                  {/* Indikator Atas menggunakan GPU Acceleration */}
-                  {isItemActive && (
-                    <motion.div
-                      layoutId="navIndicator"
-                      className="absolute top-0 w-12 h-[3px] bg-white rounded-b-full z-10"
-                      transition={{
-                        type: "spring",
-                        stiffness: 380,
-                        damping: 30,
-                      }}
-                    />
-                  )}
-
-                  <motion.div
-                    className="relative flex flex-col items-center"
-                    whileTap={{ scale: 0.9 }}
+              return (
+                <li key={item.label} className="w-1/4 flex">
+                  <Link
+                    href={item.href}
+                    prefetch={true}
+                    aria-current={isItemActive ? "page" : undefined}
+                    onClick={(e) => {
+                      if (isItemActive) {
+                        e.preventDefault();
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }
+                    }}
+                    className="flex flex-col items-center justify-center w-full relative tap-highlight-transparent overflow-hidden"
                   >
-                    <div className="relative h-6 w-6">
-                      <svg
-                        viewBox="0 0 24 24"
-                        className={`w-6 h-6 transition-colors duration-300 ${
-                          isItemActive ? "text-white" : "text-white/60"
-                        }`}
-                        fill={isItemActive ? "white" : "none"}
-                        stroke="currentColor"
-                        strokeWidth={isItemActive ? "0.5" : "1.8"}
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        style={{ transform: "translateZ(0)" }}
-                      >
-                        <AnimatePresence mode="wait">
-                          <motion.g
-                            key={isItemActive ? "solid" : "outline"}
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.8 }}
-                            transition={{ duration: 0.15 }}
-                          >
-                            {isItemActive ? item.solid : item.outline}
-                          </motion.g>
-                        </AnimatePresence>
-                      </svg>
-                    </div>
+                    {/* Indikator Atas menggunakan GPU Acceleration */}
+                    {isItemActive && (
+                      <motion.div
+                        layoutId="navIndicator"
+                        className="absolute top-0 w-12 h-0.75 bg-white rounded-b-full z-10"
+                        transition={{
+                          type: "spring",
+                          stiffness: 380,
+                          damping: 30,
+                        }}
+                      />
+                    )}
 
-                    <span
-                      className={`text-[10px] mt-1 transition-all duration-300 ${
-                        isItemActive
-                          ? "text-white font-bold opacity-100"
-                          : "text-white/60 font-medium opacity-90"
-                      }`}
+                    <motion.div
+                      className="relative flex flex-col items-center"
+                      whileTap={{ scale: 0.9 }}
                     >
-                      {item.label}
-                    </span>
-                  </motion.div>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
+                      <div className="relative h-6 w-6">
+                        <svg
+                          viewBox="0 0 24 24"
+                          className={`w-6 h-6 transition-colors duration-300 ${
+                            isItemActive ? "text-white" : "text-white/60"
+                          }`}
+                          fill={isItemActive ? "white" : "none"}
+                          stroke="currentColor"
+                          strokeWidth={isItemActive ? "0.5" : "1.8"}
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          style={{ transform: "translateZ(0)" }}
+                        >
+                          <AnimatePresence mode="wait">
+                            <motion.g
+                              key={isItemActive ? "solid" : "outline"}
+                              initial={{ opacity: 0, scale: 0.8 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              exit={{ opacity: 0, scale: 0.8 }}
+                              transition={{ duration: 0.15 }}
+                            >
+                              {isItemActive ? item.solid : item.outline}
+                            </motion.g>
+                          </AnimatePresence>
+                        </svg>
+                      </div>
+
+                      <span
+                        className={`text-[10px] mt-1 transition-all duration-300 ${
+                          isItemActive
+                            ? "text-white font-bold opacity-100"
+                            : "text-white/60 font-medium opacity-90"
+                        }`}
+                      >
+                        {item.label}
+                      </span>
+                    </motion.div>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+      )}
 
       <div className="md:hidden" aria-hidden="true" />
     </>
