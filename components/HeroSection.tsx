@@ -547,21 +547,136 @@ const HeroSection = () => {
         </div>
       </div>
 
-      {/* SEARCH BAR */}
-      <div className="relative w-full px-4 py-8 md:absolute md:inset-0 md:px-4 md:py-0 md:flex md:items-end md:justify-center md:z-20 md:pb-12 md:pointer-events-none">
-        <div className="max-w-5xl mx-auto w-full md:pointer-events-auto">
+      {/* SEARCH BAR - Desktop */}
+      <div className="hidden md:absolute md:inset-0 md:flex md:flex-col md:items-end md:justify-end md:z-20 md:pr-12 md:pb-15 md:pointer-events-none">
+        <div className="md:pointer-events-auto bg-white rounded-md shadow-lg p-5">
+          {/* TITLE */}
+          <h2 className="text-lg font-bold text-[#173A87] mb-4">
+            Cari Dokter Spesialis atau Jadwal Praktek Dokter
+          </h2>
+
           <div
             className="
-              max-w-5xl mx-auto 
+              flex flex-row
+              gap-0
+            "
+          >
+            {/* NAMA DOKTER */}
+            <div className="px-4 py-3 border border-gray-300">
+              <p className="text-xs text-[#173A87] font-semibold mb-1">
+                Nama Dokter
+              </p>
+              <div className="flex items-center gap-2">
+                <User size={16} className="text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Cari dokter..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-40 outline-none text-xs bg-transparent text-gray-700 placeholder-gray-400"
+                />
+              </div>
+            </div>
+
+            {/* SPESIALIS */}
+            <div className="px-4 py-3 border border-gray-300">
+              <p className="text-xs text-[#173A87] font-semibold mb-1">
+                Spesialis
+              </p>
+              <div className="flex items-center gap-2 relative">
+                <Stethoscope size={16} className="text-gray-400" />
+                <select
+                  value={specialty}
+                  onChange={(e) => {
+                    setSpecialty(e.target.value);
+                    setIsSpecialtyOpen(false);
+                  }}
+                  onFocus={() => setIsSpecialtyOpen(true)}
+                  onBlur={() =>
+                    setTimeout(() => setIsSpecialtyOpen(false), 100)
+                  }
+                  className="w-44 outline-none text-xs bg-transparent appearance-none text-gray-700"
+                >
+                  {SPECIALTY_CATEGORIES.map((s) => (
+                    <option key={s} value={s === "Semua Spesialis" ? "" : s}>
+                      {s}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown
+                  size={16}
+                  className={`text-gray-400 absolute right-0 pointer-events-none transition-transform duration-300 ${
+                    isSpecialtyOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </div>
+            </div>
+
+            {/* HARI */}
+            <div className="px-4 py-3 border border-gray-300">
+              <p className="text-xs text-[#173A87] font-semibold mb-1">Hari</p>
+              <div className="flex items-center gap-2 relative">
+                <CalendarDays size={16} className="text-gray-400" />
+                <select
+                  value={day}
+                  onChange={(e) => {
+                    setDay(e.target.value);
+                    setIsDayOpen(false);
+                  }}
+                  onFocus={() => setIsDayOpen(true)}
+                  onBlur={() => setTimeout(() => setIsDayOpen(false), 100)}
+                  className="w-32 outline-none text-xs bg-transparent appearance-none text-gray-700"
+                >
+                  {DAYS.map((d) => (
+                    <option key={d} value={d === "Semua Hari" ? "" : d}>
+                      {d}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown
+                  size={16}
+                  className={`text-gray-400 absolute right-0 pointer-events-none transition-transform duration-300 ${
+                    isDayOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </div>
+            </div>
+
+            {/* BUTTON SEARCH */}
+            <div className="flex items-center justify-center px-3">
+              <button
+                onClick={() => {
+                  const params = new URLSearchParams();
+                  if (search) params.append("search", search);
+                  if (specialty) params.append("specialty", specialty);
+                  if (day) params.append("day", day);
+                  if (globalThis.window?.location) {
+                    globalThis.window.location.href = `/dokter?${params.toString()}`;
+                  }
+                }}
+                className="h-14 px-4 rounded-full bg-[#173A87] flex items-center justify-center text-white hover:bg-[#1a4299] active:scale-95 transition cursor-pointer"
+              >
+                <Search className="w-6 h-6" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* SEARCH BAR - Mobile */}
+      <div className="md:hidden relative w-full px-4 py-8 pointer-events-none">
+        <div className="w-full pointer-events-auto">
+          <div
+            className="
               bg-white 
-              md:rounded-full rounded-none
-              flex flex-col md:flex-row 
+              rounded-3xl
+              flex flex-col 
               overflow-hidden 
               border border-gray-300
             "
           >
             {/* NAMA DOKTER */}
-            <div className="flex-1 px-5 py-4 border-b md:px-8 md:border-b-0 md:border-r border-gray-100">
+            <div className="flex-1 px-5 py-4 border-b border-gray-100">
               <p className="text-xs text-[#173A87] font-semibold mb-1">
                 Nama Dokter
               </p>
@@ -578,7 +693,7 @@ const HeroSection = () => {
             </div>
 
             {/* SPESIALIS */}
-            <div className="flex-1 px-5 py-4 border-b md:border-b-0 md:border-r border-gray-100">
+            <div className="flex-1 px-5 py-4 border-b border-gray-100">
               <p className="text-xs text-[#173A87] font-semibold mb-1">
                 Spesialis
               </p>
@@ -612,7 +727,7 @@ const HeroSection = () => {
             </div>
 
             {/* HARI */}
-            <div className="flex-1 px-5 py-4 border-b md:border-b-0 md:border-r border-gray-100">
+            <div className="flex-1 px-5 py-4 border-b border-gray-100">
               <p className="text-xs text-[#173A87] font-semibold mb-1">
                 Pilih Hari
               </p>
@@ -655,10 +770,10 @@ const HeroSection = () => {
                     globalThis.window.location.href = `/dokter?${params.toString()}`;
                   }
                 }}
-                className="w-full md:w-14 h-12 md:h-14 rounded-full md:rounded-full bg-[#173A87] flex items-center justify-center gap-2 text-white active:scale-95 transition cursor-pointer"
+                className="w-full h-12 rounded-full bg-[#173A87] flex items-center justify-center gap-2 text-white active:scale-95 transition cursor-pointer"
               >
-                <Search className="w-5 h-5 md:w-10 md:h-8" />
-                <span className="font-semibold md:hidden">Cari Dokter</span>
+                <Search className="w-5 h-5" />
+                <span className="font-semibold">Cari Dokter</span>
               </button>
             </div>
           </div>
