@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 
-// --- Sosial Media (Tanpa WhatsApp, Sesuai Gambar) ---
+// --- Sosial Media ---
 const socialMedia = [
   {
     name: "Facebook",
@@ -44,7 +44,7 @@ const socialMedia = [
   },
 ];
 
-// Menu Utama (Teks Besar)
+// Menu Utama
 const menuItems = [
   { name: "Pasien & Pengunjung", href: "/pasien" },
   { name: "Cari Dokter", href: "/dokter" },
@@ -64,7 +64,7 @@ const menuItems = [
   { name: "Kontak Kami", href: "/kontak-kami" },
 ];
 
-// Footer Content Component (moved outside to avoid recreating on each render)
+
 const FooterContent = () => (
   <div className="bg-[#173A87] text-white">
     {/* --- MAIN SECTION --- */}
@@ -93,7 +93,7 @@ const FooterContent = () => (
         </div>
       </div>
 
-      {/* --- MENU GRID (TEXT BESAR & BOLD) --- */}
+      {/* --- MENU GRID  --- */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-8 gap-x-12">
         {menuItems.map((item) => (
           <Link
@@ -107,7 +107,7 @@ const FooterContent = () => (
       </div>
     </div>
 
-    {/* --- BOTTOM BAR (CLEAN WHITE) --- */}
+    {/* --- BOTTOM BAR  --- */}
     <div className="bg-white text-[#173A87] py-10 border-t">
       <div className="max-w-[1400px] mx-auto px-8 md:px-16 flex flex-col md:flex-row justify-between items-center gap-8">
         {/* Copyright */}
