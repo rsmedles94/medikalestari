@@ -76,7 +76,7 @@ const FooterContent = () => (
             src="/logofooter.png"
             alt="Logo RS Medika Lestari"
             width={400}
-            height={100}
+            height={400}
             className="brightness-0 invert object-contain"
           />
         </div>
