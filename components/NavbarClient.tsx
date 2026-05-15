@@ -482,10 +482,10 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               className="flex items-center gap-1 transition-all h-full px-3 relative group text-gray-700"
               title="Cari Dokter Spesialis"
             >
-              <Search size={20} strokeWidth={2.5} />
+              <Search size={20} strokeWidth={4} />
 
               <div
-                className={`absolute bottom-0 left-3 right-3 h-1 bg-gray-400 rounded-t-full transition-transform duration-300 ${
+                className={`absolute bottom-0 left-3 right-3 h-1 bg-gray-400 rounded-t-full transition-transform duration-300  ${
                   isSearchOpen
                     ? "scale-x-0"
                     : "scale-x-0 group-hover:scale-x-100"
