@@ -221,7 +221,7 @@ export default function KamarPerawatan() {
       {/* Container Utama */}
       <div className="max-w-5xl mx-auto px-4">
         {/* Navigasi Breadcrumb - Posisi Tetap */}
-        <div className="pt-4 md:pt-16 pb-2 md:pb-4  md:-mt-8">
+        <div className="pt-8 md:pt-16 pb-2 md:pb-4  md:-mt-8">
           <nav className="flex items-center gap-1 text-[14px] font-normal text-gray-300 mb-4">
             <Link
               href="/"
