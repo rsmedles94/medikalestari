@@ -269,6 +269,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
       >
         <div className="py-4 relative">
           <div className="max-w-[1200px] mx-auto px-4 md:px-8 flex justify-between items-center">
+            {/* Logo */}
             <Link href="/" className="flex items-center scale-80 md:scale-125">
               {logoNode}
             </Link>
