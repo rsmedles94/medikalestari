@@ -92,7 +92,7 @@ const MobileBottomNavbar = () => {
           className="md:hidden fixed bottom-0 left-0 right-0 bg-[#173A87] z-50 border-t border-white/5 pb-safe"
           aria-label="Mobile Navigation Bar"
         >
-          <ul className="flex justify-around items-stretch h-18 list-none p-0 m-0">
+          <ul className="flex justify-around items-stretch h-20 list-none p-0 m-0">
             {navItems.map((item) => {
               const isItemActive = pathname === item.href;
 
