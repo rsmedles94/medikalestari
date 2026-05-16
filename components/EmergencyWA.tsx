@@ -9,29 +9,40 @@ const EmergencyWA = () => {
   const [isFooterVisible, setIsFooterVisible] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [hasAutoCollapsed, setHasAutoCollapsed] = useState(false);
 
-  // Check if mobile on mount
+  // Check jika mobile / desktop berdasarkan ukuran layar
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
+      const mobileStatus = window.innerWidth < 768;
+      setIsMobile(mobileStatus);
+
+      // Jika di desktop, pastikan selalu terbuka (tidak collapsed)
+      if (!mobileStatus) {
+        setIsCollapsed(false);
+      }
     };
+
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Auto-hide after 5 seconds (only on first visit mobile)
+  // Logika Scroll Mobile: Ketika discroll (ke atas/bawah), badge langsung hide
   useEffect(() => {
-    if (isMobile && !hasAutoCollapsed) {
-      const timer = setTimeout(() => {
-        setIsCollapsed(true);
-        setHasAutoCollapsed(true);
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [isMobile, hasAutoCollapsed]);
+    if (!isMobile) return;
 
+    const handleScroll = () => {
+      // Hanya triger collapse jika posisi scroll saat ini bermakna (bukan glitch di paling atas)
+      if (window.scrollY > 10) {
+        setIsCollapsed(true);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isMobile]);
+
+  // Observer untuk Footer
   useEffect(() => {
     const footer =
       document.querySelector("footer") || document.getElementById("footer");
@@ -50,25 +61,22 @@ const EmergencyWA = () => {
 
   if (pathname !== "/") return null;
 
-  // Only show on mobile
-  if (!isMobile) return null;
-
   return (
     <AnimatePresence>
       {!isFooterVisible && (
-        <div className="fixed right-4 top-1/2 -translate-y-1/2 z-9999 flex flex-col items-end">
-          {/* Tombol Chevron - Tetap instan saat diklik */}
+        <div className="fixed right-4 bottom-60 md:bottom-50 z-9999 flex flex-col items-end">
+          {/* Tombol Chevron - Hanya muncul di mobile (md:hidden) */}
           <motion.button
             onClick={() => setIsCollapsed(!isCollapsed)}
             animate={{
               x: isCollapsed ? 12 : 0,
             }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="w-5 h-5 bg-black/20 text-white flex items-center justify-center rounded-full  border border-white/20 active:scale-90 z-20 -mb-3 mr-1"
+            className="w-5 h-5 bg-black/20 text-white flex items-center justify-center rounded-full border border-white/20 active:scale-90 z-20 -mb-3 mr-1 md:hidden"
           >
             <motion.span
               animate={{ rotate: isCollapsed ? 180 : 0 }}
-              transition={{ duration: 0.3 }} // Kecepatan putaran chevron
+              transition={{ duration: 0.3 }}
               className="flex items-center justify-center"
             >
               <svg
@@ -86,19 +94,18 @@ const EmergencyWA = () => {
             </motion.span>
           </motion.button>
 
-          {/* Badge WhatsApp - Menunggu chevron selesai baru gerak */}
+          {/* Badge WhatsApp - Di desktop selalu stay penuh */}
           <motion.div
             initial={false}
             animate={{
-              x: isCollapsed ? 100 : 0,
-              opacity: isCollapsed ? 0.6 : 1,
+              x: isMobile && isCollapsed ? 100 : 0,
+              opacity: isMobile && isCollapsed ? 0.6 : 1,
             }}
             transition={{
               type: "spring",
-              stiffness: 200, // Sedikit lebih lambat/smooth
+              stiffness: 200,
               damping: 25,
-              // Memberikan delay 0.2 detik saat sembunyi agar chevron muter dulu
-              delay: isCollapsed ? 0.2 : 0,
+              delay: isMobile && isCollapsed ? 0.2 : 0,
             }}
             className="z-10"
           >
@@ -106,7 +113,7 @@ const EmergencyWA = () => {
               href="https://wa.me/6282246232527"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 bg-[#25D366] text-white py-1.5 px-3.5 no-underline  origin-right -rotate-90 whitespace-nowrap rounded-t-lg"
+              className="flex items-center gap-2 bg-[#25D366] text-white py-1.5 px-3.5 no-underline whitespace-nowrap rounded-t-lg origin-right -rotate-90"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
