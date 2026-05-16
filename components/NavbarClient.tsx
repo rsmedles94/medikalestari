@@ -352,7 +352,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
           <div className="flex h-full text-[15px] text-[#173A87]">
             <button
               onClick={handleHomeClick}
-              className="flex items-center h-full px-6 transition-colors font-bold relative group cursor-pointer"
+              className="flex items-center h-full px-6 transition-colors font-semibold relative group cursor-pointer"
             >
               Beranda
               <div
@@ -372,7 +372,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               }}
               onMouseLeave={() => setActiveMenu(null)}
             >
-              <button className="flex items-center h-full px-6 transition-colors font-bold relative group gap-2 text-[#173A87]">
+              <button className="flex items-center h-full px-6 transition-colors font-semibold relative group gap-2 text-[#173A87]">
                 Profil
                 <ChevronDown
                   size={18}
@@ -403,7 +403,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               }}
               onMouseLeave={() => setActiveMenu(null)}
             >
-              <button className="flex items-center h-full px-6 transition-colors font-bold relative group gap-2 text-[#173A87]">
+              <button className="flex items-center h-full px-6 transition-colors font-semibold relative group gap-2 text-[#173A87]">
                 Dokter Kami
                 <ChevronDown
                   size={18}
@@ -444,7 +444,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                   }}
                   onMouseLeave={() => setActiveMenu(null)}
                 >
-                  <button className="flex items-center h-full px-6 transition-colors font-bold relative group gap-2 text-[#173A87]">
+                  <button className="flex items-center h-full px-6 transition-colors font-semibold relative group gap-2 text-[#173A87]">
                     {item}
                     <ChevronDown
                       size={18}

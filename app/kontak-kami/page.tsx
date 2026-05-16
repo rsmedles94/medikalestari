@@ -2,8 +2,7 @@
 
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { ChevronRight, Send, Phone, Mail, MapPin } from "lucide-react";
+import { ChevronRight, Send } from "lucide-react";
 
 const KontakKami = () => {
   const [formData, setFormData] = useState({
@@ -16,18 +15,16 @@ const KontakKami = () => {
   const contactInfo = [
     {
       id: 1,
-      icon: <Phone size={28} strokeWidth={1.5} />,
-      title: "Telepon",
+      title: "Pusat Telepon",
       details: "(021) 585 4858",
-      subtitle: "Layanan Umum",
+      subtitle: "Layanan Umum & Informasi",
       action: () => window.open("https://wa.me/6282246232527", "_blank"),
     },
     {
       id: 2,
-      icon: <Mail size={28} strokeWidth={1.5} />,
-      title: "Email",
+      title: "Korespondensi Email",
       details: "marketing@rsmedikalestari.com",
-      subtitle: "Korespondensi",
+      subtitle: "Hubungan Masyarakat & Kemitraan",
       action: () => {
         const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=marketing@rsmedikalestari.com`;
         window.open(gmailUrl, "_blank");
@@ -35,8 +32,7 @@ const KontakKami = () => {
     },
     {
       id: 3,
-      icon: <MapPin size={28} strokeWidth={1.5} />,
-      title: "Lokasi",
+      title: "Lokasi Fisik",
       details: "Jl. HOS Cokroaminoto No.1",
       subtitle: "Ciledug, Tangerang",
       action: () => window.open("https://maps.google.com", "_blank"),
@@ -66,73 +62,62 @@ const KontakKami = () => {
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 text-gray-400 relative overflow-hidden pb-20">
-      {/* --- BACKGROUND DECORATION --- */}
-      <div className="absolute inset-0 z-0 opacity-40">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `radial-gradient(#005cb3 0.5px, transparent 0.5px)`,
-            backgroundSize: "30px 30px",
-          }}
-        />
-        <div className="absolute -top-24 -left-24 w-96 h-96 bg-blue-100 rounded-full blur-3xl opacity-50" />
-        <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-blue-50 rounded-full blur-3xl opacity-50" />
-      </div>
-
-      <div className="relative z-10 max-w-[1175px] mx-auto px-4 md:px-8">
-        {/* BREADCRUMB (ASLI) */}
-        <div className="pt-4 md:pt-16 pb-12 md:-mt-8">
-          <nav className="flex items-center gap-1 text-[14px] font-normal text-gray-300 mb-4">
-            <Link
-              href="/"
-              className="text-black/60 hover:text-gray-300 transition-colors"
-            >
+    <main className="min-h-screen bg-slate-50 text-slate-700 pb-20">
+      <div className="max-w-[1175px] mx-auto  md:py-5 px-4 md:px-8">
+        {/* BREADCRUMB & HEADER */}
+        <div className="pt-8 md:pt-12 pb-6">
+          <nav className="flex items-center gap-2 text-sm text-black/60 mb-3">
+            <Link href="/" className="hover:text-gray-700 transition-colors">
               Beranda
             </Link>
-            <ChevronRight size={12} className="text-gray-400" />
-            <span className="font-normal text-gray-300">Kontak Kami</span>
+            <ChevronRight size={14} className="text-gray-400" />
+            <span className="text-gray-300 font-normal">Kontak Kami</span>
           </nav>
-          <h1 className="text-3xl md:text-4xl font-bold text-black border-b border-slate-100 pb-4">
+          <h1 className="text-2xl md:text-3xl font-bold text-slate-900 border-b border-slate-200 pb-4">
             Kontak & Informasi
           </h1>
         </div>
 
-        <p className="text-black leading-relaxed max-w-2xl opacity-80 mb-12 -mt-10">
+        <p className="text-slate-600 text-sm leading-relaxed max-w-3xl mb-10">
           Silakan hubungi pusat layanan Rumah Sakit Medika Lestari untuk bantuan
           medis, jadwal dokter, atau informasi fasilitas kesehatan lainnya.
         </p>
 
-        {/* INFO CARDS - CLEAN DESIGN */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20">
+        {/* 3 BAR BERTUMPU PERSEGI PANJANG (INFO LAYANAN) */}
+        <div className="flex flex-col gap-4 mb-8">
           {contactInfo.map((item) => (
-            <motion.div
+            <div
               key={item.id}
-              whileHover={{ y: -8 }}
               onClick={item.action}
-              className="flex flex-col items-center justify-center p-10 bg-white border border-slate-200 cursor-pointer transition-all duration-300  hover:shadow-lg hover:shadow-blue-900/5 text-center"
+              className="flex flex-col md:flex-row md:items-center justify-between p-6 bg-white border border-slate-200 cursor-pointer hover:border-[#005cb3] transition-colors"
             >
-              <div className="text-[#005cb3] mb-6">{item.icon}</div>
-              <h3 className="text-xs font-bold uppercase mb-2 text-slate-400 tracking-widest">
-                {item.title}
-              </h3>
-              <p className="text-lg font-bold text-black">{item.details}</p>
-              <p className="text-xs text-slate-500 mt-1">{item.subtitle}</p>
-            </motion.div>
+              <div className="mb-2 md:mb-0">
+                <span className="text-xs font-semibold text-[#005cb3] block mb-1">
+                  {item.title}
+                </span>
+                <p className="text-base font-bold text-slate-900">
+                  {item.details}
+                </p>
+              </div>
+              <div className="text-left md:text-right">
+                <span className="text-xs text-slate-500">{item.subtitle}</span>
+              </div>
+            </div>
           ))}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        {/* LAYOUT DUA KOLOM SIMETRIS (50:50) */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
           {/* FORM KIRIM PESAN */}
-          <div className="lg:col-span-7 bg-white p-8 md:p-10 border border-slate-100 shadow-sm">
-            <h2 className="text-xl font-bold text-black mb-8 underline underline-offset-8 decoration-2">
+          <div className="bg-white p-6 md:p-8 border border-slate-200 h-full">
+            <h2 className="text-lg font-bold text-slate-900 mb-6 pb-2 border-b border-slate-100">
               Kirim Pesan
             </h2>
 
-            <form className="space-y-6" onSubmit={handleSubmit}>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="flex flex-col gap-2">
-                  <label className="text-[11px] font-bold uppercase text-black">
+            <form className="space-y-4" onSubmit={handleSubmit}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-medium text-slate-700">
                     Nama Lengkap
                   </label>
                   <input
@@ -141,13 +126,13 @@ const KontakKami = () => {
                     name="nama"
                     value={formData.nama}
                     onChange={handleChange}
-                    className="w-full bg-white border border-slate-200 p-3 text-sm text-black focus:border-[#173A87] outline-none"
-                    placeholder="Nama anda"
+                    className="w-full bg-slate-50 border border-slate-200 p-2.5 text-sm text-slate-900 focus:border-[#005cb3] focus:bg-white outline-none"
+                    placeholder="Nama lengkap"
                   />
                 </div>
-                <div className="flex flex-col gap-2">
-                  <label className="text-[11px] font-bold uppercase text-black">
-                    Email
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-medium text-slate-700">
+                    Alamat Email
                   </label>
                   <input
                     required
@@ -155,14 +140,15 @@ const KontakKami = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full bg-white border border-slate-200 p-3 text-sm text-black focus:border-[#173A87] outline-none"
-                    placeholder="email@domain.com"
+                    className="w-full bg-slate-50 border border-slate-200 p-2.5 text-sm text-slate-900 focus:border-[#005cb3] focus:bg-white outline-none"
+                    placeholder="nama@email.com"
                   />
                 </div>
               </div>
-              <div className="flex flex-col gap-2">
-                <label className="text-[11px] font-bold uppercase text-black">
-                  Subjek
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-medium text-slate-700">
+                  Subjek Pesan
                 </label>
                 <input
                   required
@@ -170,13 +156,14 @@ const KontakKami = () => {
                   name="subjek"
                   value={formData.subjek}
                   onChange={handleChange}
-                  className="w-full bg-white border border-slate-200 p-3 text-sm text-black focus:border-[#173A87] outline-none"
-                  placeholder="Tujuan pesan"
+                  className="w-full bg-slate-50 border border-slate-200 p-2.5 text-sm text-slate-900 focus:border-[#005cb3] focus:bg-white outline-none"
+                  placeholder="Perihal keperluan"
                 />
               </div>
-              <div className="flex flex-col gap-2">
-                <label className="text-[11px] font-bold uppercase text-black">
-                  Pesan
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-medium text-slate-700">
+                  Isi Pesan
                 </label>
                 <textarea
                   required
@@ -184,52 +171,52 @@ const KontakKami = () => {
                   name="pesan"
                   value={formData.pesan}
                   onChange={handleChange}
-                  className="w-full bg-white border border-slate-200 p-3 text-sm text-black focus:border-[#173A87] outline-none resize-none"
-                  placeholder="Tulis pesan anda..."
+                  className="w-full bg-slate-50 border border-slate-200 p-2.5 text-sm text-slate-900 focus:border-[#005cb3] focus:bg-white outline-none resize-none"
+                  placeholder="Tuliskan pesan atau pertanyaan Anda..."
                 />
               </div>
 
               <button
                 type="submit"
-                className="bg-[#173A87] text-white px-8 py-4 text-xs font-bold uppercase hover:bg-[#173A87]/90 transition-all flex items-center gap-3 cursor-pointer hover:scale-95"
+                className="bg-[#005cb3] hover:bg-[#004b93] text-white px-6 py-3 text-xs font-medium uppercase tracking-wider transition-colors flex items-center gap-2 cursor-pointer"
               >
-                Kirim Sekarang <Send size={14} />
+                Kirim Pesan <Send size={12} />
               </button>
             </form>
           </div>
 
           {/* DAFTAR EKSTENSI */}
-          <div className="lg:col-span-5">
-            <div className="bg-[#173A87] text-white p-10 shadow-2xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 -mr-16 -mt-16 rounded-full" />
-
-              <h2 className="text-xl font-bold uppercase mb-8 border-b border-white/20 pb-4">
-                Daftar Ekstensi
+          <div className="bg-white border border-slate-200 p-6 md:p-8 h-full flex flex-col justify-between">
+            <div>
+              <h2 className="text-lg font-bold text-slate-900 mb-6 pb-2 border-b border-slate-100">
+                Daftar Hubungan Internal (Extension)
               </h2>
-              <div className="divide-y divide-white/10">
+
+              <div className="divide-y divide-slate-100">
                 {departments.map((dept, index) => (
                   <div
                     key={index}
-                    className="flex justify-between items-center py-4 group"
+                    className="flex justify-between items-center py-3.5"
                   >
-                    <span className="text-xs font-medium opacity-90 group-hover:opacity-100 transition-all">
+                    <span className="text-sm font-normal text-slate-700">
                       {dept.name}
                     </span>
                     <a
                       href={`tel:${dept.phone.replace(/\D/g, "")}`}
-                      className="text-sm font-bold hover:underline transition-all"
+                      className="text-sm font-semibold text-[#005cb3] hover:underline"
                     >
                       {dept.phone}
                     </a>
                   </div>
                 ))}
               </div>
-              <div className="mt-10 p-4 bg-black/10 border-l-4 border-white">
-                <p className="text-[10px] leading-relaxed font-bold uppercase">
-                  * Untuk keadaan darurat, segera hubungi nomor IGD (021) 584
-                  4521.
-                </p>
-              </div>
+            </div>
+
+            <div className="mt-8 p-4 bg-red-50/50 border-l-2 border-red-500">
+              <p className="text-xs leading-relaxed text-red-800">
+                Penting: Untuk penanganan darurat segera medis, silakan hubungi
+                pusat penanganan langsung IGD pada nomor (021) 584 4521.
+              </p>
             </div>
           </div>
         </div>

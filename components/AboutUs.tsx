@@ -49,12 +49,12 @@ const AboutUs = () => {
   return (
     <section className="bg-white text-slate-900 scroll md:-mt-12 pb-20">
       {/* 1. SECTION FOTO & JUDUL */}
-      <div className="max-w-[1159px] mx-auto px-6 py-12 md:py-20">
-        <div className="mb-8 md:mb-12 border-b border-slate-100 pb-6">
+      <div className="max-w-[1159px] mx-auto px-4 py-8 md:py-20">
+        <div className="mb-8 md:mb-12 border-b border-slate-100 pb-6 md:py-9 ">
           <nav className="flex items-center gap-1 text-[14px] text-gray-300 mb-4">
             <Link
               href="/"
-              className="text-black hover:text-gray-300 transition-colors"
+              className="text-black/60 hover:text-gray-300 transition-colors"
             >
               Beranda
             </Link>
