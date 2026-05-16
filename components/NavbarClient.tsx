@@ -50,9 +50,15 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
   const [lastScrollY, setLastScrollY] = useState(0);
 
+  const [language, setLanguage] = useState<"ID" | "EN">("ID");
+
   const pathname = usePathname();
 
   const router = useRouter();
+
+  const toggleLanguage = () => {
+    setLanguage(language === "ID" ? "EN" : "ID");
+  };
 
   /* ===============================
 
@@ -146,8 +152,6 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
     "Rehabilitasi Medik": <Dumbbell size={20} strokeWidth={1.5} />,
     "Vaccination Services": <Syringe size={20} strokeWidth={1.5} />,
   };
-
-  const languages = [{ label: "Bahasa Indonesia", code: "ID", active: true }];
 
   const handleHomeClick = (e: React.MouseEvent) => {
     if (pathname === "/") {
@@ -493,62 +497,119 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               />
             </button>
 
-            <div
-              className={`relative h-full flex items-center px-3 cursor-pointer group transition-colors ${
-                activeMenu === "Lang" ? "bg-gray-100" : ""
-              }`}
-              onMouseEnter={() => setActiveMenu("Lang")}
-              onMouseLeave={() => setActiveMenu(null)}
+            <button
+              onClick={toggleLanguage}
+              className="relative h-full flex items-center px-3 cursor-pointer hover:opacity-80 transition-opacity"
+              title="Switch language"
             >
-              <div className="flex items-center gap-1 px-1 -py-1 border border-gray-400 rounded-full">
-                <svg
-                  width={18}
-                  height={18}
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="rounded-full"
-                >
-                  {/* Circular background */}
-                  <circle
-                    cx="12"
-                    cy="12"
-                    r="12"
-                    fill="#E5E7EB"
-                    stroke="#D1D5DB"
-                    strokeWidth="0.5"
-                  />
-
-                  {/* Indonesia flag in circle */}
-                  {/* Red top half */}
-                  <path
-                    d="M 2 12 C 2 6.48 6.48 2 12 2 C 17.52 2 22 6.48 22 12 L 12 12 Z"
-                    fill="#FF0000"
-                  />
-
-                  {/* White bottom half */}
-                  <path
-                    d="M 2 12 L 12 12 C 17.52 12 22 17.52 22 12 C 22 17.52 17.52 22 12 22 C 6.48 22 2 17.52 2 12 Z"
-                    fill="#FFFFFF"
-                  />
-                </svg>
-
-                <span className="font-medium text-gray-700">ID</span>
+              <div className="flex items-center gap-1 px-1  border border-gray-400 rounded-full">
+                {language === "ID" ? (
+                  <>
+                    <svg
+                      width={18}
+                      height={18}
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="rounded-full"
+                    >
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="12"
+                        fill="#E5E7EB"
+                        stroke="#D1D5DB"
+                        strokeWidth="0.5"
+                      />
+                      <path
+                        d="M 2 12 C 2 6.48 6.48 2 12 2 C 17.52 2 22 6.48 22 12 L 12 12 Z"
+                        fill="#FF0000"
+                      />
+                      <path
+                        d="M 2 12 L 12 12 C 17.52 12 22 17.52 22 12 C 22 17.52 17.52 22 12 22 C 6.48 22 2 17.52 2 12 Z"
+                        fill="#FFFFFF"
+                      />
+                    </svg>
+                    <span className="font-medium text-gray-700">ID</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="font-medium text-gray-700">EN</span>
+                    <svg
+                      width={18}
+                      height={18}
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <defs>
+                        <clipPath id="uk-flag-clip">
+                          <circle cx="12" cy="12" r="12" />
+                        </clipPath>
+                      </defs>
+                      <g clipPath="url(#uk-flag-clip)">
+                        <rect width="24" height="24" fill="#012169" />
+                        <path
+                          d="M0 0L24 24M24 0L0 24"
+                          stroke="#FFFFFF"
+                          strokeWidth="3"
+                        />
+                        <path
+                          d="M0 0L24 24"
+                          stroke="#C8102E"
+                          strokeWidth="1"
+                          strokeDasharray="12"
+                          strokeDashoffset="0"
+                        />
+                        <path
+                          d="M24 0L0 24"
+                          stroke="#C8102E"
+                          strokeWidth="1"
+                          strokeDasharray="12"
+                          strokeDashoffset="12"
+                        />
+                        <rect
+                          x="9"
+                          y="0"
+                          width="6"
+                          height="24"
+                          fill="#FFFFFF"
+                        />
+                        <rect
+                          x="0"
+                          y="9"
+                          width="24"
+                          height="6"
+                          fill="#FFFFFF"
+                        />
+                        <rect
+                          x="10"
+                          y="0"
+                          width="4"
+                          height="24"
+                          fill="#C8102E"
+                        />
+                        <rect
+                          x="0"
+                          y="10"
+                          width="24"
+                          height="4"
+                          fill="#C8102E"
+                        />
+                      </g>
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="11.75"
+                        stroke="#D1D5DB"
+                        strokeWidth="0.5"
+                        fill="none"
+                      />
+                    </svg>
+                  </>
+                )}
               </div>
-
-              <div
-                className={`absolute bottom-0 left-3 right-3 h-1 bg-gray-400 rounded-t-full transition-transform duration-300 ${
-                  activeMenu === "Lang"
-                    ? "scale-x-0"
-                    : "scale-x-0 group-hover:scale-x-100"
-                }`}
-              />
-
-              <AnimatePresence>
-                {activeMenu === "Lang" &&
-                  renderDropdownContent(languages, "w-48")}
-              </AnimatePresence>
-            </div>
+            </button>
 
             <AuthDropdown
               activeMenu={activeMenu}
