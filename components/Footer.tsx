@@ -126,7 +126,7 @@ const FooterContent = () => (
         </div>
 
         {/* Social Icons */}
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-8 mb-20 md:mb-0">
           {socialMedia.map((item) => (
             <Link
               key={item.name}

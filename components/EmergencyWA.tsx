@@ -64,7 +64,7 @@ const EmergencyWA = () => {
   return (
     <AnimatePresence>
       {!isFooterVisible && (
-        <div className="fixed right-4 bottom-60 md:bottom-50 z-9999 flex flex-col items-end">
+        <div className="fixed right-4 bottom-60 md:bottom-40 z-9999 flex flex-col items-end">
           {/* Tombol Chevron - Hanya muncul di mobile (md:hidden) */}
           <motion.button
             onClick={() => setIsCollapsed(!isCollapsed)}
