@@ -40,7 +40,7 @@ const DesktopChevronButton: React.FC<DesktopChevronButtonProps> = ({
       onClick={onClick}
       disabled={disabled}
       aria-label={`${isLeft ? "Previous" : "Next"} slide`}
-      className={`absolute ${isLeft ? "left-6" : "right-6"} top-1/2 -translate-y-1/2 z-40 p-2 bg-[#173A87] backdrop-blur transition-all duration-300 rounded-[45px] ${hoverOpacity}`}
+      className={`absolute ${isLeft ? "left-6" : "right-6"} top-1/2 -translate-y-1/2 z-40 p-2 bg-black/50 backdrop-blur transition-all duration-300 rounded-[45px] ${hoverOpacity}`}
     >
       {isLeft ? (
         <ChevronLeft size={20} className="text-white" />
