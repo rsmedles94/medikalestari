@@ -121,7 +121,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
       "Vaccination Services",
     ],
 
-    "Informasi Pasien": [
+    "Petunjuk Pasien": [
       "Alur Pendaftaran",
       "Asuransi & Rekanan",
       "Panduan Kunjungan",
@@ -371,44 +371,13 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
             <div
               className="relative h-full flex items-center"
               onMouseEnter={() => {
-                setActiveMenu("Profil");
-                closeSearch();
-              }}
-              onMouseLeave={() => setActiveMenu(null)}
-            >
-              <button className="flex items-center h-full px-6 transition-colors font-semibold relative group gap-2 text-[#173A87]">
-                Profil
-                <ChevronDown
-                  size={18}
-                  className={`transition-transform duration-300 text-[#173A87] ${
-                    activeMenu === "Profil" ? "scale-y-[-1]" : ""
-                  }`}
-                />
-                <div
-                  className={`absolute bottom-0 left-6 right-6 h-1 bg-gray-400 rounded-t-full transition-transform duration-300 ${
-                    activeMenu === "Profil"
-                      ? "scale-x-0"
-                      : "scale-x-0 group-hover:scale-x-100"
-                  }`}
-                />
-              </button>
-
-              <AnimatePresence>
-                {activeMenu === "Profil" &&
-                  renderDropdownContent(menuData["Profil"], "w-56")}
-              </AnimatePresence>
-            </div>
-
-            <div
-              className="relative h-full flex items-center"
-              onMouseEnter={() => {
                 setActiveMenu("Dokter Kami");
                 closeSearch();
               }}
               onMouseLeave={() => setActiveMenu(null)}
             >
               <button className="flex items-center h-full px-6 transition-colors font-semibold relative group gap-2 text-[#173A87]">
-                Dokter Kami
+                Cari Dokter
                 <ChevronDown
                   size={18}
                   className={`transition-transform duration-300 text-[#173A87] ${
@@ -472,6 +441,37 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                   </AnimatePresence>
                 </div>
               ))}
+
+            <div
+              className="relative h-full flex items-center"
+              onMouseEnter={() => {
+                setActiveMenu("Profil");
+                closeSearch();
+              }}
+              onMouseLeave={() => setActiveMenu(null)}
+            >
+              <button className="flex items-center h-full px-6 transition-colors font-semibold relative group gap-2 text-[#173A87]">
+                Informasi
+                <ChevronDown
+                  size={18}
+                  className={`transition-transform duration-300 text-[#173A87] ${
+                    activeMenu === "Profil" ? "scale-y-[-1]" : ""
+                  }`}
+                />
+                <div
+                  className={`absolute bottom-0 left-6 right-6 h-1 bg-gray-400 rounded-t-full transition-transform duration-300 ${
+                    activeMenu === "Profil"
+                      ? "scale-x-0"
+                      : "scale-x-0 group-hover:scale-x-100"
+                  }`}
+                />
+              </button>
+
+              <AnimatePresence>
+                {activeMenu === "Profil" &&
+                  renderDropdownContent(menuData["Profil"], "w-56")}
+              </AnimatePresence>
+            </div>
           </div>
 
           <div className="flex items-center h-full gap-2 text-[15px]">
