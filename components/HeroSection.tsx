@@ -40,12 +40,12 @@ const DesktopChevronButton: React.FC<DesktopChevronButtonProps> = ({
       onClick={onClick}
       disabled={disabled}
       aria-label={`${isLeft ? "Previous" : "Next"} slide`}
-      className={`absolute ${isLeft ? "-left-2" : "-right-2"} top-1/2 -translate-y-1/2 z-40 p-2 bg-black/40 backdrop-blur transition-all duration-300 ${hoverOpacity}`}
+      className={`absolute ${isLeft ? "left-6" : "right-6"} top-1/2 -translate-y-1/2 z-40 p-2 bg-[#173A87] backdrop-blur transition-all duration-300 rounded-[45px] ${hoverOpacity}`}
     >
       {isLeft ? (
-        <ChevronLeft size={30} className="text-white" />
+        <ChevronLeft size={20} className="text-white" />
       ) : (
-        <ChevronRight size={30} className="text-white" />
+        <ChevronRight size={20} className="text-white" />
       )}
     </button>
   );
@@ -460,7 +460,6 @@ const HeroSection = () => {
                     <div className="absolute inset-0 skeleton-shimmer" />
                   )}
 
-                  {/* Gunakan img tag langsung untuk Supabase URLs (bypass Next.js Image optimization) */}
                   <img
                     src={slide.image_url}
                     alt={`Slide ${index}`}
@@ -534,7 +533,6 @@ const HeroSection = () => {
                 <div className="absolute inset-0 skeleton-shimmer" />
               )}
 
-              {/* Gunakan img tag langsung untuk Supabase URLs (bypass Next.js Image optimization) */}
               <img
                 src={slide.image_url}
                 alt={`Slide ${index}`}
