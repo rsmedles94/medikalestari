@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 import {
   Ambulance,
   Pill,
@@ -17,7 +18,7 @@ import {
   Syringe,
   LucideIcon,
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 
 interface ServiceItem {
   label: string;
@@ -27,8 +28,12 @@ interface ServiceItem {
 
 const ServicesMenu: React.FC = () => {
   const services: ServiceItem[] = [
-    { label: "Emergency", icon: Ambulance, href: "/services/emergency" },
-    { label: "Farmasi", icon: Pill, href: "/services/farmasi" },
+    {
+      label: "Emergency Services",
+      icon: Ambulance,
+      href: "/services/emergency",
+    },
+    { label: "Farmasi & Obat", icon: Pill, href: "/services/farmasi" },
     { label: "Fisioterapi", icon: Activity, href: "/services/fisioterapi" },
     {
       label: "Kamar Perawatan",
@@ -36,12 +41,12 @@ const ServicesMenu: React.FC = () => {
       href: "/services/kamar-perawatan",
     },
     {
-      label: "Laboratory",
+      label: "Laboratory Testing",
       icon: Microscope,
       href: "/services/laboratory-testing",
     },
     {
-      label: "Gawat Darurat",
+      label: "Layanan Gawat Darurat",
       icon: Siren,
       href: "/services/layanan-gawat-darurat",
     },
@@ -54,44 +59,45 @@ const ServicesMenu: React.FC = () => {
     { label: "Radiologi", icon: Radio, href: "/services/radiologi" },
     { label: "Rawat Inap", icon: Bed, href: "/services/rawat-inap" },
     {
-      label: "Rehabilitasi",
+      label: "Rehabilitasi Medik",
       icon: Dumbbell,
       href: "/services/rehabilitasi-medik",
     },
     {
-      label: "Vaksinasi",
+      label: "Vaksinasi & Imunisasi",
       icon: Syringe,
       href: "/services/vaccination-services",
     },
   ];
 
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.03 },
+      transition: { staggerChildren: 0.02 },
     },
   };
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 15 },
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, y: 10 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.4 },
+      transition: { duration: 0.3, ease: "easeOut" },
     },
   };
 
   return (
-    <section className="py-16 px-4 bg-white">
-      <div className="max-w-[1332px] mx-auto -mt-18 md:mt-10 md:mb-10">
+    <section className="py-12 px-4 bg-white">
+      <div className="max-w-[1106px] mx-auto my-6">
         <nav aria-label="Layanan Utama">
           <motion.ul
-            className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 bg-white list-none p-0"
+            // Ditambahkan gap-3 untuk memberi jarak antar menu list
+            className="grid grid-cols-1 md:grid-cols-3 gap-1 bg-white list-none p-0"
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true }}
+            viewport={{ once: true, margin: "-50px" }}
           >
             {services.map((service) => {
               const Icon = service.icon;
@@ -99,21 +105,36 @@ const ServicesMenu: React.FC = () => {
                 <motion.li
                   key={service.label}
                   variants={itemVariants}
-                  whileHover={{ scale: 1.03, zIndex: 10 }}
-                  className="bg-white relative border border-gray-200 overflow-hidden"
+                  // Border dibuat penuh mengelilingi li karena sudah pakai gap
+                  className="bg-white border border-slate-200 overflow-hidden"
                 >
                   <Link
                     href={service.href}
-                    className="group flex flex-col items-center justify-center p-8 h-full transition-colors duration-300 hover:bg-[#173A87]"
+                    className="group flex items-center justify-between p-6 md:p-8 h-full min-h-[92px] transition-all duration-200 text-[#173A87] hover:bg-[#173A87] hover:text-white"
                   >
-                    {/* group-hover:-translate-y-1 dihapus agar ikon tidak gerak */}
-                    <div className="mb-4 text-[#173A87] group-hover:text-white transition-colors duration-300 transform">
-                      <Icon size={38} strokeWidth={1.2} />
+                    {/* Sisi Kiri: Ikon Utama & Judul Menu */}
+                    <div className="flex items-center gap-5 pr-4">
+                      <div className="flex-shrink-0 relative group-hover:scale-105 transition-transform duration-200">
+                        <Icon
+                          size={32}
+                          strokeWidth={1.5}
+                          className="text-current"
+                        />
+
+                        {/* Dot oranye kecil di pojok ikon */}
+                        <span className="absolute -bottom-1 -right-1 w-2 h-2 bg-orange-500 rounded-full border border-white" />
+                      </div>
+
+                      {/* Text Menu */}
+                      <span className="text-base md:text-[17px] font-bold tracking-normal leading-snug text-current">
+                        {service.label}
+                      </span>
                     </div>
 
-                    <span className="text-center text-[11px] md:text-xs font-bold uppercase tracking-widest text-[#173A87] group-hover:text-white transition-colors duration-300">
-                      {service.label}
-                    </span>
+                    {/* Sisi Kanan: Ikon Panah Kecil (Chevron) */}
+                    <div className="flex-shrink-0 opacity-80 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200 text-current">
+                      <ChevronRight size={16} strokeWidth={3} />
+                    </div>
                   </Link>
                 </motion.li>
               );

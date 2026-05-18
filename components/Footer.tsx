@@ -64,11 +64,10 @@ const menuItems = [
   { name: "Kontak Kami", href: "/kontak-kami" },
 ];
 
-
 const FooterContent = () => (
   <div className="bg-[#173A87] text-white">
     {/* --- MAIN SECTION --- */}
-    <div className="max-w-[1400px] mx-auto px-8 md:px-16 py-16 md:py-24">
+    <div className="max-w-[1200px] mx-auto px-8 md:px-16 py-16 md:py-24">
       <div className="flex flex-col lg:flex-row justify-between items-start gap-12 mb-20">
         {/* Logo */}
         <div className="shrink-0">
@@ -109,7 +108,7 @@ const FooterContent = () => (
 
     {/* --- BOTTOM BAR  --- */}
     <div className="bg-white text-[#173A87] py-10 border-t">
-      <div className="max-w-[1400px] mx-auto px-8 md:px-16 flex flex-col md:flex-row justify-between items-center gap-8">
+      <div className="max-w-[1200px] mx-auto px-8 md:px-16 flex flex-col md:flex-row justify-between items-center gap-8">
         {/* Copyright */}
         <div className="text-sm font-medium opacity-80">
           © {new Date().getFullYear()} RS Medika Lestari. All rights reserved.

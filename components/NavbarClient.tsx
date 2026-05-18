@@ -316,6 +316,16 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                     <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
                   </svg>
                 </a>
+
+                {/* Buat Janji Temu Pill */}
+                <a
+                  href="https://wa.me/6215858585858"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ml-6 px-4 py-2 bg-[#173A87]  text-white font-medium text-sm transition-colors duration-200 active:scale-95"
+                >
+                  Buat Janji Temu
+                </a>
               </div>
             </div>
 
@@ -341,9 +351,9 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
       {/* --- Bottom Navbar --- */}
 
-      <div className="hidden md:block relative w-full bg-[#173A87] border-t border-gray-200 z-30 shadow-md">
+      <div className="hidden md:block relative w-full bg-white border-t border-gray-200 z-30 shadow-md">
         <div className="max-w-[1220px] mx-auto px-4 md:px-8 flex justify-between items-center h-16 relative z-10">
-          <div className="flex h-full text-[15px] text-[#ffffff]">
+          <div className="flex h-full text-[15px] text-[#173A87]">
             <button
               onClick={handleHomeClick}
               className="flex items-center h-full px-6 transition-colors font-semibold relative group cursor-pointer"
@@ -366,11 +376,11 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               }}
               onMouseLeave={() => setActiveMenu(null)}
             >
-              <button className="flex items-center h-full px-6 transition-colors font-semibold relative group gap-2 text-[#ffffff] ">
+              <button className="flex items-center h-full px-6 transition-colors font-semibold relative group gap-2 text-[#173A87]">
                 Cari Dokter
                 <ChevronDown
                   size={18}
-                  className={`transition-transform duration-300 text-[#ffffff] ${
+                  className={`transition-transform duration-300 text-[#173A87] ${
                     activeMenu === "Dokter Kami" ? "scale-y-[-1]" : ""
                   }`}
                 />
@@ -407,11 +417,11 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                   }}
                   onMouseLeave={() => setActiveMenu(null)}
                 >
-                  <button className="flex items-center h-full px-6 transition-colors font-semibold relative group gap-2 text-[#ffffff]">
+                  <button className="flex items-center h-full px-6 transition-colors font-semibold relative group gap-2 text-[#173A87]">
                     {item}
                     <ChevronDown
                       size={18}
-                      className={`transition-transform duration-300 text-[#ffffff] ${
+                      className={`transition-transform duration-300 text-[#173A87] ${
                         activeMenu === item ? "scale-y-[-1]" : ""
                       }`}
                     />
@@ -440,11 +450,11 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               }}
               onMouseLeave={() => setActiveMenu(null)}
             >
-              <button className="flex items-center h-full px-6 transition-colors font-semibold relative group gap-2 text-[#ffffff]">
+              <button className="flex items-center h-full px-6 transition-colors font-semibold relative group gap-2 text-[#173A87]">
                 Informasi
                 <ChevronDown
                   size={18}
-                  className={`transition-transform duration-300 text-[#ffffff] ${
+                  className={`transition-transform duration-300 text-[#173A87] ${
                     activeMenu === "Profil" ? "scale-y-[-1]" : ""
                   }`}
                 />
@@ -473,13 +483,13 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                   openSearch();
                 }
               }}
-              className="flex items-center gap-1 transition-all h-full px-3 relative group text-[#ffffff]"
+              className="flex items-center gap-1 transition-all h-full px-3 relative group text-gray-500"
               title="Cari Dokter Spesialis"
             >
               <Search size={20} strokeWidth={3} />
 
               <div
-                className={`absolute bottom-0 left-3 right-3 h-1 bg-[#ffffff] rounded-t-full transition-transform duration-300  ${
+                className={`absolute bottom-0 left-3 right-3 h-1 bg-gray-400 rounded-t-full transition-transform duration-300  ${
                   isSearchOpen
                     ? "scale-x-0"
                     : "scale-x-0 group-hover:scale-x-100"
@@ -492,7 +502,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               className="relative h-full flex items-center px-3 cursor-pointer hover:opacity-80 transition-opacity"
               title="Switch language"
             >
-              <div className="flex items-center gap-1 px-1  border border-[#ffffff] rounded-full">
+              <div className="flex items-center gap-1 px-1  border border-gray-400 rounded-full">
                 {language === "ID" ? (
                   <>
                     <svg
@@ -520,11 +530,11 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                         fill="#FFFFFF"
                       />
                     </svg>
-                    <span className="font-medium text-[#ffffff]">ID</span>
+                    <span className="font-medium text-gray-700">ID</span>
                   </>
                 ) : (
                   <>
-                    <span className="font-medium text-[#ffffff]">EN</span>
+                    <span className="font-medium text-gray-700">EN</span>
                     <svg
                       width={18}
                       height={18}
@@ -876,7 +886,7 @@ function AuthDropdown({ activeMenu, setActiveMenu }: AuthDropdownProps) {
       onMouseEnter={() => setActiveMenu("Auth")}
       onMouseLeave={() => setActiveMenu(null)}
     >
-      <button className="flex items-center h-full gap-1 font-medium relative group text-[#ffffff] ">
+      <button className="flex items-center h-full gap-1 font-medium relative group text-gray-700">
         <Menu size={20} strokeWidth={2} />
         <div
           className={`absolute bottom-0 left-3 right-3 h-1 bg-gray-400 rounded-t-full transition-transform duration-300 ${
