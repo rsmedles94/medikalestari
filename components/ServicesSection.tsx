@@ -59,20 +59,37 @@ const ServiceSection = () => {
   };
 
   return (
-    <section className="w-full bg-[#173A87]/5 py-10">
-      <div className="max-w-[1400px] mx-auto px-4 md:px-8">
+    <section className="w-full relative overflow-hidden py-10">
+      {/* Background Gambar Utama */}
+      <div className="absolute inset-0 z-0">
+        <Image
+          src="/images/pusatpelayanan/background.jpeg"
+          alt="Background Pusat Pelayanan"
+          fill
+          priority
+          className="object-cover"
+        />
+        {/* 
+          Overlay Gradasi:
+          - bg-gradient-to-b: membuat arah gradasi dari atas ke bawah
+          - from-[#173A87]: warna atas (solid / opacity penuh)
+          - via-[#173A87]/60: warna tengah (mulai transparan)
+          - to-[#173A87]/10: warna bawah (sangat terang/transparan sehingga gambar asli lebih terlihat)
+        */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#173A87] via-[#173A87]/80 to-[#173A87]/40" />
+      </div>
+
+      {/* Wrapper Konten (Z-index dinaikkan agar tulisan/menu di atas tetap jelas dan bisa diklik) */}
+      <div className="max-w-[1400px] mx-auto px-4 md:px-8 relative z-10">
         {/* Header Section */}
-        <header className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10 pb-5 border-b border-slate-200">
-          <h2 className="text-2xl md:text-3xl font-semibold text-slate-900 uppercase tracking-tight">
+        <header className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10 pb-5 border-b border-white/20">
+          {/* Mengubah warna teks header ke putih/slate-100 agar kontras dengan bagian atas background yang gelap */}
+          <h2 className="text-2xl md:text-3xl font-semibold text-white uppercase tracking-tight">
             Pusat Pelayanan
           </h2>
-          <p className="text-slate-500 max-w-sm text-sm">
-            Akses informasi fasilitas, jadwal tenaga medis, dan operasional
-            rumah sakit
-          </p>
         </header>
 
-        {/* Grid System - Menggunakan list untuk struktur yang lebih baik */}
+        {/* Grid System */}
         <div
           className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10"
           role="list"
@@ -94,16 +111,16 @@ const ServiceSection = () => {
                   onClick={() => handleServiceClick(item.href)}
                   className="group relative aspect-[1/1] flex flex-col overflow-hidden bg-white shadow-md cursor-pointer"
                 >
-                  {/* Background Layer */}
+                  {/* Background Layer untuk masing-masing Card */}
                   <div className="absolute inset-0 z-0">
                     <Image
                       src={item.image}
-                      alt="" // Alt kosong karena title sudah ada di h3 (hindari redundansi)
+                      alt=""
                       fill
                       className="object-cover opacity-30 transition-opacity duration-500 md:group-hover:opacity-40"
                     />
 
-                    {/* Overlays */}
+                    {/* Overlays Card */}
                     <div className="absolute inset-0 bg-white/60 md:bg-white/80 md:group-hover:opacity-0 transition-opacity duration-500" />
                     <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-[#173A87]/80 to-[#173A87] opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 z-10" />
                   </div>

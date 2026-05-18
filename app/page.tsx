@@ -14,11 +14,11 @@ export default async function Home() {
       <main>
         <HeroSection />
         <ServicesMenu />
+        <PromoKesehatan />
 
         <ServiceSection />
         <AboutMedikaLestari />
 
-        <PromoKesehatan />
 
         {/* Bagian Hubungi Kami */}
         <CallCenter />

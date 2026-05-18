@@ -84,10 +84,10 @@ const ServicesMenu: React.FC = () => {
 
   return (
     <section className="py-16 px-4 bg-white">
-      <div className="max-w-[1332px] mx-auto -mt-18 md:mt-1">
+      <div className="max-w-[1332px] mx-auto -mt-18 md:mt-10 md:mb-10">
         <nav aria-label="Layanan Utama">
           <motion.ul
-            className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-px bg-gray-100 border border-gray-100 list-none p-0"
+            className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 bg-white list-none p-0"
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
@@ -100,7 +100,7 @@ const ServicesMenu: React.FC = () => {
                   key={service.label}
                   variants={itemVariants}
                   whileHover={{ scale: 1.03, zIndex: 10 }}
-                  className="bg-white relative"
+                  className="bg-white relative border border-gray-200 overflow-hidden"
                 >
                   <Link
                     href={service.href}

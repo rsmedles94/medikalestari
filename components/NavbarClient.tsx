@@ -351,9 +351,9 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
       {/* --- Bottom Navbar --- */}
 
-      <div className="hidden md:block relative w-full bg-white border-t border-gray-200 z-30 shadow-md">
+      <div className="hidden md:block relative w-full bg-[#173A87] border-t border-gray-200 z-30 shadow-md">
         <div className="max-w-[1220px] mx-auto px-4 md:px-8 flex justify-between items-center h-16 relative z-10">
-          <div className="flex h-full text-[15px] text-[#173A87]">
+          <div className="flex h-full text-[15px] text-[#ffffff]">
             <button
               onClick={handleHomeClick}
               className="flex items-center h-full px-6 transition-colors font-semibold relative group cursor-pointer"
@@ -376,11 +376,11 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               }}
               onMouseLeave={() => setActiveMenu(null)}
             >
-              <button className="flex items-center h-full px-6 transition-colors font-semibold relative group gap-2 text-[#173A87]">
+              <button className="flex items-center h-full px-6 transition-colors font-semibold relative group gap-2 text-[#ffffff] ">
                 Cari Dokter
                 <ChevronDown
                   size={18}
-                  className={`transition-transform duration-300 text-[#173A87] ${
+                  className={`transition-transform duration-300 text-[#ffffff] ${
                     activeMenu === "Dokter Kami" ? "scale-y-[-1]" : ""
                   }`}
                 />
@@ -417,11 +417,11 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                   }}
                   onMouseLeave={() => setActiveMenu(null)}
                 >
-                  <button className="flex items-center h-full px-6 transition-colors font-semibold relative group gap-2 text-[#173A87]">
+                  <button className="flex items-center h-full px-6 transition-colors font-semibold relative group gap-2 text-[#ffffff]">
                     {item}
                     <ChevronDown
                       size={18}
-                      className={`transition-transform duration-300 text-[#173A87] ${
+                      className={`transition-transform duration-300 text-[#ffffff] ${
                         activeMenu === item ? "scale-y-[-1]" : ""
                       }`}
                     />
@@ -450,11 +450,11 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               }}
               onMouseLeave={() => setActiveMenu(null)}
             >
-              <button className="flex items-center h-full px-6 transition-colors font-semibold relative group gap-2 text-[#173A87]">
+              <button className="flex items-center h-full px-6 transition-colors font-semibold relative group gap-2 text-[#ffffff]">
                 Informasi
                 <ChevronDown
                   size={18}
-                  className={`transition-transform duration-300 text-[#173A87] ${
+                  className={`transition-transform duration-300 text-[#ffffff] ${
                     activeMenu === "Profil" ? "scale-y-[-1]" : ""
                   }`}
                 />
@@ -483,13 +483,13 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                   openSearch();
                 }
               }}
-              className="flex items-center gap-1 transition-all h-full px-3 relative group text-gray-500"
+              className="flex items-center gap-1 transition-all h-full px-3 relative group text-[#ffffff]"
               title="Cari Dokter Spesialis"
             >
               <Search size={20} strokeWidth={3} />
 
               <div
-                className={`absolute bottom-0 left-3 right-3 h-1 bg-gray-400 rounded-t-full transition-transform duration-300  ${
+                className={`absolute bottom-0 left-3 right-3 h-1 bg-[#ffffff] rounded-t-full transition-transform duration-300  ${
                   isSearchOpen
                     ? "scale-x-0"
                     : "scale-x-0 group-hover:scale-x-100"
@@ -502,7 +502,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               className="relative h-full flex items-center px-3 cursor-pointer hover:opacity-80 transition-opacity"
               title="Switch language"
             >
-              <div className="flex items-center gap-1 px-1  border border-gray-400 rounded-full">
+              <div className="flex items-center gap-1 px-1  border border-[#ffffff] rounded-full">
                 {language === "ID" ? (
                   <>
                     <svg
@@ -530,11 +530,11 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                         fill="#FFFFFF"
                       />
                     </svg>
-                    <span className="font-medium text-gray-700">ID</span>
+                    <span className="font-medium text-[#ffffff]">ID</span>
                   </>
                 ) : (
                   <>
-                    <span className="font-medium text-gray-700">EN</span>
+                    <span className="font-medium text-[#ffffff]">EN</span>
                     <svg
                       width={18}
                       height={18}
@@ -886,7 +886,7 @@ function AuthDropdown({ activeMenu, setActiveMenu }: AuthDropdownProps) {
       onMouseEnter={() => setActiveMenu("Auth")}
       onMouseLeave={() => setActiveMenu(null)}
     >
-      <button className="flex items-center h-full gap-1 font-medium relative group text-gray-700">
+      <button className="flex items-center h-full gap-1 font-medium relative group text-[#ffffff] ">
         <Menu size={20} strokeWidth={2} />
         <div
           className={`absolute bottom-0 left-3 right-3 h-1 bg-gray-400 rounded-t-full transition-transform duration-300 ${
