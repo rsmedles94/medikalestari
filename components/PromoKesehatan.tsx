@@ -73,22 +73,22 @@ const STATS_DATA = [
   {
     icon: "/images/icons/location.svg",
     number: "70+",
-    text: "Locations in New York",
+    text: "Lokasi di Kota Tangerang",
   },
   {
     icon: "/images/icons/patient.svg",
-    number: "1.1M",
-    text: "New Yorkers Receive Care",
+    number: "100k+",
+    text: "Pasien pernah ditangani",
   },
   {
     icon: "/images/icons/doctor.svg",
-    number: "43K",
-    text: "Health Care Professionals",
+    number: "20+",
+    text: "Dokter Spesialis Profesional",
   },
   {
-    icon: "/images/icons/languages.svg",
-    number: "200+",
-    text: "Languages Spoken",
+    icon: "/images/icons/bed.svg",
+    number: "30+",
+    text: "Kamar Perawatan",
   },
 ];
 
