@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion, useAnimationControls } from "framer-motion";
+import Link from "next/link";
 
 // ==========================================
 // DATA DEMO PROMO KESEHATAN (Total 8 Item)
@@ -434,12 +435,14 @@ const PromoKesehatan = () => {
                 memastikan seluruh lapisan masyarakat dapat menikmati perawatan
                 berkualitas tinggi secara nyaman dan tanpa kendala birokrasi.
               </p>
-              <button
-                type="button"
-                className="px-5 py-2.5 bg-[#e67e22] hover:bg-[#d35400] text-white text-xs font-semibold transition-colors inline-flex items-center gap-2"
-              >
-                Selengkapnya →
-              </button>
+              <Link href="/tentang-kami" passHref>
+                <button
+                  type="button"
+                  className="px-5 py-2.5 bg-[#e67e22] hover:bg-[#d35400] text-white text-xs font-semibold transition-colors inline-flex items-center gap-2"
+                >
+                  Selengkapnya Tentang Kami →
+                </button>
+              </Link>
             </div>
 
             {/* Sisi Kanan: Slider Bungkus Kotak Putih Logo Penghargaan (18 Item smooth slider dengan Dot) */}
