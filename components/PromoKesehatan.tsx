@@ -73,22 +73,22 @@ const FEATURES_DATA = [
   {
     icon: "/images/icons/whatsapp.svg",
     title: "Make an Appointment Online",
-    link: "https://wa.me/628XXXXXXXXXX", 
+    link: "https://wa.me/628XXXXXXXXXX",
   },
   {
     icon: "/images/icons/instagram.svg",
-    title: "@rsmedikalestari", 
+    title: "@rsmedikalestari",
     link: "https://www.instagram.com/rsmedikalestari",
   },
   {
     icon: "/images/icons/youtube.svg",
     title: "RS Medika Lestari",
-    link: "https://www.youtube.com/@RSMedikaLestari", 
+    link: "https://www.youtube.com/@RSMedikaLestari",
   },
   {
     icon: "/images/icons/callcenter.svg",
     title: "Customer Care Darurat",
-    link: "tel:1500XXX", 
+    link: "tel:1500XXX",
   },
   {
     icon: "/images/icons/threads.svg",
@@ -98,7 +98,7 @@ const FEATURES_DATA = [
   {
     icon: "/images/icons/tiktok.svg",
     title: "RS Medika Lestari",
-    link: "https://www.tiktok.com/@rsmedikalestari", 
+    link: "https://www.tiktok.com/@rsmedikalestari",
   },
 ];
 
@@ -189,12 +189,12 @@ const AWARDS_DATA = [
 const STATS_DATA = [
   {
     icon: "/images/icons/location.svg",
-    number: "2",
+    number: "20",
     text: "Lokasi di Provinsi Banten",
   },
   {
     icon: "/images/icons/patient.svg",
-    number: "8000+",
+    number: "8K+",
     text: "Pasien pernah ditangani",
   },
   {
@@ -345,12 +345,6 @@ const PromoKesehatan = () => {
               berkomitmen memberikan pelayanan kesehatan terpadu, profesional,
               dan penuh kepedulian demi kenyamanan Anda dan keluarga.
             </p>
-            <a
-              href="/tentang-kami"
-              className="text-sm font-semibold text-orange-400 hover:underline inline-flex items-center gap-1"
-            >
-              Selengkapnya tentang kami →
-            </a>
           </div>
 
           {/* POSISI DIPINDAH KE ATAS: BARISAN STATISTIK COUNTER */}
@@ -366,7 +360,7 @@ const PromoKesehatan = () => {
                     className="object-contain brightness-0 invert"
                   />
                 </div>
-                <div className="text-4xl md:text-5xl font-black mb-1 leading-none text-white">
+                <div className="text-4xl md:text-4xl font-semibold mb-1 leading-none text-white">
                   {stat.number}
                 </div>
                 <p className="text-xs uppercase font-medium text-white/90 max-w-[180px] mx-auto leading-normal">
@@ -425,7 +419,7 @@ const PromoKesehatan = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center mb-12">
             {/* Sisi Kiri: Deskripsi Wilayah */}
             <div className="lg:col-span-6 text-left">
-              <h3 className="text-3xl md:text-5xl font-bold mb-6 leading-tight ">
+              <h3 className="text-3xl md:text-4xl font-bold mb-6 leading-tight ">
                 Layanan Kesehatan Tepercaya, Didukung Jaringan Mitra Luas
               </h3>
               <p className="text-sm md:text-base text-white/90 font-semibold mb-4 leading-normal text-justify">

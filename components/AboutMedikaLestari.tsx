@@ -29,7 +29,7 @@ const AboutMedikaLestari = () => {
 
   return (
     <section className="py-16 bg-white overflow-hidden">
-      <div className="relative z-10 max-w-290 mx-auto px-4 md:px-8 -mt-8 -mb-20">
+      <div className="relative z-10 max-w-290 mx-auto px-4 md:px-8 -mt-8 ">
         {/* Header Section */}
         <div className="flex flex-col items-center mb-16 text-center">
           <div className="mb-8">

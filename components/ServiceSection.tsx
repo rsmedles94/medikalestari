@@ -52,7 +52,7 @@ const ServiceSection = () => {
       image: "/mcu.png",
       title: "Dari Sumber Penderitaan, Kekuatan-Nya Muncul",
       href: "/kisah-pasien/kekuatan-muncul",
-      aspectClass: "aspect-[16/9.2]",
+      aspectClass: "aspect-[16/11.8]",
     },
   ];
 
@@ -63,7 +63,7 @@ const ServiceSection = () => {
       image: "/mcu.png",
       title: "Menghidupkan Kembali Tangan Harry",
       href: "/kisah-pasien/tangan-harry",
-      aspectClass: "aspect-[16/10.3]",
+      aspectClass: "aspect-[16/14.1]",
     },
     {
       id: 6,
@@ -71,7 +71,7 @@ const ServiceSection = () => {
       title:
         'Setelah Kondisi Diabetesnya Membaik, Pria Brooklyn Ini Menjadi "Keajaiban yang Berjalan"',
       href: "/kisah-pasien/keajaiban-berjalan",
-      aspectClass: "aspect-[3/3.7]",
+      aspectClass: "aspect-[3/3]",
     },
   ];
 
