@@ -40,12 +40,12 @@ const DoctorSkeleton = () => {
       {/* Konten Dokter Skeleton */}
       <div className="flex-1 text-left pt-2 space-y-4">
         {/* Nama -  shimmer effect */}
-        <div className="relative h-6 md:h-8 bg-slate-300 rounded-sm w-3/4 overflow-hidden shadow-sm">
+        <div className="relative h-6 md:h-8 bg-slate-300 w-3/4 overflow-hidden shadow-sm">
           <ShimmerOverlay />
         </div>
 
         {/* Spesialisasi -  shimmer effect */}
-        <div className="relative h-3 md:h-4 bg-slate-250 rounded-sm w-1/4 overflow-hidden shadow-sm">
+        <div className="relative h-3 md:h-4 bg-slate-250  w-1/4 overflow-hidden shadow-sm">
           <ShimmerOverlay />
         </div>
 

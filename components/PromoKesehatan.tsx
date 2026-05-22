@@ -67,33 +67,43 @@ const PROMO_DATA = [
 ];
 
 // ==========================================
-// DATA FITUR UTAMA (Sisi Kanan Gambar 1)
+// DATA FITUR UTAMA (Sesuai Gambar Grid)
 // ==========================================
 const FEATURES_DATA = [
   {
-    icon: "/images/icons/mychart.svg",
-    title: "MyChart",
-    desc: "Your online patient portal to connect with doctors and your health information.",
+    icon: "/images/icons/whatsapp.svg",
+    title: "Make an Appointment Online",
+    link: "https://wa.me/628XXXXXXXXXX", 
   },
   {
-    icon: "/images/icons/phone.svg",
-    title: "Telephone Visits",
-    desc: "Speak to a doctor by telephone.",
+    icon: "/images/icons/instagram.svg",
+    title: "@rsmedikalestari", 
+    link: "https://www.instagram.com/rsmedikalestari",
   },
   {
-    icon: "/images/icons/express.svg",
-    title: "Virtual ExpressCare",
-    desc: "Skip the emergency room. Talk to a doctor now for virtual urgent care.",
+    icon: "/images/icons/youtube.svg",
+    title: "RS Medika Lestari",
+    link: "https://www.youtube.com/@RSMedikaLestari", 
   },
   {
-    icon: "/images/icons/video.svg",
-    title: "Video Visits",
-    desc: "Video visit with a doctor on your smartphone or computer.",
+    icon: "/images/icons/callcenter.svg",
+    title: "Customer Care Darurat",
+    link: "tel:1500XXX", 
+  },
+  {
+    icon: "/images/icons/threads.svg",
+    title: "@rsmedikalestari",
+    link: "https://www.threads.net/@rsmedikalestari",
+  },
+  {
+    icon: "/images/icons/tiktok.svg",
+    title: "RS Medika Lestari",
+    link: "https://www.tiktok.com/@rsmedikalestari", 
   },
 ];
 
 // ==========================================
-// DATA LOGO REKANAN / PENGHARGAAN (Gambar 2)
+// DATA LOGO REKANAN / PENGHARGAAN (Total 18 Item)
 // ==========================================
 const AWARDS_DATA = [
   {
@@ -133,31 +143,69 @@ const AWARDS_DATA = [
     src: "/images/awards/award9.png",
     alt: "The Joint Commission Gold Seal",
   },
+  // 9 Item Tambahan untuk melengkapi menjadi 18 item slider
+  {
+    id: 10,
+    src: "/images/awards/award1.png",
+    alt: "America's Best Nursing Homes 2",
+  },
+  {
+    id: 11,
+    src: "/images/awards/award2.png",
+    alt: "Best Nursing Homes US News 2",
+  },
+  { id: 12, src: "/images/awards/award3.png", alt: "Best Hospitals US News 2" },
+  {
+    id: 13,
+    src: "/images/awards/award4.png",
+    alt: "LGBTQ Healthcare Equality Leader 2",
+  },
+  {
+    id: 14,
+    src: "/images/awards/award5.png",
+    alt: "Lown Institute Hospitals Index 2",
+  },
+  { id: 15, src: "/images/awards/award6.png", alt: "Healthgrades Gold Plus 2" },
+  {
+    id: 16,
+    src: "/images/awards/award7.png",
+    alt: "Designated a Baby Friendly Hospital 2",
+  },
+  {
+    id: 17,
+    src: "/images/awards/award8.png",
+    alt: "American College of Surgeons 2",
+  },
+  {
+    id: 18,
+    src: "/images/awards/award9.png",
+    alt: "The Joint Commission Gold Seal 2",
+  },
 ];
 
 // ==========================================
-// DATA COUNTER STATISTIK (Sesuai Gambar 2)
+// DATA COUNTER STATISTIK
 // ==========================================
 const STATS_DATA = [
   {
     icon: "/images/icons/location.svg",
-    number: "70+",
-    text: "Lokasi di Kota Tangerang",
+    number: "2",
+    text: "Lokasi di Provinsi Banten",
   },
   {
     icon: "/images/icons/patient.svg",
-    number: "100k+",
+    number: "8000+",
     text: "Pasien pernah ditangani",
   },
   {
     icon: "/images/icons/doctor.svg",
-    number: "20+",
-    text: "Dokter Spesialis Profesional",
+    number: "47",
+    text: "Tenaga Medis Profesional",
   },
   {
     icon: "/images/icons/bed.svg",
-    number: "30+",
-    text: "Kamar Perawatan",
+    number: "111",
+    text: "Kamar Perawatan Modern",
   },
 ];
 
@@ -190,11 +238,18 @@ function SkeletonCard() {
 // ==========================================
 const PromoKesehatan = () => {
   const [isLoading, setIsLoading] = useState(true);
+
+  // State & Controls untuk Slider Promo Vaksin (Bawaan)
   const [activeIndex, setActiveIndex] = useState(0);
   const controls = useAnimationControls();
-
   const [itemsPerGroup, setItemsPerGroup] = useState(4);
   const totalDots = Math.ceil(PROMO_DATA.length / itemsPerGroup);
+
+  // State & Controls Kustom Baru untuk Slider Award (18 Item, per-grup isi 9 logo sesuai grid gambar)
+  const [activeAwardIndex, setActiveAwardIndex] = useState(0);
+  const awardControls = useAnimationControls();
+  const awardItemsPerGroup = 9; // Grid 3x3 per halaman slider
+  const totalAwardDots = Math.ceil(AWARDS_DATA.length / awardItemsPerGroup);
 
   useEffect(() => {
     const handleResize = () => {
@@ -204,7 +259,9 @@ const PromoKesehatan = () => {
         setItemsPerGroup(2);
       }
       setActiveIndex(0);
+      setActiveAwardIndex(0);
       controls.start({ x: "0%" });
+      awardControls.start({ x: "0%" });
     };
 
     handleResize();
@@ -216,8 +273,9 @@ const PromoKesehatan = () => {
       window.removeEventListener("resize", handleResize);
       clearTimeout(t);
     };
-  }, [controls]);
+  }, [controls, awardControls]);
 
+  // Handler Navigasi Slider Promo Vaksin
   const handleDotClick = (index: number) => {
     setActiveIndex(index);
     const targetTranslateX = -(index * 100);
@@ -233,10 +291,25 @@ const PromoKesehatan = () => {
     });
   };
 
+  // Handler Navigasi Slider 18 Logo Rekanan Baru
+  const handleAwardDotClick = (index: number) => {
+    setActiveAwardIndex(index);
+    const targetTranslateX = -(index * 100);
+
+    awardControls.start({
+      x: `${targetTranslateX}%`,
+      transition: {
+        type: "spring",
+        stiffness: 180,
+        damping: 24,
+        mass: 0.8,
+      },
+    });
+  };
+
   return (
-    // Pembungkus Tunggal Utama: Tempat gambar background tunggal diletakkan agar benar-benar menyambung sempurna
     <div className="w-full font-sans antialiased bg-white relative overflow-hidden">
-      {/* SATU-SATUNYA BACKGROUND GAMBAR UNTUK SELURUH HALAMAN */}
+      {/* BACKGROUND GAMBAR UNTUK SELURUH HALAMAN */}
       <div className="absolute inset-x-0 top-0 bottom-32 z-0">
         <Image
           src="/informasi.jpg"
@@ -246,123 +319,42 @@ const PromoKesehatan = () => {
           priority
           quality={95}
         />
-        {/* Overlay Biru Gelap merata di atas gambar background */}
         <div className="absolute inset-0 bg-[#173A87]/95" />
       </div>
 
-      {/* Sisa area background paling bawah sendiri setelah slider card dijadikan putih murni */}
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-white z-0" />
 
       {/* ========================================================================= */}
-      {/* 1. SECTON ATAS: KONTEN DI AREA BIRU (HEADER, LAYOUT DUA KOLOM, REKANAN, STATS) */}
+      {/* 1. SECTION ATAS: KONTEN DI AREA BIRU */}
       {/* ========================================================================= */}
       <section className="relative z-10 w-full pt-20 pb-16 px-4 sm:px-6 lg:px-8 text-white">
         <div className="max-w-[1180px] mx-auto md:px-8">
-          {/* UTUH BAGIAN A: HEADER (Virtual Care - Gambar 1) */}
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold mb-4">
-              Virtual Care – Anytime, Anywhere
+          {/* UTUH BAGIAN A: HEADER */}
+          <div className="text-center max-w-4xl mx-auto mb-16">
+            <img
+              src="/medikalestari.png"
+              alt="Logo Medika Lestari"
+              className="h-20 w-auto mx-auto mb-6 object-contain"
+            />
+
+            <h2 className="text-3xl md:text-[40px] font-semibold mb-4">
+              Selamat Datang di Rumah Sakit Medika Lestari
             </h2>
             <p className="text-sm md:text-base text-white/90 mb-4 leading-normal">
-              We have several options to connect with our health care providers
-              without coming into the doctor’s office or hospital.
+              Kami hadir sebagai rumah sakit umum modern di Kota Tangerang yang
+              berkomitmen memberikan pelayanan kesehatan terpadu, profesional,
+              dan penuh kepedulian demi kenyamanan Anda dan keluarga.
             </p>
             <a
-              href="#learn-more"
+              href="/tentang-kami"
               className="text-sm font-semibold text-orange-400 hover:underline inline-flex items-center gap-1"
             >
-              Learn More About Virtual Care →
+              Selengkapnya tentang kami →
             </a>
           </div>
 
-          {/* UTUH BAGIAN B: DUA KOLOM DENGAN GAMBAL VISUAL & FITUR (Gambar 1) */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center mb-24">
-            {/* Sisi Kiri: Gambar Representasi */}
-            <div className="lg:col-span-6 flex justify-center">
-              <div className="relative w-full max-w-md aspect-[4/3] ">
-                <Image
-                  src="/mcu.png"
-                  alt="Virtual Care Info"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            </div>
-
-            {/* Sisi Kanan: Grid 4 Fitur Utama */}
-            <div className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-6 text-left">
-              {FEATURES_DATA.map((feat, index) => (
-                <div key={index} className="flex gap-3 items-start">
-                  <div className="shrink-0 w-10 h-10 flex items-center justify-center bg-white/10 border border-white/20">
-                    <Image
-                      src={feat.icon}
-                      alt={feat.title}
-                      width={24}
-                      height={24}
-                      className="object-contain brightness-0 invert"
-                    />
-                  </div>
-                  <div>
-                    <h4 className="text-base font-bold mb-1">{feat.title}</h4>
-                    <p className="text-xs text-white/80 leading-normal">
-                      {feat.desc}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <hr className="border-white/10 my-16" />
-
-          {/* UTUH BAGIAN C: EXPERT CARE & GRID LOGO REKANAN (Gambar 2) */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center mb-24">
-            {/* Sisi Kiri: Deskripsi Wilayah */}
-            <div className="lg:col-span-6 text-left">
-              <h3 className="text-3xl md:text-5xl font-bold mb-6 leading-tight">
-                Expert Care in Every NYC Neighborhood
-              </h3>
-              <p className="text-sm md:text-base text-white/90 font-semibold mb-4 leading-normal">
-                No matter your health care needs, the NYC Health + Hospitals
-                system is there for you.
-              </p>
-              <p className="text-xs md:text-sm text-white/80 leading-normal mb-8">
-                Our hospitals, nursing homes, and Gotham Health Centers are
-                recognized for racial equity and outstanding services. We offer
-                quality, affordable care in every New York City neighborhood.
-              </p>
-              <button
-                type="button"
-                className="px-5 py-2.5 bg-[#e67e22] hover:bg-[#d35400] text-white text-xs font-bold uppercase transition-colors inline-flex items-center gap-2"
-              >
-                What makes us unique →
-              </button>
-            </div>
-
-            {/* Sisi Kanan: 9 Kotak Putih Logo Penghargaan */}
-            <div className="lg:col-span-6 grid grid-cols-3 gap-2">
-              {AWARDS_DATA.map((award) => (
-                <div
-                  key={award.id}
-                  className="bg-white p-2 aspect-[4/3] flex items-center justify-center shadow"
-                >
-                  <div className="relative w-full h-full">
-                    <Image
-                      src={award.src}
-                      alt={award.alt}
-                      fill
-                      className="object-contain"
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <hr className="border-white/10 my-16" />
-
-          {/* UTUH BAGIAN D: BARISAN STATISTIK COUNTER (Paling Bawah Bagian Biru) */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12 text-center items-start">
+          {/* POSISI DIPINDAH KE ATAS: BARISAN STATISTIK COUNTER */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12 text-center items-start mb-20">
             {STATS_DATA.map((stat, index) => (
               <div key={index} className="flex flex-col items-center">
                 <div className="mb-3 w-12 h-12 flex items-center justify-center relative">
@@ -383,17 +375,178 @@ const PromoKesehatan = () => {
               </div>
             ))}
           </div>
+
+          {/* POSISI TURUN KE BAWAH STATS: SECTION GRID MENU UTAMA (TALK A DOCTOR) */}
+          <div className="mb-24 max-w-[1107px] mx-auto bg-white text-[#002878] overflow-hidden shadow-md">
+            <div className="grid grid-cols-1 md:grid-cols-3 border-b border-gray-200 last:border-none">
+              {FEATURES_DATA.map((feat, index) => (
+                <a
+                  key={index}
+                  href={feat.link}
+                  className="flex items-center justify-between p-6 bg-white hover:bg-gray-50 transition-colors duration-200 border-b md:border-b-0 md:border-r border-gray-200 last:border-r-0 [&:nth-child(3)]:border-r-0 [&:nth-child(4)]:border-b-0 [&:nth-child(5)]:border-b-0 [&:nth-child(6)]:border-b-0 min-h-[96px]"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="shrink-0 w-10 h-10 flex items-center justify-center">
+                      <Image
+                        src={feat.icon}
+                        alt={feat.title}
+                        width={36}
+                        height={36}
+                        className="object-contain"
+                      />
+                    </div>
+                    <span className="text-[17px] font-bold tracking-wide leading-snug">
+                      {feat.title}
+                    </span>
+                  </div>
+                  <div className="shrink-0 pl-2">
+                    <svg
+                      className="w-3 h-3 text-[#002878]"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <hr className="border-white/10 my-16" />
+
+          {/* UTUH BAGIAN C: EXPERT CARE & SLIDER 18 LOGO REKANAN */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center mb-12">
+            {/* Sisi Kiri: Deskripsi Wilayah */}
+            <div className="lg:col-span-6 text-left">
+              <h3 className="text-3xl md:text-5xl font-bold mb-6 leading-tight ">
+                Layanan Kesehatan Tepercaya, Didukung Jaringan Mitra Luas
+              </h3>
+              <p className="text-sm md:text-base text-white/90 font-semibold mb-4 leading-normal text-justify">
+                RS Medika Lestari berkomitmen untuk selalu hadir memberikan rasa
+                aman dan kemudahan akses medis di setiap langkah penanganan
+                kesehatan Anda.
+              </p>
+              <p className="text-xs md:text-sm text-white/80 leading-normal mb-8 text-justify">
+                Melalui sinergi erat bersama penyedia jaminan kesehatan,
+                asuransi terkemuka, dan mitra korporasi, kami mengintegrasikan
+                layanan medis prima dengan sistem klaim yang praktis. Kami
+                memastikan seluruh lapisan masyarakat dapat menikmati perawatan
+                berkualitas tinggi secara nyaman dan tanpa kendala birokrasi.
+              </p>
+              <button
+                type="button"
+                className="px-5 py-2.5 bg-[#e67e22] hover:bg-[#d35400] text-white text-xs font-semibold transition-colors inline-flex items-center gap-2"
+              >
+                Selengkapnya →
+              </button>
+            </div>
+
+            {/* Sisi Kanan: Slider Bungkus Kotak Putih Logo Penghargaan (18 Item smooth slider dengan Dot) */}
+            <div className="lg:col-span-6 w-full overflow-hidden flex flex-col">
+              <div className="w-full overflow-hidden">
+                <motion.div
+                  animate={awardControls}
+                  initial={{ x: "0%" }}
+                  className="flex w-full"
+                >
+                  {/* Halaman/Grup Pertama (Logo 1-9) */}
+                  <div className="w-full shrink-0 grid grid-cols-3 gap-2 pr-1">
+                    {AWARDS_DATA.slice(0, 9).map((award) => (
+                      <div
+                        key={award.id}
+                        className="bg-white p-2 aspect-[4/3] flex items-center justify-center shadow transition-all duration-300 hover:opacity-90"
+                      >
+                        <div className="relative w-full h-full">
+                          <Image
+                            src={award.src}
+                            alt={award.alt}
+                            fill
+                            className="object-contain"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Halaman/Grup Kedua (Logo 10-18) */}
+                  <div className="w-full shrink-0 grid grid-cols-3 gap-2 pl-1">
+                    {AWARDS_DATA.slice(9, 18).map((award) => (
+                      <div
+                        key={award.id}
+                        className="bg-white p-2 aspect-[4/3] flex items-center justify-center shadow transition-all duration-300 hover:opacity-90"
+                      >
+                        <div className="relative w-full h-full">
+                          <Image
+                            src={award.src}
+                            alt={award.alt}
+                            fill
+                            className="object-contain"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              </div>
+
+              {/* Indikator Dot Bulat Navigasi untuk Logo Rekanan */}
+              <div className="mt-6 flex items-center justify-center gap-3">
+                {Array.from({ length: totalAwardDots }).map((_, index) => {
+                  const isAwardActive = index === activeAwardIndex;
+                  return (
+                    <button
+                      key={index}
+                      type="button"
+                      onClick={() => handleAwardDotClick(index)}
+                      className="focus:outline-none flex items-center justify-center h-6 w-6 relative"
+                      aria-label={`Go to award page ${index + 1}`}
+                    >
+                      {/* Pusat Dot */}
+                      <motion.div
+                        animate={{
+                          backgroundColor: isAwardActive
+                            ? "#ffffff"
+                            : "rgba(255, 255, 255, 0.4)",
+                        }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute w-2.5 h-2.5 rounded-full z-10 pointer-events-none"
+                      />
+                      {/* Ring Ring Aktif */}
+                      <motion.div
+                        initial={{ scale: 0.4, opacity: 0 }}
+                        animate={{
+                          scale: isAwardActive ? 1 : 0.4,
+                          opacity: isAwardActive ? 1 : 0,
+                        }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 280,
+                          damping: 22,
+                        }}
+                        className="absolute w-5 h-5 rounded-full border-2 border-white bg-transparent z-0 origin-center pointer-events-none"
+                      />
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* ========================================================================= */}
-      {/* 2. SECTION BAWAH: SLIDER CARD PROMO (Memotong Separuh Lapisan BG Biru & BG Putih) */}
+      {/* 2. SECTION BAWAH: SLIDER CARD PROMO */}
       {/* ========================================================================= */}
       <section className="relative z-10 w-full pb-20 px-4 sm:px-6 lg:px-8">
-        {/* Layer penutup warna putih murni khusus untuk menutupi separuh area bawah slider card */}
         <div className="absolute inset-x-0 bottom-0 top-32 bg-white z-0" />
 
-        {/* Konten Utama Slider */}
         <div className="relative z-10 max-w-[1180px] mx-auto md:px-8">
           <div className="w-full overflow-hidden">
             <motion.div
@@ -437,9 +590,9 @@ const PromoKesehatan = () => {
                           <div className="mt-auto">
                             <button
                               type="button"
-                              className="w-full py-2 border border-[#173A87] text-[#173A87] text-[10px] md:text-xs font-bold uppercase transition-all duration-300 hover:bg-[#173A87] hover:text-white"
+                              className="w-full py-2 border border-[#173A87] text-[#173A87] text-[10px] md:text-xs font-semibold transition-all duration-300 hover:bg-[#173A87] hover:text-white"
                             >
-                              Selengkapnya
+                              Selengkapnya →
                             </button>
                           </div>
                         </div>
@@ -449,7 +602,6 @@ const PromoKesehatan = () => {
             </motion.div>
           </div>
 
-          {/* Indikator Dot Bulat */}
           <div className="mt-12 flex items-center justify-center gap-4">
             {Array.from({ length: totalDots }).map((_, index) => {
               const isActive = index === activeIndex;
@@ -461,7 +613,6 @@ const PromoKesehatan = () => {
                   className="focus:outline-none flex items-center justify-center h-8 w-8 relative"
                   aria-label={`Go to slide ${index + 1}`}
                 >
-                  {/* Dot Pusat */}
                   <motion.div
                     animate={{
                       backgroundColor: isActive ? "#ffffff" : "#173A87",
@@ -470,7 +621,6 @@ const PromoKesehatan = () => {
                     className="absolute w-4 h-4 rounded-full z-10 pointer-events-none"
                   />
 
-                  {/* Ring Aktif */}
                   <motion.div
                     initial={{ scale: 0.4, opacity: 0 }}
                     animate={{

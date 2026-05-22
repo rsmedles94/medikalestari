@@ -566,10 +566,10 @@ const HeroSection = () => {
         </div>
       </div>
 
-      {/* SEARCH BAR - Desktop */}
+      {/* Searchbar Desktop */}
       <div className="hidden md:absolute md:inset-0 md:flex md:flex-col md:items-end md:justify-end md:z-20 md:pr-20 md:pb-15 md:pointer-events-none">
         <div className="md:pointer-events-auto bg-[#173A87] rounded-md shadow-lg p-5">
-          {/* TITLE */}
+          {/* titlr */}
           <h2 className="text-lg font-bold text-white mb-4">
             Cari Dokter Spesialis atau Jadwal Praktek
           </h2>
@@ -580,7 +580,7 @@ const HeroSection = () => {
               gap-0
             "
           >
-            {/* NAMA DOKTER */}
+            {/* doctor name */}
             <div className="px-4 py-3 border border-gray-300">
               <p className="text-xs text-white font-semibold mb-1">
                 Nama Dokter

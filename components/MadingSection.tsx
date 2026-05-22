@@ -67,12 +67,12 @@ const MadingSection = () => {
   );
 
   return (
-    <section className="w-full bg-white py-8 md:py-16 px-4 md:px-8">
+    <section className="w-full bg-[#002878]/90 py-8 md:py-16 px-4 md:px-8">
       <div className="max-w-[1110px] mx-auto">
         {/* Header Navigation */}
-        <div className="flex items-center justify-between mb-8 border-b border-gray-100">
-          <h2 className="text-2xl md:text-3xl font-semibold text-slate-900 uppercase tracking-tight">
-            Informasi & Event
+        <div className="flex items-center justify-between mb-8 ">
+          <h2 className="text-2xl md:text-3xl font-semibold text-white tracking-tight">
+            Berita Terbaru
           </h2>
 
           <div className="flex gap-6 md:gap-8">
@@ -81,12 +81,12 @@ const MadingSection = () => {
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`pb-4 px-1 text-xs md:text-sm font-normal transition-all relative ${
-                  activeTab === tab ? "text-[#173A87]" : "text-gray-400"
+                  activeTab === tab ? "text-white" : "text-gray-400"
                 }`}
               >
                 {tab.toUpperCase()}
                 {activeTab === tab && (
-                  <span className="absolute bottom-0 left-0 w-full h-[3px] bg-[#173A87]" />
+                  <span className="absolute bottom-0 left-0 w-full h-[3px] bg-white" />
                 )}
               </button>
             ))}
@@ -116,7 +116,7 @@ const MadingSection = () => {
                   <div key={item.id} className="h-full">
                     {activeTab === "Informasi" ? (
                       /* --- Informasi --- */
-                      <div className="bg-white border border-gray-200 rounded-sm flex flex-col h-full overflow-hidden shadow-sm">
+                      <div className="bg-white border border-gray-200 flex flex-col h-full overflow-hidden shadow-sm">
                         {/* Header Nickname & Tanggal */}
                         <div className="p-2 md:p-3 flex items-center justify-between">
                           <div className="flex items-center gap-2">

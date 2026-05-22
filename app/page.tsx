@@ -1,5 +1,5 @@
 import HeroSection from "@/components/HeroSection";
-import ServiceSection from "@/components/ServicesSection"; // Nama disesuaikan dengan komponen baru
+import ServiceSection from "@/components/ServiceSection";
 import ServicesMenu from "@/components/ServicesMenu";
 import AboutMedikaLestari from "@/components/AboutMedikaLestari";
 import PromoKesehatan from "@/components/PromoKesehatan";
@@ -20,8 +20,7 @@ export default async function Home() {
         <AboutMedikaLestari />
 
 
-        {/* Bagian Hubungi Kami */}
-        <CallCenter />
+
 
         <MadingSection />
 
