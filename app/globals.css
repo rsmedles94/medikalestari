@@ -10,6 +10,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-primary: var(--primary-blue);
+  --font-family-sans: Avenir, Arial, Helvetica, sans-serif;
 }
 
 /* Menyembunyikan scrollbar 

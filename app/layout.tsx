@@ -1,6 +1,5 @@
 "use client";
 
-import { Montserrat } from "next/font/google";
 import "./globals.css";
 import { AuthProvider, useAuth } from "@/context/AuthProvider";
 import { SearchModalProvider } from "@/context/SearchModalContext";
@@ -12,12 +11,6 @@ import EmergencyWA from "@/components/EmergencyWA";
 import MobileBottomNavbar from "@/components/MobileBottomNavbar";
 import { PageTracker } from "@/components/PageTracker";
 import { usePathname } from "next/navigation";
-
-const montserrat = Montserrat({
-  variable: "--font-avenir",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
 
 export default function RootLayout({
   children,
@@ -50,11 +43,7 @@ export default function RootLayout({
   };
 
   return (
-    <html
-      lang="id"
-      suppressHydrationWarning
-      className={`${montserrat.variable} h-full antialiased`}
-    >
+    <html lang="id" suppressHydrationWarning className="h-full antialiased">
       <head>
         {/* SEO Metadata */}
         <title>RS Medika Lestari</title>
@@ -145,9 +134,7 @@ function LayoutContent({
         <>
           <Navbar />
           <MobileBottomNavbar />
-          <main className="min-h-screen pt-28 md:pt-26 md:pb-10 pb-22">
-            {children}
-          </main>
+          <main className="min-h-screen pt-28 md:pt-26">{children}</main>
           <EmergencyWA />
           <PopupDisplay />
           <Footer />
