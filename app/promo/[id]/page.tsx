@@ -388,7 +388,7 @@ export default function PromoDetailPage() {
       } else if (window.innerWidth >= 768) {
         setRelatedItemsPerGroup(2);
       } else {
-        setRelatedItemsPerGroup(1);
+        setRelatedItemsPerGroup(2);
       }
       setRelatedIndex(0);
       relatedControls.start({ x: "0%" });
@@ -488,7 +488,7 @@ export default function PromoDetailPage() {
             {/* Call to Action */}
             <div className="mt-10 flex flex-col sm:flex-row gap-4">
               <a
-                href="https://wa.me/628XXXXXXXXXX"
+                href="https://wa.me/6282246232527"
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#25d366] hover:bg-[#1da851] text-white font-semibold transition-colors"
               >
                 <svg
@@ -496,29 +496,16 @@ export default function PromoDetailPage() {
                   fill="currentColor"
                   viewBox="0 0 24 24"
                 >
-                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421-7.403h-.004a9.87 9.87 0 00-9.746 9.798c0 2.531.693 5.005 2.009 7.178l-2.143 6.424 6.585-2.155c2.084 1.13 4.437 1.727 6.855 1.727 5.45 0 9.885-4.467 9.868-9.951a9.857 9.857 0 00-2.877-6.96 9.833 9.833 0 00-6.992-2.909z" />
+                  <path d="M12.004 2c-5.51 0-9.993 4.483-9.993 9.993 0 1.763.457 3.49 1.33 5.025L2 22l5.13-.1.345.198a9.936 9.936 0 004.53 1.095c5.51 0 10.01-4.503 10.01-10.013C22.015 6.483 17.514 2 12.004 2zm5.83 14.286c-.24.674-1.39 1.31-1.926 1.373-.47.054-.933.076-2.733-.67-2.307-.954-3.794-3.3-3.91-3.453-.114-.153-.934-1.246-.934-2.375 0-1.13.59-1.684.8-.19.21-.237.457-.297.61-.297.152 0 .304-.002.435.003.14.004.326-.053.494.354.17.414.586 1.425.637 1.53.05.105.085.228.015.367-.07.14-.105.228-.21.353-.105.127-.223.284-.317.38-.105.106-.216.222-.093.434.123.21.547.904 1.173 1.463.805.717 1.482.94 1.692 1.047.21.107.333.09.456-.053.123-.142.525-.612.666-.82.14-.21.28-.175.474-.105.193.07 1.227.58 1.437.684.21.105.35.158.403.246.053.09.053.518-.187 1.19z" />
                 </svg>
                 Hubungi WhatsApp
-              </a>
-              <a
-                href="tel:1500XXX"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#003f88] hover:bg-[#e67e22] text-white font-semibold transition-colors"
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.86l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z" />
-                </svg>
-                Hubungi Telepon
               </a>
             </div>
           </div>
         </div>
 
         {/* Related Promos Carousel */}
-        <section className=" py-12 px-4 sm:px-6 lg:px-8 -mx-4 md:-mx-8 mt-12">
+        <section className="py-12 px-4 sm:px-6 lg:px-8 -mx-4 md:-mx-8 mt-12">
           <div className="max-w-[1175px] mx-auto">
             <div className="mb-8">
               <h2 className="text-2xl md:text-3xl font-bold text-[#003f88]">
@@ -549,7 +536,7 @@ export default function PromoDetailPage() {
                         .map((relatedPromo) => (
                           <div
                             key={`promo-${relatedPromo.id}`}
-                            className="w-1/2 lg:w-1/4 shrink-0 p-2 md:p-3"
+                            className="w-1/2 md:w-1/2 lg:w-1/4 shrink-0 p-2 md:p-3"
                           >
                             <article className="bg-white border border-gray-100 flex flex-col h-full shadow-lg overflow-hidden transition-all duration-300">
                               <div className="relative aspect-square w-full overflow-hidden bg-gray-50">
