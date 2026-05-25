@@ -516,7 +516,9 @@ const PromoKesehatan = () => {
                     >
                       <motion.div
                         animate={{
-                          backgroundColor: isAwardActive ? "#ffffff" : "#003f88",
+                          backgroundColor: isAwardActive
+                            ? "#e67e22"
+                            : "#ffffff",
                         }}
                         transition={{ duration: 0.2 }}
                         className="absolute w-4 h-4 rounded-full z-10 pointer-events-none"
@@ -533,7 +535,7 @@ const PromoKesehatan = () => {
                           stiffness: 280,
                           damping: 22,
                         }}
-                        className="absolute w-8 h-8 rounded-full border-[5px] border-[#003f88] bg-white z-0 origin-center pointer-events-none"
+                        className="absolute w-8 h-8 rounded-full border-[5px] border-white bg-[#e67e22] z-0 origin-center pointer-events-none"
                       />
                     </button>
                   );
