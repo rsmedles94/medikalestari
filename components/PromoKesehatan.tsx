@@ -60,10 +60,38 @@ const PROMO_DATA = [
   },
   {
     id: 8,
-    title: "Skrining Jantung Koroner",
+    title: "Tes Bebas Narkoba",
     description:
-      "Pemeriksaan menyeluruh fungsi jantung demi mendeteksi penyumbatan sejak dini.",
+      "Layanan uji saring narkoba yang cepat, akurat, dan rahasia untuk keperluan edukasi, kerja, maupun instansi.",
     image: "/images/promo/paket8.jpeg",
+  },
+  {
+    id: 9,
+    title: "Medical Checkup ART & Driver",
+    description:
+      "Pemeriksaan kesehatan menyeluruh bagi asisten rumah tangga dan pengemudi demi kenyamanan dan keamanan keluarga Anda.",
+    image: "/images/promo/paket9.jpeg",
+  },
+  {
+    id: 10,
+    title: "Pap Smear",
+    description:
+      "Deteksi dini kanker serviks (leher rahim) melalui pemeriksaan sitologi yang aman dan ditangani oleh tim medis ahli.",
+    image: "/images/promo/paket10.jpeg",
+  },
+  {
+    id: 11,
+    title: "Antenatal Care",
+    description:
+      "Pemeriksaan kehamilan berkala untuk memantau kesehatan ibu dan tumbuh kembang janin secara optimal.",
+    image: "/images/promo/paket11.jpeg",
+  },
+  {
+    id: 12,
+    title: "Imun Booster",
+    description:
+      "Tingkatkan daya tahan dan kebugaran tubuh secara instan dengan injeksi vitamin dan nutrisi esensial.",
+    image: "/images/promo/paket12.jpeg",
   },
 ];
 
