@@ -13,8 +13,14 @@ import {
   Download,
   Eye,
   Trash2,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
-import { CareersBannerConfig, CareerRegistration } from "@/lib/types";
+import {
+  CareersBannerConfig,
+  CareerRegistration,
+  PositionPhoto,
+} from "@/lib/types";
 
 const AdminCareersPage = () => {
   const { isAuthenticated, loading: authLoading } = useAuth();
@@ -35,10 +41,14 @@ const AdminCareersPage = () => {
   const [configForm, setConfigForm] = useState({
     criteria: [] as string[],
     is_form_active: true,
+    position_photos: [] as PositionPhoto[],
   });
-  const [bannerFile, setBannerFile] = useState<File | null>(null);
-  const [bannerPreview, setBannerPreview] = useState("");
-  const [newCriteria, setNewCriteria] = useState("");
+
+  // Position photos state
+  const [newPositionPhoto, setNewPositionPhoto] = useState<File | null>(null);
+  const [newPositionName, setNewPositionName] = useState("");
+  const [newPositionPreview, setNewPositionPreview] = useState("");
+  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
 
   // Registrations state
   const [registrations, setRegistrations] = useState<CareerRegistration[]>([]);
@@ -56,16 +66,30 @@ const AdminCareersPage = () => {
       if (configRes.ok) {
         const configData = await configRes.json();
         setConfig(configData);
+
+        // Parse position_photos if it's a JSON string
+        let parsedPhotos = [];
+        if (configData.position_photos) {
+          if (typeof configData.position_photos === "string") {
+            try {
+              parsedPhotos = JSON.parse(configData.position_photos);
+            } catch (e) {
+              console.error("Error parsing position_photos:", e);
+              parsedPhotos = [];
+            }
+          } else if (Array.isArray(configData.position_photos)) {
+            parsedPhotos = configData.position_photos;
+          }
+        }
+
         setConfigForm({
           criteria:
             typeof configData.criteria === "string"
               ? JSON.parse(configData.criteria)
               : configData.criteria || [],
           is_form_active: configData.is_form_active ?? true,
+          position_photos: parsedPhotos,
         });
-        if (configData.banner_image_url) {
-          setBannerPreview(configData.banner_image_url);
-        }
       }
 
       if (regsRes.ok) {
@@ -94,33 +118,67 @@ const AdminCareersPage = () => {
     loadData();
   }, [authLoading, isAuthenticated, router]);
 
-  const handleBannerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePositionPhotoChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = e.target.files?.[0];
     if (file) {
       if (!file.type.startsWith("image/")) {
         setMessage({ type: "error", text: "File harus berupa gambar" });
         return;
       }
-      setBannerFile(file);
-      setBannerPreview(URL.createObjectURL(file));
+      setNewPositionPhoto(file);
+      setNewPositionPreview(URL.createObjectURL(file));
     }
   };
 
-  const handleAddCriteria = () => {
-    if (newCriteria.trim()) {
+  const handleAddPositionPhoto = () => {
+    if (newPositionPhoto && newPositionName.trim()) {
+      const newPhoto: PositionPhoto = {
+        id: `temp-${Date.now()}`,
+        image_url: newPositionPreview,
+        position_name: newPositionName.trim(),
+        order: configForm.position_photos.length,
+      };
+
       setConfigForm((prev) => ({
         ...prev,
-        criteria: [...prev.criteria, newCriteria.trim()],
+        position_photos: [...prev.position_photos, newPhoto],
       }));
-      setNewCriteria("");
+
+      // Reset form
+      setNewPositionPhoto(null);
+      setNewPositionName("");
+      setNewPositionPreview("");
+      const photoInput = document.getElementById(
+        "position-photo-input",
+      ) as HTMLInputElement;
+      if (photoInput) {
+        photoInput.value = "";
+      }
     }
   };
 
-  const handleRemoveCriteria = (index: number) => {
+  const handleRemovePositionPhoto = (index: number) => {
     setConfigForm((prev) => ({
       ...prev,
-      criteria: prev.criteria.filter((_, i) => i !== index),
+      position_photos: prev.position_photos.filter((_, i) => i !== index),
     }));
+    if (currentPhotoIndex >= configForm.position_photos.length - 1) {
+      setCurrentPhotoIndex(Math.max(0, configForm.position_photos.length - 2));
+    }
+  };
+
+  const handlePrevPhoto = () => {
+    setCurrentPhotoIndex((prev) =>
+      prev === 0 ? configForm.position_photos.length - 1 : prev - 1,
+    );
+  };
+
+  const handleNextPhoto = () => {
+    setCurrentPhotoIndex((prev) =>
+      prev === configForm.position_photos.length - 1 ? 0 : prev + 1,
+    );
   };
 
   const handleSaveConfig = async () => {
@@ -128,44 +186,53 @@ const AdminCareersPage = () => {
     setMessage(null);
 
     try {
-      let bannerUrl = config?.banner_image_url || "";
+      // Upload position photos
+      const processedPhotos: PositionPhoto[] = [];
+      let uploadedNewPhoto = false;
 
-      // Upload banner if new file selected
-      if (bannerFile) {
-        const formData = new FormData();
-        formData.append("file", bannerFile);
-        formData.append("path", `careers/${Date.now()}-${bannerFile.name}`);
+      for (const photo of configForm.position_photos) {
+        let imageUrl = photo.image_url;
 
-        try {
-          const uploadRes = await fetch("/api/upload", {
-            method: "POST",
-            body: formData,
-          });
+        // Only upload if it's a temp preview (starts with blob) and file exists
+        if (
+          imageUrl.startsWith("blob:") &&
+          newPositionPhoto &&
+          !uploadedNewPhoto
+        ) {
+          const formData = new FormData();
+          formData.append("file", newPositionPhoto);
+          formData.append(
+            "path",
+            `careers/positions/${Date.now()}-${newPositionPhoto.name}`,
+          );
 
-          if (!uploadRes.ok) {
-            const errorData = await uploadRes.json();
-            throw new Error(errorData.error || "Gagal upload gambar");
+          try {
+            const uploadRes = await fetch("/api/upload", {
+              method: "POST",
+              body: formData,
+            });
+
+            if (uploadRes.ok) {
+              const uploadData = await uploadRes.json();
+              imageUrl = uploadData.url || imageUrl;
+              uploadedNewPhoto = true;
+            }
+          } catch (err) {
+            console.error("Error uploading position photo:", err);
           }
-
-          const uploadData = await uploadRes.json();
-          if (!uploadData.url) {
-            throw new Error("URL gambar tidak diterima dari server");
-          }
-          bannerUrl = uploadData.url;
-        } catch (uploadErr) {
-          const uploadErrorMsg =
-            uploadErr instanceof Error
-              ? uploadErr.message
-              : "Gagal upload gambar";
-          throw new Error(`Upload gambar gagal: ${uploadErrorMsg}`);
         }
+
+        processedPhotos.push({
+          ...photo,
+          image_url: imageUrl,
+        });
       }
 
       const updateData = {
         id: config?.id || "default-config",
-        banner_image_url: bannerUrl,
         criteria: JSON.stringify(configForm.criteria),
         is_form_active: configForm.is_form_active,
+        position_photos: JSON.stringify(processedPhotos),
       };
 
       console.log("Sending config update:", updateData);
@@ -180,14 +247,15 @@ const AdminCareersPage = () => {
 
       if (res.ok) {
         setConfig(responseData);
-        setBannerFile(null);
-        setBannerPreview(responseData.banner_image_url || "");
-        // Reset file input
-        const bannerInput = document.getElementById(
-          "banner-input",
+        setNewPositionPhoto(null);
+        setNewPositionName("");
+        setNewPositionPreview("");
+        // Reset file inputs
+        const photoInput = document.getElementById(
+          "position-photo-input",
         ) as HTMLInputElement;
-        if (bannerInput) {
-          bannerInput.value = "";
+        if (photoInput) {
+          photoInput.value = "";
         }
         setMessage({
           type: "success",
@@ -358,105 +426,194 @@ const AdminCareersPage = () => {
                 </div>
               </div>
 
-              {/* Banner Upload - Selalu tampil */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">
-                  Banner Gambar
-                </label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleBannerChange}
-                    className="hidden"
-                    id="banner-input"
-                  />
-                  {bannerPreview ? (
-                    <div className="space-y-3">
-                      <img
-                        src={bannerPreview}
-                        alt="Preview"
-                        className="max-h-64 mx-auto rounded-lg"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setBannerFile(null);
-                          setBannerPreview("");
-                          const bannerInput = document.getElementById(
-                            "banner-input",
-                          ) as HTMLInputElement;
-                          if (bannerInput) {
-                            bannerInput.value = "";
-                          }
-                        }}
-                        className="text-sm text-red-600 hover:text-red-700"
-                      >
-                        Hapus gambar
-                      </button>
-                    </div>
-                  ) : (
-                    <label htmlFor="banner-input" className="cursor-pointer">
-                      <p className="text-sm font-medium text-gray-600">
-                        Klik untuk upload banner
-                      </p>
-                    </label>
-                  )}
-                </div>
-              </div>
-
-              {/* Criteria */}
+              {/* Position Photos */}
               {configForm.is_form_active && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-3">
-                    Kriteria Tambahan
+                    Foto Posisi Lowongan
                   </label>
-                  <div className="flex gap-2 mb-3">
+
+                  {/* Upload Position Photo */}
+                  <div className="mb-6 border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
                     <input
-                      type="text"
-                      value={newCriteria}
-                      onChange={(e) => setNewCriteria(e.target.value)}
-                      onKeyPress={(e) => {
-                        if (e.key === "Enter") {
-                          handleAddCriteria();
-                        }
-                      }}
-                      className="flex-1 px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                      placeholder="Masukkan kriteria baru"
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePositionPhotoChange}
+                      className="hidden"
+                      id="position-photo-input"
                     />
-                    <button
-                      type="button"
-                      onClick={handleAddCriteria}
-                      className="px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2 cursor-pointer"
-                    >
-                      <Plus size={18} />
-                      Tambahkan
-                    </button>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-center">
+                      <div>
+                        <label
+                          htmlFor="position-photo-input"
+                          className="cursor-pointer block mb-3"
+                        >
+                          {newPositionPreview ? (
+                            <div className="space-y-2">
+                              <img
+                                src={newPositionPreview}
+                                alt="Preview"
+                                className="max-h-40 mx-auto rounded-lg"
+                              />
+                              <p className="text-xs text-gray-500">
+                                Klik untuk ganti foto
+                              </p>
+                            </div>
+                          ) : (
+                            <div>
+                              <p className="text-sm font-medium text-gray-600">
+                                Klik untuk upload foto
+                              </p>
+                              <p className="text-xs text-gray-500 mt-1">
+                                (JPG, PNG, WebP)
+                              </p>
+                            </div>
+                          )}
+                        </label>
+                      </div>
+                      <div>
+                        <input
+                          type="text"
+                          value={newPositionName}
+                          onChange={(e) => setNewPositionName(e.target.value)}
+                          placeholder="Nama Posisi (mis: Dokter, Perawat, dll)"
+                          className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none mb-2"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleAddPositionPhoto}
+                          disabled={
+                            !newPositionPhoto || !newPositionName.trim()
+                          }
+                          className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
+                        >
+                          <Plus size={18} />
+                          Tambah Foto Posisi
+                        </button>
+                      </div>
+                    </div>
                   </div>
 
-                  {configForm.criteria.length > 0 && (
-                    <div className="space-y-2">
-                      {configForm.criteria.map((criterion) => (
-                        <div
-                          key={criterion}
-                          className="flex items-center justify-between bg-gray-50 p-3 rounded-lg"
-                        >
-                          <span className="text-sm text-gray-700">
-                            {criterion}
-                          </span>
+                  {/* Display Position Photos */}
+                  {configForm.position_photos.length > 0 && (
+                    <div className="space-y-4">
+                      {/* Carousel Preview */}
+                      {configForm.position_photos.length > 0 && (
+                        <div>
+                          <div className="relative bg-white rounded-lg overflow-hidden border border-gray-200 mb-4">
+                            <div
+                              className="relative w-full bg-gradient-to-b from-gray-50 to-white flex items-center justify-center"
+                              style={{ aspectRatio: "4/3" }}
+                            >
+                              <img
+                                src={
+                                  configForm.position_photos[currentPhotoIndex]
+                                    ?.image_url
+                                }
+                                alt={
+                                  configForm.position_photos[currentPhotoIndex]
+                                    ?.position_name
+                                }
+                                className="max-h-full max-w-full object-contain p-4"
+                              />
+                            </div>
+
+                            {/* Navigation Buttons */}
+                            {configForm.position_photos.length > 1 && (
+                              <>
+                                <button
+                                  type="button"
+                                  onClick={handlePrevPhoto}
+                                  className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-2 rounded-full transition-colors border border-gray-200"
+                                >
+                                  <ChevronLeft size={20} />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={handleNextPhoto}
+                                  className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-2 rounded-full transition-colors border border-gray-200"
+                                >
+                                  <ChevronRight size={20} />
+                                </button>
+                              </>
+                            )}
+                          </div>
+
+                          {/* Position Name */}
+                          <div className="bg-white border border-gray-200 rounded-lg p-4">
+                            <p className="text-lg font-semibold text-gray-900">
+                              {
+                                configForm.position_photos[currentPhotoIndex]
+                                  ?.position_name
+                              }
+                            </p>
+                            <p className="text-sm text-gray-500 mt-1">
+                              {currentPhotoIndex + 1} dari{" "}
+                              {configForm.position_photos.length}
+                            </p>
+                          </div>
+
+                          {/* Indicator Dots */}
+                          {configForm.position_photos.length > 1 && (
+                            <div className="flex justify-center gap-2">
+                              {configForm.position_photos.map((_, index) => (
+                                <button
+                                  key={`dot-${index}`}
+                                  type="button"
+                                  onClick={() => setCurrentPhotoIndex(index)}
+                                  className={`rounded-full transition-all ${
+                                    index === currentPhotoIndex
+                                      ? "bg-gray-800 w-2.5 h-2.5"
+                                      : "bg-gray-300 w-2 h-2 hover:bg-gray-400"
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Remove Button */}
                           <button
                             type="button"
                             onClick={() =>
-                              handleRemoveCriteria(
-                                configForm.criteria.indexOf(criterion),
-                              )
+                              handleRemovePositionPhoto(currentPhotoIndex)
                             }
-                            className="text-red-600 hover:text-red-700"
+                            className="w-full mt-4 px-3 py-2 text-sm text-red-600 hover:text-red-700 border border-red-200 rounded-lg hover:bg-red-50 transition-colors font-medium"
                           >
-                            <X size={18} />
+                            Hapus Foto Ini
                           </button>
                         </div>
-                      ))}
+                      )}
+
+                      {/* Thumbnail Grid */}
+                      {configForm.position_photos.length > 0 && (
+                        <div>
+                          <p className="text-sm font-medium text-gray-700 mb-3">
+                            Semua Foto ({configForm.position_photos.length})
+                          </p>
+                          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
+                            {configForm.position_photos.map((photo, index) => (
+                              <button
+                                key={`thumb-${photo.id}`}
+                                type="button"
+                                onClick={() => setCurrentPhotoIndex(index)}
+                                className={`relative rounded-lg overflow-hidden transition-all border-2 group ${
+                                  index === currentPhotoIndex
+                                    ? "border-gray-800 ring-2 ring-gray-800 ring-offset-2"
+                                    : "border-gray-200 hover:border-gray-400"
+                                }`}
+                              >
+                                <div className="w-full aspect-square bg-gradient-to-b from-gray-100 to-gray-50 flex items-center justify-center overflow-hidden">
+                                  <img
+                                    src={photo.image_url}
+                                    alt={photo.position_name}
+                                    className="w-full h-full object-contain p-1"
+                                  />
+                                </div>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

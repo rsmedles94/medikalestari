@@ -10,27 +10,27 @@ export async function GET() {
 
     if (error) {
       console.error("Error fetching config:", error.message);
-      return NextResponse.json(
-        {
-          id: 'default-config',
-          form_title: 'Bergabunglah dengan Tim Kami',
-          form_description: 'Kami mencari profesional berbakat',
-          criteria: [],
-          phone_number: '082246232527',
-          is_form_active: true,
-          banner_image_url: null,
-        }
-      );
+      return NextResponse.json({
+        id: "default-config",
+        form_title: "Bergabunglah dengan Tim Kami",
+        form_description: "Kami mencari profesional berbakat",
+        criteria: [],
+        position_photos: [],
+        phone_number: "082246232527",
+        is_form_active: true,
+        banner_image_url: null,
+      });
     }
 
     // If no data exists, return default config
     if (!data || data.length === 0) {
       return NextResponse.json({
-        id: 'default-config',
-        form_title: 'Bergabunglah dengan Tim Kami',
-        form_description: 'Kami mencari profesional berbakat',
+        id: "default-config",
+        form_title: "Bergabunglah dengan Tim Kami",
+        form_description: "Kami mencari profesional berbakat",
         criteria: [],
-        phone_number: '082246232527',
+        position_photos: [],
+        phone_number: "082246232527",
         is_form_active: true,
         banner_image_url: null,
       });

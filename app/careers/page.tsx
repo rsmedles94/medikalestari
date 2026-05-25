@@ -10,6 +10,7 @@ import {
   CheckCircle,
   ChevronRight,
   X,
+  ChevronLeft,
 } from "lucide-react";
 import { CareersBannerConfig } from "@/lib/types";
 import CareersFormSkeleton from "@/components/CareersFormSkeleton";
@@ -21,6 +22,9 @@ const CareersPage = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -51,6 +55,18 @@ const CareersPage = () => {
           }
         } else if (!Array.isArray(data.criteria)) {
           data.criteria = [];
+        }
+
+        // Parse position_photos if it's a JSON string
+        if (data.position_photos && typeof data.position_photos === "string") {
+          try {
+            data.position_photos = JSON.parse(data.position_photos);
+          } catch (e) {
+            console.error("Error parsing position_photos:", e);
+            data.position_photos = [];
+          }
+        } else if (!Array.isArray(data.position_photos)) {
+          data.position_photos = [];
         }
 
         setConfig(data);
@@ -213,6 +229,36 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
     return <CareersFormSkeleton />;
   }
 
+  const handlePrevPhoto = () => {
+    if (config?.position_photos && config.position_photos.length > 0) {
+      setCurrentPhotoIndex((prev) =>
+        prev === 0 ? config.position_photos.length - 1 : prev - 1,
+      );
+    }
+  };
+
+  const handleNextPhoto = () => {
+    if (config?.position_photos && config.position_photos.length > 0) {
+      setCurrentPhotoIndex((prev) =>
+        prev === config.position_photos.length - 1 ? 0 : prev + 1,
+      );
+    }
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    setTouchEnd(e.changedTouches[0].clientX);
+    if (touchStart - e.changedTouches[0].clientX > 50) {
+      handleNextPhoto();
+    }
+    if (e.changedTouches[0].clientX - touchStart > 50) {
+      handlePrevPhoto();
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white">
       {/* BREADCRUMB & TITLE SECTION */}
@@ -229,16 +275,85 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
         </nav>
       </div>
 
-      {/* Banner */}
-      {config?.banner_image_url && (
-        <div className="relative w-full max-w-2xl mx-auto mt-20">
-          <Image
-            src={config.banner_image_url}
-            alt="Careers Banner"
-            width={800}
-            height={600}
-            className="w-full h-auto object-contain"
-          />
+      {/* Position Photos Carousel */}
+      {config?.position_photos && config.position_photos.length > 0 && (
+        <div className="max-w-3xl mx-auto px-4 py-12">
+          <h2 className="text-2xl font-bold text-center mb-8 text-gray-800">
+            Posisi Lowongan yang Tersedia
+          </h2>
+
+          <div className="space-y-4">
+            {/* Carousel Container */}
+            <div
+              className="relative bg-white rounded-xl overflow-hidden border border-gray-200"
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+            >
+              <div
+                className="relative w-full bg-gradient-to-b from-gray-50 to-white flex items-center justify-center"
+                style={{ aspectRatio: "4/3" }}
+              >
+                <Image
+                  src={config.position_photos[currentPhotoIndex]?.image_url}
+                  alt={config.position_photos[currentPhotoIndex]?.position_name}
+                  width={600}
+                  height={450}
+                  className="max-h-full max-w-full object-contain p-6"
+                />
+              </div>
+
+              {/* Navigation Buttons */}
+              {config.position_photos.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={handlePrevPhoto}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-2 rounded-full transition-colors border border-gray-200 z-10 hidden md:flex items-center justify-center"
+                    aria-label="Previous photo"
+                  >
+                    <ChevronLeft size={24} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleNextPhoto}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-2 rounded-full transition-colors border border-gray-200 z-10 hidden md:flex items-center justify-center"
+                    aria-label="Next photo"
+                  >
+                    <ChevronRight size={24} />
+                  </button>
+                </>
+              )}
+            </div>
+
+            {/* Position Name Card */}
+            <div className="bg-white border border-gray-200 rounded-xl p-4">
+              <p className="text-xl font-bold text-gray-900">
+                {config.position_photos[currentPhotoIndex]?.position_name}
+              </p>
+              <p className="text-sm text-gray-500 mt-2">
+                {currentPhotoIndex + 1} dari {config.position_photos.length}
+              </p>
+            </div>
+
+            {/* Indicator Dots */}
+            {config.position_photos.length > 1 && (
+              <div className="flex justify-center gap-2">
+                {config.position_photos.map((_, index) => (
+                  <button
+                    key={`dot-${index}`}
+                    type="button"
+                    onClick={() => setCurrentPhotoIndex(index)}
+                    className={`rounded-full transition-all ${
+                      index === currentPhotoIndex
+                        ? "bg-gray-800 w-2.5 h-2.5"
+                        : "bg-gray-300 w-2 h-2 hover:bg-gray-400"
+                    }`}
+                    aria-label={`Go to position ${index + 1}`}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       )}
 
@@ -383,16 +498,35 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
                     >
                       Posisi Lamaran *
                     </label>
-                    <input
-                      id="position"
-                      type="text"
-                      name="position"
-                      value={formData.position}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#003f88] focus:border-transparent outline-none"
-                      placeholder="Misal: Perawat, Dokter, dll"
-                    />
+                    {config?.position_photos &&
+                    config.position_photos.length > 0 ? (
+                      <select
+                        id="position"
+                        name="position"
+                        value={formData.position}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#003f88] focus:border-transparent outline-none bg-white"
+                      >
+                        <option value="">Pilih Posisi</option>
+                        {config.position_photos.map((photo) => (
+                          <option key={photo.id} value={photo.position_name}>
+                            {photo.position_name}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        id="position"
+                        type="text"
+                        name="position"
+                        value={formData.position}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#003f88] focus:border-transparent outline-none"
+                        placeholder="Misal: Perawat, Dokter, dll"
+                      />
+                    )}
                   </div>
 
                   <div>

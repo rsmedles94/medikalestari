@@ -59,6 +59,13 @@ export interface HeroBanner {
   created_at: string;
 }
 
+export interface PositionPhoto {
+  id: string;
+  image_url: string;
+  position_name: string;
+  order: number;
+}
+
 export interface CareersBannerConfig {
   id: string;
   banner_image_url: string;
@@ -67,6 +74,7 @@ export interface CareersBannerConfig {
   form_description: string;
   criteria: string[]; // JSON array stored as string
   phone_number: string;
+  position_photos: PositionPhoto[]; // Array of position photos with their names
   created_at: string;
   updated_at: string;
 }
