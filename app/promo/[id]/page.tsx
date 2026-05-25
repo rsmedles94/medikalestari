@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { motion, useAnimationControls } from "framer-motion";
 import { ChevronRight } from "lucide-react";
+import PromoCardSkeleton from "@/components/PromoCardSkeleton";
 
 // Data promo dengan penjelasan lengkap
 const PROMO_DATA = [
@@ -291,6 +292,7 @@ export default function PromoDetailPage() {
 
   // State & Controls untuk Carousel Promo Lainnya
   const [relatedIndex, setRelatedIndex] = useState(0);
+  const [isLoadingRelated, setIsLoadingRelated] = useState(true);
   const relatedControls = useAnimationControls();
   const [relatedItemsPerGroup, setRelatedItemsPerGroup] = useState(4);
 
@@ -307,7 +309,16 @@ export default function PromoDetailPage() {
 
     handleResize();
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+
+    // Simulasi loading time untuk carousel
+    const timer = setTimeout(() => {
+      setIsLoadingRelated(false);
+    }, 800);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      clearTimeout(timer);
+    };
   }, [relatedControls]);
 
   const handleRelatedDotClick = (index: number) => {
@@ -408,79 +419,84 @@ export default function PromoDetailPage() {
 
             {/* Carousel Container */}
             <div className="w-full overflow-hidden p-1">
-              <motion.div
-                animate={relatedControls}
-                initial={{ x: "0%" }}
-                className="flex w-full"
-              >
-                {Array.from({ length: totalRelatedDots }).map(
-                  (_, groupIndex) => {
-                    const groupKey = `group-${groupIndex}-${relatedPromos[groupIndex * relatedItemsPerGroup]?.id || 0}`;
-                    return (
-                      <div
-                        key={groupKey}
-                        className="w-full shrink-0 flex gap-4 lg:gap-6 justify-start"
-                      >
-                        {relatedPromos
-                          .slice(
-                            groupIndex * relatedItemsPerGroup,
-                            (groupIndex + 1) * relatedItemsPerGroup,
-                          )
-                          .map((relatedPromo) => (
-                            <div
-                              key={`promo-${relatedPromo.id}`}
-                              className="w-[calc(50%-8px)] lg:w-[calc(25%-18px)] shrink-0"
-                            >
-                              <article className="bg-white border border-slate-100 flex flex-col h-full shadow-md rounded-none overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl origin-center">
-                                <div className="relative aspect-square w-full overflow-hidden bg-gray-50">
-                                  <Image
-                                    src={relatedPromo.image}
-                                    alt={`Promo ${relatedPromo.title}`}
-                                    width={500}
-                                    height={500}
-                                    className="object-cover w-full h-full"
-                                    priority={relatedPromo.id <= 4}
-                                  />
-                                </div>
-
-                                <div className="p-4 md:p-5 flex flex-col grow text-center bg-white">
-                                  <h3 className="text-sm md:text-base font-bold text-[#003f88] mb-2 min-h-12 flex items-center justify-center leading-snug line-clamp-2">
-                                    {relatedPromo.title}
-                                  </h3>
-                                  <p className="text-xs text-gray-500 leading-normal mb-5 line-clamp-3 md:line-clamp-4">
-                                    {relatedPromo.shortDescription}
-                                  </p>
-                                  <div className="mt-auto">
-                                    <Link
-                                      href={`/promo/${relatedPromo.id}`}
-                                      passHref
-                                    >
-                                      <button
-                                        type="button"
-                                        className="w-full py-2.5 border bg-[#003f88] text-white text-xs font-semibold transition-all duration-300 hover:bg-[#e67e22] hover:text-white"
-                                      >
-                                        Selengkapnya →
-                                      </button>
-                                    </Link>
+              {isLoadingRelated ? (
+                <PromoCardSkeleton count={relatedItemsPerGroup} />
+              ) : (
+                <motion.div
+                  animate={relatedControls}
+                  initial={{ x: "0%" }}
+                  className="flex w-full"
+                >
+                  {Array.from({ length: totalRelatedDots }).map(
+                    (_, groupIndex) => {
+                      const groupKey = `group-${groupIndex}-${relatedPromos[groupIndex * relatedItemsPerGroup]?.id || 0}`;
+                      return (
+                        <div
+                          key={groupKey}
+                          className="w-full shrink-0 flex gap-4 lg:gap-6 justify-start"
+                        >
+                          {relatedPromos
+                            .slice(
+                              groupIndex * relatedItemsPerGroup,
+                              (groupIndex + 1) * relatedItemsPerGroup,
+                            )
+                            .map((relatedPromo) => (
+                              <div
+                                key={`promo-${relatedPromo.id}`}
+                                className="w-[calc(50%-8px)] lg:w-[calc(25%-18px)] shrink-0"
+                              >
+                                <article className="bg-white border border-slate-100 flex flex-col h-full shadow-md rounded-none overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl origin-center">
+                                  <div className="relative aspect-square w-full overflow-hidden bg-gray-50">
+                                    <Image
+                                      src={relatedPromo.image}
+                                      alt={`Promo ${relatedPromo.title}`}
+                                      width={500}
+                                      height={500}
+                                      className="object-cover w-full h-full"
+                                      priority={relatedPromo.id <= 4}
+                                    />
                                   </div>
-                                </div>
-                              </article>
-                            </div>
-                          ))}
-                      </div>
-                    );
-                  },
-                )}
-              </motion.div>
+
+                                  <div className="p-4 md:p-5 flex flex-col grow text-center bg-white">
+                                    <h3 className="text-sm md:text-base font-bold text-[#003f88] mb-2 min-h-12 flex items-center justify-center leading-snug line-clamp-2">
+                                      {relatedPromo.title}
+                                    </h3>
+                                    <p className="text-xs text-gray-500 leading-normal mb-5 line-clamp-3 md:line-clamp-4">
+                                      {relatedPromo.shortDescription}
+                                    </p>
+                                    <div className="mt-auto">
+                                      <Link
+                                        href={`/promo/${relatedPromo.id}`}
+                                        passHref
+                                      >
+                                        <button
+                                          type="button"
+                                          className="w-full py-2.5 border bg-[#003f88] text-white text-xs font-semibold transition-all duration-300 hover:bg-[#e67e22] hover:text-white"
+                                        >
+                                          Selengkapnya →
+                                        </button>
+                                      </Link>
+                                    </div>
+                                  </div>
+                                </article>
+                              </div>
+                            ))}
+                        </div>
+                      );
+                    },
+                  )}
+                </motion.div>
+              )}
             </div>
 
             {/* Dot Indicators */}
             <div className="mt-8 flex items-center justify-center gap-4 mb-12 md:mb-0">
               {Array.from({ length: totalRelatedDots }).map((_, index) => {
                 const isActive = index === relatedIndex;
+                const dotKey = `promo-carousel-dot-${numId}-${index}`;
                 return (
                   <button
-                    key={index}
+                    key={dotKey}
                     type="button"
                     onClick={() => handleRelatedDotClick(index)}
                     className="focus:outline-none flex items-center justify-center h-8 w-8 relative"
@@ -505,7 +521,7 @@ export default function PromoDetailPage() {
                         stiffness: 280,
                         damping: 22,
                       }}
-                      className="absolute w-7 h-7 rounded-full border-[4px] border-[#003f88] bg-white z-0 origin-center pointer-events-none"
+                      className="absolute w-7 h-7 rounded-full border-4 border-[#003f88] bg-white z-0 origin-center pointer-events-none"
                     />
                   </button>
                 );
