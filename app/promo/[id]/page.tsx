@@ -360,10 +360,9 @@ export default function PromoDetailPage() {
             >
               Beranda
             </Link>
-            <ChevronRight size={12} className="text-gray-400" />
-            <span className="font-normal">Promo</span>
-            <ChevronRight size={12} className="text-gray-400" />
-            <span className="font-semibold text-[#003f88]">{promo.title}</span>
+
+            <ChevronRight size={12} className="text-black/60" />
+            <span className="font-normal text-gray-300">{promo.title}</span>
           </nav>
           <h1 className="text-3xl md:text-4xl font-bold text-black mb-2">
             {promo.title}
@@ -397,13 +396,11 @@ export default function PromoDetailPage() {
                 __html: promo.fullDescription,
               }}
             />
-
-            
           </div>
         </div>
 
         {/* Related Promos Carousel */}
-        <section className="py-12 px-4 sm:px-6 lg:px-8 -mx-4 md:-mx-8 mt-12">
+        <section className="pt-12 pb-30 md:pb-12 px-4 sm:px-6 lg:px-8 -mx-4 md:-mx-8 mt-12">
           <div className="max-w-[1175px] mx-auto">
             <div className="mb-8">
               <h2 className="text-2xl md:text-3xl font-bold text-[#003f88]">
@@ -425,7 +422,7 @@ export default function PromoDetailPage() {
                 }).map((_, groupIndex) => {
                   const groupKey = `group-${groupIndex}-${relatedPromos[groupIndex * relatedItemsPerGroup]?.id || 0}`;
                   return (
-                    <div key={groupKey} className="w-full shrink-0 flex">
+                    <div key={groupKey} className="w-full shrink-0 flex gap-4">
                       {relatedPromos
                         .slice(
                           groupIndex * relatedItemsPerGroup,
@@ -434,7 +431,7 @@ export default function PromoDetailPage() {
                         .map((relatedPromo) => (
                           <div
                             key={`promo-${relatedPromo.id}`}
-                            className="w-1/2 md:w-1/2 lg:w-1/4 shrink-0 p-2 md:p-3"
+                            className="w-1/2 md:w-1/2 lg:w-1/4 shrink-0"
                           >
                             <article className="bg-white border border-gray-100 flex flex-col h-full shadow-lg overflow-hidden transition-all duration-300">
                               <div className="relative aspect-square w-full overflow-hidden bg-gray-50">
