@@ -69,11 +69,11 @@ const MadingSection = () => {
 
   return (
     /* Background menggunakan gradient: setengah ke atas transparan, setengah ke bawah biru */
-    <section className="w-full bg-gradient-to-b from-transparent from-50% to-[#00796e] to-50% py-8 md:py-16 px-4 md:px-8">
+    <section className="w-full bg-gradient-to-b from-transparent from-50% to-[#153d6f] to-50% py-8 md:py-16 px-4 md:px-8">
       <div className="max-w-[1110px] mx-auto">
         {/* Header Navigation - Judul & Tab Berwarna Biru */}
         <div className="flex items-center justify-between mb-8 ">
-          <h2 className="text-2xl md:text-3xl font-semibold text-[#00796e] tracking-tight">
+          <h2 className="text-2xl md:text-3xl font-semibold text-[#153d6f] tracking-tight">
             Berita Terbaru
           </h2>
 
@@ -83,12 +83,12 @@ const MadingSection = () => {
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`pb-4 px-1 text-xs md:text-sm font-semibold transition-all relative ${
-                  activeTab === tab ? "text-[#00796e]" : "text-gray-400"
+                  activeTab === tab ? "text-[#153d6f]" : "text-gray-400"
                 }`}
               >
                 {tab.toUpperCase()}
                 {activeTab === tab && (
-                  <span className="absolute bottom-0 left-0 w-full h-[3px] bg-[#00796e]" />
+                  <span className="absolute bottom-0 left-0 w-full h-[3px] bg-[#153d6f]" />
                 )}
               </button>
             ))}
@@ -198,7 +198,7 @@ const MadingSection = () => {
                             <a
                               href={item.link || "#"}
                               target="_blank"
-                              className="text-[11px] md:text-[13px] font-semibold text-[#00796e] hover:underline"
+                              className="text-[11px] md:text-[13px] font-semibold text-[#153d6f] hover:underline"
                             >
                               Selengkapnya...
                             </a>
@@ -226,7 +226,7 @@ const MadingSection = () => {
                           <span className="text-slate-500 text-[8px] md:text-[9px] font-bold uppercase mb-1 md:mb-2 tracking-widest">
                             EVENT
                           </span>
-                          <h3 className="text-xs md:text-sm font-bold text-slate-900 mb-2 md:mb-3 leading-snug group-hover:text-[#00796e] transition-colors line-clamp-2">
+                          <h3 className="text-xs md:text-sm font-bold text-slate-900 mb-2 md:mb-3 leading-snug group-hover:text-[#153d6f] transition-colors line-clamp-2">
                             {item.title}
                           </h3>
                           <p className="text-[9px] md:text-[10px] text-slate-500 mb-4 md:mb-5 flex-grow leading-relaxed line-clamp-3 md:line-clamp-none">
@@ -240,7 +240,7 @@ const MadingSection = () => {
                           <a
                             href={item.link || "#"}
                             target="_blank"
-                            className="flex items-center gap-1 md:gap-2 text-gray-500 font-bold text-[9px] md:text-[11px] group-hover:text-[#00796e]"
+                            className="flex items-center gap-1 md:gap-2 text-gray-500 font-bold text-[9px] md:text-[11px] group-hover:text-[#153d6f]"
                           >
                             <span>Baca Selengkapnya</span>
                             <ChevronRight

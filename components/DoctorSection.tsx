@@ -305,7 +305,7 @@ const DoctorSection = ({
                 <div className="flex flex-wrap justify-start gap-2 md:gap-3">
                   <button
                     onClick={() => setSelectedDoctor(doctor)}
-                    className="px-4 py-2 md:px-8 md:py-3 bg-[#00796e] text-white text-[10px] md:text-[12px] font-bold rounded-full transition-all hover:bg-[#00796e]/90 active:scale-95 shadow-md shadow-blue-900/5 cursor-pointer"
+                    className="px-4 py-2 md:px-8 md:py-3 bg-[#153d6f] text-white text-[10px] md:text-[12px] font-bold rounded-full transition-all hover:bg-[#153d6f]/90 active:scale-95 shadow-md shadow-blue-900/5 cursor-pointer"
                   >
                     Buat Janji Temu
                   </button>
@@ -339,7 +339,7 @@ const DoctorSection = ({
                     onClick={() => handlePageChange(i + 1)}
                     className={`w-11 h-11 flex items-center justify-center rounded-none font-bold text-xs transition-all ${
                       currentPage === i + 1
-                        ? "bg-[#00796e] text-white border border-[#00796e]"
+                        ? "bg-[#153d6f] text-white border border-[#153d6f]"
                         : "text-slate-500 border border-slate-200 hover:bg-slate-50"
                     }`}
                   >
@@ -435,7 +435,7 @@ const DoctorSection = ({
                   }}
                   inputMode="search"
                   enterKeyHint="search"
-                  className="w-full border border-slate-200 py-2.5 pl-10 pr-4 outline-none focus:border-[#00796e] text-base bg-white"
+                  className="w-full border border-slate-200 py-2.5 pl-10 pr-4 outline-none focus:border-[#153d6f] text-base bg-white"
                   style={{ fontSize: "16px" }}
                 />
               </div>
@@ -448,7 +448,7 @@ const DoctorSection = ({
                 className="p-3 border border-slate-200 hover:bg-slate-50 transition-all"
                 title="Filter Spesialis"
               >
-                <Stethoscope size={20} className="text-[#00796e]" />
+                <Stethoscope size={20} className="text-[#153d6f]" />
               </button>
 
               {/* Day Icon Button */}
@@ -457,7 +457,7 @@ const DoctorSection = ({
                 className="p-3 border border-slate-200  hover:bg-slate-50 transition-all"
                 title="Filter Hari"
               >
-                <CalendarDays size={20} className="text-[#00796e]" />
+                <CalendarDays size={20} className="text-[#153d6f]" />
               </button>
             </div>
 
@@ -472,7 +472,7 @@ const DoctorSection = ({
                   className="absolute top-20 left-0 right-0 mx-4 bg-white border border-slate-200 rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto"
                 >
                   <div className="p-2">
-                    <div className="px-4 py-2 text-xs font-bold text-[#00796e] sticky top-0 bg-white">
+                    <div className="px-4 py-2 text-xs font-bold text-[#153d6f] sticky top-0 bg-white">
                       Pilih Spesialis
                     </div>
                     {SPECIALTY_CATEGORIES.map((s) => (
@@ -481,7 +481,7 @@ const DoctorSection = ({
                         onClick={() => handleSpecialtySelect(s)}
                         className={`w-full text-left px-4 py-2 text-sm rounded-md transition-all ${
                           tempFilter.specialty === s
-                            ? "bg-[#00796e]/10 text-[#00796e] font-semibold"
+                            ? "bg-[#153d6f]/10 text-[#153d6f] font-semibold"
                             : "text-slate-700 hover:bg-slate-50"
                         }`}
                       >
@@ -504,7 +504,7 @@ const DoctorSection = ({
                   className="absolute top-20 right-0 mx-4 bg-white border border-slate-200 rounded-lg shadow-lg z-50"
                 >
                   <div className="p-2">
-                    <div className="px-4 py-2 text-xs font-bold text-[#00796e] bg-white">
+                    <div className="px-4 py-2 text-xs font-bold text-[#153d6f] bg-white">
                       Pilih Hari
                     </div>
                     {DAYS.map((d) => (
@@ -513,7 +513,7 @@ const DoctorSection = ({
                         onClick={() => handleDaySelect(d)}
                         className={`w-full text-left px-4 py-2 text-sm rounded-md transition-all whitespace-nowrap ${
                           tempFilter.day === d
-                            ? "bg-[#00796e]/10 text-[#00796e] font-semibold"
+                            ? "bg-[#153d6f]/10 text-[#153d6f] font-semibold"
                             : "text-slate-700 hover:bg-slate-50"
                         }`}
                       >
@@ -529,7 +529,7 @@ const DoctorSection = ({
           {/* SIDEBAR FILTER - Desktop Only */}
           <aside className="hidden lg:block w-1/3 xl:w-1/4 lg:sticky lg:top-45 z-30">
             <div className="border border-slate-200 p-8 bg-white rounded-none shadow-sm h-fit">
-              <div className="flex items-center gap-3 mb-8 text-[#00796e] border-b border-slate-50 pb-4">
+              <div className="flex items-center gap-3 mb-8 text-[#153d6f] border-b border-slate-50 pb-4">
                 <FilterIcon size={18} />
                 <span className="text-lg font-bold">Filter Pencarian</span>
               </div>
@@ -538,7 +538,7 @@ const DoctorSection = ({
               <div className="mb-6">
                 <label
                   htmlFor="doctor-name"
-                  className="block text-sm font-bold text-[#00796e] mb-2"
+                  className="block text-sm font-bold text-[#153d6f] mb-2"
                 >
                   Nama Dokter
                 </label>
@@ -555,7 +555,7 @@ const DoctorSection = ({
                     onChange={(e) =>
                       setTempFilter({ ...tempFilter, name: e.target.value })
                     }
-                    className="w-full border-b border-slate-200 py-2 pl-7 outline-none focus:border-[#00796e] text-sm bg-transparent rounded-none"
+                    className="w-full border-b border-slate-200 py-2 pl-7 outline-none focus:border-[#153d6f] text-sm bg-transparent rounded-none"
                   />
                 </div>
               </div>
@@ -564,7 +564,7 @@ const DoctorSection = ({
               <div className="mb-6">
                 <label
                   htmlFor="specialty-select"
-                  className="block text-sm font-bold text-[#00796e] mb-2"
+                  className="block text-sm font-bold text-[#153d6f] mb-2"
                 >
                   Spesialis
                 </label>
@@ -597,7 +597,7 @@ const DoctorSection = ({
               <div className="mb-10">
                 <label
                   htmlFor="day-select"
-                  className="block text-sm font-bold text-[#00796e] mb-2"
+                  className="block text-sm font-bold text-[#153d6f] mb-2"
                 >
                   Pilih Hari
                 </label>
@@ -625,7 +625,7 @@ const DoctorSection = ({
 
               <button
                 onClick={handleApplyFilter}
-                className="w-full bg-[#00796e] text-white py-4 font-bold rounded-full cursor-pointer transition-all hover:bg-[#00796e]/90 active:scale-[0.98]"
+                className="w-full bg-[#153d6f] text-white py-4 font-bold rounded-full cursor-pointer transition-all hover:bg-[#153d6f]/90 active:scale-[0.98]"
               >
                 Temukan Dokter
               </button>

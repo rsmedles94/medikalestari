@@ -235,7 +235,7 @@ const MobileSearchModal: React.FC<MobileSearchModalProps> = ({
                           {doctor.name}
                         </h4>
 
-                        <p className="text-[11px] text-[#00796e] font-semibold">
+                        <p className="text-[11px] text-[#153d6f] font-semibold">
                           {doctor.specialty}
                         </p>
                       </div>

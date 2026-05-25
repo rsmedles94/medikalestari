@@ -14,7 +14,7 @@ const Pembatalan = () => {
       <Breadcrumb items={breadcrumbs} />
 
       {/* Header */}
-      <section className="bg-gradient-to-r from-[#00796e] to-[#00796e] text-white py-8 px-6">
+      <section className="bg-gradient-to-r from-[#153d6f] to-[#153d6f] text-white py-8 px-6">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold">Kebijakan Pembatalan</h1>
         </div>
@@ -26,12 +26,12 @@ const Pembatalan = () => {
           <div className="space-y-12">
             {/* Pembatalan Janji Temu */}
             <div>
-              <h2 className="text-3xl font-bold text-[#00796e] mb-6 pb-4 border-b-2 border-[#00796e]">
+              <h2 className="text-3xl font-bold text-[#153d6f] mb-6 pb-4 border-b-2 border-[#153d6f]">
                 Pembatalan Janji Temu
               </h2>
 
               <div className="space-y-6">
-                <div className="p-4 bg-blue-50 border-l-4 border-[#00796e] rounded">
+                <div className="p-4 bg-blue-50 border-l-4 border-[#153d6f] rounded">
                   <h3 className="text-lg font-bold text-gray-900 mb-3">
                     Pembatalan 48 Jam Sebelumnya
                   </h3>
@@ -99,12 +99,12 @@ const Pembatalan = () => {
 
             {/* Pembatalan Rawat Inap */}
             <div>
-              <h2 className="text-3xl font-bold text-[#00796e] mb-6 pb-4 border-b-2 border-[#00796e]">
+              <h2 className="text-3xl font-bold text-[#153d6f] mb-6 pb-4 border-b-2 border-[#153d6f]">
                 Pembatalan Rawat Inap
               </h2>
 
               <div className="space-y-6">
-                <div className="p-4 bg-blue-50 border-l-4 border-[#00796e] rounded">
+                <div className="p-4 bg-blue-50 border-l-4 border-[#153d6f] rounded">
                   <h3 className="text-lg font-bold text-gray-900 mb-3">
                     Pembatalan Sebelum Perawatan Dimulai
                   </h3>
@@ -155,7 +155,7 @@ const Pembatalan = () => {
 
             {/* Pengecualian */}
             <div>
-              <h2 className="text-3xl font-bold text-[#00796e] mb-6 pb-4 border-b-2 border-[#00796e]">
+              <h2 className="text-3xl font-bold text-[#153d6f] mb-6 pb-4 border-b-2 border-[#153d6f]">
                 Pengecualian dan Keadaan Khusus
               </h2>
 
@@ -200,7 +200,7 @@ const Pembatalan = () => {
 
             {/* Cara Membatalkan */}
             <div>
-              <h2 className="text-3xl font-bold text-[#00796e] mb-6 pb-4 border-b-2 border-[#00796e]">
+              <h2 className="text-3xl font-bold text-[#153d6f] mb-6 pb-4 border-b-2 border-[#153d6f]">
                 Cara Membatalkan
               </h2>
 
@@ -253,8 +253,8 @@ const Pembatalan = () => {
             </div>
 
             {/* Important Notes */}
-            <div className="bg-blue-50 border-l-4 border-[#00796e] p-6 rounded">
-              <h3 className="text-lg font-bold text-[#00796e] mb-3">
+            <div className="bg-blue-50 border-l-4 border-[#153d6f] p-6 rounded">
+              <h3 className="text-lg font-bold text-[#153d6f] mb-3">
                 Catatan Penting
               </h3>
               <ul className="text-gray-700 space-y-2">
@@ -281,7 +281,7 @@ const Pembatalan = () => {
           <div className="mt-12 flex justify-between items-center pt-6 border-t">
             <Link
               href="/syarat-ketentuan/pembayaran"
-              className="text-[#00796e] hover:text-[#001e3d] font-semibold flex items-center"
+              className="text-[#153d6f] hover:text-[#001e3d] font-semibold flex items-center"
             >
               <svg
                 className="w-4 h-4 mr-2"
@@ -300,7 +300,7 @@ const Pembatalan = () => {
             </Link>
             <Link
               href="/syarat-ketentuan/pertanggungjawaban"
-              className="text-[#00796e] hover:text-[#001e3d] font-semibold flex items-center"
+              className="text-[#153d6f] hover:text-[#001e3d] font-semibold flex items-center"
             >
               Selanjutnya
               <svg

@@ -12,7 +12,7 @@ export default function NotFound() {
         </p>
         <Link
           href="/"
-          className="inline-block bg-[#00796e] text-white px-8 py-3 active:scale-95 transition-colors"
+          className="inline-block bg-[#153d6f] text-white px-8 py-3 active:scale-95 transition-colors"
         >
           Kembali ke Beranda
         </Link>

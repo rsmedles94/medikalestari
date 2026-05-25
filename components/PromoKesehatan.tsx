@@ -88,7 +88,7 @@ const FEATURES_DATA = [
   },
   {
     icon: "/images/icons/callcenter.svg",
-    title: "Customer Care Darurat",
+    title: "Customer Care",
     link: "tel:1500XXX",
   },
   {
@@ -293,7 +293,7 @@ const PromoKesehatan = () => {
           priority
           quality={95}
         />
-        <div className="absolute inset-0 bg-[#00796e]/95" />
+        <div className="absolute inset-0 bg-[#153d6f]/95" />
       </div>
 
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-white z-0" />
@@ -345,7 +345,7 @@ const PromoKesehatan = () => {
           </div>
 
           {/* POSISI TURUN KE BAWAH STATS: SECTION GRID MENU UTAMA (TALK A DOCTOR) */}
-          <div className="mb-24 max-w-[1107px] mx-auto bg-white text-[#00796e] overflow-hidden shadow-md">
+          <div className="mb-24 max-w-[1107px] mx-auto bg-white text-[#153d6f] overflow-hidden shadow-md">
             <div className="grid grid-cols-1 md:grid-cols-3 border-b border-gray-200 last:border-none">
               {FEATURES_DATA.map((feat, index) => (
                 <a
@@ -369,7 +369,7 @@ const PromoKesehatan = () => {
                   </div>
                   <div className="shrink-0 pl-2">
                     <svg
-                      className="w-3 h-3 text-[#00796e]"
+                      className="w-3 h-3 text-[#153d6f]"
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="3"
@@ -411,7 +411,7 @@ const PromoKesehatan = () => {
               <Link href="/tentang-kami" passHref>
                 <button
                   type="button"
-                  className="px-5 py-2.5 bg-[#e67e22] hover:bg-[#00796e] text-white text-xs font-semibold transition-colors inline-flex items-center gap-2 cursor-pointer"
+                  className="px-5 py-2.5 bg-[#e67e22] hover:bg-[#153d6f] text-white text-xs font-semibold transition-colors inline-flex items-center gap-2 cursor-pointer"
                 >
                   Selengkapnya Tentang Kami →
                 </button>
@@ -551,7 +551,7 @@ const PromoKesehatan = () => {
                         </div>
 
                         <div className="p-4 md:p-5 flex flex-col grow text-center bg-white">
-                          <h3 className="text-xs md:text-base font-bold text-[#00796e] mb-2 min-h-12 flex items-center justify-center leading-normal">
+                          <h3 className="text-xs md:text-base font-bold text-[#153d6f] mb-2 min-h-12 flex items-center justify-center leading-normal">
                             {item.title}
                           </h3>
                           <p className="text-[10px] md:text-xs text-gray-500 leading-normal mb-5 line-clamp-3 md:line-clamp-4">
@@ -560,7 +560,7 @@ const PromoKesehatan = () => {
                           <div className="mt-auto">
                             <button
                               type="button"
-                              className="w-full py-2 border bg-[#00796e] text-white text-[10px] md:text-xs font-semibold transition-all duration-300 hover:bg-[#e67e22] hover:text-white"
+                              className="w-full py-2 border bg-[#153d6f] text-white text-[10px] md:text-xs font-semibold transition-all duration-300 hover:bg-[#e67e22] hover:text-white"
                             >
                               Selengkapnya →
                             </button>
@@ -585,7 +585,7 @@ const PromoKesehatan = () => {
                 >
                   <motion.div
                     animate={{
-                      backgroundColor: isActive ? "#ffffff" : "#00796e",
+                      backgroundColor: isActive ? "#ffffff" : "#153d6f",
                     }}
                     transition={{ duration: 0.2 }}
                     className="absolute w-4 h-4 rounded-full z-10 pointer-events-none"
@@ -602,7 +602,7 @@ const PromoKesehatan = () => {
                       stiffness: 280,
                       damping: 22,
                     }}
-                    className="absolute w-8 h-8 rounded-full border-[5px] border-[#00796e] bg-white z-0 origin-center pointer-events-none"
+                    className="absolute w-8 h-8 rounded-full border-[5px] border-[#153d6f] bg-white z-0 origin-center pointer-events-none"
                   />
                 </button>
               );

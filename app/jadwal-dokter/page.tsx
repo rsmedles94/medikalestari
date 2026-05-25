@@ -70,7 +70,7 @@ export default function DoctorSchedulePage() {
           <a
             href="https://wa.me/6282246232527"
             target="_blank"
-            className="inline-flex items-center gap-2 px-4 py-3 bg-[#00796e] text-white text-[11px] sm:text-sm font-semibold rounded-lg hover:bg-[#00796e]/90 transition-all hover:scale-95 shrink-0"
+            className="inline-flex items-center gap-2 px-4 py-3 bg-[#153d6f] text-white text-[11px] sm:text-sm font-semibold rounded-lg hover:bg-[#153d6f]/90 transition-all hover:scale-95 shrink-0"
           >
             <span className="hidden lg:inline">Hubungi Customer Care</span>
             <span className="md:hidden">Hubungi Customer Care</span>
