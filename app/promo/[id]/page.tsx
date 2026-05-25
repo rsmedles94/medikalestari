@@ -298,8 +298,6 @@ export default function PromoDetailPage() {
     const handleResize = () => {
       if (window.innerWidth >= 1024) {
         setRelatedItemsPerGroup(4);
-      } else if (window.innerWidth >= 768) {
-        setRelatedItemsPerGroup(2);
       } else {
         setRelatedItemsPerGroup(2);
       }
@@ -400,86 +398,84 @@ export default function PromoDetailPage() {
         </div>
 
         {/* Related Promos Carousel */}
-        <section className="pt-12 pb-30 md:pb-12 px-4 sm:px-6 lg:px-8 -mx-4 md:-mx-8 mt-12">
-          <div className="max-w-[1175px] mx-auto">
+        <section className="pt-16 pb-16 mt-12 border-t border-slate-100">
+          <div className="w-full">
             <div className="mb-8">
               <h2 className="text-2xl md:text-3xl font-bold text-[#003f88]">
                 Promo Lainnya
               </h2>
             </div>
 
-            {/* Carousel */}
-            <div className="w-full overflow-hidden">
+            {/* Carousel Container */}
+            <div className="w-full overflow-hidden p-1">
               <motion.div
                 animate={relatedControls}
                 initial={{ x: "0%" }}
                 className="flex w-full"
               >
-                {Array.from({
-                  length: Math.ceil(
-                    relatedPromos.length / relatedItemsPerGroup,
-                  ),
-                }).map((_, groupIndex) => {
-                  const groupKey = `group-${groupIndex}-${relatedPromos[groupIndex * relatedItemsPerGroup]?.id || 0}`;
-                  return (
-                    <div
-                      key={groupKey}
-                      className="w-full shrink-0 flex gap-1 px-2 justify-center"
-                    >
-                      {relatedPromos
-                        .slice(
-                          groupIndex * relatedItemsPerGroup,
-                          (groupIndex + 1) * relatedItemsPerGroup,
-                        )
-                        .map((relatedPromo) => (
-                          <div
-                            key={`promo-${relatedPromo.id}`}
-                            className="w-1/2 md:w-1/2 lg:w-1/4 shrink-0"
-                          >
-                            <article className="bg-white border border-gray-100 flex flex-col h-full shadow-lg overflow-hidden transition-all duration-300 scale-90 hover:scale-100 origin-center">
-                              <div className="relative aspect-square w-full overflow-hidden bg-gray-50">
-                                <Image
-                                  src={relatedPromo.image}
-                                  alt={`Promo ${relatedPromo.title}`}
-                                  width={500}
-                                  height={500}
-                                  className="object-cover w-full h-full"
-                                  priority={relatedPromo.id <= 4}
-                                />
-                              </div>
-
-                              <div className="p-4 md:p-5 flex flex-col grow text-center bg-white">
-                                <h3 className="text-xs md:text-base font-bold text-[#003f88] mb-2 min-h-12 flex items-center justify-center leading-normal">
-                                  {relatedPromo.title}
-                                </h3>
-                                <p className="text-[10px] md:text-xs text-gray-500 leading-normal mb-5 line-clamp-3 md:line-clamp-4">
-                                  {relatedPromo.shortDescription}
-                                </p>
-                                <div className="mt-auto">
-                                  <Link
-                                    href={`/promo/${relatedPromo.id}`}
-                                    passHref
-                                  >
-                                    <button
-                                      type="button"
-                                      className="w-full py-2 border bg-[#003f88] text-white text-[10px] md:text-xs font-semibold transition-all duration-300 hover:bg-[#e67e22] hover:text-white"
-                                    >
-                                      Selengkapnya →
-                                    </button>
-                                  </Link>
+                {Array.from({ length: totalRelatedDots }).map(
+                  (_, groupIndex) => {
+                    const groupKey = `group-${groupIndex}-${relatedPromos[groupIndex * relatedItemsPerGroup]?.id || 0}`;
+                    return (
+                      <div
+                        key={groupKey}
+                        className="w-full shrink-0 flex gap-4 lg:gap-6 justify-start"
+                      >
+                        {relatedPromos
+                          .slice(
+                            groupIndex * relatedItemsPerGroup,
+                            (groupIndex + 1) * relatedItemsPerGroup,
+                          )
+                          .map((relatedPromo) => (
+                            <div
+                              key={`promo-${relatedPromo.id}`}
+                              className="w-[calc(50%-8px)] lg:w-[calc(25%-18px)] shrink-0"
+                            >
+                              <article className="bg-white border border-slate-100 flex flex-col h-full shadow-md rounded-none overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl origin-center">
+                                <div className="relative aspect-square w-full overflow-hidden bg-gray-50">
+                                  <Image
+                                    src={relatedPromo.image}
+                                    alt={`Promo ${relatedPromo.title}`}
+                                    width={500}
+                                    height={500}
+                                    className="object-cover w-full h-full"
+                                    priority={relatedPromo.id <= 4}
+                                  />
                                 </div>
-                              </div>
-                            </article>
-                          </div>
-                        ))}
-                    </div>
-                  );
-                })}
+
+                                <div className="p-4 md:p-5 flex flex-col grow text-center bg-white">
+                                  <h3 className="text-sm md:text-base font-bold text-[#003f88] mb-2 min-h-12 flex items-center justify-center leading-snug line-clamp-2">
+                                    {relatedPromo.title}
+                                  </h3>
+                                  <p className="text-xs text-gray-500 leading-normal mb-5 line-clamp-3 md:line-clamp-4">
+                                    {relatedPromo.shortDescription}
+                                  </p>
+                                  <div className="mt-auto">
+                                    <Link
+                                      href={`/promo/${relatedPromo.id}`}
+                                      passHref
+                                    >
+                                      <button
+                                        type="button"
+                                        className="w-full py-2.5 border bg-[#003f88] text-white text-xs font-semibold transition-all duration-300 hover:bg-[#e67e22] hover:text-white"
+                                      >
+                                        Selengkapnya →
+                                      </button>
+                                    </Link>
+                                  </div>
+                                </div>
+                              </article>
+                            </div>
+                          ))}
+                      </div>
+                    );
+                  },
+                )}
               </motion.div>
             </div>
 
             {/* Dot Indicators */}
-            <div className="mt-12 flex items-center justify-center gap-4">
+            <div className="mt-8 flex items-center justify-center gap-4 mb-12 md:mb-0">
               {Array.from({ length: totalRelatedDots }).map((_, index) => {
                 const isActive = index === relatedIndex;
                 return (
@@ -495,7 +491,7 @@ export default function PromoDetailPage() {
                         backgroundColor: isActive ? "#ffffff" : "#003f88",
                       }}
                       transition={{ duration: 0.2 }}
-                      className="absolute w-4 h-4 rounded-full z-10 pointer-events-none"
+                      className="absolute w-3 h-3 rounded-full z-10 pointer-events-none"
                     />
 
                     <motion.div
@@ -509,7 +505,7 @@ export default function PromoDetailPage() {
                         stiffness: 280,
                         damping: 22,
                       }}
-                      className="absolute w-8 h-8 rounded-full border-[5px] border-[#003f88] bg-white z-0 origin-center pointer-events-none"
+                      className="absolute w-7 h-7 rounded-full border-[4px] border-[#003f88] bg-white z-0 origin-center pointer-events-none"
                     />
                   </button>
                 );
