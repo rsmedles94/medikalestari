@@ -155,7 +155,6 @@ const AWARDS_DATA = [
     src: "/images/awards/award11.png",
     alt: "Best Nursing Homes US News 2",
   },
-
 ];
 
 // ==========================================
@@ -294,7 +293,7 @@ const PromoKesehatan = () => {
           priority
           quality={95}
         />
-        <div className="absolute inset-0 bg-[#173A87]/95" />
+        <div className="absolute inset-0 bg-[#00796e]/95" />
       </div>
 
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-white z-0" />
@@ -552,7 +551,7 @@ const PromoKesehatan = () => {
                         </div>
 
                         <div className="p-4 md:p-5 flex flex-col grow text-center bg-white">
-                          <h3 className="text-xs md:text-base font-bold text-[#173A87] mb-2 min-h-12 flex items-center justify-center leading-normal">
+                          <h3 className="text-xs md:text-base font-bold text-[#00796e] mb-2 min-h-12 flex items-center justify-center leading-normal">
                             {item.title}
                           </h3>
                           <p className="text-[10px] md:text-xs text-gray-500 leading-normal mb-5 line-clamp-3 md:line-clamp-4">
@@ -561,7 +560,7 @@ const PromoKesehatan = () => {
                           <div className="mt-auto">
                             <button
                               type="button"
-                              className="w-full py-2 border border-[#173A87] text-[#173A87] text-[10px] md:text-xs font-semibold transition-all duration-300 hover:bg-[#173A87] hover:text-white"
+                              className="w-full py-2 border border-[#00796e] text-[#00796e] text-[10px] md:text-xs font-semibold transition-all duration-300 hover:bg-[#00796e] hover:text-white"
                             >
                               Selengkapnya →
                             </button>
@@ -586,7 +585,7 @@ const PromoKesehatan = () => {
                 >
                   <motion.div
                     animate={{
-                      backgroundColor: isActive ? "#ffffff" : "#173A87",
+                      backgroundColor: isActive ? "#ffffff" : "#00796e",
                     }}
                     transition={{ duration: 0.2 }}
                     className="absolute w-4 h-4 rounded-full z-10 pointer-events-none"
@@ -603,7 +602,7 @@ const PromoKesehatan = () => {
                       stiffness: 280,
                       damping: 22,
                     }}
-                    className="absolute w-8 h-8 rounded-full border-[5px] border-[#173A87] bg-white z-0 origin-center pointer-events-none"
+                    className="absolute w-8 h-8 rounded-full border-[5px] border-[#00796e] bg-white z-0 origin-center pointer-events-none"
                   />
                 </button>
               );

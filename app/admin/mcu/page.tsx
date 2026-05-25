@@ -291,7 +291,7 @@ const MCUAdmin = () => {
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-[#173A87]">
+            <h1 className="text-3xl font-bold text-[#00796e]">
               Kelola Paket MCU
             </h1>
             <p className="text-gray-600">
@@ -303,7 +303,7 @@ const MCUAdmin = () => {
         {showForm ? (
           /* Form */
           <div className="bg-white rounded-lg border border-gray-200 p-6 max-w-2xl">
-            <h2 className="text-2xl font-bold text-[#173A87] mb-6">
+            <h2 className="text-2xl font-bold text-[#00796e] mb-6">
               {editingId ? "Ubah Paket MCU" : "Tambah Paket MCU"}
             </h2>
 

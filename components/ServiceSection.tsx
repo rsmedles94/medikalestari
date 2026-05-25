@@ -101,7 +101,7 @@ const ServiceSection = () => {
         <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent transition-opacity duration-300" />
 
         {/* Gradasi Hover Warna Biru Rumah Sakit */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#173A87]/30 via-[#173A87]/70 to-[#173A87]/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#00796e]/30 via-[#00796e]/70 to-[#00796e]/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10" />
       </div>
 
       {/* Konten Judul - Menggunakan absolute bottom agar tidak merusak kalkulasi tinggi kotak */}
@@ -118,7 +118,7 @@ const ServiceSection = () => {
       {/* Max-w-[1000px] dikunci agar proporsinya persis seperti screenshot awal */}
       <div className="max-w-[1160px] mx-auto px-4 md:px-6">
         {/* Judul Utama */}
-        <h2 className="text-2xl md:text-4xl font-bold text-[#173A87] text-center mb-10">
+        <h2 className="text-2xl md:text-4xl font-bold text-[#00796e] text-center mb-10">
           Kisah Pasien
         </h2>
 

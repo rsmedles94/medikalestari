@@ -176,7 +176,7 @@ export default function BookingForm({
                     <button
                       type="submit"
                       disabled={loading}
-                      className="w-full py-4 bg-[#173A87] text-white font-bold rounded-full transition-all duration-300
+                      className="w-full py-4 bg-[#00796e] text-white font-bold rounded-full transition-all duration-300
                       active:scale-95 flex items-center justify-center gap-3 text-sm cursor-pointer"
                     >
                       {loading ? (

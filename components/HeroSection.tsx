@@ -87,15 +87,15 @@ if (typeof document !== "undefined") {
   const dropdownStyle = document.createElement("style");
   dropdownStyle.textContent = `
     select option {
-      color: #173A87;
+      color: #00796e;
       background-color: white;
     }
     select option:hover {
-      background-color: #173A87;
+      background-color: #00796e;
       color: white;
     }
     select option:checked {
-      background-color: #173A87;
+      background-color: #00796e;
       color: white;
     }
   `;
@@ -351,7 +351,7 @@ const HeroSection = () => {
             >
               {/* NAMA DOKTER */}
               <div className="flex-1 px-5 py-4 border-b md:px-8 md:border-b-0 md:border-r border-gray-100">
-                <p className="text-xs text-[#173A87] font-semibold mb-1">
+                <p className="text-xs text-[#00796e] font-semibold mb-1">
                   Nama Dokter
                 </p>
                 <div className="flex items-center gap-2">
@@ -368,7 +368,7 @@ const HeroSection = () => {
 
               {/* SPESIALIS */}
               <div className="flex-1 px-5 py-4 border-b md:border-b-0 md:border-r border-gray-100">
-                <p className="text-xs text-[#173A87] font-semibold mb-1">
+                <p className="text-xs text-[#00796e] font-semibold mb-1">
                   Spesialis
                 </p>
                 <div className="flex items-center gap-2">
@@ -389,7 +389,7 @@ const HeroSection = () => {
 
               {/* HARI */}
               <div className="flex-1 px-5 py-4 border-b md:border-b-0 md:border-r border-gray-100">
-                <p className="text-xs text-[#173A87] font-semibold mb-1">
+                <p className="text-xs text-[#00796e] font-semibold mb-1">
                   Pilih Hari
                 </p>
                 <div className="flex items-center gap-2">
@@ -420,7 +420,7 @@ const HeroSection = () => {
                       `/dokter?${params.toString()}`,
                     );
                   }}
-                  className="w-full md:w-14 h-12 md:h-14 rounded-full md:rounded-full bg-[#173A87] flex items-center justify-center gap-2 text-white active:scale-95 transition cursor-pointer"
+                  className="w-full md:w-14 h-12 md:h-14 rounded-full md:rounded-full bg-[#00796e] flex items-center justify-center gap-2 text-white active:scale-95 transition cursor-pointer"
                 >
                   <Search className="w-5 h-5 md:w-10 md:h-8" />
                   <span className="font-semibold md:hidden">Cari Dokter</span>
@@ -567,8 +567,8 @@ const HeroSection = () => {
       </div>
 
       {/* Searchbar Desktop */}
-      <div className="hidden md:absolute md:inset-0 md:flex md:flex-col md:items-end md:justify-end md:z-20 md:pr-20 md:pb-15 md:pointer-events-none">
-        <div className="md:pointer-events-auto bg-[#173A87] rounded-md shadow-lg p-5">
+      <div className="hidden md:absolute md:inset-0 md:flex md:flex-col md:items-end md:justify-end md:z-20 md:pr-15 md:pb-15 md:pointer-events-none">
+        <div className="md:pointer-events-auto bg-[#00796e] rounded-md shadow-lg p-5">
           {/* titlr */}
           <h2 className="text-lg font-bold text-white mb-4">
             Cari Dokter Spesialis atau Jadwal Praktek
@@ -671,7 +671,7 @@ const HeroSection = () => {
                     globalThis.window.location.href = `/dokter?${params.toString()}`;
                   }
                 }}
-                className="h-14 px-4 rounded-full bg-white flex items-center justify-center text-[#173A87] active:scale-95 transition cursor-pointer"
+                className="h-14 px-4 rounded-full bg-white flex items-center justify-center text-[#00796e] active:scale-95 transition cursor-pointer"
               >
                 <Search className="w-6 h-6" />
               </button>
@@ -693,7 +693,7 @@ const HeroSection = () => {
           >
             {/* NAMA DOKTER */}
             <div className="flex-1 px-5 py-4 border-b border-gray-100">
-              <p className="text-xs text-[#173A87] font-semibold mb-1">
+              <p className="text-xs text-[#00796e] font-semibold mb-1">
                 Nama Dokter
               </p>
               <div className="flex items-center gap-2">
@@ -710,7 +710,7 @@ const HeroSection = () => {
 
             {/* SPESIALIS */}
             <div className="flex-1 px-5 py-4 border-b border-gray-100">
-              <p className="text-xs text-[#173A87] font-semibold mb-1">
+              <p className="text-xs text-[#00796e] font-semibold mb-1">
                 Spesialis
               </p>
               <div className="flex items-center gap-2 relative">
@@ -744,7 +744,7 @@ const HeroSection = () => {
 
             {/* HARI */}
             <div className="flex-1 px-5 py-4 border-b border-gray-100">
-              <p className="text-xs text-[#173A87] font-semibold mb-1">
+              <p className="text-xs text-[#00796e] font-semibold mb-1">
                 Pilih Hari
               </p>
               <div className="flex items-center gap-2 relative">
@@ -786,7 +786,7 @@ const HeroSection = () => {
                     globalThis.window.location.href = `/dokter?${params.toString()}`;
                   }
                 }}
-                className="w-full h-12 rounded-full bg-[#173A87] flex items-center justify-center gap-2 text-white active:scale-95 transition cursor-pointer"
+                className="w-full h-12 rounded-full bg-[#00796e] flex items-center justify-center gap-2 text-white active:scale-95 transition cursor-pointer"
               >
                 <Search className="w-5 h-5" />
                 <span className="font-semibold">Cari Dokter</span>

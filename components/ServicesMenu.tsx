@@ -110,7 +110,7 @@ const ServicesMenu: React.FC = () => {
                 >
                   <Link
                     href={service.href}
-                    className="group flex items-center justify-between p-6 md:p-8 h-full min-h-[92px] transition-all duration-200 text-[#173A87] hover:bg-[#173A87] hover:text-white"
+                    className="group flex items-center justify-between p-6 md:p-8 h-full min-h-[92px] transition-all duration-200 text-[#00796e] hover:bg-[#00796e] hover:text-white"
                   >
                     {/* Sisi Kiri: Ikon Utama & Judul Menu */}
                     <div className="flex items-center gap-5 pr-4">

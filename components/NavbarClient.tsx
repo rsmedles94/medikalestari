@@ -182,12 +182,12 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
         animate={{ opacity: 1, y: 0, height: "auto" }}
         exit={{ opacity: 0, y: -10, height: 0 }}
         transition={{ duration: 0.3, ease: "circOut" }}
-        className={`absolute top-full bg-[#173A87] text-white shadow-xl overflow-visible z-50 border-t border-[#173A87] mt-2 left-1/2 transform -translate-x-1/2 ${
+        className={`absolute top-full bg-[#00796e] text-white shadow-xl overflow-visible z-50 border-t border-[#00796e] mt-2 left-1/2 transform -translate-x-1/2 ${
           isLargeMenu ? "w-[600px]" : widthClass
         }`}
       >
         {/* Arrow/Triangle */}
-        <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-[#173A87]"></div>
+        <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-[#00796e]"></div>
         <div
           className={`py-4 px-2 grid ${isLargeMenu ? "grid-cols-2" : "grid-cols-1"}`}
         >
@@ -278,16 +278,15 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               {logoNode}
             </Link>
 
-            <div className="hidden md:flex gap-2 items-center text-[15px] font-normal text-[#173A87]">
+            <div className="hidden md:flex gap-2 items-center text-[15px] font-normal text-[#00796e]">
               {/* Social Media Icons - Kiri */}
               <div className="flex items-center gap-4">
-
                 {/* Buat Janji Temu Pill */}
                 <a
                   href="https://wa.me/6215858585858"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="ml-6 px-4 py-2 bg-[#173A87]  text-white font-medium text-sm transition-colors duration-200 active:scale-95"
+                  className="ml-6 px-4 py-2 bg-[#00796e]  text-white font-medium text-sm transition-colors duration-200 active:scale-95"
                 >
                   Buat Janji Temu
                 </a>
@@ -318,7 +317,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
       <div className="hidden md:block relative w-full bg-white border-t border-gray-200 z-30 shadow-md">
         <div className="max-w-[1220px] mx-auto px-4 md:px-8 flex justify-between items-center h-16 relative z-10">
-          <div className="flex h-full text-[15px] text-[#173A87]">
+          <div className="flex h-full text-[15px] text-[#00796e]">
             <button
               onClick={handleHomeClick}
               className="flex items-center h-full px-6 transition-colors font-semibold relative group cursor-pointer"
@@ -341,11 +340,11 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               }}
               onMouseLeave={() => setActiveMenu(null)}
             >
-              <button className="flex items-center h-full px-6 transition-colors font-semibold relative group gap-2 text-[#173A87]">
+              <button className="flex items-center h-full px-6 transition-colors font-semibold relative group gap-2 text-[#00796e]">
                 Cari Dokter
                 <ChevronDown
                   size={18}
-                  className={`transition-transform duration-300 text-[#173A87] ${
+                  className={`transition-transform duration-300 text-[#00796e] ${
                     activeMenu === "Dokter Kami" ? "scale-y-[-1]" : ""
                   }`}
                 />
@@ -382,11 +381,11 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                   }}
                   onMouseLeave={() => setActiveMenu(null)}
                 >
-                  <button className="flex items-center h-full px-6 transition-colors font-semibold relative group gap-2 text-[#173A87]">
+                  <button className="flex items-center h-full px-6 transition-colors font-semibold relative group gap-2 text-[#00796e]">
                     {item}
                     <ChevronDown
                       size={18}
-                      className={`transition-transform duration-300 text-[#173A87] ${
+                      className={`transition-transform duration-300 text-[#00796e] ${
                         activeMenu === item ? "scale-y-[-1]" : ""
                       }`}
                     />
@@ -415,11 +414,11 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               }}
               onMouseLeave={() => setActiveMenu(null)}
             >
-              <button className="flex items-center h-full px-6 transition-colors font-semibold relative group gap-2 text-[#173A87]">
+              <button className="flex items-center h-full px-6 transition-colors font-semibold relative group gap-2 text-[#00796e]">
                 Informasi
                 <ChevronDown
                   size={18}
-                  className={`transition-transform duration-300 text-[#173A87] ${
+                  className={`transition-transform duration-300 text-[#00796e] ${
                     activeMenu === "Profil" ? "scale-y-[-1]" : ""
                   }`}
                 />
@@ -622,7 +621,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               <div className="flex flex-col p-4">
                 <button
                   onClick={handleHomeClick}
-                  className="text-left p-4 font-semibold text-[#173A87] border-b text-lg"
+                  className="text-left p-4 font-semibold text-[#00796e] border-b text-lg"
                 >
                   Beranda
                 </button>
@@ -631,7 +630,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                   onClick={() =>
                     setActiveMenu(activeMenu === "Profil" ? null : "Profil")
                   }
-                  className="w-full text-left p-4 font-semibold text-[#173A87] flex justify-between items-center text-lg border-b"
+                  className="w-full text-left p-4 font-semibold text-[#00796e] flex justify-between items-center text-lg border-b"
                 >
                   Profil
                   {activeMenu === "Profil" ? (
@@ -686,7 +685,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                 <Link
                   href="/dokter#section-dokter"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-left p-4 font-semibold text-[#173A87] border-b text-lg"
+                  className="text-left p-4 font-semibold text-[#00796e] border-b text-lg"
                 >
                   Dokter Spesialis
                 </Link>
@@ -694,7 +693,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                 <Link
                   href="/jadwal-dokter"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-left p-4 font-semibold text-[#173A87] border-b text-lg"
+                  className="text-left p-4 font-semibold text-[#00796e] border-b text-lg"
                 >
                   Jadwal Dokter
                 </Link>
@@ -709,7 +708,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                         onClick={() =>
                           setActiveMenu(activeMenu === item ? null : item)
                         }
-                        className="w-full text-left p-4 font-semibold text-[#173A87] flex justify-between items-center text-lg"
+                        className="w-full text-left p-4 font-semibold text-[#00796e] flex justify-between items-center text-lg"
                       >
                         {item}
 
@@ -815,7 +814,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
         <Link
           href="/services/medical-checkup"
-          className="flex-1 bg-[#173A87] text-white font-semibold text-center text-xs flex items-center justify-center gap-2 hover:bg-[#013a63] transition-colors"
+          className="flex-1 bg-[#00796e] text-white font-semibold text-center text-xs flex items-center justify-center gap-2 hover:bg-[#013a63] transition-colors"
         >
           <Stethoscope size={16} />
           Medical Checkup
@@ -869,16 +868,16 @@ function AuthDropdown({ activeMenu, setActiveMenu }: AuthDropdownProps) {
             animate={{ opacity: 1, y: 0, height: "auto" }}
             exit={{ opacity: 0, y: -10, height: 0 }}
             transition={{ duration: 0.3, ease: "circOut" }}
-            className="absolute top-full right-0 bg-[#173A87] text-white shadow-xl overflow-visible z-50 border-t border-[#173A87] w-48 mt-2"
+            className="absolute top-full right-0 bg-[#00796e] text-white shadow-xl overflow-visible z-50 border-t border-[#00796e] w-48 mt-2"
           >
             {/* Arrow/Triangle */}
-            <div className="absolute -top-2 right-6 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-[#173A87]"></div>
+            <div className="absolute -top-2 right-6 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-[#00796e]"></div>
             <div className="py-2 px-2 grid grid-cols-1">
               {isAuthenticated ? (
                 <Link
                   href="/admin/dashboard"
                   onClick={() => setActiveMenu(null)}
-                  className="px-4 py-4 text-white font-medium hover:bg-white hover:text-[#173A87] transition-colors flex items-center gap-2 m-1"
+                  className="px-4 py-4 text-white font-medium hover:bg-white hover:text-[#00796e] transition-colors flex items-center gap-2 m-1"
                 >
                   Dashboard Admin
                 </Link>
@@ -917,7 +916,7 @@ function AuthArea({
         href="/admin/dashboard"
         onClick={onClick}
         className={`flex items-center gap-2 font-medium ${
-          isMobile ? "text-[#173A87] text-lg" : "text-gray-700 text-sm "
+          isMobile ? "text-[#00796e] text-lg" : "text-gray-700 text-sm "
         }`}
         title="Panel Admin"
       >
