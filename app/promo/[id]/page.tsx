@@ -21,14 +21,6 @@ const PROMO_DATA = [
         Vaksin Influenza dan Prevenar adalah solusi perlindungan kesehatan yang komprehensif untuk Anda dan seluruh keluarga. 
         Dengan teknologi vaksin terkini, kami memberikan perlindungan maksimal terhadap virus influenza dan bakteri pneumonia.
       </p>
-      <p class="text-gray-700 mb-4 leading-relaxed">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-      </p>
-      <p class="text-gray-700 mb-4 leading-relaxed">
-        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
-        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-      </p>
       <h4 class="text-lg font-semibold text-[#003f88] mt-6 mb-3">Keuntungan Layanan Kami:</h4>
       <ul class="list-disc list-inside text-gray-700 space-y-2">
         <li>Vaksin berkualitas tinggi dari produsen terpercaya</li>
@@ -50,14 +42,6 @@ const PROMO_DATA = [
       <p class="text-gray-700 mb-4 leading-relaxed">
         Layanan khitan kami menggunakan metode modern dengan teknologi terkini untuk memastikan prosedur yang aman, minim nyeri, 
         dan pemulihan yang cepat. Tim dokter kami berpengalaman dalam menangani sirkumsisi anak dengan pendekatan yang profesional dan penuh perhatian.
-      </p>
-      <p class="text-gray-700 mb-4 leading-relaxed">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-      </p>
-      <p class="text-gray-700 mb-4 leading-relaxed">
-        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
-        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
       </p>
       <h4 class="text-lg font-semibold text-[#003f88] mt-6 mb-3">Metode & Keunggulan:</h4>
       <ul class="list-disc list-inside text-gray-700 space-y-2">
@@ -81,14 +65,7 @@ const PROMO_DATA = [
         Skrining batu empedu kami menggunakan teknologi ultrasonografi (USG) dan pemeriksaan laboratorium terkini untuk mendeteksi 
         keberadaan batu empedu secara dini. Deteksi dini ini penting untuk mencegah komplikasi serius.
       </p>
-      <p class="text-gray-700 mb-4 leading-relaxed">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-      </p>
-      <p class="text-gray-700 mb-4 leading-relaxed">
-        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
-        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-      </p>
+
       <h4 class="text-lg font-semibold text-[#003f88] mt-6 mb-3">Jenis Pemeriksaan:</h4>
       <ul class="list-disc list-inside text-gray-700 space-y-2">
         <li>Ultrasonografi (USG) abdomen</li>
@@ -110,14 +87,6 @@ const PROMO_DATA = [
       <p class="text-gray-700 mb-4 leading-relaxed">
         Paket persalinan Bunda kami dirancang khusus untuk memberikan pengalaman persalinan yang aman, nyaman, dan berkesan bagi ibu dan bayi. 
         Dengan dukungan tim medis profesional dan fasilitas modern, kami siap mendampingi momen spesial Anda.
-      </p>
-      <p class="text-gray-700 mb-4 leading-relaxed">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-      </p>
-      <p class="text-gray-700 mb-4 leading-relaxed">
-        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
-        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
       </p>
       <h4 class="text-lg font-semibold text-[#003f88] mt-6 mb-3">Fasilitas & Layanan:</h4>
       <ul class="list-disc list-inside text-gray-700 space-y-2">
@@ -141,14 +110,7 @@ const PROMO_DATA = [
         ERACS (Early Rehabilitation After Cesarean Section) adalah metode persalinan caesar modern yang memungkinkan pemulihan lebih cepat. 
         Dengan teknik ini, ibu dapat bergerak lebih cepat dan kembali ke aktivitas normal dalam waktu singkat.
       </p>
-      <p class="text-gray-700 mb-4 leading-relaxed">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-      </p>
-      <p class="text-gray-700 mb-4 leading-relaxed">
-        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
-        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-      </p>
+
       <h4 class="text-lg font-semibold text-[#003f88] mt-6 mb-3">Keunggulan ERACS:</h4>
       <ul class="list-disc list-inside text-gray-700 space-y-2">
         <li>Pemulihan 3-5x lebih cepat</li>
@@ -171,14 +133,7 @@ const PROMO_DATA = [
         Operasi katarak kami menggunakan teknologi Phacoemulsification, metode modern yang memungkinkan lensa yang keruh dihancurkan dan dihisap 
         melalui sayatan kecil. Teknik ini memberikan hasil penglihatan yang lebih baik dengan pemulihan cepat.
       </p>
-      <p class="text-gray-700 mb-4 leading-relaxed">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-      </p>
-      <p class="text-gray-700 mb-4 leading-relaxed">
-        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
-        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-      </p>
+
       <h4 class="text-lg font-semibold text-[#003f88] mt-6 mb-3">Teknologi & Keunggulan:</h4>
       <ul class="list-disc list-inside text-gray-700 space-y-2">
         <li>Teknologi Phacoemulsification terkini</li>
@@ -201,14 +156,7 @@ const PROMO_DATA = [
         Program medical checkup khusus untuk calon jamaah haji kami dirancang untuk memastikan kondisi kesehatan Anda prima sebelum menunaikan ibadah haji. 
         Pemeriksaan komprehensif ini mencakup berbagai tes untuk memastikan Anda siap secara fisik.
       </p>
-      <p class="text-gray-700 mb-4 leading-relaxed">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-      </p>
-      <p class="text-gray-700 mb-4 leading-relaxed">
-        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
-        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-      </p>
+
       <h4 class="text-lg font-semibold text-[#003f88] mt-6 mb-3">Pemeriksaan Meliputi:</h4>
       <ul class="list-disc list-inside text-gray-700 space-y-2">
         <li>Pemeriksaan fisik lengkap</li>
@@ -231,14 +179,7 @@ const PROMO_DATA = [
         Layanan tes narkoba kami menyediakan pemeriksaan yang cepat, akurat, dan terjaga kerahasiaannya. Kami melayani pemeriksaan untuk keperluan 
         edukasi, rekrutmen kerja, atau persyaratan instansi dengan standar internasional.
       </p>
-      <p class="text-gray-700 mb-4 leading-relaxed">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-      </p>
-      <p class="text-gray-700 mb-4 leading-relaxed">
-        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
-        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-      </p>
+
       <h4 class="text-lg font-semibold text-[#003f88] mt-6 mb-3">Jenis Tes & Layanan:</h4>
       <ul class="list-disc list-inside text-gray-700 space-y-2">
         <li>Tes urine dan darah</li>
@@ -261,14 +202,7 @@ const PROMO_DATA = [
         Program medical checkup khusus untuk asisten rumah tangga (ART) dan pengemudi kami dirancang untuk memastikan mereka dalam kondisi 
         kesehatan yang baik sehingga dapat menjalankan tugas mereka dengan aman dan berkualitas.
       </p>
-      <p class="text-gray-700 mb-4 leading-relaxed">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-      </p>
-      <p class="text-gray-700 mb-4 leading-relaxed">
-        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
-        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-      </p>
+
       <h4 class="text-lg font-semibold text-[#003f88] mt-6 mb-3">Pemeriksaan Mencakup:</h4>
       <ul class="list-disc list-inside text-gray-700 space-y-2">
         <li>Pemeriksaan kesehatan umum</li>
@@ -291,14 +225,7 @@ const PROMO_DATA = [
         Pap smear adalah pemeriksaan sitologi penting untuk deteksi dini kanker serviks (leher rahim) pada wanita. Pemeriksaan ini dilakukan 
         oleh tim medis ahli dengan peralatan modern untuk hasil yang akurat dan aman.
       </p>
-      <p class="text-gray-700 mb-4 leading-relaxed">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-      </p>
-      <p class="text-gray-700 mb-4 leading-relaxed">
-        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
-        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-      </p>
+
       <h4 class="text-lg font-semibold text-[#003f88] mt-6 mb-3">Pentingnya Pap Smear:</h4>
       <ul class="list-disc list-inside text-gray-700 space-y-2">
         <li>Deteksi dini kanker serviks</li>
@@ -321,14 +248,7 @@ const PROMO_DATA = [
         Program Antenatal Care kami adalah layanan pemeriksaan kehamilan berkala yang komprehensif untuk memantau kesehatan ibu hamil dan 
         perkembangan janin. Dengan pemeriksaan rutin, kami memastikan kehamilan Anda berjalan dengan optimal dan aman.
       </p>
-      <p class="text-gray-700 mb-4 leading-relaxed">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-      </p>
-      <p class="text-gray-700 mb-4 leading-relaxed">
-        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
-        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-      </p>
+
       <h4 class="text-lg font-semibold text-[#003f88] mt-6 mb-3">Layanan Antenatal Care:</h4>
       <ul class="list-disc list-inside text-gray-700 space-y-2">
         <li>Pemeriksaan rutin selama kehamilan</li>
@@ -351,14 +271,7 @@ const PROMO_DATA = [
         Layanan Imun Booster kami menyediakan injeksi vitamin dan nutrisi esensial untuk meningkatkan daya tahan tubuh dan kebugaran secara instan. 
         Cocok untuk mereka yang memiliki aktivitas tinggi atau ingin menjaga kesehatan preventif.
       </p>
-      <p class="text-gray-700 mb-4 leading-relaxed">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-      </p>
-      <p class="text-gray-700 mb-4 leading-relaxed">
-        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
-        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-      </p>
+
       <h4 class="text-lg font-semibold text-[#003f88] mt-6 mb-3">Komposisi Imun Booster:</h4>
       <ul class="list-disc list-inside text-gray-700 space-y-2">
         <li>Vitamin C dan Vitamin D tinggi</li>
@@ -485,22 +398,7 @@ export default function PromoDetailPage() {
               }}
             />
 
-            {/* Call to Action */}
-            <div className="mt-10 flex flex-col sm:flex-row gap-4">
-              <a
-                href="https://wa.me/6282246232527"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#25d366] hover:bg-[#1da851] text-white font-semibold transition-colors"
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M12.004 2c-5.51 0-9.993 4.483-9.993 9.993 0 1.763.457 3.49 1.33 5.025L2 22l5.13-.1.345.198a9.936 9.936 0 004.53 1.095c5.51 0 10.01-4.503 10.01-10.013C22.015 6.483 17.514 2 12.004 2zm5.83 14.286c-.24.674-1.39 1.31-1.926 1.373-.47.054-.933.076-2.733-.67-2.307-.954-3.794-3.3-3.91-3.453-.114-.153-.934-1.246-.934-2.375 0-1.13.59-1.684.8-.19.21-.237.457-.297.61-.297.152 0 .304-.002.435.003.14.004.326-.053.494.354.17.414.586 1.425.637 1.53.05.105.085.228.015.367-.07.14-.105.228-.21.353-.105.127-.223.284-.317.38-.105.106-.216.222-.093.434.123.21.547.904 1.173 1.463.805.717 1.482.94 1.692 1.047.21.107.333.09.456-.053.123-.142.525-.612.666-.82.14-.21.28-.175.474-.105.193.07 1.227.58 1.437.684.21.105.35.158.403.246.053.09.053.518-.187 1.19z" />
-                </svg>
-                Hubungi WhatsApp
-              </a>
-            </div>
+            
           </div>
         </div>
 
