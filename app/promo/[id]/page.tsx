@@ -422,7 +422,10 @@ export default function PromoDetailPage() {
                 }).map((_, groupIndex) => {
                   const groupKey = `group-${groupIndex}-${relatedPromos[groupIndex * relatedItemsPerGroup]?.id || 0}`;
                   return (
-                    <div key={groupKey} className="w-full shrink-0 flex gap-4">
+                    <div
+                      key={groupKey}
+                      className="w-full shrink-0 flex gap-1 px-2 justify-center"
+                    >
                       {relatedPromos
                         .slice(
                           groupIndex * relatedItemsPerGroup,
@@ -433,7 +436,7 @@ export default function PromoDetailPage() {
                             key={`promo-${relatedPromo.id}`}
                             className="w-1/2 md:w-1/2 lg:w-1/4 shrink-0"
                           >
-                            <article className="bg-white border border-gray-100 flex flex-col h-full shadow-lg overflow-hidden transition-all duration-300">
+                            <article className="bg-white border border-gray-100 flex flex-col h-full shadow-lg overflow-hidden transition-all duration-300 scale-90 hover:scale-100 origin-center">
                               <div className="relative aspect-square w-full overflow-hidden bg-gray-50">
                                 <Image
                                   src={relatedPromo.image}
