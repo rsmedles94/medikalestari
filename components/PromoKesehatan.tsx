@@ -162,23 +162,23 @@ const AWARDS_DATA = [
 // ==========================================
 const STATS_DATA = [
   {
-    icon: "/images/icons/location.svg",
-    number: "2k",
-    text: "Pasien Rawat Inap pernah ditangani",
-  },
-  {
-    icon: "/images/icons/patient.svg",
-    number: "8K+",
-    text: "Pasien Poliklinik pernah ditangani",
-  },
-  {
     icon: "/images/icons/doctor.svg",
     number: "47",
     text: "Tenaga Medis Profesional",
   },
   {
+    icon: "/images/icons/poly.svg",
+    number: "8K+",
+    text: "Pasien Poliklinik pernah ditangani",
+  },
+  {
+    icon: "/images/icons/patient.svg",
+    number: "2k",
+    text: "Pasien Rawat Inap pernah ditangani",
+  },
+  {
     icon: "/images/icons/bed.svg",
-    number: "111",
+    number: "100+",
     text: "Kamar Perawatan Modern",
   },
 ];
