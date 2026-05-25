@@ -144,7 +144,7 @@ const ServiceSection = () => {
         <div className="mt-10 text-center">
           <Link
             href="/kisah-pasien"
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-[#002878] hover:underline transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-[#00796e] hover:underline transition-colors"
           >
             <span>Lihat Cerita Lainnya</span>
             <svg

@@ -132,7 +132,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({ isOpen, onClose }) => {
                         <li key={doctor.id}>
                           <button
                             onClick={() => handleDoctorClick(doctor.id)}
-                            className="w-full group flex gap-4 p-4 bg-white hover:shadow-md transition-all text-left border border-gray-200 hover:border-[#00796e]"
+                            className="w-full group flex gap-4 p-4 bg-white hover:shadow-md transition-all text-left border border-gray-200"
                           >
                             <div className="w-16 h-16 rounded-full overflow-hidden shrink-0 bg-gray-200">
                               <Image
@@ -147,7 +147,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({ isOpen, onClose }) => {
                               />
                             </div>
                             <div className="flex-1">
-                              <h4 className="text-sm font-bold text-[#00796e] group-hover:text-[#015A85] transition-colors">
+                              <h4 className="text-sm font-bold text-[#00796e] transition-colors">
                                 {doctor.name}
                               </h4>
                               <p className="text-xs text-gray-500 font-medium">
@@ -183,7 +183,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({ isOpen, onClose }) => {
                   <li key={specialty}>
                     <button
                       onClick={() => handleSpecialtyClick(specialty)}
-                      className="w-full group flex justify-between items-center text-[13px] text-[#00796e] font-medium hover:text-[#001e3d] transition-colors border-b border-transparent hover:border-[#00796e] pb-1 text-left"
+                      className="w-full group flex justify-between items-center text-[13px] text-[#00796e] font-medium hover:text-[#136f63] transition-colors border-b border-transparent hover:border-[#00796e] pb-1 text-left"
                     >
                       <span>{specialty}</span>
                       <ArrowRight

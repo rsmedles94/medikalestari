@@ -345,7 +345,7 @@ const PromoKesehatan = () => {
           </div>
 
           {/* POSISI TURUN KE BAWAH STATS: SECTION GRID MENU UTAMA (TALK A DOCTOR) */}
-          <div className="mb-24 max-w-[1107px] mx-auto bg-white text-[#002878] overflow-hidden shadow-md">
+          <div className="mb-24 max-w-[1107px] mx-auto bg-white text-[#00796e] overflow-hidden shadow-md">
             <div className="grid grid-cols-1 md:grid-cols-3 border-b border-gray-200 last:border-none">
               {FEATURES_DATA.map((feat, index) => (
                 <a
@@ -369,7 +369,7 @@ const PromoKesehatan = () => {
                   </div>
                   <div className="shrink-0 pl-2">
                     <svg
-                      className="w-3 h-3 text-[#002878]"
+                      className="w-3 h-3 text-[#00796e]"
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="3"
@@ -411,7 +411,7 @@ const PromoKesehatan = () => {
               <Link href="/tentang-kami" passHref>
                 <button
                   type="button"
-                  className="px-5 py-2.5 bg-[#e67e22] hover:bg-[#d35400] text-white text-xs font-semibold transition-colors inline-flex items-center gap-2 cursor-pointer"
+                  className="px-5 py-2.5 bg-[#e67e22] hover:bg-[#00796e] text-white text-xs font-semibold transition-colors inline-flex items-center gap-2 cursor-pointer"
                 >
                   Selengkapnya Tentang Kami →
                 </button>
@@ -560,7 +560,7 @@ const PromoKesehatan = () => {
                           <div className="mt-auto">
                             <button
                               type="button"
-                              className="w-full py-2 border border-[#00796e] text-[#00796e] text-[10px] md:text-xs font-semibold transition-all duration-300 hover:bg-[#00796e] hover:text-white"
+                              className="w-full py-2 border bg-[#00796e] text-white text-[10px] md:text-xs font-semibold transition-all duration-300 hover:bg-[#e67e22] hover:text-white"
                             >
                               Selengkapnya →
                             </button>
