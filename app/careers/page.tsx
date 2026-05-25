@@ -262,11 +262,11 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
   return (
     <div className="min-h-screen bg-white">
       {/* BREADCRUMB & TITLE SECTION */}
-      <div className="max-w-293.75 mx-auto px-4 md:px-8 pt-4 md:pt-16 pb-12 md:-mt-8">
+      <div className="max-w-293.75 mx-auto px-4 md:px-8 pt-4 md:pt-16 pb-12 md:-mt-1">
         <nav className="flex items-center gap-1 text-[14px] font-normal text-gray-300 mb-4">
           <Link
             href="/"
-            className="text-black hover:text-gray-300 transition-colors"
+            className="text-black/60 hover:text-gray-300 transition-colors"
           >
             Beranda
           </Link>
@@ -277,7 +277,7 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
 
       {/* Position Photos Carousel */}
       {config?.position_photos && config.position_photos.length > 0 && (
-        <div className="max-w-3xl mx-auto px-4 py-12">
+        <div className="max-w-3xl mx-auto px-4 py-1">
           <h2 className="text-2xl font-bold text-center mb-8 text-gray-800">
             Posisi Lowongan yang Tersedia
           </h2>
@@ -285,7 +285,7 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
           <div className="space-y-4">
             {/* Carousel Container */}
             <div
-              className="relative bg-white rounded-xl overflow-hidden border border-gray-200"
+              className="relative bg-white overflow-hidden border border-gray-200"
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
             >
@@ -326,7 +326,7 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
             </div>
 
             {/* Position Name Card */}
-            <div className="bg-white border border-gray-200 rounded-xl p-4">
+            <div className="bg-white border border-gray-200 p-4">
               <p className="text-xl font-bold text-gray-900">
                 {config.position_photos[currentPhotoIndex]?.position_name}
               </p>
@@ -371,7 +371,7 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
           <div className="max-w-2xl mx-auto px-4 py-12 flex justify-center">
             <button
               onClick={() => setShowModal(true)}
-              className="px-8 py-4 bg-[#003f88] text-white rounded-lg font-semibold hover:bg-[#003f88]/90 transition-colors cursor-pointer active:scale-95"
+              className="px-8 py-4 bg-[#003f88] text-white font-semibold hover:bg-[#003f88]/90 transition-colors cursor-pointer active:scale-95"
             >
               Daftar Lowongan
             </button>
