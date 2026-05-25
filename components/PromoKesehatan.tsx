@@ -503,7 +503,7 @@ const PromoKesehatan = () => {
               </div>
 
               {/* Indikator Dot Bulat Navigasi untuk Logo Rekanan */}
-              <div className="mt-6 flex items-center justify-center gap-3">
+              <div className="mt-12 flex items-center justify-center gap-4">
                 {Array.from({ length: totalAwardDots }).map((_, index) => {
                   const isAwardActive = index === activeAwardIndex;
                   return (
@@ -511,20 +511,17 @@ const PromoKesehatan = () => {
                       key={index}
                       type="button"
                       onClick={() => handleAwardDotClick(index)}
-                      className="focus:outline-none flex items-center justify-center h-6 w-6 relative"
+                      className="focus:outline-none flex items-center justify-center h-8 w-8 relative"
                       aria-label={`Go to award page ${index + 1}`}
                     >
-                      {/* Pusat Dot */}
                       <motion.div
                         animate={{
-                          backgroundColor: isAwardActive
-                            ? "#ffffff"
-                            : "rgba(255, 255, 255, 0.4)",
+                          backgroundColor: isAwardActive ? "#ffffff" : "#003f88",
                         }}
                         transition={{ duration: 0.2 }}
-                        className="absolute w-2.5 h-2.5 rounded-full z-10 pointer-events-none"
+                        className="absolute w-4 h-4 rounded-full z-10 pointer-events-none"
                       />
-                      {/* Ring Ring Aktif */}
+
                       <motion.div
                         initial={{ scale: 0.4, opacity: 0 }}
                         animate={{
@@ -536,7 +533,7 @@ const PromoKesehatan = () => {
                           stiffness: 280,
                           damping: 22,
                         }}
-                        className="absolute w-5 h-5 rounded-full border-2 border-white bg-transparent z-0 origin-center pointer-events-none"
+                        className="absolute w-8 h-8 rounded-full border-[5px] border-[#003f88] bg-white z-0 origin-center pointer-events-none"
                       />
                     </button>
                   );
@@ -594,12 +591,14 @@ const PromoKesehatan = () => {
                             {item.description}
                           </p>
                           <div className="mt-auto">
-                            <button
-                              type="button"
-                              className="w-full py-2 border bg-[#003f88] text-white text-[10px] md:text-xs font-semibold transition-all duration-300 hover:bg-[#e67e22] hover:text-white"
-                            >
-                              Selengkapnya →
-                            </button>
+                            <Link href={`/promo/${item.id}`} passHref>
+                              <button
+                                type="button"
+                                className="w-full py-2 border bg-[#003f88] text-white text-[10px] md:text-xs font-semibold transition-all duration-300 hover:bg-[#e67e22] hover:text-white"
+                              >
+                                Selengkapnya →
+                              </button>
+                            </Link>
                           </div>
                         </div>
                       </article>

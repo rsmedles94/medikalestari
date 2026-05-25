@@ -138,6 +138,10 @@ const AdminCareersPage = () => {
         setMessage({ type: "error", text: "File harus berupa gambar" });
         return;
       }
+      // Clean up previous blob URL to prevent memory leaks
+      if (newPositionPreview) {
+        URL.revokeObjectURL(newPositionPreview);
+      }
       setNewPositionPhoto(file);
       setNewPositionPreview(URL.createObjectURL(file));
     }
@@ -187,6 +191,10 @@ const AdminCareersPage = () => {
         // Reset form
         setNewPositionPhoto(null);
         setNewPositionName("");
+        // Clean up blob URL to prevent memory leaks
+        if (newPositionPreview) {
+          URL.revokeObjectURL(newPositionPreview);
+        }
         setNewPositionPreview("");
         const photoInput = document.getElementById(
           "position-photo-input",

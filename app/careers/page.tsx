@@ -293,13 +293,45 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
                 className="relative w-full bg-gradient-to-b from-gray-50 to-white flex items-center justify-center"
                 style={{ aspectRatio: "4/3" }}
               >
-                <Image
-                  src={config.position_photos[currentPhotoIndex]?.image_url}
-                  alt={config.position_photos[currentPhotoIndex]?.position_name}
-                  width={600}
-                  height={450}
-                  className="max-h-full max-w-full object-contain p-6"
-                />
+                {config.position_photos[currentPhotoIndex]?.image_url ? (
+                  <img
+                    src={config.position_photos[currentPhotoIndex]?.image_url}
+                    alt={
+                      config.position_photos[currentPhotoIndex]?.position_name
+                    }
+                    className="max-h-full max-w-full object-contain p-6"
+                    onError={(e) => {
+                      const imageUrl =
+                        config.position_photos[currentPhotoIndex]?.image_url;
+                      console.error("Failed to load image:", imageUrl);
+                      // Check if it's a blob URL (temporary, invalid)
+                      if (imageUrl?.startsWith("blob:")) {
+                        console.warn(
+                          "Blob URL detected - image is temporary and may have expired",
+                        );
+                        e.currentTarget.style.display = "none";
+                        // Show error message
+                        const parent = e.currentTarget.parentElement;
+                        if (
+                          parent &&
+                          !parent.querySelector("[data-error-message]")
+                        ) {
+                          const errorDiv = document.createElement("div");
+                          errorDiv.setAttribute("data-error-message", "true");
+                          errorDiv.className = "text-center text-gray-500";
+                          errorDiv.innerHTML =
+                            '<p>Gambar tidak dapat dimuat</p><p class="text-xs mt-1">Silakan hubungi admin untuk mengunggah ulang gambar</p>';
+                          parent.appendChild(errorDiv);
+                        }
+                      } else {
+                        // For other errors, just hide the image
+                        e.currentTarget.style.display = "none";
+                      }
+                    }}
+                  />
+                ) : (
+                  <div className="text-gray-400">Gambar tidak tersedia</div>
+                )}
               </div>
 
               {/* Navigation Buttons */}
