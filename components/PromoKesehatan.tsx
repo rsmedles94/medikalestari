@@ -99,7 +99,7 @@ const FEATURES_DATA = [
   {
     icon: "/images/icons/tiktok.svg",
     title: "RS Medika Lestari",
-    link: "https://www.tiktok.com/@rsmedikalestari",
+    link: "https://www.tiktok.com/@rsmedikalestariciledug",
   },
 ];
 
@@ -114,24 +114,24 @@ const AWARDS_DATA = [
   },
   {
     id: 2,
-    src: "/images/awards/award2.png",
+    src: "/images/awards/award2.jpeg",
     alt: "Best Nursing Homes US News",
   },
   { id: 3, src: "/images/awards/award3.png", alt: "Best Hospitals US News" },
   {
     id: 4,
-    src: "/images/awards/award4.png",
+    src: "/images/awards/award4.jpeg",
     alt: "LGBTQ Healthcare Equality Leader",
   },
   {
     id: 5,
-    src: "/images/awards/award5.png",
+    src: "/images/awards/award5.jpeg",
     alt: "Lown Institute Hospitals Index",
   },
-  { id: 6, src: "/images/awards/award6.png", alt: "Healthgrades Gold Plus" },
+  { id: 6, src: "/images/awards/award6.jpeg", alt: "Healthgrades Gold Plus" },
   {
     id: 7,
-    src: "/images/awards/award7.png",
+    src: "/images/awards/award7.jpeg",
     alt: "Designated a Baby Friendly Hospital",
   },
   {
@@ -147,41 +147,15 @@ const AWARDS_DATA = [
   // 9 Item Tambahan untuk melengkapi menjadi 18 item slider
   {
     id: 10,
-    src: "/images/awards/award1.png",
+    src: "/images/awards/award10.jpeg",
     alt: "America's Best Nursing Homes 2",
   },
   {
     id: 11,
-    src: "/images/awards/award2.png",
+    src: "/images/awards/award11.png",
     alt: "Best Nursing Homes US News 2",
   },
-  { id: 12, src: "/images/awards/award3.png", alt: "Best Hospitals US News 2" },
-  {
-    id: 13,
-    src: "/images/awards/award4.png",
-    alt: "LGBTQ Healthcare Equality Leader 2",
-  },
-  {
-    id: 14,
-    src: "/images/awards/award5.png",
-    alt: "Lown Institute Hospitals Index 2",
-  },
-  { id: 15, src: "/images/awards/award6.png", alt: "Healthgrades Gold Plus 2" },
-  {
-    id: 16,
-    src: "/images/awards/award7.png",
-    alt: "Designated a Baby Friendly Hospital 2",
-  },
-  {
-    id: 17,
-    src: "/images/awards/award8.png",
-    alt: "American College of Surgeons 2",
-  },
-  {
-    id: 18,
-    src: "/images/awards/award9.png",
-    alt: "The Joint Commission Gold Seal 2",
-  },
+
 ];
 
 // ==========================================
@@ -352,7 +326,7 @@ const PromoKesehatan = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12 text-center items-start mb-20">
             {STATS_DATA.map((stat, index) => (
               <div key={index} className="flex flex-col items-center">
-                <div className="mb-3 w-12 h-12 flex items-center justify-center relative">
+                <div className="mb-3 w-15 h-15 flex items-center justify-center relative">
                   <Image
                     src={stat.icon}
                     alt={stat.text}
@@ -361,7 +335,7 @@ const PromoKesehatan = () => {
                     className="object-contain brightness-0 invert"
                   />
                 </div>
-                <div className="text-4xl md:text-4xl font-semibold mb-1 leading-none text-white">
+                <div className="text-4xl md:text-5xl font-semibold mb-1 leading-none text-white">
                   {stat.number}
                 </div>
                 <p className="text-xs uppercase font-medium text-white/90 max-w-[180px] mx-auto leading-normal">
@@ -458,7 +432,7 @@ const PromoKesehatan = () => {
                     {AWARDS_DATA.slice(0, 9).map((award) => (
                       <div
                         key={award.id}
-                        className="bg-white p-2 aspect-[4/3] flex items-center justify-center shadow transition-all duration-300 hover:opacity-90"
+                        className="bg-white p-2 aspect-[4/3] flex items-center justify-center shadow transition-all duration-300"
                       >
                         <div className="relative w-full h-full">
                           <Image
@@ -544,7 +518,7 @@ const PromoKesehatan = () => {
       <section className="relative z-10 w-full pb-20 px-4 sm:px-6 lg:px-8">
         <div className="absolute inset-x-0 bottom-0 top-32 bg-white z-0" />
 
-        <div className="relative z-10 max-w-[1180px] mx-auto md:px-8">
+        <div className="relative z-10 max-w-[1205px] mx-auto md:px-8">
           <div className="w-full overflow-hidden">
             <motion.div
               animate={controls}

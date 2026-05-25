@@ -55,6 +55,7 @@ const MadingSection = () => {
         console.error("Error loading content:", error);
         setAllData([]);
       } finally {
+        /* PERBAIKAN: Diubah dari loading(false) menjadi setLoading(false) */
         setLoading(false);
       }
     };
@@ -67,11 +68,12 @@ const MadingSection = () => {
   );
 
   return (
-    <section className="w-full bg-[#173A87] py-8 md:py-16 px-4 md:px-8">
+    /* Background menggunakan gradient: setengah ke atas transparan, setengah ke bawah biru */
+    <section className="w-full bg-gradient-to-b from-transparent from-50% to-[#173A87] to-50% py-8 md:py-16 px-4 md:px-8">
       <div className="max-w-[1110px] mx-auto">
-        {/* Header Navigation */}
+        {/* Header Navigation - Judul & Tab Berwarna Biru */}
         <div className="flex items-center justify-between mb-8 ">
-          <h2 className="text-2xl md:text-3xl font-semibold text-white tracking-tight">
+          <h2 className="text-2xl md:text-3xl font-semibold text-[#173A87] tracking-tight">
             Berita Terbaru
           </h2>
 
@@ -80,20 +82,20 @@ const MadingSection = () => {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`pb-4 px-1 text-xs md:text-sm font-normal transition-all relative ${
-                  activeTab === tab ? "text-white" : "text-gray-400"
+                className={`pb-4 px-1 text-xs md:text-sm font-semibold transition-all relative ${
+                  activeTab === tab ? "text-[#173A87]" : "text-gray-400"
                 }`}
               >
                 {tab.toUpperCase()}
                 {activeTab === tab && (
-                  <span className="absolute bottom-0 left-0 w-full h-[3px] bg-white" />
+                  <span className="absolute bottom-0 left-0 w-full h-[3px] bg-[#173A87]" />
                 )}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Scrollable Container - Mobile 2 Cards */}
+        {/* Scrollable Container */}
         <div
           ref={scrollRef}
           onMouseDown={handleMouseDown}
@@ -205,7 +207,8 @@ const MadingSection = () => {
                       </div>
                     ) : (
                       /* --- Event --- */
-                      <div className="bg-white overflow-hidden border border-gray-100 flex flex-col group transition-all hover:shadow-md">
+                      /* min-h memaksa kontainer putih memanjang ke bawah secara konsisten */
+                      <div className="bg-white overflow-hidden border border-gray-100 flex flex-col group transition-all hover:shadow-md min-h-[400px] md:min-h-[450px] h-full">
                         <a
                           href={item.link || "#"}
                           target="_blank"
@@ -215,21 +218,21 @@ const MadingSection = () => {
                           <img
                             src={item.image_url}
                             alt=""
-                            className="w-full h-auto transition-transform duration-300 group-hover:scale-105"
+                            className="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105"
                           />
                         </a>
 
-                        <div className="p-3 md:p-4 flex flex-col flex-grow">
+                        <div className="p-3 md:p-4 pt-5 pb-5 flex flex-col flex-grow">
                           <span className="text-slate-500 text-[8px] md:text-[9px] font-bold uppercase mb-1 md:mb-2 tracking-widest">
                             EVENT
                           </span>
-                          <h3 className="text-xs md:text-sm font-bold text-slate-900 mb-1 md:mb-2 leading-snug group-hover:text-[#173A87] transition-colors line-clamp-2">
+                          <h3 className="text-xs md:text-sm font-bold text-slate-900 mb-2 md:mb-3 leading-snug group-hover:text-[#173A87] transition-colors line-clamp-2">
                             {item.title}
                           </h3>
-                          <p className="text-[9px] md:text-[10px] text-slate-500 mb-2 md:mb-3 flex-grow leading-relaxed line-clamp-1 md:line-clamp-2">
+                          <p className="text-[9px] md:text-[10px] text-slate-500 mb-4 md:mb-5 flex-grow leading-relaxed line-clamp-3 md:line-clamp-none">
                             {item.description}
                           </p>
-                          <div className="flex items-center gap-1 md:gap-2 text-gray-500 font-bold text-[8px] md:text-[9px] mb-2 md:mb-3 uppercase">
+                          <div className="flex items-center gap-1 md:gap-2 text-gray-500 font-bold text-[8px] md:text-[9px] mb-3 md:mb-4 uppercase mt-auto">
                             <Calendar size={10} />{" "}
                             {item.start_date || item.date}
                           </div>
