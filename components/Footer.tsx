@@ -65,7 +65,7 @@ const menuItems = [
 ];
 
 const FooterContent = () => (
-  <div className="bg-[#153d6f] text-white">
+  <div className="bg-[#003f88] text-white">
     {/* --- MAIN SECTION --- */}
     <div className="max-w-[1200px] mx-auto px-8 md:px-16 py-16 md:py-24">
       <div className="flex flex-col lg:flex-row justify-between items-start gap-12 mb-20">
@@ -107,15 +107,15 @@ const FooterContent = () => (
     </div>
 
     {/* --- BOTTOM BAR  --- */}
-    <div className="bg-white text-[#153d6f] py-10 border-t">
+    <div className="bg-white text-[#003f88] py-6 border-t">
       <div className="max-w-[1200px] mx-auto px-8 md:px-16 flex flex-col md:flex-row justify-between items-center gap-8">
         {/* Copyright */}
-        <div className="text-sm font-medium opacity-80">
+        <div className="text-sm font-normal opacity-80 text-black">
           © {new Date().getFullYear()} RS Medika Lestari. All rights reserved.
         </div>
 
         {/* Links Kecil di Tengah */}
-        <div className="flex gap-6 text-sm font-medium">
+        <div className="flex gap-6 text-sm font-normal opacity-80 text-black">
           <Link href="/privacy" className="hover:underline">
             Privacy Policy
           </Link>

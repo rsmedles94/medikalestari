@@ -161,7 +161,7 @@ const AdminDoctorsPage = () => {
               resetForm();
               setShowModal(true);
             }}
-            className="flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-lg hover:[#153d6f] transition-colors cursor-pointer"
+            className="flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-lg hover:[#003f88] transition-colors cursor-pointer"
           >
             <Plus size={20} />
             Tambah Dokter
@@ -212,7 +212,7 @@ const AdminDoctorsPage = () => {
                     <td className="px-6 py-4 flex gap-2">
                       <button
                         onClick={() => handleEdit(doctor)}
-                        className="p-2 text-[#153d6f] hover:bg-blue-50 rounded-lg transition-colors"
+                        className="p-2 text-[#003f88] hover:bg-blue-50 rounded-lg transition-colors"
                       >
                         <Edit2 size={18} />
                       </button>
@@ -288,7 +288,7 @@ const AdminDoctorsPage = () => {
                     id="doctor-image"
                   />
                   <label htmlFor="doctor-image" className="cursor-pointer">
-                    <div className="mt-2 text-center text-sm text-[#153d6f] hover:text-[#153d6f]">
+                    <div className="mt-2 text-center text-sm text-[#003f88] hover:text-[#003f88]">
                       Pilih Foto
                     </div>
                   </label>
@@ -311,7 +311,7 @@ const AdminDoctorsPage = () => {
                     setFormData({ ...formData, name: e.target.value })
                   }
                   placeholder="dr. Nama Dokter"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#153d6f] outline-none"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003f88] outline-none"
                   required
                 />
               </div>
@@ -330,7 +330,7 @@ const AdminDoctorsPage = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, specialty: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#153d6f] outline-none"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003f88] outline-none"
                   required
                 >
                   <option value="">Pilih Spesialisasi</option>
@@ -375,7 +375,7 @@ const AdminDoctorsPage = () => {
                   }
                   placeholder="Deskripsi singkat dokter"
                   rows={3}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#153d6f] outline-none"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003f88] outline-none"
                 />
               </div>
 
@@ -395,7 +395,7 @@ const AdminDoctorsPage = () => {
                     setFormData({ ...formData, phone: e.target.value })
                   }
                   placeholder="contoh: 08123456789"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#153d6f] outline-none"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003f88] outline-none"
                   required
                 />
               </div>
@@ -416,7 +416,7 @@ const AdminDoctorsPage = () => {
                     setFormData({ ...formData, email: e.target.value })
                   }
                   placeholder="dokter@example.com"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#153d6f] outline-none"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003f88] outline-none"
                   required
                 />
               </div>
@@ -424,7 +424,7 @@ const AdminDoctorsPage = () => {
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full bg-[#153d6f] text-white py-3 rounded-lg hover:bg-[#153d6f] transition-colors font-semibold mt-6"
+                className="w-full bg-[#003f88] text-white py-3 rounded-lg hover:bg-[#003f88] transition-colors font-semibold mt-6"
               >
                 {editingId ? "Perbarui Dokter" : "Tambah Dokter"}
               </button>

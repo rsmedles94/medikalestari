@@ -73,11 +73,11 @@ export default function MedicalCheckup() {
 
                   {/* Content Area */}
                   <div className="p-4 flex flex-col grow">
-                    <h3 className="text-[15px] font-bold text-gray-800 mb-2 leading-tight group-hover:text-[#153d6f] transition-colors">
+                    <h3 className="text-[15px] font-bold text-gray-800 mb-2 leading-tight group-hover:text-[#003f88] transition-colors">
                       {item.title}
                     </h3>
                     <div className="mt-auto">
-                      <p className="text-[#153d6f] font-bold text-base">
+                      <p className="text-[#003f88] font-bold text-base">
                         Rp.
                         {Number(item.price.replace(/\D/g, "")).toLocaleString(
                           "id-ID",

@@ -6,7 +6,7 @@ import { useAuth } from "@/context/AuthProvider";
 import { AdminPageSkeleton } from "@/components/AdminSkeleton";
 import { Users, Calendar, ChevronRight } from "lucide-react";
 
-// Mengganti warna background ke [#153d6f] dan teks ke putih
+// Mengganti warna background ke [#003f88] dan teks ke putih
 const ScaleButton = ({
   onClick,
   children,

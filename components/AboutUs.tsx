@@ -164,10 +164,10 @@ const AboutUs = () => {
 
                 {/* Layer Overlay Biru (Transparansi) */}
                 <div
-                  className="absolute inset-0 z-10 bg-[#001e3d]/75 transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] 
+                  className="absolute inset-0 z-10 bg-[#003f88]/75 transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] 
                              md:[clip-path:polygon(0_85%,100%_70%,100%_100%,0%_100%)] 
                              md:group-hover:[clip-path:polygon(0_0,100%_0,100%_100%,0%_100%)]
-                             md:group-hover:bg-[#001e3d]/85"
+                             md:group-hover:bg-[#003f88]/85"
                 />
 
                 {/* Konten Teks */}
@@ -209,7 +209,7 @@ const AboutUs = () => {
           {partners.map((item) => (
             <div
               key={item}
-              className="flex items-center justify-center p-4 border border-slate-100 rounded-xl bg-white shadow-sm h-32 relative"
+              className="flex items-center justify-center p-4 border border-slate-100 bg-white shadow-sm h-32 relative"
             >
               {!isImageLoaded(`partner-${item}`) && (
                 <ImageSkeleton width="w-24" height="h-24" />
