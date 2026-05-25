@@ -33,6 +33,7 @@ import { useSearchModal } from "@/context/SearchModalContext";
 import SearchDropdown from "./SearchDropdown";
 import MobileSearchModal from "./MobileSearchModal";
 import DropdownMenuItem from "./DropdownMenuItem";
+import BookingForm from "./BookingForm";
 import { usePathname, useRouter } from "next/navigation";
 
 interface NavbarClientProps {
@@ -43,6 +44,8 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const [showBookingForm, setShowBookingForm] = useState(false);
 
   const { isSearchOpen, openSearch, closeSearch } = useSearchModal();
 
@@ -282,14 +285,12 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               {/* Social Media Icons - Kiri */}
               <div className="flex items-center gap-4">
                 {/* Buat Janji Temu Pill */}
-                <a
-                  href="https://wa.me/6215858585858"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="ml-6 px-4 py-2 bg-[#003f88]  text-white font-medium text-sm transition-colors duration-200 active:scale-95"
+                <button
+                  onClick={() => setShowBookingForm(true)}
+                  className="ml-6 px-4 py-2 bg-[#003f88]  text-white font-medium text-sm transition-colors duration-200 active:scale-95 cursor-pointer"
                 >
                   Buat Janji Temu
-                </a>
+                </button>
               </div>
             </div>
 
@@ -830,6 +831,15 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
           (021) 585 4858
         </a>
       </div>
+
+      {/* Booking Form Modal */}
+      {showBookingForm && (
+        <BookingForm
+          doctorName="RS Medika Lestari"
+          specialty="Konsultasi Umum"
+          onClose={() => setShowBookingForm(false)}
+        />
+      )}
     </nav>
   );
 };
