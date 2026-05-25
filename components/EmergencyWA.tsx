@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const EmergencyWA = () => {
@@ -10,16 +10,14 @@ const EmergencyWA = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
+  // Ref untuk menyimpan posisi scroll terakhir guna mendeteksi arah scroll
+  const lastScrollY = useRef(0);
+
   // Check jika mobile / desktop berdasarkan ukuran layar
   useEffect(() => {
     const checkMobile = () => {
       const mobileStatus = window.innerWidth < 768;
       setIsMobile(mobileStatus);
-
-      // Jika di desktop, pastikan selalu terbuka (tidak collapsed)
-      if (!mobileStatus) {
-        setIsCollapsed(false);
-      }
     };
 
     checkMobile();
@@ -27,37 +25,30 @@ const EmergencyWA = () => {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Logika Scroll Mobile: Ketika discroll (ke atas/bawah), badge langsung hide
+  // Logika Scroll Baru: Hanya sembunyikan jika scroll ke bawah & posisi > 10
   useEffect(() => {
-    if (!isMobile) return;
-
     const handleScroll = () => {
-      // Hanya triger collapse jika posisi scroll saat ini bermakna (bukan glitch di paling atas)
-      if (window.scrollY > 10) {
+      const currentScrollY = window.scrollY;
+
+      // Jika posisi scroll di paling atas, biarkan tetap terbuka
+      if (currentScrollY <= 10) {
+        lastScrollY.current = currentScrollY;
+        return;
+      }
+
+      // Deteksi arah: jika currentScrollY lebih besar dari lastScrollY, berarti scroll ke BAWAH
+      if (currentScrollY > lastScrollY.current) {
         setIsCollapsed(true);
       }
+      // Jika scroll ke ATAS, kita diamkan (tidak dipaksa hide)
+
+      // Update posisi scroll terakhir
+      lastScrollY.current = currentScrollY;
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [isMobile]);
-
-  // Observer untuk Footer
-  useEffect(() => {
-    const footer =
-      document.querySelector("footer") || document.getElementById("footer");
-    if (!footer) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsFooterVisible(entry.isIntersecting);
-      },
-      { threshold: 0.1 },
-    );
-
-    observer.observe(footer);
-    return () => observer.disconnect();
-  }, [pathname]);
+  }, []);
 
   if (pathname !== "/") return null;
 
@@ -65,14 +56,14 @@ const EmergencyWA = () => {
     <AnimatePresence>
       {!isFooterVisible && (
         <div className="fixed right-4 bottom-60 md:bottom-40 z-9999 flex flex-col items-end">
-          {/* Tombol Chevron - Hanya muncul di mobile (md:hidden) */}
+          {/* Tombol Chevron - Muncul di semua device */}
           <motion.button
             onClick={() => setIsCollapsed(!isCollapsed)}
             animate={{
               x: isCollapsed ? 12 : 0,
             }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="w-5 h-5 bg-black/20 text-white flex items-center justify-center rounded-full border border-white/20 active:scale-90 z-20 -mb-3 mr-1 md:hidden"
+            className="w-5 h-5 bg-black/20 text-white flex items-center justify-center rounded-full border border-white/20 active:scale-90 z-20 -mb-3 mr-1"
           >
             <motion.span
               animate={{ rotate: isCollapsed ? 180 : 0 }}
@@ -94,18 +85,18 @@ const EmergencyWA = () => {
             </motion.span>
           </motion.button>
 
-          {/* Badge WhatsApp - Di desktop selalu stay penuh */}
+          {/* Badge WhatsApp - Animasi hide/collapse untuk semua ukuran layar */}
           <motion.div
             initial={false}
             animate={{
-              x: isMobile && isCollapsed ? 100 : 0,
-              opacity: isMobile && isCollapsed ? 0.6 : 1,
+              x: isCollapsed ? 100 : 0,
+              opacity: isCollapsed ? 0.6 : 1,
             }}
             transition={{
               type: "spring",
               stiffness: 200,
               damping: 25,
-              delay: isMobile && isCollapsed ? 0.2 : 0,
+              delay: isCollapsed ? 0.2 : 0,
             }}
             className="z-10"
           >
