@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { AdminPageSkeleton } from "@/components/AdminSkeleton";
 import { useAuth } from "@/context/AuthProvider";
 import { useRouter } from "next/navigation";
@@ -56,11 +56,11 @@ const AdminCareersPage = () => {
     useState<CareerRegistration | null>(null);
   const [showDetail, setShowDetail] = useState(false);
 
-  const loadData = async () => {
+  const loadData = useCallback(async (signal?: AbortSignal) => {
     try {
       const [configRes, regsRes] = await Promise.all([
-        fetch("/api/careers/config"),
-        fetch("/api/careers/registrations"),
+        fetch("/api/careers/config", { signal }),
+        fetch("/api/careers/registrations", { signal }),
       ]);
 
       if (configRes.ok) {
@@ -97,6 +97,10 @@ const AdminCareersPage = () => {
         setRegistrations(regsData);
       }
     } catch (err) {
+      if (err instanceof Error && err.name === "AbortError") {
+        console.log("Data loading was cancelled");
+        return;
+      }
       console.error("Error loading data:", err);
       setMessage({
         type: "error",
@@ -105,7 +109,7 @@ const AdminCareersPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   // Load initial data
   useEffect(() => {
@@ -115,8 +119,15 @@ const AdminCareersPage = () => {
       return;
     }
 
-    loadData();
-  }, [authLoading, isAuthenticated, router]);
+    const abortController = new AbortController();
+    // Async function wrapped in IIFE to properly handle async operations
+    // This is a recommended React pattern for loading data in useEffect
+    (async () => {
+      await loadData(abortController.signal);
+    })();
+
+    return () => abortController.abort();
+  }, [authLoading, isAuthenticated, router, loadData]);
 
   const handlePositionPhotoChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -132,29 +143,66 @@ const AdminCareersPage = () => {
     }
   };
 
-  const handleAddPositionPhoto = () => {
+  const handleAddPositionPhoto = async () => {
     if (newPositionPhoto && newPositionName.trim()) {
-      const newPhoto: PositionPhoto = {
-        id: `temp-${Date.now()}`,
-        image_url: newPositionPreview,
-        position_name: newPositionName.trim(),
-        order: configForm.position_photos.length,
-      };
+      setSubmitting(true);
+      try {
+        // Upload gambar terlebih dahulu
+        const formData = new FormData();
+        formData.append("file", newPositionPhoto);
+        formData.append(
+          "path",
+          `careers/positions/${Date.now()}-${newPositionPhoto.name}`,
+        );
 
-      setConfigForm((prev) => ({
-        ...prev,
-        position_photos: [...prev.position_photos, newPhoto],
-      }));
+        const uploadRes = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
 
-      // Reset form
-      setNewPositionPhoto(null);
-      setNewPositionName("");
-      setNewPositionPreview("");
-      const photoInput = document.getElementById(
-        "position-photo-input",
-      ) as HTMLInputElement;
-      if (photoInput) {
-        photoInput.value = "";
+        if (!uploadRes.ok) {
+          const uploadError = await uploadRes.json();
+          throw new Error(uploadError.error || "Gagal upload gambar posisi");
+        }
+
+        const uploadData = await uploadRes.json();
+
+        const newPhoto: PositionPhoto = {
+          id: `temp-${Date.now()}`,
+          image_url: uploadData.url, // Gunakan URL yang sudah di-upload, bukan blob URL
+          position_name: newPositionName.trim(),
+          order: configForm.position_photos.length,
+        };
+
+        setConfigForm((prev) => ({
+          ...prev,
+          position_photos: [...prev.position_photos, newPhoto],
+        }));
+
+        setMessage({
+          type: "success",
+          text: "Foto posisi berhasil ditambahkan",
+        });
+
+        // Reset form
+        setNewPositionPhoto(null);
+        setNewPositionName("");
+        setNewPositionPreview("");
+        const photoInput = document.getElementById(
+          "position-photo-input",
+        ) as HTMLInputElement;
+        if (photoInput) {
+          photoInput.value = "";
+        }
+      } catch (err) {
+        console.error("Error adding position photo:", err);
+        setMessage({
+          type: "error",
+          text:
+            err instanceof Error ? err.message : "Gagal menambah foto posisi",
+        });
+      } finally {
+        setSubmitting(false);
       }
     }
   };
@@ -186,47 +234,13 @@ const AdminCareersPage = () => {
     setMessage(null);
 
     try {
-      // Upload position photos
-      const processedPhotos: PositionPhoto[] = [];
-      let uploadedNewPhoto = false;
-
-      for (const photo of configForm.position_photos) {
-        let imageUrl = photo.image_url;
-
-        // Only upload if it's a temp preview (starts with blob) and file exists
-        if (
-          imageUrl.startsWith("blob:") &&
-          newPositionPhoto &&
-          !uploadedNewPhoto
-        ) {
-          const formData = new FormData();
-          formData.append("file", newPositionPhoto);
-          formData.append(
-            "path",
-            `careers/positions/${Date.now()}-${newPositionPhoto.name}`,
-          );
-
-          try {
-            const uploadRes = await fetch("/api/upload", {
-              method: "POST",
-              body: formData,
-            });
-
-            if (uploadRes.ok) {
-              const uploadData = await uploadRes.json();
-              imageUrl = uploadData.url || imageUrl;
-              uploadedNewPhoto = true;
-            }
-          } catch (err) {
-            console.error("Error uploading position photo:", err);
-          }
-        }
-
-        processedPhotos.push({
+      // Semua gambar sudah di-upload saat ditambahkan, jadi kita langsung simpan
+      const processedPhotos: PositionPhoto[] = configForm.position_photos.map(
+        (photo, index) => ({
           ...photo,
-          image_url: imageUrl,
-        });
-      }
+          order: index,
+        }),
+      );
 
       const updateData = {
         id: config?.id || "default-config",
@@ -483,12 +497,23 @@ const AdminCareersPage = () => {
                           type="button"
                           onClick={handleAddPositionPhoto}
                           disabled={
-                            !newPositionPhoto || !newPositionName.trim()
+                            !newPositionPhoto ||
+                            !newPositionName.trim() ||
+                            submitting
                           }
                           className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
                         >
-                          <Plus size={18} />
-                          Tambah Foto Posisi
+                          {submitting ? (
+                            <>
+                              <Loader2 size={18} className="animate-spin" />
+                              Menambah...
+                            </>
+                          ) : (
+                            <>
+                              <Plus size={18} />
+                              Tambah Foto Posisi
+                            </>
+                          )}
                         </button>
                       </div>
                     </div>
