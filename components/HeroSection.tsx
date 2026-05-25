@@ -686,7 +686,6 @@ const HeroSection = () => {
           <div
             className="
               bg-white 
-              rounded-3xl
               flex flex-col 
               overflow-hidden 
               border border-gray-300
