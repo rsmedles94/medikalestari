@@ -323,14 +323,31 @@ export default function DoctorScheduleGrid({
           {filteredDoctors.map((doctor) => (
             <button
               key={doctor.id}
-              onClick={() => router.push(`/dokter/${doctor.id}`)}
+              onClick={() =>
+                doctor.status !== "cuti" && router.push(`/dokter/${doctor.id}`)
+              }
               onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
+                if (
+                  (e.key === "Enter" || e.key === " ") &&
+                  doctor.status !== "cuti"
+                ) {
                   router.push(`/dokter/${doctor.id}`);
                 }
               }}
-              className="bg-white shadow-lg overflow-hidden cursor-pointer transition-all border border-slate-200 hover:-translate-y-2 hover:shadow-xl hover:border-slate-100 text-left"
+              disabled={doctor.status === "cuti"}
+              className={`relative bg-white shadow-lg overflow-hidden transition-all border border-slate-200 text-left ${
+                doctor.status === "cuti"
+                  ? "opacity-60 cursor-not-allowed"
+                  : "cursor-pointer hover:-translate-y-2 hover:shadow-xl hover:border-slate-100"
+              }`}
             >
+              {doctor.status === "cuti" && (
+                <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+                  <span className="text-5xl md:text-6xl text-red-400 italic font-extrabold opacity-90">
+                    CUTI
+                  </span>
+                </div>
+              )}
               {/* Doctor Header */}
               <div className="bg-slate-50 p-4 border-b border-slate-200">
                 <div className="flex gap-4 items-center">
@@ -466,14 +483,32 @@ export default function DoctorScheduleGrid({
               {paginatedDoctors.map((doctor) => (
                 <button
                   key={doctor.id}
-                  onClick={() => router.push(`/dokter/${doctor.id}`)}
+                  onClick={() =>
+                    doctor.status !== "cuti" &&
+                    router.push(`/dokter/${doctor.id}`)
+                  }
                   onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
+                    if (
+                      (e.key === "Enter" || e.key === " ") &&
+                      doctor.status !== "cuti"
+                    ) {
                       router.push(`/dokter/${doctor.id}`);
                     }
                   }}
-                  className="bg-white border border-slate-200 shadow-sm overflow-hidden active:scale-[0.99] transition-transform text-left"
+                  disabled={doctor.status === "cuti"}
+                  className={`relative bg-white border border-slate-200 shadow-sm overflow-hidden transition-transform text-left ${
+                    doctor.status === "cuti"
+                      ? "opacity-60 cursor-not-allowed"
+                      : "active:scale-[0.99] cursor-pointer"
+                  }`}
                 >
+                  {doctor.status === "cuti" && (
+                    <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+                      <span className="text-4xl md:text-5xl text-red-400 italic font-extrabold opacity-90">
+                        CUTI
+                      </span>
+                    </div>
+                  )}
                   {/* Bagian Atas: Profil Dokter */}
                   <div className="p-4 flex items-center gap-4 bg-slate-50/50">
                     {doctor.image_url && (

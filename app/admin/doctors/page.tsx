@@ -26,9 +26,9 @@ const AdminDoctorsPage = () => {
     specialty: "",
     bio: "",
     image_url: "",
-  phone: "",
-  email: "",
-  status: "hadir",
+    phone: "",
+    email: "",
+    status: "hadir",
   });
   const router = useRouter();
   const { loading: authLoading, isAuthenticated } = useAuth();
@@ -87,8 +87,8 @@ const AdminDoctorsPage = () => {
       const doctorData = {
         ...formData,
         image_url: imageUrl,
-  // ensure status typed to allowed union
-  status: formData.status as "hadir" | "cuti",
+        // ensure status typed to allowed union
+        status: formData.status as "hadir" | "cuti",
       };
 
       if (editingId) {
@@ -117,9 +117,9 @@ const AdminDoctorsPage = () => {
       specialty: doctor.specialty,
       bio: doctor.bio,
       image_url: doctor.image_url,
-  phone: doctor.phone || "",
-  email: doctor.email || "",
-  status: doctor.status || "hadir",
+      phone: doctor.phone || "",
+      email: doctor.email || "",
+      status: doctor.status || "hadir",
     });
     setImagePreview(doctor.image_url);
     setShowModal(true);
@@ -143,9 +143,9 @@ const AdminDoctorsPage = () => {
       specialty: "",
       bio: "",
       image_url: "",
-  phone: "",
-  email: "",
-  status: "hadir",
+      phone: "",
+      email: "",
+      status: "hadir",
     });
     setImageFile(null);
     setImagePreview("");
