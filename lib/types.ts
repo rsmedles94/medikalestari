@@ -5,8 +5,11 @@ export interface Doctor {
   image_url: string;
   experience_years?: number;
   bio: string;
-  phone: string;
-  email: string;
+  // optional contact fields (kept for backward compatibility)
+  phone?: string;
+  email?: string;
+  // status: 'hadir' = available / 'cuti' = on leave
+  status?: "hadir" | "cuti";
   created_at: string;
 }
 

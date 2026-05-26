@@ -268,8 +268,17 @@ const DoctorSection = ({
           {paginatedDoctors.map((doctor, index) => (
             <div
               key={`doctor-${doctor.id || index}-${startIndex + index}`}
-              className="group flex flex-row items-start gap-4 md:gap-8 p-4 md:p-8 bg-white border border-slate-100 shadow-sm h-fit rounded-none transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:border-slate-100"
+              className={`relative group flex flex-row items-start gap-4 md:gap-8 p-4 md:p-8 bg-white border border-slate-100 shadow-sm h-fit rounded-none transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:border-slate-100 ${
+                doctor.status === "cuti" ? "opacity-60 pointer-events-none" : ""
+              }`}
             >
+              {doctor.status === "cuti" && (
+                <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+                  <span className="text-6xl md:text-8xl text-red-400 italic font-extrabold opacity-90">
+                    CUTI
+                  </span>
+                </div>
+              )}
               {/* Foto Dokter */}
               <div className="relative w-24 h-24 sm:w-32 sm:h-32 md:w-44 md:h-44 shrink-0 rounded-full overflow-hidden border-4 border-slate-50 group-hover:border-blue-50 transition-colors shadow-sm bg-slate-100">
                 <Image

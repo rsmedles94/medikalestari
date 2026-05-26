@@ -130,31 +130,61 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({ isOpen, onClose }) => {
                     <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 list-none p-0">
                       {searchResults.map((doctor) => (
                         <li key={doctor.id}>
-                          <button
-                            onClick={() => handleDoctorClick(doctor.id)}
-                            className="w-full group flex gap-4 p-4 bg-white hover:shadow-md transition-all text-left border border-gray-200"
-                          >
-                            <div className="w-16 h-16 rounded-full overflow-hidden shrink-0 bg-gray-200">
-                              <Image
-                                src={
-                                  doctor.image_url ||
-                                  "https://images.unsplash.com/photo-1612349317150-e539c59dc62a?w=100&h=100&fit=crop"
-                                }
-                                alt={`Foto ${doctor.name}`}
-                                width={64}
-                                height={64}
-                                className="w-full h-full object-cover"
-                              />
+                          {doctor.status === "cuti" ? (
+                            <div className="w-full group flex gap-4 p-4 bg-white border border-gray-200 text-left opacity-70 pointer-events-none">
+                              <div className="w-16 h-16 rounded-full overflow-hidden shrink-0 bg-gray-200">
+                                <Image
+                                  src={
+                                    doctor.image_url ||
+                                    "https://images.unsplash.com/photo-1612349317150-e539c59dc62a?w=100&h=100&fit=crop"
+                                  }
+                                  alt={`Foto ${doctor.name}`}
+                                  width={64}
+                                  height={64}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                              <div className="flex-1">
+                                <h4 className="text-sm font-bold text-[#003f88] transition-colors">
+                                  {doctor.name}
+                                </h4>
+                                <p className="text-xs text-gray-500 font-medium">
+                                  {doctor.specialty}
+                                </p>
+                              </div>
+                              <div className="ml-2 flex items-center">
+                                <span className="text-sm italic text-red-500 font-semibold">
+                                  Cuti
+                                </span>
+                              </div>
                             </div>
-                            <div className="flex-1">
-                              <h4 className="text-sm font-bold text-[#003f88] transition-colors">
-                                {doctor.name}
-                              </h4>
-                              <p className="text-xs text-gray-500 font-medium">
-                                {doctor.specialty}
-                              </p>
-                            </div>
-                          </button>
+                          ) : (
+                            <button
+                              onClick={() => handleDoctorClick(doctor.id)}
+                              className="w-full group flex gap-4 p-4 bg-white hover:shadow-md transition-all text-left border border-gray-200"
+                            >
+                              <div className="w-16 h-16 rounded-full overflow-hidden shrink-0 bg-gray-200">
+                                <Image
+                                  src={
+                                    doctor.image_url ||
+                                    "https://images.unsplash.com/photo-1612349317150-e539c59dc62a?w=100&h=100&fit=crop"
+                                  }
+                                  alt={`Foto ${doctor.name}`}
+                                  width={64}
+                                  height={64}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                              <div className="flex-1">
+                                <h4 className="text-sm font-bold text-[#003f88] transition-colors">
+                                  {doctor.name}
+                                </h4>
+                                <p className="text-xs text-gray-500 font-medium">
+                                  {doctor.specialty}
+                                </p>
+                              </div>
+                            </button>
+                          )}
                         </li>
                       ))}
                     </ul>

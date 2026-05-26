@@ -26,8 +26,9 @@ const AdminDoctorsPage = () => {
     specialty: "",
     bio: "",
     image_url: "",
-    phone: "",
-    email: "",
+  phone: "",
+  email: "",
+  status: "hadir",
   });
   const router = useRouter();
   const { loading: authLoading, isAuthenticated } = useAuth();
@@ -86,6 +87,8 @@ const AdminDoctorsPage = () => {
       const doctorData = {
         ...formData,
         image_url: imageUrl,
+  // ensure status typed to allowed union
+  status: formData.status as "hadir" | "cuti",
       };
 
       if (editingId) {
@@ -114,8 +117,9 @@ const AdminDoctorsPage = () => {
       specialty: doctor.specialty,
       bio: doctor.bio,
       image_url: doctor.image_url,
-      phone: doctor.phone,
-      email: doctor.email,
+  phone: doctor.phone || "",
+  email: doctor.email || "",
+  status: doctor.status || "hadir",
     });
     setImagePreview(doctor.image_url);
     setShowModal(true);
@@ -139,8 +143,9 @@ const AdminDoctorsPage = () => {
       specialty: "",
       bio: "",
       image_url: "",
-      phone: "",
-      email: "",
+  phone: "",
+  email: "",
+  status: "hadir",
     });
     setImageFile(null);
     setImagePreview("");
@@ -184,6 +189,9 @@ const AdminDoctorsPage = () => {
                     Spesialisasi
                   </th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                    Status
+                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
                     Aksi
                   </th>
                 </tr>
@@ -208,6 +216,17 @@ const AdminDoctorsPage = () => {
                     </td>
                     <td className="px-6 py-4 text-gray-600">
                       {doctor.specialty}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={`px-3 py-1 rounded-full text-sm font-medium ${
+                          doctor.status === "cuti"
+                            ? "bg-red-100 text-red-700 italic"
+                            : "bg-green-100 text-green-700"
+                        }`}
+                      >
+                        {doctor.status === "cuti" ? "Cuti" : "Hadir"}
+                      </span>
                     </td>
                     <td className="px-6 py-4 flex gap-2">
                       <button
@@ -379,46 +398,25 @@ const AdminDoctorsPage = () => {
                 />
               </div>
 
-              {/* Phone */}
+              {/* Status */}
               <div>
                 <label
-                  htmlFor="phone"
+                  htmlFor="status"
                   className="block text-sm font-medium text-gray-700 mb-2"
                 >
-                  Nomor Telepon
+                  Status Dokter
                 </label>
-                <input
-                  id="phone"
-                  type="tel"
-                  value={formData.phone}
+                <select
+                  id="status"
+                  value={formData.status}
                   onChange={(e) =>
-                    setFormData({ ...formData, phone: e.target.value })
+                    setFormData({ ...formData, status: e.target.value })
                   }
-                  placeholder="contoh: 08123456789"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003f88] outline-none"
-                  required
-                />
-              </div>
-
-              {/* Email */}
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-gray-700 mb-2"
                 >
-                  Email
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
-                  placeholder="dokter@example.com"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003f88] outline-none"
-                  required
-                />
+                  <option value="hadir">Hadir</option>
+                  <option value="cuti">Cuti</option>
+                </select>
               </div>
 
               {/* Submit Button */}

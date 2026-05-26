@@ -5,6 +5,7 @@ import { Schedule } from "@/lib/types";
 interface DoctorScheduleDisplayProps {
   schedules: Schedule[];
   onBooking: () => void;
+  doctorStatus?: "hadir" | "cuti";
 }
 
 const DAYS = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
@@ -12,6 +13,7 @@ const DAYS = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
 export default function DoctorScheduleDisplay({
   schedules,
   onBooking,
+  doctorStatus = "hadir",
 }: Readonly<DoctorScheduleDisplayProps>) {
   const getScheduleForCell = (day: string, row: number) => {
     const daySchedules = schedules.filter((s) => s.day_of_week === day);
@@ -93,9 +95,12 @@ export default function DoctorScheduleDisplay({
       <div className="mt-10 flex justify-end md:justify-start">
         <button
           onClick={onBooking}
-          className="bg-[#003f88] hover:bg-[#003f88]/90 text-white px-10 py-4 rounded-full font-bold 
-               transition-all duration-300 text-sm uppercase tracking-wide cursor-pointer
-               active:scale-95"
+          disabled={doctorStatus === "cuti"}
+          className={`px-10 py-4 rounded-full font-bold transition-all duration-300 text-sm uppercase tracking-wide cursor-pointer active:scale-95 ${
+            doctorStatus === "cuti"
+              ? "bg-gray-300 text-white cursor-not-allowed"
+              : "bg-[#003f88] hover:bg-[#003f88]/90 text-white"
+          }`}
         >
           Buat Janji Temu
         </button>
