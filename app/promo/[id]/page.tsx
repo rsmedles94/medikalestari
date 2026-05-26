@@ -361,7 +361,7 @@ export default function PromoDetailPage() {
       {/* MAIN CONTENT AREA */}
       <main className="max-w-[1175px] mx-auto px-4 md:px-8">
         {/* BREADCRUMB */}
-        <div className="mb-8 md:mb-12 border-b border-slate-100 pb-6 pt-12 md:pt-17">
+        <div className="mb-8 md:mb-12 border-b border-slate-100 pb-6 pt-8 md:pt-17">
           <nav className="flex items-center gap-1 text-[14px] text-gray-300 mb-4">
             <Link
               href="/"
