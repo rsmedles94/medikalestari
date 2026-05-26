@@ -285,18 +285,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               {logoNode}
             </Link>
 
-            <div className="hidden md:flex gap-2 items-center text-[15px] font-normal text-[#003f88]">
-              {/* Social Media Icons - Kiri */}
-              <div className="flex items-center gap-4">
-                {/* Buat Janji Temu Pill */}
-                <button
-                  onClick={() => setShowBookingForm(true)}
-                  className="ml-6 px-4 py-2 bg-[#003f88]  text-white font-medium text-sm transition-colors duration-200 active:scale-95 cursor-pointer"
-                >
-                  Buat Janji Temu
-                </button>
-              </div>
-            </div>
+
 
             <div className="md:hidden flex items-center gap-3 p-2 text-gray-700 relative z-[110]">
               <button

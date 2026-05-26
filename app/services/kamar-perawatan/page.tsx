@@ -286,10 +286,10 @@ export default function KamarPerawatan() {
         </div>
 
         {/* Card Utama - Tanpa Rounded (Tajam) */}
-        <div className="bg-white rounded-none shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-gray-100 overflow-hidden">
-          <div className="flex flex-col md:flex-row md:min-h-[450px] items-stretch mb-30 md:mb-0">
+        <div className="bg-white rounded-none shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-gray-100 overflow-hidden ">
+          <div className="flex flex-col md:flex-row md:min-h-[450px] items-stretch mb-30 md:mb-0 ">
             {/* Sisi Kiri: Slider Gambar */}
-            <div className="md:w-1/2 relative bg-[#f8f9fa] overflow-hidden min-h-[280px] md:min-h-full">
+            <div className="md:w-1/2 relative bg-[#f8f9fa] overflow-hidden min-h-[280px] md:min-h-full ">
               <AnimatePresence
                 initial={false}
                 custom={direction}
