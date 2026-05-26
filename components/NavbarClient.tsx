@@ -185,12 +185,12 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
         animate={{ opacity: 1, y: 0, height: "auto" }}
         exit={{ opacity: 0, y: -10, height: 0 }}
         transition={{ duration: 0.3, ease: "circOut" }}
-        className={`absolute top-full bg-[#003f88] text-white shadow-xl overflow-visible z-50 border-t border-[#003f88] mt-2 left-1/2 transform -translate-x-1/2 ${
+        className={`absolute top-full bg-white text-gray-900 shadow-lg overflow-visible z-50 border-t border-white mt-2 left-1/2 transform -translate-x-1/2 ${
           isLargeMenu ? "w-[600px]" : widthClass
         }`}
       >
         {/* Arrow/Triangle */}
-        <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-[#003f88]"></div>
+        <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-white"></div>
         <div
           className={`py-4 px-2 grid ${isLargeMenu ? "grid-cols-2" : "grid-cols-1"}`}
         >
@@ -318,7 +318,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
       <div className="hidden md:block relative w-full bg-white border-t border-gray-200 z-30 shadow-md">
         <div className="max-w-[1220px] mx-auto px-4 md:px-8 flex justify-between items-center h-16 relative z-10">
-          <div className="flex h-full text-[15px] text-[#003f88]">
+          <div className="flex h-full text-[15px] text-gray-700">
             <button
               onClick={handleHomeClick}
               className="flex items-center h-full px-6 transition-colors font-semibold relative group cursor-pointer"
@@ -341,11 +341,11 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               }}
               onMouseLeave={() => setActiveMenu(null)}
             >
-              <button className="flex items-center h-full px-6 transition-colors font-semibold relative group gap-2 text-[#003f88]">
+              <button className="flex items-center h-full px-6 transition-colors font-semibold relative group gap-2 text-gray-700">
                 Cari Dokter
                 <ChevronDown
                   size={18}
-                  className={`transition-transform duration-300 text-[#003f88] ${
+                  className={`transition-transform duration-300 text-gray-700 ${
                     activeMenu === "Dokter Kami" ? "scale-y-[-1]" : ""
                   }`}
                 />
@@ -382,11 +382,11 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                   }}
                   onMouseLeave={() => setActiveMenu(null)}
                 >
-                  <button className="flex items-center h-full px-6 transition-colors font-semibold relative group gap-2 text-[#003f88]">
+                  <button className="flex items-center h-full px-6 transition-colors font-semibold relative group gap-2 text-gray-700">
                     {item}
                     <ChevronDown
                       size={18}
-                      className={`transition-transform duration-300 text-[#003f88] ${
+                      className={`transition-transform duration-300 text-gray-700 ${
                         activeMenu === item ? "scale-y-[-1]" : ""
                       }`}
                     />
@@ -415,11 +415,11 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               }}
               onMouseLeave={() => setActiveMenu(null)}
             >
-              <button className="flex items-center h-full px-6 transition-colors font-semibold relative group gap-2 text-[#003f88]">
+              <button className="flex items-center h-full px-6 transition-colors font-semibold relative group gap-2 text-gray-700">
                 Informasi
                 <ChevronDown
                   size={18}
-                  className={`transition-transform duration-300 text-[#003f88] ${
+                  className={`transition-transform duration-300 text-gray-700 ${
                     activeMenu === "Profil" ? "scale-y-[-1]" : ""
                   }`}
                 />
@@ -622,7 +622,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               <div className="flex flex-col p-4">
                 <button
                   onClick={handleHomeClick}
-                  className="text-left p-4 font-semibold text-[#003f88] border-b text-lg"
+                  className="text-left p-4 font-semibold text-gray-700 border-b text-lg"
                 >
                   Beranda
                 </button>
@@ -631,7 +631,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                   onClick={() =>
                     setActiveMenu(activeMenu === "Profil" ? null : "Profil")
                   }
-                  className="w-full text-left p-4 font-semibold text-[#003f88] flex justify-between items-center text-lg border-b"
+                  className="w-full text-left p-4 font-semibold text-gray-700 flex justify-between items-center text-lg border-b"
                 >
                   Profil
                   {activeMenu === "Profil" ? (
@@ -686,7 +686,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                 <Link
                   href="/dokter#section-dokter"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-left p-4 font-semibold text-[#003f88] border-b text-lg"
+                  className="text-left p-4 font-semibold text-gray-700 border-b text-lg"
                 >
                   Dokter Spesialis
                 </Link>
@@ -694,7 +694,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                 <Link
                   href="/jadwal-dokter"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-left p-4 font-semibold text-[#003f88] border-b text-lg"
+                  className="text-left p-4 font-semibold text-gray-700 border-b text-lg"
                 >
                   Jadwal Dokter
                 </Link>
@@ -709,7 +709,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                         onClick={() =>
                           setActiveMenu(activeMenu === item ? null : item)
                         }
-                        className="w-full text-left p-4 font-semibold text-[#003f88] flex justify-between items-center text-lg"
+                        className="w-full text-left p-4 font-semibold text-gray-700 flex justify-between items-center text-lg"
                       >
                         {item}
 
