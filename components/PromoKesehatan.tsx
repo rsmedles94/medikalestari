@@ -380,14 +380,14 @@ const PromoKesehatan = () => {
             ))}
           </div>
 
-          {/* POSISI TURUN KE BAWAH STATS: SECTION GRID MENU UTAMA (TALK A DOCTOR) */}
-          <div className="mb-24 max-w-[1107px] mx-auto bg-white text-[#003f88] overflow-hidden shadow-md">
-            <div className="grid grid-cols-1 md:grid-cols-3 border-b border-gray-200 last:border-none">
+          {/* Menu Menu */}
+          <div className="mb-24 max-w-[1107px] mx-auto text-[#003f88]">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
               {FEATURES_DATA.map((feat, index) => (
                 <a
                   key={index}
                   href={feat.link}
-                  className="flex items-center justify-between p-6 bg-white hover:bg-gray-50 transition-colors duration-200 border-b md:border-b-0 md:border-r border-gray-200 last:border-r-0 [&:nth-child(3)]:border-r-0 [&:nth-child(4)]:border-b-0 [&:nth-child(5)]:border-b-0 [&:nth-child(6)]:border-b-0 min-h-[96px]"
+                  className="flex items-center justify-between p-6 bg-white hover:bg-gray-50 transition-colors duration-200 shadow-md min-h-[96px]"
                 >
                   <div className="flex items-center gap-4">
                     <div className="shrink-0 w-10 h-10 flex items-center justify-center">
