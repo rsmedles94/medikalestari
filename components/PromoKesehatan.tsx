@@ -312,7 +312,7 @@ const PromoKesehatan = () => {
   return (
     <div className="w-full font-sans antialiased bg-white relative overflow-hidden">
       {/* BACKGROUND GAMBAR UNTUK SELURUH HALAMAN */}
-      <div className="absolute inset-x-0 top-0 bottom-96 z-0">
+      <div className="absolute inset-x-0 top-0 bottom-48 z-0">
         <Image
           src="/informasi.jpg"
           alt="Informasi Medika Lestari Background"
@@ -324,7 +324,7 @@ const PromoKesehatan = () => {
         <div className="absolute inset-0 bg-[#003f88]/95" />
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 h-96 bg-white z-0" />
+      <div className="absolute bottom-0 left-0 right-0 h-48 bg-white z-0" />
 
       {/* ========================================================================= */}
       {/* 1. SECTION ATAS: KONTEN DI AREA BIRU */}
@@ -550,7 +550,7 @@ const PromoKesehatan = () => {
       {/* 2. SECTION BAWAH: SLIDER CARD PROMO */}
       {/* ========================================================================= */}
       <section className="relative z-10 w-full pb-20 px-4 sm:px-6 lg:px-8">
-        <div className="absolute inset-x-0 bottom-0 top-32 bg-white z-0" />
+        <div className="absolute inset-x-0 bottom-0 top-1/3 bg-white z-0" />
 
         <div className="relative z-10 max-w-[1190px] mx-auto md:px-8">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-8 -mt-10 text-center">
