@@ -4,7 +4,7 @@ export interface Doctor {
   specialty: string;
   image_url: string;
   experience_years?: number;
-  bio: string;
+  bio?: string;
   // optional contact fields (kept for backward compatibility)
   phone?: string;
   email?: string;

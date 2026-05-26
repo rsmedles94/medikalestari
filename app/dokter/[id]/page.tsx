@@ -161,16 +161,6 @@ const DoctorDetailPage = () => {
                 </p>
               </div>
 
-              {/* SECTION 1: BIODATA */}
-              <div className="mb-5">
-                <h2 className="text-xl font-bold text-gray-700 mb-4">
-                  Biodata
-                </h2>
-                <div className="text-slate-600 leading-relaxed max-w-3xl text-lg">
-                  {doctor.bio || "Informasi biodata dokter belum tersedia."}
-                </div>
-              </div>
-
               {/* SECTION 2: JADWAL PRAKTEK */}
               <div className="pt-5 border-t border-slate-100 ">
                 <DoctorScheduleDisplay
