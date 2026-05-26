@@ -201,7 +201,7 @@ const STATS_DATA = [
   },
   {
     icon: "/images/icons/patient.svg",
-    number: "2k",
+    number: "2k+",
     text: "Pasien Rawat Inap pernah ditangani",
   },
   {
