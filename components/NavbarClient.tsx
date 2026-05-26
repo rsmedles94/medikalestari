@@ -188,6 +188,10 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
         className={`absolute top-full bg-white text-gray-900 shadow-lg overflow-visible z-50 border-t border-white mt-2 left-1/2 transform -translate-x-1/2 ${
           isLargeMenu ? "w-[600px]" : widthClass
         }`}
+        style={{
+          boxShadow:
+            "0 10px 25px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9), inset 0 -1px 2px rgba(0, 0, 0, 0.05)",
+        }}
       >
         {/* Arrow/Triangle */}
         <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-white"></div>
