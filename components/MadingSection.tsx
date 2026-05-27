@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import {
   ChevronRight,
-  Clock,
+  Newspaper,
   Calendar,
   MoreHorizontal,
   Heart,
@@ -82,10 +82,15 @@ const MadingSection = () => {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`pb-4 px-1 text-xs md:text-sm font-semibold transition-all relative ${
+                className={`pb-4 px-1 text-xs md:text-sm font-semibold transition-all relative flex items-center gap-2 ${
                   activeTab === tab ? "text-[#003f88]" : "text-gray-400"
                 }`}
               >
+                {tab === "Informasi" ? (
+                  <Newspaper size={16} />
+                ) : (
+                  <Calendar size={16} />
+                )}
                 {tab.toUpperCase()}
                 {activeTab === tab && (
                   <span className="absolute bottom-0 left-0 w-full h-[3px] bg-[#003f88]" />
