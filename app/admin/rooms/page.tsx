@@ -29,7 +29,9 @@ const ROOM_OPTIONS = [
   "Kamar Kelas 3",
   "Kamar ICU",
   "Kamar NICU",
+  "Kamar PICU",
   "Kamar HCU",
+  "Kamar Isolasi",
 ];
 
 interface RoomImage {
