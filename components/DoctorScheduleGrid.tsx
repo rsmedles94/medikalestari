@@ -19,6 +19,49 @@ interface DoctorScheduleGridProps {
 const DAYS = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
 const ITEMS_PER_PAGE = 10;
 
+// Fungsi untuk mendapatkan hari saat ini dalam Indonesian format
+const getTodayDayName = (): string => {
+  const dayIndex = new Date().getDay();
+  // JavaScript getDay: 0 = Minggu, 1 = Senin, ..., 6 = Sabtu
+  const dayMap = [
+    "Minggu",
+    "Senin",
+    "Selasa",
+    "Rabu",
+    "Kamis",
+    "Jumat",
+    "Sabtu",
+  ];
+  return dayMap[dayIndex];
+};
+
+// Fungsi untuk mendapatkan hari cuti berdasarkan hari saat ini
+// Jika dokter cuti dan hari ini ada jadwal, tampilkan badge di hari ini
+const getCutiDay = (doctor: DoctorWithSchedule): string | null => {
+  if (
+    doctor.status !== "cuti" ||
+    !doctor.schedules ||
+    doctor.schedules.length === 0
+  ) {
+    return null;
+  }
+
+  const todayDay = getTodayDayName();
+
+  // Cek apakah hari ini memiliki jadwal
+  const hasScheduleToday = doctor.schedules.some(
+    (s) => s.day_of_week === todayDay,
+  );
+
+  // Jika ada jadwal hari ini, tampilkan badge di hari ini
+  if (hasScheduleToday) {
+    return todayDay;
+  }
+
+  // Jika tidak ada jadwal hari ini, tidak tampilkan badge
+  return null;
+};
+
 export default function DoctorScheduleGrid({
   doctorsWithSchedules = [],
   loading = false,
@@ -337,17 +380,10 @@ export default function DoctorScheduleGrid({
               disabled={doctor.status === "cuti"}
               className={`relative bg-white shadow-lg overflow-hidden transition-all border border-slate-200 text-left ${
                 doctor.status === "cuti"
-                  ? "opacity-60 cursor-not-allowed"
+                  ? "opacity-60 cursor-not-allowed pointer-events-none"
                   : "cursor-pointer hover:-translate-y-2 hover:shadow-xl hover:border-slate-100"
               }`}
             >
-              {doctor.status === "cuti" && (
-                <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
-                  <span className="text-5xl md:text-6xl text-red-400 italic font-extrabold opacity-90">
-                    CUTI
-                  </span>
-                </div>
-              )}
               {/* Doctor Header */}
               <div className="bg-slate-50 p-4 border-b border-slate-200">
                 <div className="flex gap-4 items-center">
@@ -377,19 +413,29 @@ export default function DoctorScheduleGrid({
                 <table className="w-full text-xs">
                   <thead>
                     <tr className="bg-[#003f88]/10">
-                      {DAYS.map((day) => (
-                        <th
-                          key={day}
-                          className="py-2 px-1 font-semibold text-slate-700 border-b border-slate-200"
-                        >
-                          {day.substring(0, 3)}
-                        </th>
-                      ))}
+                      {DAYS.map((day) => {
+                        const cutiDay = getCutiDay(doctor);
+                        const isCutiDay = cutiDay === day;
+                        return (
+                          <th
+                            key={day}
+                            className={`py-2 px-1 font-semibold border-b border-slate-200 ${
+                              isCutiDay
+                                ? "bg-red-100 text-red-700"
+                                : "text-slate-700"
+                            }`}
+                          >
+                            {day.substring(0, 3)}
+                          </th>
+                        );
+                      })}
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
                       {DAYS.map((day) => {
+                        const cutiDay = getCutiDay(doctor);
+                        const isCutiDay = cutiDay === day;
                         const schedule = getScheduleForCell(
                           day,
                           1,
@@ -398,14 +444,28 @@ export default function DoctorScheduleGrid({
                         return (
                           <td
                             key={`${doctor.id}-${day}-1`}
-                            className="py-2 px-1 border-b border-r border-slate-200 last:border-r-0 text-center h-12 align-middle"
+                            className={`py-2 px-1 border-b border-r border-slate-200 last:border-r-0 text-center h-12 align-middle relative ${
+                              isCutiDay && schedule.length > 0
+                                ? "bg-red-50"
+                                : ""
+                            }`}
                           >
-                            {schedule.length > 0 ? (
-                              <div className="text-[10px] font-medium text-slate-700 whitespace-normal">
-                                {schedule[0].start_time.substring(0, 5)}
+                            {isCutiDay && schedule.length > 0 ? (
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <span className="text-white font-bold text-2xl bg-red-500 rounded-full w-8 h-8 flex items-center justify-center">
+                                  C
+                                </span>
                               </div>
                             ) : (
-                              <span className="text-slate-300">-</span>
+                              <div className="relative z-10">
+                                {schedule.length > 0 ? (
+                                  <div className="text-[10px] font-medium text-slate-700 whitespace-normal">
+                                    {schedule[0].start_time.substring(0, 5)}
+                                  </div>
+                                ) : (
+                                  <span className="text-slate-300">-</span>
+                                )}
+                              </div>
                             )}
                           </td>
                         );
@@ -413,6 +473,8 @@ export default function DoctorScheduleGrid({
                     </tr>
                     <tr>
                       {DAYS.map((day) => {
+                        const cutiDay = getCutiDay(doctor);
+                        const isCutiDay = cutiDay === day;
                         const schedule = getScheduleForCell(
                           day,
                           2,
@@ -421,14 +483,28 @@ export default function DoctorScheduleGrid({
                         return (
                           <td
                             key={`${doctor.id}-${day}-2`}
-                            className="py-2 px-1 border-r border-slate-200 last:border-r-0 text-center h-12 align-middle"
+                            className={`py-2 px-1 border-r border-slate-200 last:border-r-0 text-center h-12 align-middle relative ${
+                              isCutiDay && schedule.length > 0
+                                ? "bg-red-50"
+                                : ""
+                            }`}
                           >
-                            {schedule.length > 0 ? (
-                              <div className="text-[10px] font-medium text-slate-700 whitespace-normal">
-                                {schedule[0].start_time.substring(0, 5)}
+                            {isCutiDay && schedule.length > 0 ? (
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <span className="text-white font-bold text-2xl bg-red-500 rounded-full w-8 h-8 flex items-center justify-center">
+                                  C
+                                </span>
                               </div>
                             ) : (
-                              <span className="text-slate-300">-</span>
+                              <div className="relative z-10">
+                                {schedule.length > 0 ? (
+                                  <div className="text-[10px] font-medium text-slate-700 whitespace-normal">
+                                    {schedule[0].start_time.substring(0, 5)}
+                                  </div>
+                                ) : (
+                                  <span className="text-slate-300">-</span>
+                                )}
+                              </div>
                             )}
                           </td>
                         );
@@ -498,17 +574,10 @@ export default function DoctorScheduleGrid({
                   disabled={doctor.status === "cuti"}
                   className={`relative bg-white border border-slate-200 shadow-sm overflow-hidden transition-transform text-left ${
                     doctor.status === "cuti"
-                      ? "opacity-60 cursor-not-allowed"
+                      ? "opacity-60 cursor-not-allowed pointer-events-none"
                       : "active:scale-[0.99] cursor-pointer"
                   }`}
                 >
-                  {doctor.status === "cuti" && (
-                    <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
-                      <span className="text-4xl md:text-5xl text-red-400 italic font-extrabold opacity-90">
-                        CUTI
-                      </span>
-                    </div>
-                  )}
                   {/* Bagian Atas: Profil Dokter */}
                   <div className="p-4 flex items-center gap-4 bg-slate-50/50">
                     {doctor.image_url && (
@@ -536,19 +605,29 @@ export default function DoctorScheduleGrid({
                     <table className="w-full table-fixed border-collapse">
                       <thead>
                         <tr className="bg-slate-50/80">
-                          {DAYS.map((day) => (
-                            <th
-                              key={day}
-                              className="py-2 px-0.5 text-center text-[10px] font-bold text-slate-500 uppercase border-r border-slate-100 last:border-0"
-                            >
-                              {day.substring(0, 3)}
-                            </th>
-                          ))}
+                          {DAYS.map((day) => {
+                            const cutiDay = getCutiDay(doctor);
+                            const isCutiDay = cutiDay === day;
+                            return (
+                              <th
+                                key={day}
+                                className={`py-2 px-0.5 text-center text-[10px] font-bold uppercase border-r border-slate-100 last:border-0 ${
+                                  isCutiDay
+                                    ? "bg-red-100 text-red-700"
+                                    : "text-slate-500"
+                                }`}
+                              >
+                                {day.substring(0, 3)}
+                              </th>
+                            );
+                          })}
                         </tr>
                       </thead>
                       <tbody>
                         <tr>
                           {DAYS.map((day) => {
+                            const cutiDay = getCutiDay(doctor);
+                            const isCutiDay = cutiDay === day;
                             const s1 = getScheduleForCell(
                               day,
                               1,
@@ -564,30 +643,42 @@ export default function DoctorScheduleGrid({
                             return (
                               <td
                                 key={`${doctor.id}-${day}`}
-                                className={`py-3 px-0.5 text-center border-r border-slate-100 last:border-0 ${
-                                  isAvailable ? "bg-white" : "bg-slate-50/30"
+                                className={`py-3 px-0.5 text-center border-r border-slate-100 last:border-0 relative ${
+                                  isCutiDay && isAvailable
+                                    ? "bg-red-50"
+                                    : isAvailable
+                                      ? "bg-white"
+                                      : "bg-slate-50/30"
                                 }`}
                               >
-                                <div className="flex flex-col items-center justify-center gap-1.5 min-h-10">
-                                  {/* Sesi 1 */}
-                                  {s1.length > 0 && (
-                                    <span className="text-[11px] font-bold text-slate-800">
-                                      {s1[0].start_time.substring(0, 5)}
+                                {isCutiDay && isAvailable ? (
+                                  <div className="absolute inset-0 flex items-center justify-center">
+                                    <span className="text-white font-bold text-lg bg-red-500 rounded-full w-6 h-6 flex items-center justify-center">
+                                      C
                                     </span>
-                                  )}
-                                  {s1.length === 0 && s2.length === 0 && (
-                                    <span className="text-slate-300 text-xs">
-                                      —
-                                    </span>
-                                  )}
+                                  </div>
+                                ) : (
+                                  <div className="flex flex-col items-center justify-center gap-1.5 min-h-10 relative z-10">
+                                    {/* Sesi 1 */}
+                                    {s1.length > 0 && (
+                                      <span className="text-[11px] font-bold text-slate-800">
+                                        {s1[0].start_time.substring(0, 5)}
+                                      </span>
+                                    )}
+                                    {s1.length === 0 && s2.length === 0 && (
+                                      <span className="text-slate-300 text-xs">
+                                        —
+                                      </span>
+                                    )}
 
-                                  {/* Sesi 2 - Menumpuk Langsung di Bawahnya */}
-                                  {s2.length > 0 && (
-                                    <span className="text-[11px] font-bold text-slate-800 ">
-                                      {s2[0].start_time.substring(0, 5)}
-                                    </span>
-                                  )}
-                                </div>
+                                    {/* Sesi 2 - Menumpuk Langsung di Bawahnya */}
+                                    {s2.length > 0 && (
+                                      <span className="text-[11px] font-bold text-slate-800 ">
+                                        {s2[0].start_time.substring(0, 5)}
+                                      </span>
+                                    )}
+                                  </div>
+                                )}
                               </td>
                             );
                           })}
@@ -663,6 +754,10 @@ export default function DoctorScheduleGrid({
             <li>
               • Baris kedua menampilkan sesi praktek kedua jika tersedia pada
               hari yang sama
+            </li>
+            <li>
+              • Huruf C merah menunjukkan bahwa dokter sedang cuti di hari
+              tersebut
             </li>
           </ul>
         </div>
