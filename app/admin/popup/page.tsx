@@ -12,7 +12,7 @@ import {
 } from "@/lib/popup-api";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthProvider";
-import { Plus, Edit2, Trash2, X, Upload, Eye, EyeOff } from "lucide-react";
+import { Plus, Edit2, Trash2, Upload, Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 
 const AdminPopupPage = () => {
@@ -36,6 +36,18 @@ const AdminPopupPage = () => {
   const router = useRouter();
   const { loading: authLoading, isAuthenticated } = useAuth();
 
+  const fetchPopupsData = async () => {
+    try {
+      const data = await fetchAllPopups();
+      setPopups(data);
+    } catch (error) {
+      console.error("Error fetching popups:", error);
+      setMessage({ type: "error", text: "Gagal memuat data popup" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     let mounted = true;
     const init = async () => {
@@ -52,18 +64,6 @@ const AdminPopupPage = () => {
       mounted = false;
     };
   }, [authLoading, isAuthenticated, router]);
-
-  const fetchPopupsData = async () => {
-    try {
-      const data = await fetchAllPopups();
-      setPopups(data);
-    } catch (error) {
-      console.error("Error fetching popups:", error);
-      setMessage({ type: "error", text: "Gagal memuat data popup" });
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -226,9 +226,7 @@ const AdminPopupPage = () => {
 
         {/* INFO BOX */}
         <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <p className="text-blue-900 font-medium">
-            ℹ️ Maksimal 3 gambar.
-          </p>
+          <p className="text-blue-900 font-medium">ℹ️ Maksimal 3 gambar.</p>
         </div>
 
         {/* POPUP LIST */}
