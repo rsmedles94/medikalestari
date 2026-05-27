@@ -11,22 +11,24 @@ export type Popup = {
   updated_at: string;
 };
 
-// POPUP OPERATIONS
+// POPUP OPERATIONS - PUBLIC (untuk frontend public)
 export async function fetchPopups() {
-  const { data, error } = await supabase
-    .from("popups")
-    .select("*")
-    .eq("is_active", true)
-    .order("display_order", { ascending: true });
+  try {
+    const { data, error } = await supabase
+      .from("popups")
+      .select("*")
+      .eq("is_active", true)
+      .order("display_order", { ascending: true });
 
-  if (error) {
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
     console.error("Error fetching popups:", error);
-    throw error;
+    return [];
   }
-
-  return data || [];
 }
 
+// POPUP OPERATIONS - ADMIN (untuk admin panel)
 export async function fetchAllPopups() {
   const { data, error } = await supabase
     .from("popups")
@@ -34,7 +36,7 @@ export async function fetchAllPopups() {
     .order("display_order", { ascending: true });
 
   if (error) {
-    console.error("Error fetching popups:", error);
+    console.error("Error fetching all popups:", error);
     throw error;
   }
 
@@ -64,17 +66,16 @@ export async function createPopup(popupData: {
 
 export async function updatePopup(
   id: string,
-  popupData: {
-    image_url?: string;
-    title?: string;
-    description?: string;
-    display_order?: number;
-    is_active?: boolean;
-  },
+  popupData: Partial<Omit<Popup, "id" | "created_at">>,
 ) {
+  const updateData = {
+    ...popupData,
+    updated_at: new Date().toISOString(),
+  };
+
   const { data, error } = await supabase
     .from("popups")
-    .update(popupData)
+    .update(updateData)
     .eq("id", id)
     .select()
     .single();

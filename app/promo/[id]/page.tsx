@@ -471,7 +471,7 @@ export default function PromoDetailPage() {
                                       >
                                         <button
                                           type="button"
-                                          className="w-full py-2.5 border bg-[#003f88] text-white text-xs font-semibold transition-all duration-300 hover:bg-[#e67e22] hover:text-white"
+                                          className="w-full py-2.5 border bg-[#003f88] text-white text-xs font-semibold transition-all duration-300 hover:bg-[#e67e22] hover:text-white cursor-pointer"
                                         >
                                           Selengkapnya →
                                         </button>

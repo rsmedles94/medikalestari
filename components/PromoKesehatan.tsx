@@ -599,7 +599,7 @@ const PromoKesehatan = () => {
                             <Link href={`/promo/${item.id}`} passHref>
                               <button
                                 type="button"
-                                className="w-full py-2 border bg-[#003f88] text-white text-[10px] md:text-xs font-semibold transition-all duration-300 hover:bg-[#e67e22] hover:text-white"
+                                className="w-full py-2 border bg-[#003f88] text-white text-[10px] md:text-xs font-semibold transition-all duration-300 hover:bg-[#e67e22] hover:text-white cursor-pointer"
                               >
                                 Selengkapnya →
                               </button>
