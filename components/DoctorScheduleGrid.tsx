@@ -413,13 +413,17 @@ export default function DoctorScheduleGrid({
                 <table className="w-full text-xs">
                   <thead>
                     <tr className="bg-[#003f88]/10">
-                      {DAYS.map((day) => {
+                      {DAYS.map((day, index) => {
                         const cutiDay = getCutiDay(doctor);
                         const isCutiDay = cutiDay === day;
+                        const isFirstDay = index === 0;
+                        const isLastDay = index === DAYS.length - 1;
                         return (
                           <th
                             key={day}
-                            className={`py-2 px-1 font-semibold border-b border-slate-200 ${
+                            className={`py-2 px-1 font-semibold border-b border-slate-200 text-center ${
+                              isFirstDay ? "border-l border-slate-200" : ""
+                            } ${isLastDay ? "border-r border-slate-200" : ""} ${
                               isCutiDay
                                 ? "bg-red-100 text-red-700"
                                 : "text-slate-700"
@@ -433,7 +437,7 @@ export default function DoctorScheduleGrid({
                   </thead>
                   <tbody>
                     <tr>
-                      {DAYS.map((day) => {
+                      {DAYS.map((day, index) => {
                         const cutiDay = getCutiDay(doctor);
                         const isCutiDay = cutiDay === day;
                         const schedule = getScheduleForCell(
@@ -441,10 +445,14 @@ export default function DoctorScheduleGrid({
                           1,
                           doctor.schedules,
                         );
+                        const isFirstDay = index === 0;
+                        const isLastDay = index === DAYS.length - 1;
                         return (
                           <td
                             key={`${doctor.id}-${day}-1`}
-                            className={`py-2 px-1 border-b border-r border-slate-200 last:border-r-0 text-center h-12 align-middle relative ${
+                            className={`py-2 px-1 border-b border-r border-slate-200 text-center h-12 align-middle relative ${
+                              isFirstDay ? "border-l border-slate-200" : ""
+                            } ${
                               isCutiDay && schedule.length > 0
                                 ? "bg-red-50"
                                 : ""
@@ -472,7 +480,7 @@ export default function DoctorScheduleGrid({
                       })}
                     </tr>
                     <tr>
-                      {DAYS.map((day) => {
+                      {DAYS.map((day, index) => {
                         const cutiDay = getCutiDay(doctor);
                         const isCutiDay = cutiDay === day;
                         const schedule = getScheduleForCell(
@@ -480,10 +488,13 @@ export default function DoctorScheduleGrid({
                           2,
                           doctor.schedules,
                         );
+                        const isFirstDay = index === 0;
                         return (
                           <td
                             key={`${doctor.id}-${day}-2`}
-                            className={`py-2 px-1 border-r border-slate-200 last:border-r-0 text-center h-12 align-middle relative ${
+                            className={`py-2 px-1 border-b border-r border-slate-200 text-center h-12 align-middle relative ${
+                              isFirstDay ? "border-l border-slate-200" : ""
+                            } ${
                               isCutiDay && schedule.length > 0
                                 ? "bg-red-50"
                                 : ""

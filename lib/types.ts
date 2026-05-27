@@ -58,7 +58,7 @@ export interface HeroBanner {
   image_url: string;
   order: number;
   is_active: boolean;
-  device_type: "desktop" | "mobile"; // desktop (1900x720) or mobile (2208x2760)
+  device_type: "desktop" | "mobile"; // desktop (1900x780) or mobile (2208x2760)
   created_at: string;
 }
 

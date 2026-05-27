@@ -36,10 +36,12 @@ export default function DoctorScheduleDisplay({
         <table className="w-full border-collapse table-fixed min-w-[650px]">
           <thead>
             <tr className="bg-[#003f88]/10">
-              {DAYS.map((day) => (
+              {DAYS.map((day, index) => (
                 <th
                   key={day}
-                  className="py-4 px-2 text-[12px] font-semibold text-slate-500 border-b border-r border-slate-200 last:border-r-0"
+                  className={`py-4 px-2 text-[12px] font-semibold text-slate-500 border-b border-r border-slate-200 last:border-r-0 text-center ${
+                    index === 0 ? "border-l border-slate-200" : ""
+                  } ${index === DAYS.length - 1 ? "border-r border-slate-200" : ""}`}
                 >
                   {day}
                 </th>
@@ -49,12 +51,15 @@ export default function DoctorScheduleDisplay({
           <tbody>
             {/* BARIS 1: Slot Pertama */}
             <tr>
-              {DAYS.map((day) => {
+              {DAYS.map((day, index) => {
                 const rowSchedules = getScheduleForCell(day, 1);
+                const isFirstDay = index === 0;
                 return (
                   <td
                     key={`${day}-1`}
-                    className="border-b border-r border-slate-100 last:border-r-0 p-3 h-20 text-center"
+                    className={`border-b border-r border-slate-100 p-3 h-20 text-center ${
+                      isFirstDay ? "border-l border-slate-100" : ""
+                    }`}
                   >
                     <div className="flex flex-col items-center justify-center">
                       {rowSchedules.length > 0 ? (
@@ -73,12 +78,15 @@ export default function DoctorScheduleDisplay({
 
             {/* BARIS 2: Slot Kedua */}
             <tr>
-              {DAYS.map((day) => {
+              {DAYS.map((day, index) => {
                 const rowSchedules = getScheduleForCell(day, 2);
+                const isFirstDay = index === 0;
                 return (
                   <td
                     key={`${day}-2`}
-                    className="border-r border-slate-100 last:border-r-0 p-3 h-20 text-center"
+                    className={`border-b border-r border-slate-100 p-3 h-20 text-center ${
+                      isFirstDay ? "border-l border-slate-100" : ""
+                    }`}
                   >
                     <div className="flex flex-col items-center justify-center">
                       {rowSchedules.length > 0 ? (

@@ -416,11 +416,11 @@ const AdminHeroBannersPage = () => {
                         })
                       }
                       className="w-4 h-4 text-blue-600"
-                      aria-label="Desktop - 1900 x 720 px"
+                      aria-label="Desktop - 1900 x 780 px"
                     />
                     <span className="ml-2">
                       <span className="font-medium">Desktop</span>
-                      <p className="text-xs text-gray-500">1900 x 720 px</p>
+                      <p className="text-xs text-gray-500">1900 x 780 px</p>
                     </span>
                   </label>
                   <label

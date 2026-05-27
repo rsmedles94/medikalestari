@@ -332,7 +332,7 @@ const HeroSection = () => {
     return (
       <section className="relative w-full bg-transparent overflow-hidden pt-8 md:pt-12">
         {/* Empty state untuk desktop */}
-        <div className="hidden md:block relative w-full aspect-1900/720 bg-gray-200" />
+        <div className="hidden md:block relative w-full aspect-1900/780 bg-gray-200" />
 
         {/* Empty state untuk mobile */}
         <div className="md:hidden relative w-full aspect-2208/2760 bg-gray-200" />
