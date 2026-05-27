@@ -22,8 +22,8 @@ import {
 import Image from "next/image";
 
 const ROOM_OPTIONS = [
-  "Kamar VIP",
-  "Kamar Silver",
+  "Kamar VIP Gold",
+  "Kamar VIP Silver",
   "Kamar Kelas 1",
   "Kamar Kelas 2",
   "Kamar Kelas 3",
