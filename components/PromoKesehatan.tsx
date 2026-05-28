@@ -554,7 +554,7 @@ const PromoKesehatan = () => {
 
         <div className="relative z-10 max-w-[1190px] mx-auto md:px-8">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-8 -mt-10 text-center">
-            Penawaran Spesial Promo Paket Kesehatan Untuk Anda
+            Penawaran promo spesial paket kesehatan untuk anda
           </h2>
           <div className="w-full overflow-hidden">
             <motion.div
@@ -576,7 +576,7 @@ const PromoKesehatan = () => {
                       key={item.id}
                       className="w-1/2 lg:w-1/4 shrink-0 p-2 md:p-3"
                     >
-                      <article className="bg-white border border-gray-100 flex flex-col h-full shadow-lg overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+                      <article className="bg-white border border-gray-300 flex flex-col h-full -lg overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
                         <div className="relative aspect-square w-full overflow-hidden bg-gray-50">
                           <Image
                             src={item.image}

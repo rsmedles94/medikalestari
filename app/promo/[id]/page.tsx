@@ -8,7 +8,7 @@ import { motion, useAnimationControls } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 import PromoCardSkeleton from "@/components/PromoCardSkeleton";
 
-// Data promo dengan penjelasan lengkap
+// Data mentah paket promo rumah sakit
 const PROMO_DATA = [
   {
     id: 1,
@@ -42,7 +42,7 @@ const PROMO_DATA = [
       <h3 class="text-2xl font-bold text-[#003f88] mb-4">Sirkumsisi Anak (Khitan)</h3>
       <p class="text-gray-700 mb-4 leading-relaxed">
         Layanan khitan kami menggunakan metode modern dengan teknologi terkini untuk memastikan prosedur yang aman, minim nyeri, 
-        dan pemulihan yang cepat. Tim dokter kami berpengalaman dalam menangani sirkumsisi anak dengan pendekatan yang profesional dan penuh perhatian.
+        dan pemulihan yang cepat. Tim dokter kami berpengalaman dalam menangani sirkumsisi anak dengan pendekatan yang profesional and penuh perhatian.
       </p>
       <h4 class="text-lg font-semibold text-[#003f88] mt-6 mb-3">Metode & Keunggulan:</h4>
       <ul class="list-disc list-inside text-gray-700 space-y-2">
@@ -290,12 +290,13 @@ export default function PromoDetailPage() {
   const id = params.id as string;
   const numId = Number.parseInt(id, 10);
 
-  // State & Controls untuk Carousel Promo Lainnya
+  // Mengatur navigasi dot aktif dan durasi skeleton loading
   const [relatedIndex, setRelatedIndex] = useState(0);
   const [isLoadingRelated, setIsLoadingRelated] = useState(true);
   const relatedControls = useAnimationControls();
   const [relatedItemsPerGroup, setRelatedItemsPerGroup] = useState(4);
 
+  // Menentukan jumlah card per grup berdasarkan lebar viewport layar
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1024) {
@@ -310,7 +311,6 @@ export default function PromoDetailPage() {
     handleResize();
     window.addEventListener("resize", handleResize);
 
-    // Simulasi loading time untuk carousel
     const timer = setTimeout(() => {
       setIsLoadingRelated(false);
     }, 800);
@@ -321,6 +321,7 @@ export default function PromoDetailPage() {
     };
   }, [relatedControls]);
 
+  // Mengatur pergeseran animasi ketika dot indikator di-klik
   const handleRelatedDotClick = (index: number) => {
     setRelatedIndex(index);
     const targetTranslateX = -(index * 100);
@@ -335,12 +336,14 @@ export default function PromoDetailPage() {
     });
   };
 
+  // Memisahkan promo utama yang aktif dengan promo relasi di bawahnya
   const promo = PROMO_DATA.find((item) => item.id === numId);
   const relatedPromos = PROMO_DATA.filter((p) => p.id !== numId);
   const totalRelatedDots = Math.ceil(
     relatedPromos.length / relatedItemsPerGroup,
   );
 
+  // Tampilan fallback apabila ID promo tidak cocok
   if (!promo) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center px-4">
@@ -358,31 +361,38 @@ export default function PromoDetailPage() {
 
   return (
     <div className="w-full min-h-screen bg-white">
-      {/* MAIN CONTENT AREA */}
+      {/* Kontainer area utama isi konten dikunci ke max-w-[1175px] */}
       <main className="max-w-[1175px] mx-auto px-4 md:px-8">
-        {/* BREADCRUMB */}
-        <div className="mb-8 md:mb-12 border-b border-slate-100 pb-6 pt-8 md:pt-17">
-          <nav className="flex items-center gap-1 text-[14px] text-gray-300 mb-4">
+        {/* Kepala halaman berisi judul dan remah roti */}
+        <header className="mb-8 md:mb-12 border-b border-slate-100 pb-6 pt-8 md:pt-17">
+          <nav
+            className="flex items-center gap-1 text-[14px] text-gray-300 mb-4"
+            aria-label="Breadcrumb"
+          >
             <Link
               href="/"
               className="text-black/60 hover:text-gray-300 transition-colors"
             >
               Beranda
             </Link>
-
-            <ChevronRight size={12} className="text-black/60" />
-            <span className="font-normal text-gray-300">{promo.title}</span>
+            <ChevronRight
+              size={12}
+              className="text-black/60"
+              aria-hidden="true"
+            />
+            <span className="font-normal text-gray-300" aria-current="page">
+              {promo.title}
+            </span>
           </nav>
           <h1 className="text-3xl md:text-4xl font-bold text-black mb-2">
             {promo.title}
           </h1>
           <p className="text-slate-600">{promo.shortDescription}</p>
-        </div>
+        </header>
 
-        {/* Content Grid */}
+        {/* Pembagian grid gambar kiri dan detail teks kanan */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-          {/* Left: Image */}
-          <div className="flex flex-col">
+          <section className="flex flex-col">
             <div className="relative w-full aspect-square overflow-hidden shadow-lg bg-gray-100">
               <Image
                 src={promo.image}
@@ -395,101 +405,84 @@ export default function PromoDetailPage() {
             <p className="text-sm text-gray-500 mt-4 text-center italic">
               {promo.shortDescription}
             </p>
-          </div>
+          </section>
 
-          {/* Right: Description */}
-          <div className="flex flex-col">
-            <div
+          <section className="flex flex-col">
+            <article
               className="prose prose-sm max-w-none"
               dangerouslySetInnerHTML={{
                 __html: promo.fullDescription,
               }}
             />
-          </div>
+          </section>
         </div>
 
-        {/* Related Promos Carousel */}
+        {/* Blok carousel rekomendasi produk kesehatan lainnya */}
         <section className="pt-16 pb-16 mt-12 border-t border-slate-100">
           <div className="w-full">
-            <div className="mb-8">
+            <header className="mb-4">
               <h2 className="text-2xl md:text-3xl font-bold text-[#003f88]">
                 Promo Lainnya
               </h2>
-            </div>
+            </header>
 
-            {/* Carousel Container */}
-            <div className="w-full overflow-hidden p-1">
+            {/* Pembungkus luar carousel menggunakan lebar penuh mengikuti induknya */}
+            <div className="w-full overflow-hidden py-1 relative">
               {isLoadingRelated ? (
                 <PromoCardSkeleton count={relatedItemsPerGroup} />
               ) : (
-                <motion.div
-                  animate={relatedControls}
-                  initial={{ x: "0%" }}
-                  className="flex w-full"
-                >
-                  {Array.from({ length: totalRelatedDots }).map(
-                    (_, groupIndex) => {
-                      const groupKey = `group-${groupIndex}-${relatedPromos[groupIndex * relatedItemsPerGroup]?.id || 0}`;
-                      return (
-                        <div
-                          key={groupKey}
-                          className="w-full shrink-0 flex gap-4 lg:gap-6 justify-start"
-                        >
-                          {relatedPromos
-                            .slice(
-                              groupIndex * relatedItemsPerGroup,
-                              (groupIndex + 1) * relatedItemsPerGroup,
-                            )
-                            .map((relatedPromo) => (
-                              <div
-                                key={`promo-${relatedPromo.id}`}
-                                className="w-[calc(50%-8px)] lg:w-[calc(25%-18px)] shrink-0"
-                              >
-                                <article className="bg-white border border-slate-100 flex flex-col h-full shadow-md rounded-none overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl origin-center">
-                                  <div className="relative aspect-square w-full overflow-hidden bg-gray-50">
-                                    <Image
-                                      src={relatedPromo.image}
-                                      alt={`Promo ${relatedPromo.title}`}
-                                      width={500}
-                                      height={500}
-                                      className="object-cover w-full h-full"
-                                      priority={relatedPromo.id <= 4}
-                                    />
-                                  </div>
+                /* Penggunaan minus-margin agar card kiri dan kanan sejajar tegak lurus dengan judul di atasnya */
+                <div className="w-full overflow-hidden -mx-2 lg:-mx-3">
+                  <motion.div
+                    animate={relatedControls}
+                    initial={{ x: "0%" }}
+                    className="flex"
+                    style={{ width: "100%" }}
+                  >
+                    {relatedPromos.map((relatedPromo) => (
+                      <div
+                        key={`promo-${relatedPromo.id}`}
+                        className="w-1/2 lg:w-1/4 shrink-0 grow-0 space-y-0 p-2 lg:p-3 box-border"
+                      >
+                        <article className="bg-white border border-gray-300 flex flex-col h-full rounded-none overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-lg origin-center">
+                          <div className="relative aspect-square w-full overflow-hidden bg-gray-50">
+                            <Image
+                              src={relatedPromo.image}
+                              alt={`Promo ${relatedPromo.title}`}
+                              width={500}
+                              height={500}
+                              className="object-cover w-full h-full"
+                              priority={relatedPromo.id <= 4}
+                            />
+                          </div>
 
-                                  <div className="p-4 md:p-5 flex flex-col grow text-center bg-white">
-                                    <h3 className="text-sm md:text-base font-bold text-[#003f88] mb-2 min-h-12 flex items-center justify-center leading-snug line-clamp-2">
-                                      {relatedPromo.title}
-                                    </h3>
-                                    <p className="text-xs text-gray-500 leading-normal mb-5 line-clamp-3 md:line-clamp-4">
-                                      {relatedPromo.shortDescription}
-                                    </p>
-                                    <div className="mt-auto">
-                                      <Link
-                                        href={`/promo/${relatedPromo.id}`}
-                                        passHref
-                                      >
-                                        <button
-                                          type="button"
-                                          className="w-full py-2.5 border bg-[#003f88] text-white text-xs font-semibold transition-all duration-300 hover:bg-[#e67e22] hover:text-white cursor-pointer"
-                                        >
-                                          Selengkapnya →
-                                        </button>
-                                      </Link>
-                                    </div>
-                                  </div>
-                                </article>
-                              </div>
-                            ))}
-                        </div>
-                      );
-                    },
-                  )}
-                </motion.div>
+                          <div className="p-4 md:p-5 flex flex-col grow text-center bg-white">
+                            <h3 className="text-sm md:text-base font-bold text-[#003f88] mb-2 min-h-12 flex items-center justify-center leading-snug line-clamp-2">
+                              {relatedPromo.title}
+                            </h3>
+                            <p className="text-xs text-gray-500 leading-normal mb-5 line-clamp-3 md:line-clamp-4">
+                              {relatedPromo.shortDescription}
+                            </p>
+                            <div className="mt-auto">
+                              <Link href={`/promo/${relatedPromo.id}`} passHref>
+                                <button
+                                  type="button"
+                                  className="w-full py-2.5 border bg-[#003f88] text-white text-xs font-semibold transition-all duration-300 hover:bg-[#e67e22] hover:text-white cursor-pointer"
+                                >
+                                  Selengkapnya →
+                                </button>
+                              </Link>
+                            </div>
+                          </div>
+                        </article>
+                      </div>
+                    ))}
+                  </motion.div>
+                </div>
               )}
             </div>
 
-            {/* Dot Indicators */}
+            {/* Navigasi berupa lingkaran penanda baris halaman aktif */}
             <div className="mt-8 flex items-center justify-center gap-4 mb-12 md:mb-0">
               {Array.from({ length: totalRelatedDots }).map((_, index) => {
                 const isActive = index === relatedIndex;
