@@ -379,11 +379,11 @@ const PromoKesehatan = () => {
             </p>
           </div>
 
-          {/* POSISI DIPINDAH KE ATAS: BARISAN STATISTIK COUNTER */}
+          {/* data statistik medika lestari */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12 text-center items-start mb-20">
             {STATS_DATA.map((stat, index) => (
               <div key={index} className="flex flex-col items-center">
-                {/* Image tetap di atas */}
+                {/* Image */}
                 <div className="mb-3 w-15 h-15 flex items-center justify-center relative">
                   <Image
                     src={stat.icon}
@@ -394,14 +394,14 @@ const PromoKesehatan = () => {
                   />
                 </div>
 
-                {/* Pembungkus Angka dan Teks */}
-                <div className="flex flex-row items-center justify-center gap-x-3 text-left">
-                  {/* Number (Leading-none wajib ada agar tidak ada spasi hantu) */}
+                {/* Pembungkus Angka dan Teks  */}
+                <div className="flex flex-col md:flex-row items-center justify-center gap-y-2 md:gap-x-3 text-center md:text-left">
+                  {/* Number */}
                   <div className="text-4xl md:text-[50px] font-bold leading-none text-white flex-shrink-0">
                     {stat.number}
                   </div>
 
-                  {/* Teks di sebelah kanan */}
+                  {/* Teks  */}
                   <p className="text-xs uppercase font-bold text-white/90 max-w-[120px] leading-tight">
                     {stat.text}
                   </p>
