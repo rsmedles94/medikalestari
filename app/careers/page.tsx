@@ -278,7 +278,7 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
       {/* Position Photos Carousel */}
       {config?.position_photos && config.position_photos.length > 0 && (
         <div className="max-w-3xl mx-auto px-4 py-1">
-          <h2 className="text-2xl font-bold text-center mb-8 text-gray-800">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-8 text-gray-800">
             Posisi Lowongan yang Tersedia
           </h2>
 
@@ -400,10 +400,10 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
       ) : (
         <>
           {/* Button Daftar Section */}
-          <div className="max-w-2xl mx-auto px-4 py-12 flex justify-center">
+          <div className="max-w-2xl mx-auto px-4 py-12 flex justify-center ">
             <button
               onClick={() => setShowModal(true)}
-              className="px-8 py-4 bg-[#003f88] text-white font-semibold hover:bg-[#003f88]/90 transition-colors cursor-pointer active:scale-95"
+              className="px-8 py-4 bg-[#003f88] text-white font-semibold hover:bg-[#003f88]/90 transition-colors cursor-pointer active:scale-95 mb-20"
             >
               Daftar Lowongan
             </button>
