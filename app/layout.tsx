@@ -7,7 +7,6 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AdminSidebar from "@/components/AdminSidebar";
 import PopupDisplay from "@/components/PopupDisplay";
-import EmergencyWA from "@/components/EmergencyWA";
 import MobileBottomNavbar from "@/components/MobileBottomNavbar";
 import { PageTracker } from "@/components/PageTracker";
 import { usePathname } from "next/navigation";
@@ -135,7 +134,6 @@ function LayoutContent({
           <Navbar />
           <MobileBottomNavbar />
           <main className="min-h-screen pt-28 md:pt-26">{children}</main>
-          <EmergencyWA />
           <PopupDisplay />
           <Footer />
         </>

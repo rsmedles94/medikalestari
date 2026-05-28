@@ -364,8 +364,10 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
           opacity: isInPromoSection ? 0 : 1,
         }}
         transition={{ duration: 0 }}
-        className={`hidden md:block relative w-full bg-white border-t border-gray-200 z-30 shadow-md overflow-hidden ${
-          isInPromoSection ? "invisible" : "visible"
+        className={`hidden md:block relative w-full bg-white border-t border-gray-200 z-30 shadow-md ${
+          isInPromoSection
+            ? "invisible pointer-events-none"
+            : "visible pointer-events-auto"
         }`}
       >
         <div className="max-w-[1220px] mx-auto px-4 md:px-8 flex justify-between items-center h-16 relative z-10">
