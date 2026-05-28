@@ -174,7 +174,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
       "Vaccination Services",
     ],
 
-    "Petunjuk Pasien": [
+    "Portal Pasien": [
       "Alur Pendaftaran",
       "Asuransi & Rekanan",
       "Panduan Kunjungan",
