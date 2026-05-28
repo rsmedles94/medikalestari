@@ -852,12 +852,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                     </div>
                   ))}
 
-                <div className="mt-6 px-4">
-                  <AuthArea
-                    isMobile
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  />
-                </div>
+                <AuthArea isMobile onClick={() => setIsMobileMenuOpen(false)} />
               </div>
             </motion.div>
           </>
@@ -985,17 +980,16 @@ function AuthArea({
       <Link
         href="/admin/dashboard"
         onClick={onClick}
-        className={`flex items-center gap-2 font-medium ${
-          isMobile ? "text-[#003f88] text-lg" : "text-gray-700 text-sm "
+        className={`flex items-center gap-2 font-semibold ${
+          isMobile
+            ? "p-4 text-gray-700 text-lg border-b"
+            : "text-gray-700 text-sm"
         }`}
         title="Panel Admin"
       >
-        <LayoutDashboard
-          size={isMobile ? 24 : 20}
-          className={isMobile ? "" : "text-gray-700"}
-        />
+        <LayoutDashboard size={20} className="text-gray-700" />
 
-        {isMobile && <span>DASHBOARD ADMIN</span>}
+        {isMobile && <span>Panel Admin</span>}
       </Link>
     );
   }
@@ -1004,15 +998,14 @@ function AuthArea({
     <Link
       href="/admin/login"
       onClick={onClick}
-      className={`flex items-center gap-2 font-medium ${
-        isMobile ? "text-gray-600 text-lg" : "text-gray-700 text-sm"
+      className={`flex items-center gap-2 font-semibold ${
+        isMobile
+          ? "p-4 text-gray-700 text-base border-b"
+          : "text-gray-700 text-sm"
       }`}
       title="Login"
     >
-      <UserCircle
-        size={isMobile ? 24 : 20}
-        className={isMobile ? "" : "text-gray-700"}
-      />
+      <UserCircle size={20} className="text-gray-700" />
 
       {isMobile && <span>Login</span>}
     </Link>
