@@ -128,7 +128,7 @@ export default function AlurPendaftaran() {
         <div className="absolute inset-0 bg-gradient-to-r from-[#003f88]/90 to-[#013a63]/90 z-0" />
 
         {/* Content */}
-        <div className="max-w-[1172px] mx-auto px-4 md:px-8 py-2 relative z-10">
+        <div className="max-w-[1172px] mx-auto px-4 md:px-8 py-0 md:py-2 relative z-10">
           {/* Breadcrumb Navigation */}
           <nav className="mb-6" aria-label="Breadcrumb">
             <ol className="flex items-center space-x-2 text-sm">
