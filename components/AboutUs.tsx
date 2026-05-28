@@ -47,11 +47,14 @@ const AboutUs = () => {
   ];
 
   return (
-    <section className="bg-white text-slate-900 scroll md:-mt-12 pb-20">
-      {/* 1. SECTION FOTO & JUDUL */}
-      <div className="max-w-[1159px] mx-auto px-4 py-8 md:py-20">
+    <article className="bg-white text-slate-900 scroll md:-mt-12 pb-20">
+      {/* breadcrumb tentang kami */}
+      <header className="max-w-[1159px] mx-auto px-4 py-8 md:py-20">
         <div className="mb-8 md:mb-12 border-b border-slate-100 pb-6 md:py-9 ">
-          <nav className="flex items-center gap-1 text-[14px] text-gray-300 mb-4">
+          <nav
+            aria-label="Breadcrumb"
+            className="flex items-center gap-1 text-[14px] text-gray-300 mb-4"
+          >
             <Link
               href="/"
               className="text-black/60 hover:text-gray-300 transition-colors"
@@ -59,7 +62,9 @@ const AboutUs = () => {
               Beranda
             </Link>
             <ChevronRight size={12} className="text-gray-400" />
-            <span className="font-normal">Tentang Kami</span>
+            <span className="font-normal" aria-current="page">
+              Tentang Kami
+            </span>
           </nav>
           <h1 className="text-4xl font-bold text-black mb-2">Tentang Kami</h1>
           <p className="text-slate-600">
@@ -109,10 +114,10 @@ const AboutUs = () => {
             </div>
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* 2. SECTION SEJARAH */}
-      <div className="max-w-[1160px] mx-auto px-6 pb-24">
+      {/* 2. sejarah */}
+      <section className="max-w-[1160px] mx-auto px-6 pb-24">
         <div className="max-w-[1160px]">
           <h2 className="text-3xl font-bold tracking-tight text-slate-950 uppercase mb-6">
             Sejarah Berdirinya RS Medika Lestari
@@ -145,10 +150,10 @@ const AboutUs = () => {
             </p>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* 3. VISI MISI & MOTTO */}
-      <div className="bg-slate-50 border-y border-slate-200 py-24">
+      {/* 3. visi & misi */}
+      <section className="bg-slate-50 border-y border-slate-200 py-24">
         <div className="max-w-[1160px] mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {cardData.map((item) => (
@@ -156,13 +161,13 @@ const AboutUs = () => {
                 key={item.title}
                 className="group relative h-[420px] w-full overflow-hidden bg-white shadow-xl border border-slate-100"
               >
-                {/* Background Image - Tampil di Mobile & Desktop */}
+                {/* background image  */}
                 <div
                   className="absolute inset-0 z-0 bg-cover bg-center transition-transform duration-[800ms] md:scale-105 md:group-hover:scale-100"
                   style={{ backgroundImage: `url('${item.img}')` }}
                 />
 
-                {/* Layer Overlay Biru (Transparansi) */}
+                {/* layer overlay polygon */}
                 <div
                   className="absolute inset-0 z-10 bg-[#003f88]/75 transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] 
                              md:[clip-path:polygon(0_85%,100%_70%,100%_100%,0%_100%)] 
@@ -170,17 +175,17 @@ const AboutUs = () => {
                              md:group-hover:bg-[#003f88]/85"
                 />
 
-                {/* Konten Teks */}
+                {/* konten teks */}
                 <div className="absolute inset-0 z-20 p-8 flex flex-col justify-end">
                   {/* Judul */}
                   <h3 className="text-white text-3xl font-bold transition-all duration-700 md:group-hover:-translate-y-2">
                     {item.title}
                   </h3>
 
-                  {/* Deskripsi - Langsung tampil di mobile, hover di desktop */}
+                  {/* deskripsi */}
                   <div
                     className="max-h-[300px] opacity-100 mt-4 transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] 
-                                 md:max-h-0 md:opacity-0 md:mt-0 md:group-hover:max-h-[200px] md:group-hover:opacity-100 md:group-hover:mt-4"
+                               md:max-h-0 md:opacity-0 md:mt-0 md:group-hover:max-h-[200px] md:group-hover:opacity-100 md:group-hover:mt-4"
                   >
                     <div className="text-white/95 leading-relaxed pt-3 border-t border-white/20 font-medium">
                       {item.content}
@@ -191,14 +196,14 @@ const AboutUs = () => {
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* 5. SECTION MITRA KAMI */}
-      <div className="max-w-[1160px] mx-auto px-6 py-24">
+      {/* 5. mitra kami */}
+      <section className="max-w-[1160px] mx-auto px-6 py-24">
         <div className="text-center mb-16">
-          <h3 className="text-2xl md:text-3xl font-bold text-slate-900 mb-4 uppercase">
+          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-4 uppercase">
             Mitra Kami
-          </h3>
+          </h2>
           <p className="text-slate-500 text-[15px] max-w-[600px] mx-auto">
             Komitmen kami terhadap kualitas divalidasi oleh organisasi perawatan
             kesehatan bergengsi
@@ -216,7 +221,7 @@ const AboutUs = () => {
               )}
               <Image
                 src={`/tentangkami/${item}.webp`}
-                alt={item}
+                alt={`Logo mitra ${item}`}
                 fill
                 className="object-contain p-4"
                 onLoad={() => handleImageLoad(`partner-${item}`)}
@@ -224,8 +229,8 @@ const AboutUs = () => {
             </div>
           ))}
         </div>
-      </div>
-    </section>
+      </section>
+    </article>
   );
 };
 

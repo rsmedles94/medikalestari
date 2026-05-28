@@ -100,23 +100,23 @@ const AdminSidebar = () => {
 
   const isActive = (path: string) => pathname === path;
 
-  // Jangan render sidebar jika sedang loading atau belum authenticated
+  //  render sidebar loading dan  authenticated
   if (authLoading) {
-    return null; // Don't render while loading
+    return null; // logic render sebelum loading
   }
 
   if (!isAuthenticated) {
-    return null; // Don't render if not authenticated
+    return null; // login render sebelum authenticated
   }
 
-  // Compute sidebar width classes for mobile
+  
   const mobileSidebarWidthClass = isOpen
     ? "w-64 translate-x-0"
     : "w-64 -translate-x-full";
 
   return (
     <>
-      {/* MOBILE TOGGLE */}
+      {/* toggle mobile */}
       {isMobile && (
         <button
           onClick={() => setIsOpen(!isOpen)}
@@ -126,7 +126,7 @@ const AdminSidebar = () => {
         </button>
       )}
 
-      {/* OVERLAY MOBILE */}
+      {/* overlay mobile */}
       {isMobile && isOpen && (
         <button
           className="fixed inset-0 bg-black/30 z-40 cursor-pointer"
@@ -139,7 +139,7 @@ const AdminSidebar = () => {
         />
       )}
 
-      {/* SIDEBAR */}
+      {/* sidebar */}
       <aside
         className={`
           ${isMobile ? "fixed top-0 left-0 z-50" : "fixed top-0 left-0 z-40"}
@@ -149,7 +149,7 @@ const AdminSidebar = () => {
           ${isMobile ? mobileSidebarWidthClass : "w-64"}
         `}
       >
-        {/* HEADER */}
+        {/* header */}
         <div className="p-6 border-b border-slate-100 min-h-22 flex items-center">
           <Link href="/admin/dashboard" className="flex items-center gap-3">
             {isOpen ? (
@@ -162,7 +162,7 @@ const AdminSidebar = () => {
           </Link>
         </div>
 
-        {/* MENU */}
+        {/* menu */}
         <nav className="flex-1 px-3 py-5 space-y-2 overflow-y-auto">
           {menuItems.map((item) => {
             const active = isActive(item.href);
@@ -205,9 +205,9 @@ const AdminSidebar = () => {
           })}
         </nav>
 
-        {/* FOOTER */}
+        {/* footer */}
         <div className="p-4 border-t border-slate-100 space-y-3">
-          {/* HOME */}
+          {/* tombol beranda */}
           <button
             onClick={() => router.push("/")}
             className="
@@ -221,7 +221,7 @@ const AdminSidebar = () => {
             {isOpen && <span className="text-[14px]">Beranda</span>}
           </button>
 
-          {/* LOGOUT */}
+          {/* tombol logout */}
           <button
             onClick={handleLogout}
             className="

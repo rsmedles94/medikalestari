@@ -27,16 +27,16 @@ export default function DoctorDetailSkeleton() {
 
   return (
     <div className="min-h-screen bg-white text-[#1A1A1A]">
-      <div className="max-w-7xl mx-auto px-6 py-12">
+      <main className="max-w-7xl mx-auto px-6 py-12">
         {/* Kontainer Grid Utama */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mt-6">
           {/* KOLOM KIRI: STICKY IMAGE & SOCIALS */}
-          <div className="lg:col-span-4 lg:sticky lg:top-60 flex flex-col items-center">
+          <aside className="lg:col-span-4 lg:sticky lg:top-60 flex flex-col items-center">
             {/* Profile Image Skeleton */}
             <div className="w-64 h-64 md:w-80 md:h-80 rounded-full bg-slate-300 animate-pulse border-8 border-white shadow-lg"></div>
 
             {/* Social Share Section Skeleton */}
-            <div className="mt-10 flex flex-col items-center gap-4">
+            <section className="mt-10 flex flex-col items-center gap-4">
               <div className="h-3 w-32 bg-slate-200 rounded animate-pulse"></div>
               <div className="flex gap-4">
                 {socialIds.map((id) => (
@@ -46,19 +46,19 @@ export default function DoctorDetailSkeleton() {
                   ></div>
                 ))}
               </div>
-            </div>
-          </div>
+            </section>
+          </aside>
 
           {/* KOLOM KANAN: INFO, BIODATA & JADWAL */}
           <div className="lg:col-span-8 space-y-8">
             {/* Doctor Name & Specialty Skeleton */}
-            <div>
+            <header>
               <div className="h-12 w-64 bg-slate-300 rounded animate-pulse mb-3"></div>
               <div className="h-5 w-48 bg-slate-200 rounded animate-pulse"></div>
-            </div>
+            </header>
 
-            {/* SECTION 1: BIODATA */}
-            <div>
+            {/* BIODATA */}
+            <section>
               <div className="h-5 w-20 bg-slate-300 rounded animate-pulse mb-4"></div>
               <div className="space-y-2">
                 {biodataIds.map((id) => (
@@ -68,10 +68,10 @@ export default function DoctorDetailSkeleton() {
                   ></div>
                 ))}
               </div>
-            </div>
+            </section>
 
-            {/* SECTION 2: JADWAL PRAKTEK */}
-            <div className="pt-10 border-t border-slate-100">
+            {/* JADWAL PRAKTEK */}
+            <section className="pt-10 border-t border-slate-100">
               <div className="h-5 w-24 bg-slate-300 rounded animate-pulse mb-4"></div>
               <div className="overflow-x-auto border border-slate-200 rounded-lg">
                 <table className="w-full">
@@ -104,10 +104,10 @@ export default function DoctorDetailSkeleton() {
                 </table>
               </div>
               <div className="mt-8 h-12 w-40 bg-slate-300 rounded-full animate-pulse"></div>
-            </div>
+            </section>
 
-            {/* SECTION 3: REKOMENDASI DOKTER */}
-            <div className="pt-10 border-t border-slate-100">
+            {/* REKOMENDASI DOKTER */}
+            <section className="pt-10 border-t border-slate-100">
               <div className="h-5 w-40 bg-slate-300 rounded animate-pulse mb-6"></div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {recommendIds.map((id) => (
@@ -125,10 +125,10 @@ export default function DoctorDetailSkeleton() {
                   </div>
                 ))}
               </div>
-            </div>
+            </section>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

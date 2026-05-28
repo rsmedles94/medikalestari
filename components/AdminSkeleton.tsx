@@ -11,20 +11,20 @@ export const AdminPageSkeleton = ({
     <div className="min-h-screen bg-gray-100">
       <div className="animate-pulse">
         {/* Header Skeleton */}
-        <div className="bg-white border-b border-slate-100 p-4">
+        <header className="bg-white border-b border-slate-100 p-4">
           <div className="max-w-[1220px] mx-auto px-4 md:px-8 py-4">
             <div className="h-8 bg-slate-200 rounded w-1/4" />
           </div>
-        </div>
+        </header>
 
         {/* Content Area */}
-        <div className="max-w-[1220px] mx-auto px-4 md:px-8 py-8">
+        <main className="max-w-[1220px] mx-auto px-4 md:px-8 py-8">
           <div className="space-y-6">
             {/* Button/Action Bar Skeleton */}
             <div className="h-12 bg-slate-200 rounded w-40" />
 
             {/* Table/Content Skeleton */}
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+            <section className="bg-white rounded-lg shadow-md overflow-hidden">
               <div className="p-6 space-y-6">
                 {new Array(5).fill(0).map((_, i) => (
                   <div key={`row-${i}`} className="space-y-3">
@@ -36,9 +36,9 @@ export const AdminPageSkeleton = ({
                   </div>
                 ))}
               </div>
-            </div>
+            </section>
           </div>
-        </div>
+        </main>
       </div>
     </div>
   );
@@ -46,7 +46,7 @@ export const AdminPageSkeleton = ({
 
 export const AdminTableSkeleton = ({ rows = 5 }: { rows?: number }) => {
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden animate-pulse">
+    <section className="bg-white rounded-lg shadow-md overflow-hidden animate-pulse">
       <div className="p-6 space-y-4">
         {new Array(rows).fill(0).map((_, i) => (
           <div key={`skeleton-row-${i}`} className="flex gap-4">
@@ -57,6 +57,6 @@ export const AdminTableSkeleton = ({ rows = 5 }: { rows?: number }) => {
           </div>
         ))}
       </div>
-    </div>
+    </section>
   );
 };

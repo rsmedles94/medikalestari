@@ -25,7 +25,7 @@ export default function BookingForm({
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
 
-  // Scroll Lock - Prevent background scroll saat modal terbuka
+  // Scroll Lock Mencegah pengguliran latar belakang saat modal terbuka
   useEffect(() => {
     // Tambahkan overflow hidden ke body untuk mencegah scroll
     const scrollbarWidth =
@@ -103,9 +103,10 @@ export default function BookingForm({
         exit={{ opacity: 0, scale: 0.98, y: 10 }}
         className="fixed inset-0 z-[70] flex items-center justify-center p-4 pointer-events-none"
       >
-        <div className="bg-white rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] w-full max-w-sm overflow-hidden pointer-events-auto border border-slate-100">
+        {/* container modal utama */}
+        <section className="bg-white rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] w-full max-w-sm overflow-hidden pointer-events-auto border border-slate-100">
           {/* Header */}
-          <div className="p-7 pb-2 flex items-start justify-between">
+          <header className="p-7 pb-2 flex items-start justify-between">
             <div className="pr-4">
               <h2 className="text-xl font-bold text-slate-900 leading-tight">
                 Buat Janji Temu
@@ -120,9 +121,10 @@ export default function BookingForm({
             >
               <X size={20} />
             </button>
-          </div>
+          </header>
 
-          <div className="p-7">
+
+          <main className="p-7">
             <AnimatePresence mode="wait">
               {submitted ? (
                 <motion.div
@@ -213,8 +215,8 @@ export default function BookingForm({
                 </form>
               )}
             </AnimatePresence>
-          </div>
-        </div>
+          </main>
+        </section>
       </motion.div>
     </AnimatePresence>
   );

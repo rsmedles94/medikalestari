@@ -36,11 +36,7 @@ export default function DoctorRecommendation({
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="mt-12 pt-8 border-t border-slate-100"
-    >
+    <section className="mt-12 pt-8 border-t border-slate-100">
       <h2 className="text-lg font-bold text-slate-800 mb-4 tracking-tight">
         Rekomendasi {specialty} lainnya
       </h2>
@@ -54,7 +50,7 @@ export default function DoctorRecommendation({
         {recommendedDoctors.map((doctor) => (
           <motion.div key={doctor.id} variants={itemVariants}>
             {doctor.status === "cuti" ? (
-              <div className="relative group flex items-center p-3 bg-white border border-slate-100 rounded-xl transition-all duration-200 -mt-2 opacity-60 pointer-events-none">
+              <article className="relative group flex items-center p-3 bg-white border border-slate-100 rounded-xl transition-all duration-200 -mt-2 opacity-60 pointer-events-none">
                 {/* overlay CUTI */}
                 <div className="absolute inset-0 z-10 flex items-center justify-center">
                   <span className="text-5xl text-red-400 italic font-extrabold opacity-90">
@@ -82,10 +78,10 @@ export default function DoctorRecommendation({
                     </p>
                   </div>
                 </div>
-              </div>
+              </article>
             ) : (
-              <Link href={`/dokter/${doctor.id}`}>
-                <div className="group flex items-center p-3 bg-white border border-slate-100 rounded-xl hover:border-blue-200 hover:shadow-md hover:shadow-[#003f88] transition-all duration-200 -mt-2">
+              <Link href={`/dokter/${doctor.id}`} className="block">
+                <article className="group flex items-center p-3 bg-white border border-slate-100 rounded-xl hover:border-blue-200 hover:shadow-md hover:shadow-[#003f88] transition-all duration-200 -mt-2">
                   <div className="relative flex-shrink-0 w-16 h-16 rounded-full overflow-hidden bg-slate-50 border border-slate-50">
                     <Image
                       src={doctor.image_url || "/placeholder-doctor.jpg"}
@@ -113,16 +109,17 @@ export default function DoctorRecommendation({
                       height="16"
                       fill="currentColor"
                       viewBox="0 0 256 256"
+                      aria-hidden="true"
                     >
                       <path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"></path>
                     </svg>
                   </div>
-                </div>
+                </article>
               </Link>
             )}
           </motion.div>
         ))}
       </motion.div>
-    </motion.div>
+    </section>
   );
 }

@@ -106,7 +106,7 @@ export default function DoctorScheduleDisplay({
         </table>
       </div>
 
-      <div className="mt-10 flex justify-end md:justify-start">
+      <div className="mt-10 flex justify-end md:justify-start mb-20 md:mb-0">
         <button
           onClick={onBooking}
           disabled={doctorStatus === "cuti"}

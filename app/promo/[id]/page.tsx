@@ -421,7 +421,7 @@ export default function PromoDetailPage() {
         <section className="pt-16 pb-16 mt-12 border-t border-slate-100">
           <div className="w-full">
             <header className="mb-4">
-              <h2 className="text-2xl md:text-3xl font-bold text-[#003f88]">
+              <h2 className="text-2xl md:text-3xl font-bold text-black">
                 Promo Lainnya
               </h2>
             </header>
