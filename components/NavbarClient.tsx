@@ -830,6 +830,18 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                                 itemHref = "/services/rehabilitasi-medik";
                               else if (subitem === "Vaccination Services")
                                 itemHref = "/services/vaccination-services";
+                              else if (subitem === "Tarif Kamar")
+                                itemHref = "/tarif-kamar";
+                              else if (subitem === "Alur Pendaftaran")
+                                itemHref = "/alur-pendaftaran";
+                              else if (subitem === "Asuransi & Rekanan")
+                                itemHref = "/asuransi-rekanan";
+                              else if (subitem === "Panduan Kunjungan")
+                                itemHref = "/panduan-kunjungan";
+                              else if (subitem === "Kontak")
+                                itemHref = "/kontak-kami";
+                              else if (subitem === "Syarat & Ketentuan")
+                                itemHref = "/syarat-ketentuan";
 
                               return (
                                 <Link
