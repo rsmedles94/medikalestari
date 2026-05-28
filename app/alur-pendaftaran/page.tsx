@@ -118,8 +118,17 @@ export default function AlurPendaftaran() {
   return (
     <main className="min-h-screen bg-white">
       {/* Header Section with Breadcrumb */}
-      <section className="bg-gradient-to-r from-[#003f88] to-[#013a63] text-white py-8 md:py-15">
-        <div className="max-w-[1170px] mx-auto px-4 md:px-8">
+      <section
+        className="bg-cover bg-center bg-no-repeat text-white py-8 md:py-15 relative"
+        style={{
+          backgroundImage: "url(/informasi.jpg)",
+        }}
+      >
+        {/* Blue Overlay with 90% opacity */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#003f88]/90 to-[#013a63]/90 z-0" />
+
+        {/* Content */}
+        <div className="max-w-[1170px] mx-auto px-4 md:px-8 relative z-10">
           {/* Breadcrumb Navigation */}
           <nav className="mb-6" aria-label="Breadcrumb">
             <ol className="flex items-center space-x-2 text-sm">
@@ -163,7 +172,7 @@ export default function AlurPendaftaran() {
       <section className="py-16 md:py-24 bg-gray-50">
         <div className="max-w-[1200px] mx-auto px-4 md:px-8">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 text-center">
-            Langkah Langkah Mudah
+            Petunjuk Pendaftaran
           </h2>
           <p className="text-center text-gray-600 mb-16 max-w-2xl mx-auto">
             Ikuti panduan di bawah untuk melakukan pendaftaran ke RS Medika
