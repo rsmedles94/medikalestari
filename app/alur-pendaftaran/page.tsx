@@ -128,7 +128,7 @@ export default function AlurPendaftaran() {
         <div className="absolute inset-0 bg-gradient-to-r from-[#003f88]/90 to-[#013a63]/90 z-0" />
 
         {/* Content */}
-        <div className="max-w-[1170px] mx-auto px-4 md:px-8 relative z-10">
+        <div className="max-w-[1172px] mx-auto px-4 md:px-8 py-2 relative z-10">
           {/* Breadcrumb Navigation */}
           <nav className="mb-6" aria-label="Breadcrumb">
             <ol className="flex items-center space-x-2 text-sm">
@@ -170,7 +170,7 @@ export default function AlurPendaftaran() {
 
       {/* Steps Section */}
       <section className="py-16 md:py-24 bg-gray-50">
-        <div className="max-w-[1200px] mx-auto px-4 md:px-8">
+        <div className="max-w-[1172px] mx-auto px-4 md:px-8">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 text-center">
             Petunjuk Pendaftaran
           </h2>
@@ -231,7 +231,7 @@ export default function AlurPendaftaran() {
 
       {/* Contact Section */}
       <section className="py-16 md:py-24 bg-gray-50">
-        <div className="max-w-[1200px] mx-auto px-4 md:px-8">
+        <div className="max-w-[1172px] mx-auto px-4 md:px-8">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 text-center">
             Hubungi Kami
           </h2>
@@ -315,7 +315,7 @@ export default function AlurPendaftaran() {
 
       {/* FAQ Section */}
       <section className="py-16 md:py-24 bg-white">
-        <div className="max-w-[1200px] mx-auto px-4 md:px-8">
+        <div className="max-w-[1172px] mx-auto px-4 md:px-8">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 text-center">
             Pertanyaan Umum
           </h2>
@@ -345,8 +345,8 @@ export default function AlurPendaftaran() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 md:py-24 bg-gradient-to-r from-[#003f88] to-[#013a63] text-white ">
-        <div className="max-w-[1200px] mx-auto px-4 md:px-8 text-center">
+      <section className="py-16 md:py-24 bg-[#003f88] text-white ">
+        <div className="max-w-[1172px] mx-auto px-4 md:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             Siap untuk Mendaftar?
           </h2>
