@@ -183,6 +183,36 @@ const AWARDS_DATA = [
     src: "/images/awards/award11.png",
     alt: "Best Nursing Homes US News 2",
   },
+  {
+    id: 12,
+    src: "/images/awards/award12.webp",
+    alt: "Best Nursing Homes US News 2",
+  },
+  {
+    id: 13,
+    src: "/images/awards/award13.webp",
+    alt: "Best Nursing Homes US News 2",
+  },
+  {
+    id: 14,
+    src: "/images/awards/award14.webp",
+    alt: "Best Nursing Homes US News 2",
+  },
+  {
+    id: 15,
+    src: "/images/awards/award15.webp",
+    alt: "Best Nursing Homes US News 2",
+  },
+  {
+    id: 16,
+    src: "/images/awards/award16.webp",
+    alt: "Best Nursing Homes US News 2",
+  },
+  {
+    id: 17,
+    src: "/images/awards/award17.webp",
+    alt: "Best Nursing Homes US News 2",
+  },
 ];
 
 // ==========================================
