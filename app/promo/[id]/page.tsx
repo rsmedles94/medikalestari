@@ -17,12 +17,12 @@ const PROMO_DATA = [
       "Lindungi diri dan keluarga dari virus Influenza dan bakteri Pneumonia dengan paket vaksinasi komprehensif.",
     image: "/images/promo/paket1.jpeg",
     fullDescription: `
-      <h3 class="text-2xl font-bold text-[#003f88] mb-4">Vaksin Influenza & Prevenar</h3>
+      <h3 class="text-2xl font-bold text-black mb-4">Vaksin Influenza & Prevenar</h3>
       <p class="text-gray-700 mb-4 leading-relaxed">
         Vaksin Influenza dan Prevenar adalah solusi perlindungan kesehatan yang komprehensif untuk Anda dan seluruh keluarga. 
         Dengan teknologi vaksin terkini, kami memberikan perlindungan maksimal terhadap virus influenza dan bakteri pneumonia.
       </p>
-      <h4 class="text-lg font-semibold text-[#003f88] mt-6 mb-3">Keuntungan Layanan Kami:</h4>
+      <h4 class="text-2xl font-semibold text-black mt-6 mb-3">Keuntungan Layanan Kami:</h4>
       <ul class="list-disc list-inside text-gray-700 space-y-2">
         <li>Vaksin berkualitas tinggi dari produsen terpercaya</li>
         <li>Tenaga medis profesional dan berpengalaman</li>
@@ -39,12 +39,12 @@ const PROMO_DATA = [
       "Layanan khitan anak dengan metode modern yang minim nyeri, proses penyembuhan cepat.",
     image: "/images/promo/paket2.jpeg",
     fullDescription: `
-      <h3 class="text-2xl font-bold text-[#003f88] mb-4">Sirkumsisi Anak (Khitan)</h3>
+      <h3 class="text-2xl font-bold text-black mb-4">Sirkumsisi Anak (Khitan)</h3>
       <p class="text-gray-700 mb-4 leading-relaxed">
         Layanan khitan kami menggunakan metode modern dengan teknologi terkini untuk memastikan prosedur yang aman, minim nyeri, 
         dan pemulihan yang cepat. Tim dokter kami berpengalaman dalam menangani sirkumsisi anak dengan pendekatan yang profesional and penuh perhatian.
       </p>
-      <h4 class="text-lg font-semibold text-[#003f88] mt-6 mb-3">Metode & Keunggulan:</h4>
+      <h4 class="text-2xl font-semibold text-black mt-6 mb-3">Metode & Keunggulan:</h4>
       <ul class="list-disc list-inside text-gray-700 space-y-2">
         <li>Metode modern dengan minimal invasive</li>
         <li>Anestesi lokal untuk kenyamanan maksimal</li>
@@ -61,13 +61,13 @@ const PROMO_DATA = [
       "Deteksi dini adanya batu empedu melalui pemeriksaan radiologi dan laboratorium.",
     image: "/images/promo/paket3.jpeg",
     fullDescription: `
-      <h3 class="text-2xl font-bold text-[#003f88] mb-4">Skrining Batu Empedu</h3>
+      <h3 class="text-2xl font-bold text-black mb-4">Skrining Batu Empedu</h3>
       <p class="text-gray-700 mb-4 leading-relaxed">
         Skrining batu empedu kami menggunakan teknologi ultrasonografi (USG) dan pemeriksaan laboratorium terkini untuk mendeteksi 
         keberadaan batu empedu secara dini. Deteksi dini ini penting untuk mencegah komplikasi serius.
       </p>
 
-      <h4 class="text-lg font-semibold text-[#003f88] mt-6 mb-3">Jenis Pemeriksaan:</h4>
+      <h4 class="text-2xl font-semibold text-black mt-6 mb-3">Jenis Pemeriksaan:</h4>
       <ul class="list-disc list-inside text-gray-700 space-y-2">
         <li>Ultrasonografi (USG) abdomen</li>
         <li>Tes fungsi hati</li>
@@ -84,12 +84,12 @@ const PROMO_DATA = [
       "Wujudkan momen kelahiran buah hati yang aman dan nyaman dengan paket persalinan lengkap.",
     image: "/images/promo/paket4.jpeg",
     fullDescription: `
-      <h3 class="text-2xl font-bold text-[#003f88] mb-4">Persalinan Bunda</h3>
+      <h3 class="text-2xl font-bold text-black mb-4">Persalinan Bunda</h3>
       <p class="text-gray-700 mb-4 leading-relaxed">
         Paket persalinan Bunda kami dirancang khusus untuk memberikan pengalaman persalinan yang aman, nyaman, dan berkesan bagi ibu dan bayi. 
         Dengan dukungan tim medis profesional dan fasilitas modern, kami siap mendampingi momen spesial Anda.
       </p>
-      <h4 class="text-lg font-semibold text-[#003f88] mt-6 mb-3">Fasilitas & Layanan:</h4>
+      <h4 class="text-2xl font-semibold text-black mt-6 mb-3">Fasilitas & Layanan:</h4>
       <ul class="list-disc list-inside text-gray-700 space-y-2">
         <li>Ruang bersalin modern dan nyaman</li>
         <li>Dokter obgin berpengalaman</li>
@@ -106,13 +106,13 @@ const PROMO_DATA = [
       "Metode persalinan caesar ERACS untuk pemulihan yang jauh lebih cepat.",
     image: "/images/promo/paket5.jpeg",
     fullDescription: `
-      <h3 class="text-2xl font-bold text-[#003f88] mb-4">Persalinan ERACS</h3>
+      <h3 class="text-2xl font-bold text-text-black mb-4">Persalinan ERACS</h3>
       <p class="text-gray-700 mb-4 leading-relaxed">
         ERACS (Early Rehabilitation After Cesarean Section) adalah metode persalinan caesar modern yang memungkinkan pemulihan lebih cepat. 
         Dengan teknik ini, ibu dapat bergerak lebih cepat dan kembali ke aktivitas normal dalam waktu singkat.
       </p>
 
-      <h4 class="text-lg font-semibold text-[#003f88] mt-6 mb-3">Keunggulan ERACS:</h4>
+      <h4 class="text-2xl font-semibold text-text-black mt-6 mb-3">Keunggulan ERACS:</h4>
       <ul class="list-disc list-inside text-gray-700 space-y-2">
         <li>Pemulihan 3-5x lebih cepat</li>
         <li>Mobilisasi dini pasca operasi</li>
@@ -129,13 +129,13 @@ const PROMO_DATA = [
       "Kembalikan kejernihan penglihatan Anda dengan prosedur operasi katarak teknologi Phacoemulsification.",
     image: "/images/promo/paket6.jpeg",
     fullDescription: `
-      <h3 class="text-2xl font-bold text-[#003f88] mb-4">Operasi Mata Katarak</h3>
+      <h3 class="text-2xl font-bold text-black mb-4">Operasi Mata Katarak</h3>
       <p class="text-gray-700 mb-4 leading-relaxed">
         Operasi katarak kami menggunakan teknologi Phacoemulsification, metode modern yang memungkinkan lensa yang keruh dihancurkan dan dihisap 
         melalui sayatan kecil. Teknik ini memberikan hasil penglihatan yang lebih baik dengan pemulihan cepat.
       </p>
 
-      <h4 class="text-lg font-semibold text-[#003f88] mt-6 mb-3">Teknologi & Keunggulan:</h4>
+      <h4 class="text-2xl font-semibold text-text-black mt-6 mb-3">Teknologi & Keunggulan:</h4>
       <ul class="list-disc list-inside text-gray-700 space-y-2">
         <li>Teknologi Phacoemulsification terkini</li>
         <li>Dokter spesialis mata berpengalaman</li>
@@ -152,13 +152,13 @@ const PROMO_DATA = [
       "Pemeriksaan kesehatan menyeluruh bagi calon jamaah haji untuk memastikan kondisi fisik prima.",
     image: "/images/promo/paket7.jpeg",
     fullDescription: `
-      <h3 class="text-2xl font-bold text-[#003f88] mb-4">Medical Checkup Jamaah Haji</h3>
+      <h3 class="text-2xl font-bold text-black mb-4">Medical Checkup Jamaah Haji</h3>
       <p class="text-gray-700 mb-4 leading-relaxed">
         Program medical checkup khusus untuk calon jamaah haji kami dirancang untuk memastikan kondisi kesehatan Anda prima sebelum menunaikan ibadah haji. 
         Pemeriksaan komprehensif ini mencakup berbagai tes untuk memastikan Anda siap secara fisik.
       </p>
 
-      <h4 class="text-lg font-semibold text-[#003f88] mt-6 mb-3">Pemeriksaan Meliputi:</h4>
+      <h4 class="text-2xl font-semibold text-black mt-6 mb-3">Pemeriksaan Meliputi:</h4>
       <ul class="list-disc list-inside text-gray-700 space-y-2">
         <li>Pemeriksaan fisik lengkap</li>
         <li>Tes laboratorium komprehensif</li>
@@ -175,13 +175,13 @@ const PROMO_DATA = [
       "Layanan uji saring narkoba yang cepat, akurat, dan rahasia untuk keperluan edukasi, kerja, maupun instansi.",
     image: "/images/promo/paket8.jpeg",
     fullDescription: `
-      <h3 class="text-2xl font-bold text-[#003f88] mb-4">Tes Bebas Narkoba</h3>
+      <h3 class="text-2xl font-bold text-black mb-4">Tes Bebas Narkoba</h3>
       <p class="text-gray-700 mb-4 leading-relaxed">
         Layanan tes narkoba kami menyediakan pemeriksaan yang cepat, akurat, dan terjaga kerahasiaannya. Kami melayani pemeriksaan untuk keperluan 
         edukasi, rekrutmen kerja, atau persyaratan instansi dengan standar internasional.
       </p>
 
-      <h4 class="text-lg font-semibold text-[#003f88] mt-6 mb-3">Jenis Tes & Layanan:</h4>
+      <h4 class="text-2xl font-semibold text-black mt-6 mb-3">Jenis Tes & Layanan:</h4>
       <ul class="list-disc list-inside text-gray-700 space-y-2">
         <li>Tes urine dan darah</li>
         <li>Hasil cepat 24-48 jam</li>
@@ -198,13 +198,13 @@ const PROMO_DATA = [
       "Pemeriksaan kesehatan menyeluruh bagi asisten rumah tangga dan pengemudi demi kenyamanan dan keamanan keluarga Anda.",
     image: "/images/promo/paket9.jpeg",
     fullDescription: `
-      <h3 class="text-2xl font-bold text-[#003f88] mb-4">Medical Checkup ART & Driver</h3>
+      <h3 class="text-2xl font-bold text-black mb-4">Medical Checkup ART & Driver</h3>
       <p class="text-gray-700 mb-4 leading-relaxed">
         Program medical checkup khusus untuk asisten rumah tangga (ART) dan pengemudi kami dirancang untuk memastikan mereka dalam kondisi 
         kesehatan yang baik sehingga dapat menjalankan tugas mereka dengan aman dan berkualitas.
       </p>
 
-      <h4 class="text-lg font-semibold text-[#003f88] mt-6 mb-3">Pemeriksaan Mencakup:</h4>
+      <h4 class="text-2xl font-semibold text-black mt-6 mb-3">Pemeriksaan Mencakup:</h4>
       <ul class="list-disc list-inside text-gray-700 space-y-2">
         <li>Pemeriksaan kesehatan umum</li>
         <li>Tes laboratorium lengkap</li>
@@ -221,13 +221,13 @@ const PROMO_DATA = [
       "Deteksi dini kanker serviks (leher rahim) melalui pemeriksaan sitologi yang aman dan ditangani oleh tim medis ahli.",
     image: "/images/promo/paket10.jpeg",
     fullDescription: `
-      <h3 class="text-2xl font-bold text-[#003f88] mb-4">Pap Smear</h3>
+      <h3 class="text-2xl font-bold text-black mb-4">Pap Smear</h3>
       <p class="text-gray-700 mb-4 leading-relaxed">
         Pap smear adalah pemeriksaan sitologi penting untuk deteksi dini kanker serviks (leher rahim) pada wanita. Pemeriksaan ini dilakukan 
         oleh tim medis ahli dengan peralatan modern untuk hasil yang akurat dan aman.
       </p>
 
-      <h4 class="text-lg font-semibold text-[#003f88] mt-6 mb-3">Pentingnya Pap Smear:</h4>
+      <h4 class="text-2xl font-semibold text-text-black mt-6 mb-3">Pentingnya Pap Smear:</h4>
       <ul class="list-disc list-inside text-gray-700 space-y-2">
         <li>Deteksi dini kanker serviks</li>
         <li>Deteksi infeksi HPV</li>
@@ -244,13 +244,13 @@ const PROMO_DATA = [
       "Pemeriksaan kehamilan berkala untuk memantau kesehatan ibu dan tumbuh kembang janin secara optimal.",
     image: "/images/promo/paket11.jpeg",
     fullDescription: `
-      <h3 class="text-2xl font-bold text-[#003f88] mb-4">Antenatal Care</h3>
+      <h3 class="text-2xl font-bold text-black mb-4">Antenatal Care</h3>
       <p class="text-gray-700 mb-4 leading-relaxed">
         Program Antenatal Care kami adalah layanan pemeriksaan kehamilan berkala yang komprehensif untuk memantau kesehatan ibu hamil dan 
         perkembangan janin. Dengan pemeriksaan rutin, kami memastikan kehamilan Anda berjalan dengan optimal dan aman.
       </p>
 
-      <h4 class="text-lg font-semibold text-[#003f88] mt-6 mb-3">Layanan Antenatal Care:</h4>
+      <h4 class="text-2xl font-semibold text-black mt-6 mb-3">Layanan Antenatal Care:</h4>
       <ul class="list-disc list-inside text-gray-700 space-y-2">
         <li>Pemeriksaan rutin selama kehamilan</li>
         <li>USG 4D berkala</li>
@@ -267,13 +267,13 @@ const PROMO_DATA = [
       "Tingkatkan daya tahan dan kebugaran tubuh secara instan dengan injeksi vitamin dan nutrisi esensial.",
     image: "/images/promo/paket12.jpeg",
     fullDescription: `
-      <h3 class="text-2xl font-bold text-[#003f88] mb-4">Imun Booster</h3>
+      <h3 class="text-2xl font-bold text-text-black mb-4">Imun Booster</h3>
       <p class="text-gray-700 mb-4 leading-relaxed">
         Layanan Imun Booster kami menyediakan injeksi vitamin dan nutrisi esensial untuk meningkatkan daya tahan tubuh dan kebugaran secara instan. 
         Cocok untuk mereka yang memiliki aktivitas tinggi atau ingin menjaga kesehatan preventif.
       </p>
 
-      <h4 class="text-lg font-semibold text-[#003f88] mt-6 mb-3">Komposisi Imun Booster:</h4>
+      <h4 class="text-2xl font-semibold text-text-black mt-6 mb-3">Komposisi Imun Booster:</h4>
       <ul class="list-disc list-inside text-gray-700 space-y-2">
         <li>Vitamin C dan Vitamin D tinggi</li>
         <li>Mineral esensial dan antioxidant</li>
