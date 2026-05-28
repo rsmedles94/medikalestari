@@ -288,6 +288,13 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               itemHref = "/services/rehabilitasi-medik";
             else if (title === "Vaccination Services")
               itemHref = "/services/vaccination-services";
+            else if (title === "Tarif Kamar") itemHref = "/tarif-kamar";
+            else if (title === "Alur Pendaftaran")
+              itemHref = "/alur-pendaftaran";
+            else if (title === "Asuransi & Rekanan")
+              itemHref = "/asuransi-rekanan";
+            else if (title === "Panduan Kunjungan")
+              itemHref = "/panduan-kunjungan";
 
             return (
               <div
