@@ -10,7 +10,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-primary: var(--primary-blue);
-  --font-family-sans: Avenir, Arial, Helvetica, sans-serif;
+  --font-family-sans: "Google Sans", Avenir, Arial, Helvetica, sans-serif;
 }
 
 /* Menyembunyikan scrollbar 
@@ -28,7 +28,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Avenir, Arial, Helvetica, sans-serif;
+  font-family: "Google Sans", Avenir, Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -webkit-touch-callout: none;
 }
