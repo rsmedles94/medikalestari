@@ -66,7 +66,7 @@ export default function TarifKamar() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white font-sans pb-24 md:pb-0">
+      <div className="min-h-screen bg-white font-sans pb-28 md:pb-0">
         <div className="max-w-[1190px] w-full mx-auto px-4 pt-4 md:pt-16 ">
           {/* Cards Skeleton Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
@@ -141,9 +141,9 @@ export default function TarifKamar() {
   }
 
   return (
-    <main className="min-h-screen bg-white pb-24 md:pb-0">
+    <main className="min-h-screen bg-white pb-28 md:pb-0">
       {/* Ditambahkan w-full agar max-w bekerja dengan benar */}
-      <div className="max-w-[1190px] w-full mx-auto px-4">
+      <div className="max-w-[1139px] w-full mx-auto px-4">
         {/* Breadcrumb */}
         <div className="pt-8 md:pt-16 pb-2 md:pb-4">
           <nav
@@ -190,7 +190,8 @@ export default function TarifKamar() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: index * 0.1 }}
-                  className="bg-white shadow-md border border-gray-100 hover:shadow-lg transition-shadow duration-300 overflow-hidden cursor-pointer flex flex-col justify-between h-full"
+                  /* Menghapus class 'group' dari sini agar hover luar tidak mempengaruhi gambar */
+                  className="bg-white border border-gray-300 hover:shadow-lg transition-shadow duration-300 overflow-hidden cursor-pointer flex flex-col justify-between h-full"
                   onClick={() => {
                     // Optional: Navigate to detail page if you create one
                   }}
