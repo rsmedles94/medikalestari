@@ -55,6 +55,10 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
   const [language, setLanguage] = useState<"ID" | "EN">("ID");
 
+  const [isInPromoSection, setIsInPromoSection] = useState(false);
+
+  const [isPromoOrBelowStarted, setIsPromoOrBelowStarted] = useState(false);
+
   const pathname = usePathname();
 
   const router = useRouter();
@@ -71,11 +75,57 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
   useEffect(() => {
     const controlNavbar = () => {
-      if (window.scrollY > lastScrollY && window.scrollY > 50) {
+      // Deteksi PromoKesehatan, ServiceSection, dan MadingSection
+      const allSections = document.querySelectorAll("section");
+      let isInHideZone = false; // Sedang di dalam PromoKesehatan, ServiceSection, atau MadingSection
+      let hasStartedHideZone = false; // Sudah melewati hide zone sepenuhnya
+
+      for (const section of allSections) {
+        const rect = section.getBoundingClientRect();
+
+        // Check apakah section ini adalah PromoKesehatan, ServiceSection, atau MadingSection
+        const isPromoSection = section.innerHTML.includes(
+          "Selamat Datang di Rumah Sakit Medika Lestari",
+        );
+        const isServiceSection = section.innerHTML.includes("Kisah Pasien"); // ServiceSection punya judul "Kisah Pasien"
+        const isMadingSection =
+          section.className.includes("bg-gradient") &&
+          section.innerHTML.includes("Mading"); // Rough detection untuk MadingSection
+
+        if (isPromoSection || isServiceSection || isMadingSection) {
+          // Cek apakah sedang DI dalam section ini (top section sudah masuk ke atas viewport)
+          // rect.top <= 0 berarti section sudah masuk dari atas
+          // rect.bottom > 0 berarti masih ada bagian yang terlihat
+          isInHideZone = isInHideZone || (rect.top <= 0 && rect.bottom > 0);
+
+          // Cek apakah sudah sepenuhnya melewati section (bottom section keluar dari bawah viewport)
+          // rect.bottom <= 0 berarti section sudah keluar sepenuhnya ke atas
+          hasStartedHideZone = hasStartedHideZone || rect.bottom <= 0;
+        }
+      }
+
+      // Jika sedang di hide zone atau sudah melewatinya, hide navbars
+      const shouldHideNavbars = isInHideZone || hasStartedHideZone;
+
+      // Bottom navbar hide sama seperti top navbar
+      setIsInPromoSection(shouldHideNavbars);
+
+      // Top navbar hide saat di hide zone atau sudah melewatinya
+      setIsPromoOrBelowStarted(shouldHideNavbars);
+
+      // Top navbar behavior:
+      if (shouldHideNavbars) {
+        // Di hide zone, navbar selalu hide
         setIsVisible(false);
       } else {
-        setIsVisible(true);
+        // Di luar hide zone, kontrol berdasarkan scroll direction
+        if (window.scrollY > lastScrollY && window.scrollY > 50) {
+          setIsVisible(false);
+        } else {
+          setIsVisible(true);
+        }
       }
+
       setLastScrollY(window.scrollY);
     };
     window.addEventListener("scroll", controlNavbar);
@@ -285,8 +335,6 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               {logoNode}
             </Link>
 
-
-
             <div className="md:hidden flex items-center gap-3 p-2 text-gray-700 relative z-[110]">
               <button
                 onClick={() => openSearch()}
@@ -309,7 +357,17 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
       {/* --- Bottom Navbar --- */}
 
-      <div className="hidden md:block relative w-full bg-white border-t border-gray-200 z-30 shadow-md">
+      <motion.div
+        initial={{ height: "auto", opacity: 1 }}
+        animate={{
+          height: isInPromoSection ? 0 : "auto",
+          opacity: isInPromoSection ? 0 : 1,
+        }}
+        transition={{ duration: 0 }}
+        className={`hidden md:block relative w-full bg-white border-t border-gray-200 z-30 shadow-md overflow-hidden ${
+          isInPromoSection ? "invisible" : "visible"
+        }`}
+      >
         <div className="max-w-[1220px] mx-auto px-4 md:px-8 flex justify-between items-center h-16 relative z-10">
           <div className="flex h-full text-[15px] text-gray-700">
             <button
@@ -577,7 +635,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
         </div>
 
         <SearchDropdown isOpen={isSearchOpen} onClose={() => closeSearch()} />
-      </div>
+      </motion.div>
 
       {/* --- Mobile Menu --- */}
 
