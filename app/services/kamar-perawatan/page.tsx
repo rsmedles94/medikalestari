@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight, Link as LinkIcon } from "lucide-react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
@@ -37,7 +36,6 @@ interface RoomResponse {
 }
 
 export default function KamarPerawatan() {
-  const searchParams = useSearchParams();
   const [rooms, setRooms] = useState<RoomData[]>([]);
   const [activeTab, setActiveTab] = useState<string>("");
   const [loading, setLoading] = useState(true);
@@ -59,23 +57,10 @@ export default function KamarPerawatan() {
           room_images: room.room_images || [],
         }));
         setRooms(roomsData);
-
-        // Check if there's a room parameter in the URL
-        const roomParam = searchParams.get("room");
-        if (roomParam && roomsData.length > 0) {
-          const foundRoom = roomsData.find(
-            (r: RoomData) => r.name === roomParam,
-          );
-          if (foundRoom) {
-            setActiveTab(foundRoom.name);
-          } else {
-            setActiveTab(roomsData[0].name);
-          }
-        } else if (roomsData.length > 0) {
+        if (roomsData.length > 0) {
           setActiveTab(roomsData[0].name);
+          setCurrentImageIndex(0);
         }
-
-        setCurrentImageIndex(0);
       } catch (error) {
         console.error("Error loading rooms:", error);
       } finally {
@@ -84,7 +69,7 @@ export default function KamarPerawatan() {
     };
 
     loadRooms();
-  }, [searchParams]);
+  }, []);
 
   const currentKamar = rooms.find((r: RoomData) => r.name === activeTab);
 

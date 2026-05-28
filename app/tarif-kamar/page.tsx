@@ -67,8 +67,28 @@ export default function TarifKamar() {
   if (loading) {
     return (
       <div className="min-h-screen bg-white font-sans">
-        <div className="max-w-[1190px] mx-auto px-4 pt-4 md:pt-16">
-          {/* Hanya Menyisakan Cards Skeleton Grid */}
+        <div className="max-w-[1200px] mx-auto px-4 pt-4 md:pt-16">
+          {/* Breadcrumb Skeleton */}
+          <div className="h-6 bg-gradient-to-r from-gray-100 via-gray-50 to-gray-100 rounded w-32 mb-8 relative overflow-hidden">
+            <div
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent"
+              style={{
+                animation: "shimmer 2s infinite",
+              }}
+            />
+          </div>
+
+          {/* Title Skeleton */}
+          <div className="h-10 bg-gradient-to-r from-gray-100 via-gray-50 to-gray-100 rounded w-48 mb-12 relative overflow-hidden">
+            <div
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent"
+              style={{
+                animation: "shimmer 2s infinite",
+              }}
+            />
+          </div>
+
+          {/* Cards Skeleton Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
               <div
@@ -139,141 +159,125 @@ export default function TarifKamar() {
   }
 
   return (
-    <main className="min-h-screen bg-white">
-      <div className="max-w-[1139px] w-full mx-auto px-4">
-        {/* Breadcrumb dengan Nav */}
+    <div className="min-h-screen bg-white">
+      <div className="max-w-[1200px] mx-auto px-4">
+        {/* Breadcrumb */}
         <div className="pt-8 md:pt-16 pb-2 md:pb-4">
-          <nav
-            className="flex items-center gap-1 text-[14px] font-normal text-gray-300 mb-8"
-            aria-label="Breadcrumb"
-          >
+          <nav className="flex items-center gap-1 text-[14px] font-normal text-gray-300 mb-8">
             <Link
               href="/"
               className="text-black/60 hover:text-gray-400 transition-colors"
             >
               Beranda
             </Link>
-            <ChevronRight
-              size={12}
-              className="text-black/60"
-              aria-hidden="true"
-            />
+            <ChevronRight size={12} className="text-black/60" />
             <span className="font-normal text-gray-300">Tarif Kamar</span>
           </nav>
         </div>
 
-        {/* Page Title Header */}
-        <header className="mb-12">
+        {/* Page Title */}
+        <div className="mb-12">
           <h1 className="text-3xl md:text-4xl font-bold text-[#001e3d] mb-4">
             Tarif Kamar Perawatan
           </h1>
           <p className="text-gray-600 text-base">
             Pilih kamar yang sesuai dengan kebutuhan Anda
           </p>
-        </header>
+        </div>
 
-        {/* Cards Grid Section */}
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-12">
+        {/* Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-12">
           {rooms.length > 0 ? (
             rooms.map((room, index) => {
-              const displayImage =
-                room.room_images && room.room_images.length > 0
-                  ? room.room_images[0].image_url
-                  : room.image_url;
+              const displayImage = room.room_images && room.room_images.length > 0 
+                ? room.room_images[0].image_url 
+                : room.image_url;
 
               return (
-                <motion.article
+                <motion.div
                   key={room.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: index * 0.1 }}
-                  className="bg-white shadow-md border border-gray-100 hover:shadow-lg transition-shadow duration-300 overflow-hidden group cursor-pointer flex flex-col justify-between h-full"
+                  className="bg-white rounded-lg shadow-md border border-gray-100 hover:shadow-lg transition-shadow duration-300 overflow-hidden group cursor-pointer"
                   onClick={() => {
                     // Optional: Navigate to detail page if you create one
                   }}
                 >
-                  {/* Bagian Atas Card (Gambar + Informasi Utama) */}
-                  <div className="flex flex-col flex-grow">
-                    {/* Image Container */}
-                    <div className="relative w-full h-48 bg-[#f8f9fa] overflow-hidden">
-                      {displayImage && (
-                        <Image
-                          src={displayImage}
-                          alt={room.name}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      )}
-                    </div>
-
-                    {/* Content Detail */}
-                    <div className="p-6 flex-grow flex flex-col justify-between">
-                      <div>
-                        {/* Room Name */}
-                        <h2 className="text-xl font-bold text-[#001e3d] mb-2">
-                          {room.name}
-                        </h2>
-
-                        {/* Price */}
-                        <p className="text-lg font-bold text-gray-700 mb-4">
-                          Rp.{room.price}{" "}
-                          <span className="text-sm font-normal text-gray-400">
-                            /malam
-                          </span>
-                        </p>
-
-                        {/* Description */}
-                        <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                          {room.description}
-                        </p>
-                      </div>
-
-                      {/* Facilities */}
-                      {room.facilities.length > 0 && (
-                        <div className="mt-auto pt-2">
-                          <p className="text-xs font-bold text-gray-700 uppercase mb-2">
-                            Fasilitas:
-                          </p>
-                          <div className="space-y-1">
-                            {room.facilities
-                              .slice(0, 3)
-                              .map((facility, idx) => (
-                                <div
-                                  key={idx}
-                                  className="flex items-center gap-2"
-                                >
-                                  <div className="w-1 h-1 rounded-full bg-[#001e3d]" />
-                                  <span className="text-xs text-gray-600">
-                                    {facility}
-                                  </span>
-                                </div>
-                              ))}
-                            {room.facilities.length > 3 && (
-                              <p className="text-xs text-gray-500 mt-1">
-                                +{room.facilities.length - 3} fasilitas lainnya
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                  {/* Image Container */}
+                  <div className="relative w-full h-48 bg-[#f8f9fa] overflow-hidden">
+                    {displayImage && (
+                      <Image
+                        src={displayImage}
+                        alt={room.name}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    )}
                   </div>
 
-                  {/* Bagian Bawah Card (Tombol Selengkapnya Tetap di Sini) */}
-                  <div className="px-6 pb-6">
+                  {/* Content */}
+                  <div className="p-6">
+                    {/* Room Name */}
+                    <h2 className="text-xl font-bold text-[#001e3d] mb-2">
+                      {room.name}
+                    </h2>
+
+                    {/* Price */}
+                    <p className="text-lg font-bold text-gray-700 mb-4">
+                      Rp.{room.price}{" "}
+                      <span className="text-sm font-normal text-gray-400">
+                        /malam
+                      </span>
+                    </p>
+
+                    {/* Description */}
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                      {room.description}
+                    </p>
+
+                    {/* Facilities */}
+                    {room.facilities.length > 0 && (
+                      <div className="mb-4">
+                        <p className="text-xs font-bold text-gray-700 uppercase mb-2">
+                          Fasilitas:
+                        </p>
+                        <div className="space-y-1">
+                          {room.facilities.slice(0, 3).map((facility, idx) => (
+                            <div
+                              key={idx}
+                              className="flex items-center gap-2"
+                            >
+                              <div className="w-1 h-1 rounded-full bg-[#001e3d]" />
+                              <span className="text-xs text-gray-600">
+                                {facility}
+                              </span>
+                            </div>
+                          ))}
+                          {room.facilities.length > 3 && (
+                            <p className="text-xs text-gray-500 mt-1">
+                              +{room.facilities.length - 3} fasilitas lainnya
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* View Details Button */}
                     <Link
                       href="/services/kamar-perawatan"
                       onClick={(e) => {
                         e.preventDefault();
+                        // Scroll to the room on the detail page if needed
                         sessionStorage.setItem("selectedRoom", room.name);
                         window.location.href = `/services/kamar-perawatan?room=${room.name}`;
                       }}
-                      className="inline-block w-full py-2 px-4 bg-[#003f88] text-white text-center text-sm font-medium hover:bg-[#e67e22] transition-colors"
+                      className="mt-4 inline-block w-full py-2 px-4 bg-[#001e3d] text-white text-center text-sm font-medium rounded hover:bg-[#001e3d]/90 transition-colors"
                     >
-                      Selengkapnya →
+                      Lihat Detail
                     </Link>
                   </div>
-                </motion.article>
+                </motion.div>
               );
             })
           ) : (
@@ -283,8 +287,8 @@ export default function TarifKamar() {
               </p>
             </div>
           )}
-        </section>
+        </div>
       </div>
-    </main>
+    </div>
   );
 }
