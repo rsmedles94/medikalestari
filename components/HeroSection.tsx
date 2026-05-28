@@ -567,7 +567,7 @@ const HeroSection = () => {
       </div>
 
       {/* Searchbar Desktop */}
-      <div className="hidden md:absolute md:inset-0 md:flex md:flex-col md:items-end md:justify-end md:z-20 md:pr-15 md:pb-32 md:pointer-events-none">
+      <div className="hidden md:absolute md:inset-0 md:flex md:flex-col md:items-end md:justify-end md:z-20 md:pr-9 md:pb-15 md:pointer-events-none">
         <div className="md:pointer-events-auto bg-[#003f88]  shadow-lg p-5">
           {/* titlr */}
           <h2 className="text-lg font-bold text-white mb-4">
