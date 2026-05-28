@@ -23,15 +23,15 @@ const ServiceSection = () => {
     {
       id: 1,
       image: "/mcu.png",
-      title: "Menemukan Oase dari Kecanduan",
+      title:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse ornare facilisis varius. Duis quis lacinia dui, et porta tellus. Quisque sed porttitor urna. Donec felis odio, varius malesuada eleifend sit amet, egestas quis orci. Maecenas sem lorem, sollicitudin ut volutpat id, fermentum id dolor.",
       href: "/kisah-pasien/menemukan-oase",
       aspectClass: "aspect-[16/10]",
     },
     {
       id: 4,
       image: "/mcu.png",
-      title:
-        "Di Tempat Penampungan Korban Kekerasan Dalam Rumah Tangga, Keluarga Kini Mendapatkan Dukungan Kesehatan Mental",
+      title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse ornare facilisis varius. Duis quis lacinia dui, et porta tellus. Quisque sed porttitor urna. Donec felis odio, varius malesuada eleifend sit amet, egestas quis orci. Maecenas sem lorem, sollicitudin ut volutpat id, fermentum id dolor.",
       href: "/kisah-pasien/dukungan-kesehatan-mental",
       aspectClass: "aspect-[3/3.8]",
     },
@@ -43,14 +43,14 @@ const ServiceSection = () => {
     {
       id: 2,
       image: "/mcu.png",
-      title: "Pemutaran Film yang Mengubah Hidupnya",
+      title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse ornare facilisis varius. Duis quis lacinia dui, et porta tellus. Quisque sed porttitor urna. Donec felis odio, varius malesuada eleifend sit amet, egestas quis orci. Maecenas sem lorem, sollicitudin ut volutpat id, fermentum id dolor.",
       href: "/kisah-pasien/pemutaran-film",
       aspectClass: "aspect-[3/3.45]",
     },
     {
       id: 5,
       image: "/mcu.png",
-      title: "Dari Sumber Penderitaan, Kekuatan-Nya Muncul",
+      title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse ornare facilisis varius. Duis quis lacinia dui, et porta tellus. Quisque sed porttitor urna. Donec felis odio, varius malesuada eleifend sit amet, egestas quis orci. Maecenas sem lorem, sollicitudin ut volutpat id, fermentum id dolor.",
       href: "/kisah-pasien/kekuatan-muncul",
       aspectClass: "aspect-[16/11.8]",
     },
@@ -61,7 +61,8 @@ const ServiceSection = () => {
     {
       id: 3,
       image: "/mcu.png",
-      title: "Menghidupkan Kembali Tangan Harry",
+      title:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse ornare facilisis varius. Duis quis lacinia dui, et porta tellus. Quisque sed porttitor urna. Donec felis odio, varius malesuada eleifend sit amet, egestas quis orci. Maecenas sem lorem, sollicitudin ut volutpat id, fermentum id dolor.",
       href: "/kisah-pasien/tangan-harry",
       aspectClass: "aspect-[16/14.1]",
     },
@@ -69,7 +70,7 @@ const ServiceSection = () => {
       id: 6,
       image: "/mcu.png",
       title:
-        'Setelah Kondisi Diabetesnya Membaik, Pria Brooklyn Ini Menjadi "Keajaiban yang Berjalan"',
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse ornare facilisis varius. Duis quis lacinia dui, et porta tellus. Quisque sed porttitor urna. Donec felis odio, varius malesuada eleifend sit amet, egestas quis orci. Maecenas sem lorem, sollicitudin ut volutpat id, fermentum id dolor.",
       href: "/kisah-pasien/keajaiban-berjalan",
       aspectClass: "aspect-[3/3]",
     },
