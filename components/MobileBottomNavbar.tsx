@@ -6,10 +6,16 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSearchModal } from "@/context/SearchModalContext";
 
+/**
+ * ini untuk komponen navigasi bawah khusus tampilan mobile
+ */
 const MobileBottomNavbar = () => {
   const pathname = usePathname();
   const { isSearchOpen } = useSearchModal();
 
+  /**
+   * ini untuk daftar menu navigasi beserta ikon SVG (outline & solid)
+   */
   const navItems = [
     {
       label: "Beranda",
@@ -85,6 +91,9 @@ const MobileBottomNavbar = () => {
     },
   ];
 
+  /**
+   * ini untuk menyembunyikan navbar jika modal pencarian sedang terbuka
+   */
   if (isSearchOpen) return null;
 
   return (
@@ -110,19 +119,24 @@ const MobileBottomNavbar = () => {
                 }}
                 className="flex flex-col items-center justify-center w-full relative tap-highlight-transparent overflow-hidden select-none"
               >
-                {/* Indikator Atas - Memakai h-[3px] agar valid di Tailwind & tidak menghilang */}
-                {isItemActive && (
-                  <motion.div
-                    layoutId="mobileNavIndicator"
-                    className="absolute top-0 w-12 h-[3px] bg-white rounded-b-full z-10"
-                    transition={{
-                      type: "tween",
-                      ease: "easeInOut",
-                      duration: 0.23,
-                    }}
-                  />
-                )}
+                {/** * ini untuk indikator aktif bagian atas dengan AnimatePresence agar tidak bug saat pindah halaman 
+                 */}
+                <AnimatePresence mode="wait" presenceAffectsLayout={false}>
+                  {isItemActive && (
+                    <motion.div
+                      layoutId="mobileNavIndicator"
+                      className="absolute top-0 w-12 h-[3px] bg-white rounded-b-full z-10"
+                      transition={{
+                        type: "tween",
+                        ease: "easeInOut",
+                        duration: 0.23,
+                      }}
+                    />
+                  )}
+                </AnimatePresence>
 
+                {/** * ini untuk pembungkus konten ikon dan teks menu navigasi 
+                 */}
                 <motion.div
                   layout
                   className="relative flex flex-col items-center justify-center"
@@ -142,6 +156,8 @@ const MobileBottomNavbar = () => {
                       strokeLinejoin="round"
                       style={{ transform: "translateZ(0)" }}
                     >
+                      {/** * ini untuk animasi transisi perpindahan ikon outline ke solid 
+                       */}
                       <AnimatePresence mode="wait" initial={false}>
                         <motion.g
                           key={isItemActive ? "solid" : "outline"}
