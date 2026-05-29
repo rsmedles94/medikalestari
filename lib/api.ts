@@ -1,7 +1,8 @@
 import { supabase } from "./supabase";
 import { debugSupabaseImageUrl } from "./image-url-helper";
 import { Doctor, Schedule, MadingContent, HeroBanner } from "./types";
-import { deduplicateRequest } from "./request-cache";
+import { deduplicateRequest } from "./enhanced-request-cache";
+import { cacheManager } from "./cache-manager";
 
 // UTILITY: Retry mechanism untuk handle connection pooling issues
 async function withRetry<T>(
@@ -40,7 +41,14 @@ export async function fetchDoctors(
   searchName?: string,
 ): Promise<Doctor[]> {
   // Generate cache key based on parameters to handle different filter combinations
-  const cacheKey = `doctors-${specialty || "all"}-${searchName || "all"}`;
+  const cacheKey = `doctors:${specialty || "all"}:${searchName || "all"}`;
+
+  // Check CacheManager first
+  const cachedData = cacheManager.get(cacheKey);
+  if (cachedData) {
+    console.debug(`[fetchDoctors] Cache hit for ${cacheKey}`);
+    return cachedData as Doctor[];
+  }
 
   return deduplicateRequest(cacheKey, async () => {
     return withRetry(async () => {
@@ -61,7 +69,10 @@ export async function fetchDoctors(
         return [];
       }
 
-      return data || [];
+      const result = data || [];
+      // Store in CacheManager with configured TTL
+      cacheManager.set(cacheKey, result);
+      return result;
     });
   });
 }

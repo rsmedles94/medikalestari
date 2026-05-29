@@ -6,7 +6,10 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { deduplicateRequest, clearRequestCache } from "@/lib/request-cache";
+import {
+  deduplicateRequest,
+  clearRequestCache,
+} from "@/lib/enhanced-request-cache";
 
 interface UseCachedFetchOptions {
   skip?: boolean;

@@ -347,9 +347,10 @@ const PromoKesehatan = () => {
           src="/informasi.jpg"
           alt="Informasi Medika Lestari Background"
           fill
+          sizes="100vw"
           className="object-cover pointer-events-none select-none"
           priority
-          quality={95}
+          quality={75}
         />
         <div className="absolute inset-0 bg-[#003f88]/95" />
       </div>
@@ -504,6 +505,7 @@ const PromoKesehatan = () => {
                             src={award.src}
                             alt={award.alt}
                             fill
+                            sizes="100vw"
                             className="object-contain"
                           />
                         </div>
@@ -523,6 +525,7 @@ const PromoKesehatan = () => {
                             src={award.src}
                             alt={award.alt}
                             fill
+                            sizes="100vw"
                             className="object-contain"
                           />
                         </div>

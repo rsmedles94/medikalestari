@@ -393,6 +393,7 @@ export default function DoctorScheduleGrid({
                         src={doctor.image_url}
                         alt={doctor.name}
                         fill
+                        sizes="56px"
                         className="object-cover"
                       />
                     </div>
