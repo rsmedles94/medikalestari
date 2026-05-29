@@ -12,10 +12,7 @@ const MobileBottomNavbar = () => {
   const pathname = usePathname();
   const { isSearchOpen } = useSearchModal();
 
-  {
-    /** * ini untuk mengoptimalkan memori agar node SVG tidak di-render ulang terus-menerus saat page beralih
-     */
-  }
+  // Memoize navbar items untuk optimize performa
   const navItems = useMemo(
     () => [
       {
@@ -94,16 +91,13 @@ const MobileBottomNavbar = () => {
     [],
   );
 
-  {
-    /** * ini untuk menyembunyikan navbar secara kondisional jika modal pencarian aktif
-     */
-  }
-  if (isSearchOpen) return null;
-
   return (
     <nav
-      className="md:hidden fixed bottom-0 left-0 right-0 bg-[#003f88] z-50 border-t border-white/10 pb-safe shadow-lg will-change-transform transform-gpu"
+      className={`md:hidden fixed bottom-0 left-0 right-0 bg-[#003f88] z-50 border-t border-white/10 pb-safe shadow-lg will-change-transform transform-gpu transition-opacity ${
+        isSearchOpen ? "hidden" : "block"
+      }`}
       aria-label="Mobile Bottom Navigation"
+      suppressHydrationWarning
     >
       <ul className="flex justify-around items-stretch h-20 list-none p-0 m-0">
         {navItems.map((item) => {
@@ -126,17 +120,24 @@ const MobileBottomNavbar = () => {
                 {/** * ini untuk indikator aktif atas murni menggunakan CSS murni agar instan dan bebas jeda/lag
                  */}
                 <div
-                  className={`absolute top-0 w-12 h-[3px] bg-white rounded-b-full z-10 transition-all duration-200 ease-in-out ${
+                  className={`absolute top-0 w-12 h-0.75 bg-white rounded-b-full z-10 transition-all duration-200 ease-in-out ${
                     isItemActive
                       ? "opacity-100 scale-100"
                       : "opacity-0 scale-75 pointer-events-none"
                   }`}
+                  suppressHydrationWarning
                 />
 
                 {/** * ini untuk pembungkus konten menu utama dengan animasi tap css murni yang sangat enteng
                  */}
-                <div className="relative flex flex-col items-center justify-center active:scale-95 transition-transform duration-100 ease-out transform-gpu">
-                  <div className="relative h-6 w-6 flex items-center justify-center">
+                <div
+                  className="relative flex flex-col items-center justify-center active:scale-95 transition-transform duration-100 ease-out transform-gpu"
+                  suppressHydrationWarning
+                >
+                  <div
+                    className="relative h-6 w-6 flex items-center justify-center"
+                    suppressHydrationWarning
+                  >
                     <svg
                       viewBox="0 0 24 24"
                       className={`w-6 h-6 transition-colors duration-200 ${
@@ -162,6 +163,7 @@ const MobileBottomNavbar = () => {
                         ? "text-white font-semibold opacity-100"
                         : "text-white/60 font-medium opacity-90"
                     }`}
+                    suppressHydrationWarning
                   >
                     {item.label}
                   </span>
