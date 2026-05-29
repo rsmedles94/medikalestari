@@ -411,48 +411,7 @@ const PromoKesehatan = () => {
             ))}
           </div>
 
-          {/* Menu Menu */}
-          <div className="mb-24 max-w-[1107px] mx-auto text-[#003f88]">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-              {FEATURES_DATA.map((feat, index) => (
-                <a
-                  key={index}
-                  href={feat.link}
-                  className="flex items-center justify-between p-6 bg-white hover:bg-gray-50 transition-colors duration-200 shadow-md min-h-[96px]"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="shrink-0 w-10 h-10 flex items-center justify-center">
-                      <Image
-                        src={feat.icon}
-                        alt={feat.title}
-                        width={40}
-                        height={40}
-                        className="object-contain"
-                      />
-                    </div>
-                    <span className="text-[17px] font-bold tracking-wide leading-snug">
-                      {feat.title}
-                    </span>
-                  </div>
-                  <div className="shrink-0 pl-2">
-                    <svg
-                      className="w-3 h-3 text-[#003f88]"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="3"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M9 5l7 7-7 7"
-                      />
-                    </svg>
-                  </div>
-                </a>
-              ))}
-            </div>
-          </div>
+          
 
           <hr className="border-white/10 my-16" />
 
