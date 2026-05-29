@@ -535,7 +535,7 @@ const PromoKesehatan = () => {
                 </motion.div>
               </div>
 
-              {/* Indikator Dot Bulat Navigasi untuk Logo Rekanan */}
+              {/* Indikator Dot Rekanan */}
               <div className="mt-12 flex items-center justify-center gap-4">
                 {Array.from({ length: totalAwardDots }).map((_, index) => {
                   const isAwardActive = index === activeAwardIndex;
@@ -554,7 +554,7 @@ const PromoKesehatan = () => {
                             : "#ffffff",
                         }}
                         transition={{ duration: 0.2 }}
-                        className="absolute w-4 h-4 rounded-full z-10 pointer-events-none"
+                        className="absolute w-5 h-5 rounded-full z-10 pointer-events-none"
                       />
 
                       <motion.div
@@ -568,7 +568,7 @@ const PromoKesehatan = () => {
                           stiffness: 280,
                           damping: 22,
                         }}
-                        className="absolute w-8 h-8 rounded-full border-[5px] border-white bg-[#e67e22] z-0 origin-center pointer-events-none"
+                        className="absolute w-8 h-8 rounded-full border-[5px] border-white bg-white z-0 origin-center pointer-events-none "
                       />
                     </button>
                   );
@@ -645,6 +645,7 @@ const PromoKesehatan = () => {
             </motion.div>
           </div>
 
+          {/* dot card promo */}
           <div className="mt-12 flex items-center justify-center gap-4">
             {Array.from({ length: totalDots }).map((_, index) => {
               const isActive = index === activeIndex;
@@ -658,10 +659,10 @@ const PromoKesehatan = () => {
                 >
                   <motion.div
                     animate={{
-                      backgroundColor: isActive ? "#ffffff" : "#003f88",
+                      backgroundColor: isActive ? "#ffffff" : "#3D8ECB",
                     }}
                     transition={{ duration: 0.2 }}
-                    className="absolute w-4 h-4 rounded-full z-10 pointer-events-none"
+                    className="absolute w-5 h-5 rounded-full z-10 pointer-events-none"
                   />
 
                   <motion.div
@@ -675,7 +676,7 @@ const PromoKesehatan = () => {
                       stiffness: 280,
                       damping: 22,
                     }}
-                    className="absolute w-8 h-8 rounded-full border-[5px] border-[#003f88] bg-white z-0 origin-center pointer-events-none"
+                    className="absolute w-9 h-9 rounded-full border-[5px] border-[#3D8ECB] bg-[#3D8ECB] z-0 origin-center pointer-events-none"
                   />
                 </button>
               );

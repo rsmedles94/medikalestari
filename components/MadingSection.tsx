@@ -353,7 +353,7 @@ const MadingSection = memo(() => {
                       backgroundColor: isActive ? "#e67e22" : "#ffffff",
                     }}
                     transition={{ duration: 0.2 }}
-                    className="absolute w-4 h-4 rounded-full z-10 pointer-events-none"
+                    className="absolute w-5 h-5 rounded-full z-10 pointer-events-none"
                   />
 
                   <motion.div
@@ -367,7 +367,7 @@ const MadingSection = memo(() => {
                       stiffness: 280,
                       damping: 22,
                     }}
-                    className="absolute w-8 h-8 rounded-full border-[5px] border-white bg-[#e67e22] z-0 origin-center pointer-events-none"
+                    className="absolute w-9 h-9 rounded-full border-[5px] border-white bg-white z-0 origin-center pointer-events-none"
                   />
                 </button>
               );

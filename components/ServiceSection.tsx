@@ -212,7 +212,7 @@ const ServiceSection = () => {
                   className="focus:outline-none flex items-center justify-center h-8 w-8 relative"
                   aria-label={`Go to page ${index + 1}`}
                 >
-                  {/* Bulatan Dot Inti Tengah */}
+                  {/* dot ulasan */}
                   <motion.div
                     animate={{
                       backgroundColor: isActive
@@ -220,7 +220,7 @@ const ServiceSection = () => {
                         : "rgb(255, 255, 255)",
                     }}
                     transition={{ duration: 0.2 }}
-                    className="absolute w-4 h-4 rounded-full z-10 pointer-events-none"
+                    className="absolute w-5 h-5 rounded-full z-10 pointer-events-none"
                   />
 
                   {/* Ring Outer Lingkaran Luar saat Aktif */}
@@ -235,7 +235,7 @@ const ServiceSection = () => {
                       stiffness: 280,
                       damping: 22,
                     }}
-                    className="absolute w-8 h-8 rounded-full border-[5px] border-white bg-white z-0 origin-center pointer-events-none"
+                    className="absolute w-9 h-9 rounded-full border-[5px] border-white bg-white z-0 origin-center pointer-events-none"
                   />
                 </button>
               );
