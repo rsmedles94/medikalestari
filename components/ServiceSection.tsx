@@ -103,15 +103,15 @@ const ServiceSection = () => {
   };
 
   return (
-    <section className="w-full bg-[#f8f9fa] py-16 font-sans">
+    <section className="w-full bg-[#3D8ECB] py-16 font-sans">
       <div className="max-w-[1160px] mx-auto px-4 md:px-6">
         {/* Judul Utama */}
         <div className="text-center mb-12">
-          <h2 className="text-2xl md:text-4xl font-bold text-slate-900 mb-2">
-            Ulasan dari Google Maps
+          <h2 className="text-2xl md:text-4xl font-bold text-white mb-2">
+            Ulasan Pasien
           </h2>
-          <p className="text-sm md:text-base text-slate-500 max-w-xl mx-auto">
-            Apa kata mereka yang telah merasakan langsung pelayanan medis di RS
+          <p className="text-sm md:text-base text-white max-w-xl mx-auto">
+            Apa kata mereka yang telah merasakan langsung pelayanan dan fasilitas medis di Rumah Sakit
             Medika Lestari?
           </p>
         </div>
