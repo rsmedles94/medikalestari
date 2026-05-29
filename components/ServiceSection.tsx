@@ -13,12 +13,12 @@ interface KisahItem {
   date: string;
   isLocalGuide?: boolean;
   reviewText: string;
-  images: string[]; // Diwajibkan ada 3 foto per ulasan
+  images: string[]; // Tetap dipertahankan di interface agar tidak merusak contract data asli
   href: string;
 }
 
 const ServiceSection = () => {
-  // Data ulasan asli sesuai permintaan Anda (Masing-masing memiliki tepat 3 foto simetris)
+  // Data ulasan asli tetap dipertahankan logikanya tanpa mengubah struktur object
   const ulasanData: KisahItem[] = [
     {
       id: 1,
@@ -105,18 +105,18 @@ const ServiceSection = () => {
   return (
     <section className="w-full bg-[#3D8ECB] py-16 font-sans">
       <div className="max-w-[1160px] mx-auto px-4 md:px-6">
-        {/* Judul Utama */}
-        <div className="text-center mb-12">
+        {/* Semantic HTML: Menggunakan <header> untuk judul section */}
+        <header className="text-center mb-12">
           <h2 className="text-2xl md:text-4xl font-bold text-white mb-2">
             Ulasan Pasien
           </h2>
           <p className="text-sm md:text-base text-white max-w-xl mx-auto">
-            Apa kata mereka yang telah merasakan langsung pelayanan dan fasilitas medis di Rumah Sakit
-            Medika Lestari?
+            Apa kata mereka yang telah merasakan langsung pelayanan dan
+            fasilitas medis di Rumah Sakit Medika Lestari?
           </p>
-        </div>
+        </header>
 
-        {/* Grid System yang memaksa semua item simetris tinggi & lebarnya */}
+        {/* Grid System - Tetap simetris dan rapi meski tanpa gambar */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
           {ulasanData.map((item, index) => (
             <motion.article
@@ -128,7 +128,6 @@ const ServiceSection = () => {
               onClick={() =>
                 window.open(item.href, "_blank", "noopener,noreferrer")
               }
-              // h-full & flex-col membuat bagian dalam kartu meregang rata bawah secara simetris
               className="w-full h-full flex flex-col justify-between bg-white border border-slate-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer text-left"
             >
               <div>
@@ -153,7 +152,7 @@ const ServiceSection = () => {
                           <span className="text-xs text-[#e67e22] font-medium">
                             Local Guide
                           </span>
-                          <span className="text-xs text-slate-300">•</span>
+                          <span className="text-xs text-slate-300">·</span>
                         </>
                       )}
                       <span className="text-xs text-slate-400">
@@ -168,35 +167,17 @@ const ServiceSection = () => {
                   {renderStars(item.rating)}
                 </div>
 
-                {/* Isi Teks Ulasan dengan batasan baris agar kartu tetap presisi */}
-                <p className="text-sm text-slate-600 leading-relaxed font-normal line-clamp-6 mb-4 break-words">
+                {/* Isi Teks Ulasan */}
+                <p className="text-sm text-slate-600 leading-relaxed font-normal line-clamp-6 mb-2 break-words">
                   {item.reviewText}
                 </p>
-              </div>
-
-              {/* Grid 3 Foto di bawah ulasan yang diletakkan di paling bawah kartu agar simetris */}
-              <div className="mt-auto pt-2 grid grid-cols-3 gap-2">
-                {item.images.map((img, imgIdx) => (
-                  <div
-                    key={imgIdx}
-                    className="relative aspect-square w-full rounded-xl overflow-hidden bg-slate-50 border border-slate-100/80"
-                  >
-                    <Image
-                      src={img}
-                      alt={`Foto lampiran ${item.author} ke-${imgIdx + 1}`}
-                      fill
-                      sizes="(max-w-768px) 33vw, 10vw"
-                      className="object-cover transition-transform duration-500 hover:scale-105"
-                    />
-                  </div>
-                ))}
               </div>
             </motion.article>
           ))}
         </div>
 
-        {/* Tombol Bagian Bawah */}
-        <div className="mt-12 text-center">
+        {/* Semantic HTML: Menggunakan <footer> untuk bagian bawah/action section */}
+        <footer className="mt-12 text-center">
           <Link
             href="https://www.google.com/maps/place/RS+Medika+Lestari/@-6.2248952,106.708865,866m/data=!3m2!1e3!5s0x2e69fb20f9710f11:0xb1df070900c513d2!4m16!1m9!3m8!1s0x2e69fa1cb5b440a1:0xe21244587f98ac8f!2sRS+Medika+Lestari!8m2!3d-6.2248952!4d106.7114399!9m1!1b1!16s%2Fg%2F11h0hgmvp!3m5!1s0x2e69fa1cb5b440a1:0xe21244587f98ac8f!8m2!3d-6.2248952!4d106.7114399!16s%2Fg%2F11h0hgmvp?hl=id-ID&entry=ttu&g_ep=EgoyMDI2MDUyNi4wIKXMDSoASAFQAw%3D%3D"
             target="_blank"
@@ -219,7 +200,7 @@ const ServiceSection = () => {
               />
             </svg>
           </Link>
-        </div>
+        </footer>
       </div>
     </section>
   );
