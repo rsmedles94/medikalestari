@@ -1,8 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { motion } from "framer-motion";
 
 interface KisahItem {
@@ -17,7 +16,8 @@ interface KisahItem {
 }
 
 const ServiceSection = () => {
-  // Data ulasan asli dengan properti 'images' yang sudah dihapus total
+  const [activeIndex, setActiveIndex] = useState(0);
+
   const ulasanData: KisahItem[] = [
     {
       id: 1,
@@ -81,13 +81,16 @@ const ServiceSection = () => {
     },
   ];
 
+  // Penentu langkah slide agar pas saat 3 card tampil penuh
+  const totalDots = ulasanData.length - 2 > 0 ? ulasanData.length - 2 : 1;
+
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }).map((_, index) => (
       <svg
         key={index}
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
-        fill={index < rating ? "#F4B400" : "#E0E0E0"}
+        fill={index < rating ? "#F4B400" : "#E2E8F0"}
         className="w-4 h-4"
       >
         <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
@@ -96,108 +99,149 @@ const ServiceSection = () => {
   };
 
   return (
-    <section className="w-full bg-[#3D8ECB] py-16 font-sans">
-      <div className="max-w-[1160px] mx-auto px-4 md:px-6">
-        {/* Semantic HTML: Header Section */}
-        <header className="text-center mb-12">
-          <h2 className="text-2xl md:text-4xl font-bold text-white mb-2">
-            Ulasan Pasien
-          </h2>
-          <p className="text-sm md:text-base text-white max-w-xl mx-auto">
-            Apa kata mereka yang telah merasakan langsung pelayanan dan
-            fasilitas medis di Rumah Sakit Medika Lestari?
-          </p>
-        </header>
-
-        {/* Grid System */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
-          {ulasanData.map((item, index) => (
-            <motion.article
-              key={item.id}
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{
-                duration: 0.5,
-                delay: index * 0.05,
-                ease: "easeOut",
-              }}
-              onClick={() =>
-                window.open(item.href, "_blank", "noopener,noreferrer")
-              }
-              className="w-full h-full flex flex-col justify-between bg-white border border-slate-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer text-left"
-            >
-              <div>
-                {/* Header Reviewer */}
-                <div className="flex items-start gap-3 mb-3">
-                  <div className="relative w-10 h-10 rounded-full overflow-hidden bg-slate-200 flex-shrink-0">
-                    <Image
-                      src={item.avatar}
-                      alt={item.author}
-                      fill
-                      sizes="40px"
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="flex flex-col min-w-0">
-                    <span className="text-sm font-semibold text-slate-900 truncate">
-                      {item.author}
-                    </span>
-                    <div className="flex items-center gap-1.5 mt-0.5">
-                      {item.isLocalGuide && (
-                        <>
-                          <span className="text-xs text-[#e67e22] font-medium">
-                            Local Guide
-                          </span>
-                          <span className="text-xs text-slate-300">·</span>
-                        </>
-                      )}
-                      <span className="text-xs text-slate-400">
-                        {item.date}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Baris Rating Bintang */}
-                <div className="flex items-center gap-0.5 mb-2.5">
-                  {renderStars(item.rating)}
-                </div>
-
-                {/* Isi Teks Ulasan */}
-                <p className="text-sm text-slate-600 leading-relaxed font-normal line-clamp-6 mb-2 break-words">
-                  {item.reviewText}
-                </p>
-              </div>
-            </motion.article>
-          ))}
+    <section className="w-full bg-[#3D8ECB] py-16 md:py-20 font-sans overflow-hidden">
+      <div className="max-w-[1180px] mx-auto">
+        {/* 1. CONTAINER HEADER */}
+        <div className="px-4 md:px-8 mb-12 flex items-end justify-between w-full gap-4">
+          <div className="text-left min-w-0">
+            <h2 className="text-3xl md:text-4xl font-bold text-white tracking-wide mb-3">
+              Ulasan Pasien
+            </h2>
+            <p className="text-sm md:text-base text-white leading-relaxed whitespace-nowrap overflow-hidden text-ellipsis">
+              Apa kata mereka yang telah merasakan langsung pelayanan dan
+              fasilitas medis di Rumah Sakit Medika Lestari?
+            </p>
+          </div>
+          <button
+            onClick={() =>
+              window.open(
+                "https://www.google.com/maps/place/RS+Medika+Lestari/@-6.2248952,106.708865,866m/data=!3m2!1e3!5s0x2e69fb20f9710f11:0xb1df070900c513d2!4m16!1m9!3m8!1s0x2e69fa1cb5b440a1:0xe21244587f98ac8f!2sRS+Medika+Lestari!8m2!3d-6.2248952!4d106.7114399!9m1!1b1!16s%2Fg%2F11h0hgmvp!3m5!1s0x2e69fa1cb5b440a1:0xe21244587f98ac8f!8m2!3d-6.2248952!4d106.7114399!16s%2Fg%2F11h0hgmvp?hl=id-ID&entry=ttu&g_ep=EgoyMDI2MDUyNi4wIKXMDSoASAFQAw%3D%3D",
+                "_blank",
+                "noopener,noreferrer",
+              )
+            }
+            className="text-white font-semibold text-sm hover:opacity-80 flex items-center gap-1 transition-all shrink-0 border-b border-transparent hover:border-white pb-0.5 mb-0.5 whitespace-nowrap"
+          >
+            Lihat ulasan lainnya <span className="text-base">→</span>
+          </button>
         </div>
 
-        {/* Semantic HTML: Footer Action Section */}
-        <footer className="mt-12 text-center">
-          <Link
-            href="https://www.google.com/maps/place/RS+Medika+Lestari/@-6.2248952,106.708865,866m/data=!3m2!1e3!5s0x2e69fb20f9710f11:0xb1df070900c513d2!4m16!1m9!3m8!1s0x2e69fa1cb5b440a1:0xe21244587f98ac8f!2sRS+Medika+Lestari!8m2!3d-6.2248952!4d106.7114399!9m1!1b1!16s%2Fg%2F11h0hgmvp!3m5!1s0x2e69fa1cb5b440a1:0xe21244587f98ac8f!8m2!3d-6.2248952!4d106.7114399!16s%2Fg%2F11h0hgmvp?hl=id-ID&entry=ttu&g_ep=EgoyMDI2MDUyNi4wIKXMDSoASAFQAw%3D%3D"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-[#003f88] shadow-sm transition-all duration-200"
-          >
-            <span>Lihat Semua Ulasan Google Maps</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-              stroke="currentColor"
-              className="w-4 h-4"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
-              />
-            </svg>
-          </Link>
-        </footer>
+        {/* 2. AREA WRAPPER SLIDER (Mengintip presisi) */}
+        <div className="w-full">
+          <div className="px-4 md:px-8">
+            <div className="overflow-visible relative">
+              <motion.div
+                className="flex gap-6"
+                style={{ width: "max-content" }}
+                animate={{
+                  x:
+                    typeof window !== "undefined" && window.innerWidth < 768
+                      ? -(activeIndex * 304)
+                      : -(activeIndex * 384),
+                }}
+                transition={{ type: "spring", stiffness: 150, damping: 20 }}
+              >
+                {ulasanData.map((item) => (
+                  <article
+                    key={item.id}
+                    onClick={() =>
+                      window.open(item.href, "_blank", "noopener,noreferrer")
+                    }
+                    className="w-[280px] md:w-[360px] h-[380px] flex-shrink-0 flex flex-col justify-between bg-white rounded-none p-6 shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer text-left select-none"
+                  >
+                    <div>
+                      {/* Profil Reviewer */}
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="relative w-11 h-11 rounded-full overflow-hidden bg-slate-100 flex-shrink-0">
+                          <Image
+                            src={item.avatar}
+                            alt={item.author}
+                            fill
+                            sizes="44px"
+                            className="object-cover"
+                          />
+                        </div>
+                        <div className="flex flex-col min-w-0">
+                          <span className="text-sm font-bold text-slate-800 truncate">
+                            {item.author}
+                          </span>
+                          <div className="flex items-center gap-1 mt-0.5">
+                            {item.isLocalGuide && (
+                              <span className="text-[10px] bg-orange-50 text-orange-600 px-1 rounded font-medium">
+                                LG
+                              </span>
+                            )}
+                            <span className="text-xs text-slate-400">
+                              {item.date}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-0.5 mb-3">
+                        {renderStars(item.rating)}
+                      </div>
+
+                      <p className="text-sm text-slate-600 leading-relaxed font-normal line-clamp-6 break-words">
+                        &quot;{item.reviewText}&quot;
+                      </p>
+                    </div>
+
+                    <div className="font-semibold text-xs flex items-center gap-1 mt-2">
+                      <span className="text-[#3D8ECB] hover:text-[#e67e22] hover:underline transition-colors">
+                        → Selengkapnya
+                      </span>
+                    </div>
+                  </article>
+                ))}
+              </motion.div>
+            </div>
+          </div>
+        </div>
+
+        {/* 3. INDIKATOR DOT NAVIGASI (Menggunakan struktur persis pilihanmu) */}
+        <div className="px-4 md:px-8 mt-12">
+          <div className="flex items-center justify-start gap-4">
+            {Array.from({ length: totalDots }).map((_, index) => {
+              const isActive = index === activeIndex;
+              return (
+                <button
+                  key={`dot-${index}`}
+                  type="button"
+                  onClick={() => setActiveIndex(index)}
+                  className="focus:outline-none flex items-center justify-center h-8 w-8 relative"
+                  aria-label={`Go to page ${index + 1}`}
+                >
+                  {/* Bulatan Dot Inti Tengah */}
+                  <motion.div
+                    animate={{
+                      backgroundColor: isActive
+                        ? "#3D8ECB"
+                        : "rgb(255, 255, 255)",
+                    }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute w-4 h-4 rounded-full z-10 pointer-events-none"
+                  />
+
+                  {/* Ring Outer Lingkaran Luar saat Aktif */}
+                  <motion.div
+                    initial={{ scale: 0.4, opacity: 0 }}
+                    animate={{
+                      scale: isActive ? 1 : 0.4,
+                      opacity: isActive ? 1 : 0,
+                    }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 280,
+                      damping: 22,
+                    }}
+                    className="absolute w-8 h-8 rounded-full border-[5px] border-white bg-white z-0 origin-center pointer-events-none"
+                  />
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </section>
   );
