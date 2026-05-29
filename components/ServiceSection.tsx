@@ -116,8 +116,12 @@ const ServiceSection = () => {
               key={item.id}
               initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: index * 0.05 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{
+                duration: 0.5,
+                delay: index * 0.05,
+                ease: "easeOut",
+              }}
               onClick={() =>
                 window.open(item.href, "_blank", "noopener,noreferrer")
               }
