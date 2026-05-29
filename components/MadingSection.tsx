@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState, useCallback, useMemo, memo } from "react";
 import {
   ChevronRight,
   Newspaper,
@@ -13,37 +13,28 @@ import {
 } from "lucide-react";
 import { motion, useAnimationControls } from "framer-motion";
 import { fetchMadingContent } from "@/lib/api";
-import { MadingContent } from "@/lib/types";
+import { useCachedFetch } from "@/lib/hooks/useCachedFetch";
+import { useEffect } from "react";
 
-const MadingSection = () => {
+const MadingSection = memo(() => {
   const [activeTab, setActiveTab] = useState("Informasi");
-  const [allData, setAllData] = useState<MadingContent[]>([]);
-  const [loading, setLoading] = useState(true);
   const [likedItems, setLikedItems] = useState<Record<string, boolean>>({});
   const [activeIndex, setActiveIndex] = useState(0);
   const [itemsPerGroup, setItemsPerGroup] = useState(4);
   const controls = useAnimationControls();
 
-  const toggleLike = (id: string) => {
+  // Wrap fetchMadingContent dengan useCallback untuk stable reference
+  const fetchMadingCallback = useCallback(() => fetchMadingContent(), []);
+
+  // Use cached fetch dengan deduplication
+  const { data: allData = [], loading } = useCachedFetch(
+    fetchMadingCallback,
+    "mading-content",
+    { deduplicate: true },
+  );
+
+  const toggleLike = useCallback((id: string) => {
     setLikedItems((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
-
-  useEffect(() => {
-    const loadContent = async () => {
-      try {
-        setLoading(true);
-        const content = await fetchMadingContent();
-        setAllData(content);
-      } catch (error) {
-        console.error("Error loading content:", error);
-        setAllData([]);
-      } finally {
-        /* PERBAIKAN: Diubah dari loading(false) menjadi setLoading(false) */
-        setLoading(false);
-      }
-    };
-
-    loadContent();
   }, []);
 
   // Handle resize untuk menentukan items per group
@@ -55,7 +46,7 @@ const MadingSection = () => {
         setItemsPerGroup(2); // Mobile: 2 items
       }
       setActiveIndex(0);
-      controls.start({ x: "0%" });
+      void controls.start({ x: "0%" });
     };
 
     handleResize();
@@ -66,34 +57,49 @@ const MadingSection = () => {
     };
   }, [controls]);
 
-  const filteredData = allData.filter((item) =>
-    activeTab === "Informasi" ? item.type === "edukasi" : item.type === "event",
+  const filteredData = useMemo(
+    () =>
+      (allData || []).filter((item) =>
+        activeTab === "Informasi"
+          ? item.type === "edukasi"
+          : item.type === "event",
+      ),
+    [allData, activeTab],
   );
 
-  const totalDots = Math.ceil(filteredData.length / itemsPerGroup);
+  const totalDots = useMemo(
+    () => Math.ceil(filteredData.length / itemsPerGroup),
+    [filteredData.length, itemsPerGroup],
+  );
 
   // Handler ketika tab berubah
-  const handleTabChange = (tab: string) => {
-    setActiveTab(tab);
-    setActiveIndex(0);
-    controls.start({ x: "0%" });
-  };
+  const handleTabChange = useCallback(
+    (tab: string) => {
+      setActiveTab(tab);
+      setActiveIndex(0);
+      void controls.start({ x: "0%" });
+    },
+    [controls],
+  );
 
   // Handler untuk navigasi dot
-  const handleDotClick = (index: number) => {
-    setActiveIndex(index);
-    const targetTranslateX = -(index * 100);
+  const handleDotClick = useCallback(
+    (index: number) => {
+      setActiveIndex(index);
+      const targetTranslateX = -(index * 100);
 
-    controls.start({
-      x: `${targetTranslateX}%`,
-      transition: {
-        type: "spring",
-        stiffness: 180,
-        damping: 24,
-        mass: 0.8,
-      },
-    });
-  };
+      controls.start({
+        x: `${targetTranslateX}%`,
+        transition: {
+          type: "spring",
+          stiffness: 180,
+          damping: 24,
+          mass: 0.8,
+        },
+      });
+    },
+    [controls],
+  );
 
   return (
     /* Background menggunakan gradient: setengah ke atas transparan, setengah ke bawah biru */
@@ -381,6 +387,8 @@ const MadingSection = () => {
       `}</style>
     </section>
   );
-};
+});
+
+MadingSection.displayName = "MadingSection";
 
 export default MadingSection;

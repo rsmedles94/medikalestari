@@ -39,25 +39,30 @@ export async function fetchDoctors(
   specialty?: string,
   searchName?: string,
 ): Promise<Doctor[]> {
-  return withRetry(async () => {
-    let query = supabase.from("doctors").select("*");
+  // Generate cache key based on parameters to handle different filter combinations
+  const cacheKey = `doctors-${specialty || "all"}-${searchName || "all"}`;
 
-    if (specialty && specialty !== "Semua Spesialis") {
-      query = query.eq("specialty", specialty);
-    }
+  return deduplicateRequest(cacheKey, async () => {
+    return withRetry(async () => {
+      let query = supabase.from("doctors").select("*");
 
-    if (searchName) {
-      query = query.ilike("name", `%${searchName}%`);
-    }
+      if (specialty && specialty !== "Semua Spesialis") {
+        query = query.eq("specialty", specialty);
+      }
 
-    const { data, error } = await query;
+      if (searchName) {
+        query = query.ilike("name", `%${searchName}%`);
+      }
 
-    if (error) {
-      console.error("Error fetching doctors:", error);
-      return [];
-    }
+      const { data, error } = await query;
 
-    return data || [];
+      if (error) {
+        console.error("Error fetching doctors:", error);
+        return [];
+      }
+
+      return data || [];
+    });
   });
 }
 

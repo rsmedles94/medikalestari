@@ -1,57 +1,55 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import { fetchPopups, type Popup } from "@/lib/popup-api";
+import React, { useState, useEffect, useRef, useCallback, memo } from "react";
+import { fetchPopups } from "@/lib/popup-api";
+import { useCachedFetch } from "@/lib/hooks/useCachedFetch";
+import { imageLoader } from "@/lib/image-loader";
 import { X } from "lucide-react";
 
-const PopupDisplay = () => {
-  const [popups, setPopups] = useState<Popup[]>([]);
+const FIVE_MINUTES = 5 * 60 * 1000;
+const POPUP_KEY = "last_popup_exit_time";
+const SESSION_KEY = "has_seen_popup_session";
+const BEHAVIOR_KEY = "popup_user_behavior";
+
+const PopupDisplay = memo(() => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
 
-  const popupsRef = useRef<Popup[]>([]);
+  const popupsRef = useRef<Array<{ id: string; image_url: string }>>([]);
   const tabLeftTimeRef = useRef<number | null>(null);
   const openTimeRef = useRef<number>(0);
 
-  const POPUP_KEY = "last_popup_exit_time";
-  const SESSION_KEY = "has_seen_popup_session";
-  const BEHAVIOR_KEY = "popup_user_behavior";
+  // Wrap fetchPopups dengan useCallback untuk stable reference
+  const fetchPopupsCallback = useCallback(() => fetchPopups(), []);
 
-  const FIVE_MINUTES = 5 * 60 * 1000;
+  // Use cached fetch dengan deduplication untuk popups
+  const { data: popups = [] } = useCachedFetch(
+    fetchPopupsCallback,
+    "popups-data",
+    { deduplicate: true },
+  );
 
   useEffect(() => {
-    popupsRef.current = popups;
+    if (popups) {
+      popupsRef.current = popups;
+    }
   }, [popups]);
 
   // ===== Behavior Tracking =====
-  const getBehavior = () => {
+  const getBehavior = useCallback(() => {
     const raw = localStorage.getItem(BEHAVIOR_KEY);
     return raw ? JSON.parse(raw) : { quickClose: 0, engaged: 0 };
-  };
-
-  const updateBehavior = (viewDuration: number) => {
-    const behavior = getBehavior();
-    if (viewDuration < 2000) {
-      behavior.quickClose += 1;
-    } else {
-      behavior.engaged += 1;
-    }
-    localStorage.setItem(BEHAVIOR_KEY, JSON.stringify(behavior));
-  };
-
-  const getDynamicCooldown = () => {
-    const behavior = getBehavior();
-    if (behavior.quickClose >= 3) {
-      return FIVE_MINUTES * 2;
-    }
-    return FIVE_MINUTES;
-  };
+  }, []);
 
   const checkLogicAndShow = useCallback(() => {
     const now = Date.now();
     const lastExit = localStorage.getItem(POPUP_KEY);
     const hasSeenThisSession = sessionStorage.getItem(SESSION_KEY);
-    const cooldown = getDynamicCooldown();
+    const behavior = getBehavior();
+    let cooldown = FIVE_MINUTES;
+    if (behavior.quickClose >= 3) {
+      cooldown = FIVE_MINUTES * 2;
+    }
 
     if (!hasSeenThisSession) {
       setIsVisible(true);
@@ -66,35 +64,30 @@ const PopupDisplay = () => {
 
     setIsVisible(true);
     openTimeRef.current = now;
-  }, []);
+  }, [getBehavior]);
 
-  const preloadImages = useCallback((data: Popup[]) => {
-    data.forEach((item) => {
-      const img = new Image();
-      img.src = item.image_url;
-    });
-  }, []);
-
+  // Preload popup images dengan priority queue
   useEffect(() => {
-    let mounted = true;
-    const loadPopups = async () => {
-      try {
-        const popupData = await fetchPopups();
-        if (!mounted) return;
-        if (popupData?.length) {
-          preloadImages(popupData);
-          setPopups(popupData);
+    if (popups && popups.length > 0) {
+      // Preload images dengan low priority untuk tidak block
+      void Promise.all(
+        popups.map((item) =>
+          imageLoader.loadImage({
+            url: item.image_url,
+            priority: "low",
+          }),
+        ),
+      )
+        .then(() => {
           checkLogicAndShow();
-        }
-      } catch (error) {
-        console.error("Error loading popups:", error);
-      }
-    };
-    loadPopups();
-    return () => {
-      mounted = false;
-    };
-  }, [checkLogicAndShow, preloadImages]);
+        })
+        .catch((err) => {
+          console.warn("Error preloading popup images:", err);
+          // Show anyway even if preload fails
+          checkLogicAndShow();
+        });
+    }
+  }, [popups, checkLogicAndShow]);
 
   useEffect(() => {
     const handleVisibilityChange = () => {
@@ -119,29 +112,37 @@ const PopupDisplay = () => {
   const closePopup = useCallback(() => {
     const now = Date.now();
     const duration = now - openTimeRef.current;
-    updateBehavior(duration);
+    // Update behavior inline to avoid dependency issues
+    const behavior = getBehavior();
+    if (duration < 2000) {
+      behavior.quickClose += 1;
+    } else {
+      behavior.engaged += 1;
+    }
+    localStorage.setItem(BEHAVIOR_KEY, JSON.stringify(behavior));
+
     requestAnimationFrame(() => {
       setIsVisible(false);
       setCurrentIndex(0);
       localStorage.setItem(POPUP_KEY, now.toString());
     });
-  }, []);
+  }, [getBehavior]);
 
   const handleAction = useCallback(() => {
-    if (currentIndex < popupsRef.current.length - 1) {
+    // Use ref to check length, not state dependency
+    const length = popupsRef.current.length;
+    if (currentIndex < length - 1) {
       setCurrentIndex((prev) => prev + 1);
     } else {
-      closePopup();
+      void closePopup();
     }
-  }, [currentIndex, closePopup]);
-
-  // handleForceClose dihapus/tidak digunakan di overlay agar area luar tidak menutup popup
+  }, [closePopup, currentIndex]);
 
   useEffect(() => {
     document.body.style.overflow = isVisible ? "hidden" : "";
   }, [isVisible]);
 
-  if (!isVisible || popups.length === 0) return null;
+  if (!isVisible || !popups || popups.length === 0) return null;
 
   const currentPopup = popups[currentIndex];
 
@@ -182,6 +183,8 @@ const PopupDisplay = () => {
       </div>
     </div>
   );
-};
+});
+
+PopupDisplay.displayName = "PopupDisplay";
 
 export default PopupDisplay;

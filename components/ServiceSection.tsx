@@ -13,12 +13,11 @@ interface KisahItem {
   date: string;
   isLocalGuide?: boolean;
   reviewText: string;
-  images: string[]; // Tetap dipertahankan di interface agar tidak merusak contract data asli
   href: string;
 }
 
 const ServiceSection = () => {
-  // Data ulasan asli tetap dipertahankan logikanya tanpa mengubah struktur object
+  // Data ulasan asli dengan properti 'images' yang sudah dihapus total
   const ulasanData: KisahItem[] = [
     {
       id: 1,
@@ -28,7 +27,6 @@ const ServiceSection = () => {
       date: "3 bulan lalu",
       reviewText:
         "Pengalaman melahirkan di RS Medika Lestari sangat memuaskan. Dari pendaftaran yang cepat, pelayanan yang ramah, hingga proses pemeriksaan yang tidak perlu menunggu lama. Saya USG dan melahirkan caesar ERACS dengan Dr. Kendrick Liong — dokter yang sangat baik, ramah, dan detail dalam menjelaskan. Perawat dan bidan sigap serta membantu. Kamar SVIP Lely juga bersih, rapi, dan nyaman. Terima kasih Mas Angga dan seluruh tim RS Medika Lestari. Sangat rekomendasi 🙏",
-      images: ["/pasien1_1.jpeg", "/pasien1_2.jpeg", "/pasien1_3.jpeg"],
       href: "https://maps.app.goo.gl/z68tfUZiL5jLkBig8",
     },
     {
@@ -39,7 +37,6 @@ const ServiceSection = () => {
       date: "7 bulan lalu",
       reviewText:
         "bessttt deh pelayanan walaupun lama maklumin aja yang penting staff2 nya ramah ramah kalo gue nanya jadi gak sungkan karna staff nya emng baik2 jawaban nya gak ngegas atau gak ngotot2,gk kaya tempat lain sok sok an jutek pengen gua tampol aja rasanya,untuk dokter THT dr.nadhila dan sus nya terimkasih sudah sabar dan penjelasan nya gak ngotot dan menghadapi aku meler parah ini dengan sabar dan ngang ngong ngang ngong🤧😂.",
-      images: ["/pasien2_1.jpeg", "/pasien2_2.jpeg", "/pasien2_3.jpeg"],
       href: "https://maps.app.goo.gl/Xwg3pewgjAXwiPgcA",
     },
     {
@@ -50,7 +47,6 @@ const ServiceSection = () => {
       date: "7 bulan lalu",
       reviewText:
         "Alhamdullilah beruntung bisa lahiran di RS Medika Lestari. USG dan melahirkan caesar eracs dengan Dr. Kendrick Liong. Masyallah dokternya baik hati, ramah dan detail menjelaskan setiap pertanyaan. Perawat staf bidannya sigap, ramah dan sangat membantu. Pelayanan disini sangat sangat memuaskan, Dan kamar Rawat inap bersih, nyaman. Dapet fasilitas SVIP jugaa masyaallah berasa nginep di hotel hihi. Terimakasih RS Medika Lestari. Sehat selalu Dr. Kendrick liong.",
-      images: ["/pasien3_1.jpeg", "/pasien3_2.jpeg", "/pasien3_3.jpeg"],
       href: "https://maps.app.goo.gl/ccmz5QQv8M64ziXNA",
     },
     {
@@ -61,7 +57,6 @@ const ServiceSection = () => {
       date: "4 bulan lalu",
       reviewText:
         "Jam 1 malem harus ke ugd karena anak sakit. Sampai pintu pendaftaran di sambut dengan senyuman ramah petugas pendaftaran dan harus di ranap. Thanks ya RS medika lestari good experience 🙏 cuma parkir nya musti ada petugas khusus dari RS. Thank you.",
-      images: ["/pasien4_1.jpeg", "/pasien4_2.jpeg", "/pasien4_3.jpeg"],
       href: "https://maps.app.goo.gl/prEZmJqBC1D13Kwi7",
     },
     {
@@ -72,7 +67,6 @@ const ServiceSection = () => {
       date: "8 bulan lalu",
       reviewText:
         "semenjak masuk kelas ibu jadi lebih semangat buat kontrol kehamilan. Setiap bulan selalu cek usg dimedika lestari pejelasan dokter Kendrick sangat detail dan mengedukasi Semoga bisa lancar sampai persalinan di medika lestari 😇 terimakasih jg buat tim medika mas angga&mas karis dan bidan² yg selalu memberi afirmasi positif dikelas ibu 🙏",
-      images: ["/pasien5_1.jpeg", "/pasien5_2.jpeg", "/pasien5_3.jpeg"],
       href: "https://maps.app.goo.gl/gHLU5YZn9triKhyP9",
     },
     {
@@ -83,7 +77,6 @@ const ServiceSection = () => {
       date: "10 bulan lalu",
       reviewText:
         "Melahirkan di RS Medika Lestari merupakan pilihan yang sangat tepat. Selama saya hamil & melahirkan di RS medika lestari memberikan pengalaman yang sangat luar biasa baik, mulai dari Dokternya, staff para perawat and bidan yang membantu proses melahirkan sangat tidak mengecewakan. Pelayanan ny sangat memuaskan. Jangan ragu untuk berobat ataupun melahirkan di RS Medika Lestari.",
-      images: ["/pasien6_1.jpeg", "/pasien6_2.jpeg", "/pasien6_3.jpeg"],
       href: "https://maps.app.goo.gl/26njXCsTPG9fnt8F6",
     },
   ];
@@ -105,7 +98,7 @@ const ServiceSection = () => {
   return (
     <section className="w-full bg-[#3D8ECB] py-16 font-sans">
       <div className="max-w-[1160px] mx-auto px-4 md:px-6">
-        {/* Semantic HTML: Menggunakan <header> untuk judul section */}
+        {/* Semantic HTML: Header Section */}
         <header className="text-center mb-12">
           <h2 className="text-2xl md:text-4xl font-bold text-white mb-2">
             Ulasan Pasien
@@ -116,7 +109,7 @@ const ServiceSection = () => {
           </p>
         </header>
 
-        {/* Grid System - Tetap simetris dan rapi meski tanpa gambar */}
+        {/* Grid System */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
           {ulasanData.map((item, index) => (
             <motion.article
@@ -176,7 +169,7 @@ const ServiceSection = () => {
           ))}
         </div>
 
-        {/* Semantic HTML: Menggunakan <footer> untuk bagian bawah/action section */}
+        {/* Semantic HTML: Footer Action Section */}
         <footer className="mt-12 text-center">
           <Link
             href="https://www.google.com/maps/place/RS+Medika+Lestari/@-6.2248952,106.708865,866m/data=!3m2!1e3!5s0x2e69fb20f9710f11:0xb1df070900c513d2!4m16!1m9!3m8!1s0x2e69fa1cb5b440a1:0xe21244587f98ac8f!2sRS+Medika+Lestari!8m2!3d-6.2248952!4d106.7114399!9m1!1b1!16s%2Fg%2F11h0hgmvp!3m5!1s0x2e69fa1cb5b440a1:0xe21244587f98ac8f!8m2!3d-6.2248952!4d106.7114399!16s%2Fg%2F11h0hgmvp?hl=id-ID&entry=ttu&g_ep=EgoyMDI2MDUyNi4wIKXMDSoASAFQAw%3D%3D"
