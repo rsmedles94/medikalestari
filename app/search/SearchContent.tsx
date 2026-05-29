@@ -151,17 +151,24 @@ const SearchContent = () => {
                     {suggestions.map((doctor) => (
                       <Link key={doctor.id} href={`/dokter/${doctor.id}`}>
                         <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors border border-gray-100 cursor-pointer">
-                          <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 bg-gray-200">
-                            <Image
-                              src={
-                                doctor.image_url ||
-                                "https://images.unsplash.com/photo-1612349317150-e539c59dc62a?w=100&h=100&fit=crop"
-                              }
-                              alt={doctor.name}
-                              width={48}
-                              height={48}
-                              className="w-full h-full object-cover"
-                            />
+                          <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 bg-gray-200 flex items-center justify-center">
+                            {doctor.image_url ? (
+                              <Image
+                                src={doctor.image_url}
+                                alt={doctor.name}
+                                width={48}
+                                height={48}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <svg
+                                className="w-6 h-6 text-gray-400"
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                              </svg>
+                            )}
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-semibold text-gray-900 truncate">
@@ -202,17 +209,24 @@ const SearchContent = () => {
                     >
                       <Link href={`/dokter/${doctor.id}`}>
                         <div className="group flex gap-3 p-4 bg-white rounded-lg md:rounded-xl border border-gray-200 hover:border-[#003f88] hover:shadow-md transition-all cursor-pointer md:p-5">
-                          <div className="w-20 h-20 md:w-24 md:h-24 rounded-lg overflow-hidden flex-shrink-0 bg-gray-200">
-                            <Image
-                              src={
-                                doctor.image_url ||
-                                "https://images.unsplash.com/photo-1612349317150-e539c59dc62a?w=120&h=120&fit=crop"
-                              }
-                              alt={doctor.name}
-                              width={96}
-                              height={96}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                            />
+                          <div className="w-20 h-20 md:w-24 md:h-24 rounded-lg overflow-hidden shrink-0 bg-gray-200 flex items-center justify-center">
+                            {doctor.image_url ? (
+                              <Image
+                                src={doctor.image_url}
+                                alt={doctor.name}
+                                width={96}
+                                height={96}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                              />
+                            ) : (
+                              <svg
+                                className="w-8 h-8 text-gray-400"
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                              </svg>
+                            )}
                           </div>
                           <div className="flex-1 min-w-0">
                             <h3 className="text-sm md:text-lg font-bold text-gray-900 group-hover:text-[#003f88] transition-colors line-clamp-1">

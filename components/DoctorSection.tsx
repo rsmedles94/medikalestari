@@ -280,18 +280,25 @@ const DoctorSection = ({
                 </div>
               )}
               {/* Foto Dokter */}
-              <div className="relative w-24 h-24 sm:w-32 sm:h-32 md:w-44 md:h-44 shrink-0 rounded-full overflow-hidden border-4 border-slate-50 group-hover:border-blue-50 transition-colors shadow-sm bg-slate-100">
-                <Image
-                  src={
-                    doctor.image_url ||
-                    "https://images.unsplash.com/photo-1612349317150-e539c59dc62a?w=500&h=500&fit=crop"
-                  }
-                  alt={doctor.name}
-                  fill
-                  className="object-cover"
-                  priority={index < 3}
-                  sizes="(max-width: 768px) 96px, 176px"
-                />
+              <div className="relative w-24 h-24 sm:w-32 sm:h-32 md:w-44 md:h-44 shrink-0 rounded-full overflow-hidden border-4 border-slate-50 group-hover:border-blue-50 transition-colors shadow-sm bg-slate-100 flex items-center justify-center">
+                {doctor.image_url ? (
+                  <Image
+                    src={doctor.image_url}
+                    alt={doctor.name}
+                    fill
+                    className="object-cover"
+                    priority={index < 3}
+                    sizes="(max-width: 768px) 96px, 176px"
+                  />
+                ) : (
+                  <svg
+                    className="w-1/2 h-1/2 text-gray-400"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                  </svg>
+                )}
               </div>
 
               {/* Detail Dokter */}

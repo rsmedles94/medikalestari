@@ -6,30 +6,30 @@
  * 1. Buka production site
  * 2. Buka console (F12)
  * 3. Paste kode berikut
+ *
+ * NOTE: Please upload actual images instead of using external URLs
  */
 
 async function addSampleHeroBanners() {
   try {
-    // Add desktop banner
+    // Add desktop banner - PLEASE UPDATE WITH YOUR OWN IMAGE
     const desktopRes = await fetch("/api/admin/hero-banners", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        image_url:
-          "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1900&h=720&fit=crop",
+        image_url: "/images/hero-banner-default-desktop.webp", // Update with your actual image path
         order: 1,
         is_active: true,
         device_type: "desktop",
       }),
     });
 
-    // Add mobile banner
+    // Add mobile banner - PLEASE UPDATE WITH YOUR OWN IMAGE
     const mobileRes = await fetch("/api/admin/hero-banners", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        image_url:
-          "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=2208&h=2760&fit=crop",
+        image_url: "/images/hero-banner-default-mobile.webp", // Update with your actual image path
         order: 1,
         is_active: true,
         device_type: "mobile",

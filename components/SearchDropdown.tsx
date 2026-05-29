@@ -139,17 +139,24 @@ const SearchDropdown: React.FC<SearchDropdownProps> = memo(
                           <li key={doctor.id}>
                             {doctor.status === "cuti" ? (
                               <div className="w-full group flex gap-4 p-4 bg-white border border-gray-200 text-left opacity-70 pointer-events-none">
-                                <div className="w-16 h-16 rounded-full overflow-hidden shrink-0 bg-gray-200">
-                                  <Image
-                                    src={
-                                      doctor.image_url ||
-                                      "https://images.unsplash.com/photo-1612349317150-e539c59dc62a?w=100&h=100&fit=crop"
-                                    }
-                                    alt={`Foto ${doctor.name}`}
-                                    width={64}
-                                    height={64}
-                                    className="w-full h-full object-cover"
-                                  />
+                                <div className="w-16 h-16 rounded-full overflow-hidden shrink-0 bg-gray-200 flex items-center justify-center">
+                                  {doctor.image_url ? (
+                                    <Image
+                                      src={doctor.image_url}
+                                      alt={`Foto ${doctor.name}`}
+                                      width={64}
+                                      height={64}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  ) : (
+                                    <svg
+                                      className="w-10 h-10 text-gray-400"
+                                      fill="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                                    </svg>
+                                  )}
                                 </div>
                                 <div className="flex-1">
                                   <h4 className="text-sm font-bold text-[#003f88] transition-colors">
@@ -170,17 +177,24 @@ const SearchDropdown: React.FC<SearchDropdownProps> = memo(
                                 onClick={() => handleDoctorClick(doctor.id)}
                                 className="w-full group flex gap-4 p-4 bg-white hover:shadow-md transition-all text-left border border-gray-200"
                               >
-                                <div className="w-16 h-16 rounded-full overflow-hidden shrink-0 bg-gray-200">
-                                  <Image
-                                    src={
-                                      doctor.image_url ||
-                                      "https://images.unsplash.com/photo-1612349317150-e539c59dc62a?w=100&h=100&fit=crop"
-                                    }
-                                    alt={`Foto ${doctor.name}`}
-                                    width={64}
-                                    height={64}
-                                    className="w-full h-full object-cover"
-                                  />
+                                <div className="w-16 h-16 rounded-full overflow-hidden shrink-0 bg-gray-200 flex items-center justify-center">
+                                  {doctor.image_url ? (
+                                    <Image
+                                      src={doctor.image_url}
+                                      alt={`Foto ${doctor.name}`}
+                                      width={64}
+                                      height={64}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  ) : (
+                                    <svg
+                                      className="w-10 h-10 text-gray-400"
+                                      fill="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                                    </svg>
+                                  )}
                                 </div>
                                 <div className="flex-1">
                                   <h4 className="text-sm font-bold text-[#003f88] transition-colors">
