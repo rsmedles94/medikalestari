@@ -97,7 +97,6 @@ const MobileBottomNavbar = () => {
         isSearchOpen ? "hidden" : "block"
       }`}
       aria-label="Mobile Bottom Navigation"
-      suppressHydrationWarning
     >
       <ul className="flex justify-around items-stretch h-20 list-none p-0 m-0">
         {navItems.map((item) => {
@@ -117,27 +116,18 @@ const MobileBottomNavbar = () => {
                 }}
                 className="flex flex-col items-center justify-center w-full relative tap-highlight-transparent overflow-hidden select-none"
               >
-                {/** * ini untuk indikator aktif atas murni menggunakan CSS murni agar instan dan bebas jeda/lag
-                 */}
+                {/* Active indicator bar */}
                 <div
                   className={`absolute top-0 w-12 h-0.75 bg-white rounded-b-full z-10 transition-all duration-200 ease-in-out ${
                     isItemActive
                       ? "opacity-100 scale-100"
                       : "opacity-0 scale-75 pointer-events-none"
                   }`}
-                  suppressHydrationWarning
                 />
 
-                {/** * ini untuk pembungkus konten menu utama dengan animasi tap css murni yang sangat enteng
-                 */}
-                <div
-                  className="relative flex flex-col items-center justify-center active:scale-95 transition-transform duration-100 ease-out transform-gpu"
-                  suppressHydrationWarning
-                >
-                  <div
-                    className="relative h-6 w-6 flex items-center justify-center"
-                    suppressHydrationWarning
-                  >
+                {/* Menu content wrapper */}
+                <div className="relative flex flex-col items-center justify-center active:scale-95 transition-transform duration-100 ease-out transform-gpu">
+                  <div className="relative h-6 w-6 flex items-center justify-center">
                     <svg
                       viewBox="0 0 24 24"
                       className={`w-6 h-6 transition-colors duration-200 ${
@@ -149,8 +139,7 @@ const MobileBottomNavbar = () => {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                     >
-                      {/** * ini untuk transisi perpindahan opacity ikon isi (solid) dan garis (outline) menggunakan CSS murni
-                       */}
+                      {/* Icon transition between active and inactive state */}
                       <g className="transition-all duration-150 ease-in-out">
                         {isItemActive ? item.solid : item.outline}
                       </g>
@@ -163,7 +152,6 @@ const MobileBottomNavbar = () => {
                         ? "text-white font-semibold opacity-100"
                         : "text-white/60 font-medium opacity-90"
                     }`}
-                    suppressHydrationWarning
                   >
                     {item.label}
                   </span>

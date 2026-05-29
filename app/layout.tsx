@@ -42,7 +42,7 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="id" suppressHydrationWarning className="h-full antialiased">
+    <html lang="id" className="h-full antialiased" suppressHydrationWarning>
       <head>
         {/* SEO Metadata */}
         <title>RS Medika Lestari</title>

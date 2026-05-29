@@ -91,7 +91,7 @@ const DoctorDetailPage = () => {
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              whileHover={{ scale: 1.5 }}
+              whileHover={{ scale: 1.3 }}
               transition={{
                 type: "spring",
                 stiffness: 300,

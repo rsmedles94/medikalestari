@@ -31,7 +31,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthProvider";
 import { useSearchModal } from "@/context/SearchModalContext";
 import SearchDropdown from "./SearchDropdown";
-import MobileSearchModal from "./MobileSearchModal";
+import { MobileSearchModalWrapper } from "./MobileSearchModalWrapper";
 import DropdownMenuItem from "./DropdownMenuItem";
 import BookingForm from "./BookingForm";
 import { usePathname, useRouter } from "next/navigation";
@@ -873,7 +873,10 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
       {/* Mobile Search */}
 
-      <MobileSearchModal isOpen={isSearchOpen} onClose={() => closeSearch()} />
+      <MobileSearchModalWrapper
+        isOpen={isSearchOpen}
+        onClose={() => closeSearch()}
+      />
 
       {/* Mobile Quick Action Menu */}
 
