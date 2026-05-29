@@ -95,41 +95,6 @@ const PROMO_DATA = [
   },
 ];
 
-// ==========================================
-// DATA FITUR UTAMA (Sesuai Gambar Grid)
-// ==========================================
-const FEATURES_DATA = [
-  {
-    icon: "/images/icons/whatsapp.svg",
-    title: "Make an Appointment Online",
-    link: "https://wa.me/628XXXXXXXXXX",
-  },
-  {
-    icon: "/images/icons/instagram.svg",
-    title: "@rsmedikalestari",
-    link: "https://www.instagram.com/rsmedikalestari",
-  },
-  {
-    icon: "/images/icons/youtube.svg",
-    title: "RS Medika Lestari",
-    link: "https://www.youtube.com/@RSMedikaLestari",
-  },
-  {
-    icon: "/images/icons/callcenter.svg",
-    title: "Customer Care",
-    link: "tel:1500XXX",
-  },
-  {
-    icon: "/images/icons/threads.svg",
-    title: "@rsmedikalestari",
-    link: "https://www.threads.net/@rsmedikalestari",
-  },
-  {
-    icon: "/images/icons/tiktok.svg",
-    title: "RS Medika Lestari",
-    link: "https://www.tiktok.com/@rsmedikalestariciledug",
-  },
-];
 
 // ==========================================
 // DATA LOGO REKANAN / PENGHARGAAN (Total 18 Item)
