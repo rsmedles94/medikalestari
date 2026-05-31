@@ -29,8 +29,8 @@ export default function MedicalCheckup() {
 
   return (
     <div className="min-h-screen bg-white mb-20">
-      <div className="max-w-[1175px] mx-auto px-4 md:px-8 pt-4 md:pt-16 pb-12 md:-mt-8">
-        <nav className="flex items-center gap-1 text-[14px] font-normal text-gray-300 mb-4">
+      <div className="max-w-[1175px] mx-auto px-4 md:px-8 pt-4 md:pt-16  ">
+        <nav className="flex items-center gap-1 text-[14px] font-normal text-gray-300 mb-4 mt-4 md:mt-1">
           <Link
             href="/"
             className="text-black/60 hover:text-gray-300 transition-colors"
@@ -42,9 +42,9 @@ export default function MedicalCheckup() {
         </nav>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 md:-mt-12">
+      <div className="max-w-6xl mx-auto px-4 ">
         {/* Title */}
-        <h1 className="text-3xl md:text-4xl font-bold text-black mb-2">
+        <h1 className="text-3xl md:text-4xl font-bold text-black mb-2 ">
           Medical Checkup
         </h1>
         <p className="text-gray-600 mb-8">
