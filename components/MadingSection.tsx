@@ -276,7 +276,7 @@ const MadingSection = memo(() => {
                                   target="_blank"
                                   className="text-[11px] md:text-[13px] font-semibold text-[#003f88] hover:underline block"
                                 >
-                                  Selengkapnya...
+                                  → Selengkapnya
                                 </a>
                               </div>
                             </div>

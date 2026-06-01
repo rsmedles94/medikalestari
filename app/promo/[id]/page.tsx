@@ -500,7 +500,7 @@ export default function PromoDetailPage() {
                         backgroundColor: isActive ? "#ffffff" : "#003f88",
                       }}
                       transition={{ duration: 0.2 }}
-                      className="absolute w-3 h-3 rounded-full z-10 pointer-events-none"
+                      className="absolute w-5 h-5 rounded-full z-10 pointer-events-none"
                     />
 
                     <motion.div
@@ -514,7 +514,7 @@ export default function PromoDetailPage() {
                         stiffness: 280,
                         damping: 22,
                       }}
-                      className="absolute w-7 h-7 rounded-full border-4 border-[#003f88] bg-white z-0 origin-center pointer-events-none"
+                      className="absolute w-9 h-9 rounded-full border-4 border-[#003f88] bg-[#003f88] z-0 origin-center pointer-events-none"
                     />
                   </button>
                 );
