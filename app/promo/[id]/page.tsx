@@ -297,6 +297,9 @@ export default function PromoDetailPage() {
   const [relatedItemsPerGroup, setRelatedItemsPerGroup] = useState(4);
 
   // Menentukan jumlah card per grup berdasarkan lebar viewport layar
+  const [hoveredRelatedPromoId, setHoveredRelatedPromoId] = useState<
+    number | null
+  >(null);
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1024) {
@@ -444,30 +447,57 @@ export default function PromoDetailPage() {
                         key={`promo-${relatedPromo.id}`}
                         className="w-1/2 lg:w-1/4 shrink-0 grow-0 space-y-0 p-2 lg:p-3 box-border"
                       >
-                        <article className="bg-white border border-gray-300 flex flex-col h-full rounded-none overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-lg origin-center">
-                          <div className="relative aspect-square w-full overflow-hidden bg-gray-50">
-                            <Image
-                              src={relatedPromo.image}
-                              alt={`Promo ${relatedPromo.title}`}
-                              width={500}
-                              height={500}
-                              className="object-cover w-full h-full"
-                              priority={relatedPromo.id <= 4}
-                            />
+                        <article
+                          className="bg-white border border-gray-300 flex flex-col h-full rounded-none overflow-hidden transition-all duration-300 origin-center"
+                          onMouseEnter={() =>
+                            setHoveredRelatedPromoId(relatedPromo.id)
+                          }
+                          onMouseLeave={() => setHoveredRelatedPromoId(null)}
+                        >
+                          <div className="relative aspect-square w-full overflow-hidden bg-gray-50 cursor-pointer">
+                            <motion.div
+                              className="w-full h-full"
+                              animate={{
+                                scale:
+                                  hoveredRelatedPromoId === relatedPromo.id
+                                    ? 1.1
+                                    : 1,
+                              }}
+                              transition={{
+                                type: "tween",
+                                duration: 0.6,
+                                ease: "easeInOut",
+                              }}
+                            >
+                              <Image
+                                src={relatedPromo.image}
+                                alt={`Promo ${relatedPromo.title}`}
+                                width={500}
+                                height={500}
+                                className="object-cover w-full h-full"
+                                priority={relatedPromo.id <= 4}
+                              />
+                            </motion.div>
                           </div>
 
                           <div className="p-4 md:p-5 flex flex-col grow text-center bg-white">
-                            <h3 className="text-sm md:text-base font-bold text-[#003f88] mb-2 min-h-12 flex items-center justify-center leading-snug line-clamp-2">
-                              {relatedPromo.title}
-                            </h3>
-                            <p className="text-xs text-gray-500 leading-normal mb-5 line-clamp-3 md:line-clamp-4">
+                            <Link href={`/promo/${relatedPromo.id}`} passHref>
+                              <h3 className="text-sm md:text-base font-bold text-[#003f88] mb-2 min-h-12 flex items-center justify-center leading-snug line-clamp-2 cursor-pointer hover:text-[#e67e22] transition-colors duration-300">
+                                {relatedPromo.title}
+                              </h3>
+                            </Link>
+                            <p className="text-xs text-gray-500 leading-normal mb-5 line-clamp-3 md:line-clamp-4 cursor-default">
                               {relatedPromo.shortDescription}
                             </p>
                             <div className="mt-auto">
                               <Link href={`/promo/${relatedPromo.id}`} passHref>
                                 <button
                                   type="button"
-                                  className="w-full py-2.5 border bg-[#003f88] text-white text-xs font-semibold transition-all duration-300 hover:bg-[#e67e22] hover:text-white cursor-pointer"
+                                  className={`w-full py-2.5 border text-white text-xs font-semibold transition-all duration-300 cursor-pointer ${
+                                    hoveredRelatedPromoId === relatedPromo.id
+                                      ? "bg-[#e67e22]"
+                                      : "bg-[#003f88] hover:bg-[#e67e22]"
+                                  }`}
                                 >
                                   Selengkapnya →
                                 </button>

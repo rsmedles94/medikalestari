@@ -95,7 +95,6 @@ const PROMO_DATA = [
   },
 ];
 
-
 // ==========================================
 // DATA LOGO REKANAN / PENGHARGAAN (Total 18 Item)
 // ==========================================
@@ -248,6 +247,9 @@ const PromoKesehatan = () => {
   const awardItemsPerGroup = 9; // Grid 3x3 per halaman slider
   const totalAwardDots = Math.ceil(AWARDS_DATA.length / awardItemsPerGroup);
 
+  // State untuk track card promo mana yang di-hover
+  const [hoveredPromoId, setHoveredPromoId] = useState<number | null>(null);
+
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1024) {
@@ -375,8 +377,6 @@ const PromoKesehatan = () => {
               </div>
             ))}
           </div>
-
-          
 
           <hr className="border-white/10 my-16" />
 
@@ -533,32 +533,54 @@ const PromoKesehatan = () => {
                       key={item.id}
                       className="w-1/2 lg:w-1/4 shrink-0 p-2 md:p-3"
                     >
-                      <article className="bg-white border border-gray-300 flex flex-col h-full -lg overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
-                        <div className="relative aspect-square w-full overflow-hidden bg-gray-50">
-                          <Image
-                            src={item.image}
-                            alt={`Promo ${item.title}`}
-                            width={500}
-                            height={500}
-                            className="object-cover w-full h-full"
-                            priority={item.id <= 4}
-                          />
+                      <article
+                        className="bg-white border border-gray-300 flex flex-col h-full -lg overflow-hidden transition-all duration-300 group"
+                        onMouseEnter={() => setHoveredPromoId(item.id)}
+                        onMouseLeave={() => setHoveredPromoId(null)}
+                      >
+                        <div className="relative aspect-square w-full overflow-hidden bg-gray-50 cursor-pointer">
+                          <motion.div
+                            className="w-full h-full"
+                            animate={{
+                              scale: hoveredPromoId === item.id ? 1.1 : 1,
+                            }}
+                            transition={{
+                              type: "tween",
+                              duration: 0.6,
+                              ease: "easeInOut",
+                            }}
+                          >
+                            <Image
+                              src={item.image}
+                              alt={`Promo ${item.title}`}
+                              width={500}
+                              height={500}
+                              className="object-cover w-full h-full"
+                              priority={item.id <= 4}
+                            />
+                          </motion.div>
                         </div>
 
                         <div className="p-4 md:p-5 flex flex-col grow text-center bg-white">
-                          <h3 className="text-xs md:text-base font-bold text-[#003f88] mb-2 min-h-12 flex items-center justify-center leading-normal">
-                            {item.title}
-                          </h3>
-                          <p className="text-[10px] md:text-xs text-gray-500 leading-normal mb-5 line-clamp-3 md:line-clamp-4">
+                          <Link href={`/promo/${item.id}`} passHref>
+                            <h3 className="text-xs md:text-base font-bold text-[#003f88] mb-2 min-h-12 flex items-center justify-center leading-normal cursor-pointer hover:text-[#e67e22] transition-colors duration-300">
+                              {item.title}
+                            </h3>
+                          </Link>
+                          <p className="text-[10px] md:text-xs text-gray-500 leading-normal mb-5 line-clamp-3 md:line-clamp-4 cursor-default">
                             {item.description}
                           </p>
                           <div className="mt-auto">
                             <Link href={`/promo/${item.id}`} passHref>
                               <button
                                 type="button"
-                                className="w-full py-2 border bg-[#003f88] text-white text-[10px] md:text-xs font-semibold transition-all duration-300 hover:bg-[#e67e22] hover:text-white cursor-pointer"
+                                className={`w-full py-2 border text-white text-[10px] md:text-xs font-semibold transition-all duration-300 cursor-pointer ${
+                                  hoveredPromoId === item.id
+                                    ? "bg-[#e67e22]"
+                                    : "bg-[#003f88] hover:bg-[#e67e22]"
+                                }`}
                               >
-                                Selengkapnya →
+                                Selengkapnya ⭢
                               </button>
                             </Link>
                           </div>
