@@ -263,7 +263,7 @@ Keluhan/Catatan: ${formData.keluhan}`;
           <h2 className="text-3xl font-bold text-gray-900 mb-8">
             Paket MCU Lainnya
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-20 md:mb-0">
             {MCU_DATA.filter((item) => item.id !== mcu.id)
               .slice(0, 4)
               .map((item) => (
