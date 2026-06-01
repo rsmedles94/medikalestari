@@ -85,7 +85,7 @@ Keluhan/Catatan: ${formData.keluhan}`;
     <article className="min-h-screen bg-white mb-20 w-full">
       {/* Breadcrumb */}
       <nav
-        className="w-full max-w-[1139px] mx-auto px-4 pt-8 md:pt-12"
+        className="w-full max-w-[1139px] mx-auto px-4 pt-8 md:pt-16 md:mt-1"
         aria-label="Breadcrumb"
       >
         <ol className="flex items-center gap-1 text-sm font-normal text-gray-600">
