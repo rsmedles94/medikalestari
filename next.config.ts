@@ -156,6 +156,12 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [];
   },
+
+  // Proxy configuration untuk menggantikan middleware (new pattern)
+  // https://nextjs.org/docs/messages/middleware-to-proxy
+  experimental: {
+    proxyTimeout: 30_000,
+  },
 };
 
 export default nextConfig;
