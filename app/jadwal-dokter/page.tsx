@@ -37,7 +37,7 @@ export default function DoctorSchedulePage() {
             >
               Beranda
             </Link>
-            <ChevronRight size={12} className="text-gray-400" />
+            <ChevronRight size={12} className="text-black/60" />
             <span className="font-normal">Jadwal Dokter</span>
           </nav>
           <h1 className="text-3xl md:text-4xl font-bold text-black mb-2">
