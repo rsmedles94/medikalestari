@@ -185,7 +185,7 @@ export default function DoctorScheduleGrid({
                     // Auto-apply on enter
                   }
                 }}
-                className="w-full border border-slate-200 py-3 pl-10 pr-4 outline-none focus:border-[#003f88] text-sm bg-white"
+                className="w-full border border-slate-200 py-3 pl-10 pr-4 outline-none focus:border-[#003f88] text-base bg-white"
               />
             </div>
 
