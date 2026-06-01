@@ -1,0 +1,8 @@
+{
+  "include": ["app", "components", "lib", "pages"],
+  "exclude": ["node_modules", ".next"],
+  "typeCheckingMode": "basic",
+  "reportMissingImports": true,
+  "reportMissingTypeStubs": false,
+  "reportOptionalSubscript": "warning"
+}

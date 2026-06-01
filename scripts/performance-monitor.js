@@ -5,9 +5,6 @@
  * Monitor cache hit rates, memory usage, dan performance metrics
  */
 
-const fs = require("fs");
-const path = require("path");
-
 const generateReport = () => {
   console.clear();
   console.log(
@@ -97,8 +94,7 @@ const generateReport = () => {
     },
   };
 
-  Object.entries(tiers).forEach(([tier, config], idx) => {
-    const isLast = idx === Object.keys(tiers).length - 1;
+  Object.entries(tiers).forEach(([tier, config]) => {
     console.log(
       `│                                                               │`,
     );
@@ -442,8 +438,12 @@ const generateReport = () => {
 };
 
 // Run if executed directly
-if (require.main === module) {
+import { fileURLToPath } from "node:url";
+
+const __filename = fileURLToPath(import.meta.url);
+
+if (process.argv[1] === __filename) {
   generateReport();
 }
 
-module.exports = { generateReport };
+export { generateReport };

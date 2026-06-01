@@ -20,24 +20,48 @@ export function middleware(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
 
-  // Static assets - very long cache
-  if (pathname.match(/\.(js|css|gif|ico|jpg|jpeg|png|webp|svg)$/)) {
+  // Static assets - very long cache with versioning
+  if (pathname.match(/\.(js|css|woff|woff2|ttf|eot)(\?.*)?$/)) {
     response.headers.set(
       "Cache-Control",
-      "public, immutable, max-age=31536000",
+      "public, max-age=31536000, immutable",
     ); // 1 year
+    response.headers.set("Vary", "Accept-Encoding");
   }
-  // API routes - short cache
+  // Images - long cache but allow revalidation
+  else if (pathname.match(/\.(gif|ico|jpg|jpeg|png|webp|svg)(\?.*)?$/)) {
+    response.headers.set(
+      "Cache-Control",
+      "public, max-age=2592000, stale-while-revalidate=86400",
+    ); // 30 days + stale window
+    response.headers.set("Vary", "Accept-Encoding");
+  }
+  // API routes - short cache untuk dynamic data
   else if (pathname.startsWith("/api/")) {
-    response.headers.set("Cache-Control", "public, max-age=60, s-maxage=120"); // 1-2 min
+    response.headers.set(
+      "Cache-Control",
+      "public, max-age=30, s-maxage=60, stale-while-revalidate=300",
+    ); // 30s client + 60s CDN + stale window
+    response.headers.set("Vary", "Accept, Accept-Encoding");
   }
-  // HTML pages - moderate cache
+  // HTML pages - short TTL untuk freshness, long stale window
   else if (
     pathname.endsWith(".html") ||
     pathname === "" ||
     !pathname.includes(".")
   ) {
-    response.headers.set("Cache-Control", "public, max-age=300, s-maxage=600"); // 5-10 min
+    response.headers.set(
+      "Cache-Control",
+      "public, max-age=60, s-maxage=300, stale-while-revalidate=86400",
+    ); // 1min client + 5min CDN + 1 day stale
+    response.headers.set("Vary", "Accept-Encoding, Accept-Language");
+  }
+  // Default untuk routes lain
+  else {
+    response.headers.set(
+      "Cache-Control",
+      "public, max-age=300, s-maxage=600, stale-while-revalidate=3600",
+    ); // 5min client + 10min CDN + 1 hour stale
   }
 
   // ============================================

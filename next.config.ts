@@ -52,27 +52,21 @@ const nextConfig: NextConfig = {
   // Custom headers untuk caching strategy
   async headers() {
     return [
-      // Static assets - cache for 1 year
+      // Static JS/CSS - cache for 1 year (immutable)
       {
-        source: "/static/:path*",
+        source: "/:path*.:ext(js|css)",
         headers: [
           {
             key: "Cache-Control",
             value: "public, max-age=31536000, immutable",
           },
-        ],
-      },
-      // Public assets - cache for 1 year
-      {
-        source: "/:path*.{jpg,jpeg,png,gif,webp,svg,ico}",
-        headers: [
           {
-            key: "Cache-Control",
-            value: "public, max-age=31536000, immutable",
+            key: "Vary",
+            value: "Accept-Encoding",
           },
         ],
       },
-      // Fonts - cache for 1 year
+      // Fonts - cache for 1 year (immutable)
       {
         source: "/:path*.{woff,woff2,ttf,eot,otf}",
         headers: [
@@ -80,26 +74,53 @@ const nextConfig: NextConfig = {
             key: "Cache-Control",
             value: "public, max-age=31536000, immutable",
           },
+          {
+            key: "Vary",
+            value: "Accept-Encoding",
+          },
         ],
       },
-      // API routes - no cache
+      // Images - 30 days dengan stale-while-revalidate
+      {
+        source: "/:path*.{jpg,jpeg,png,gif,webp,svg,ico}",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=2592000, stale-while-revalidate=86400",
+          },
+          {
+            key: "Vary",
+            value: "Accept-Encoding",
+          },
+        ],
+      },
+      // API routes - short cache dengan stale window
       {
         source: "/api/:path*",
         headers: [
           {
             key: "Cache-Control",
-            value: "public, max-age=0, must-revalidate",
+            value:
+              "public, max-age=30, s-maxage=60, stale-while-revalidate=300",
+          },
+          {
+            key: "Vary",
+            value: "Accept, Accept-Encoding, Authorization",
           },
         ],
       },
-      // HTML pages - short cache + revalidate
+      // HTML pages - 1 min cache + 5 min CDN + 1 day stale
       {
         source: "/:path*",
         headers: [
           {
             key: "Cache-Control",
             value:
-              "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
+              "public, max-age=60, s-maxage=300, stale-while-revalidate=86400",
+          },
+          {
+            key: "Vary",
+            value: "Accept-Encoding, Accept-Language, Host",
           },
           {
             key: "X-Content-Type-Options",
@@ -116,6 +137,10 @@ const nextConfig: NextConfig = {
           {
             key: "Referrer-Policy",
             value: "strict-origin-when-cross-origin",
+          },
+          {
+            key: "Permissions-Policy",
+            value: "geolocation=(), microphone=(), camera=()",
           },
         ],
       },

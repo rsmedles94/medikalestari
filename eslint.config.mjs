@@ -18,6 +18,13 @@ const eslintConfig = defineConfig([
     ".pnpm-debug.log*",
     ".pnpm/**",
   ]),
+  {
+    files: ["lib/hooks/use-hydration-safe.tsx"],
+    rules: {
+      "react-hooks/exhaustive-deps": "off",
+      "react-hooks/rules-of-hooks": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;

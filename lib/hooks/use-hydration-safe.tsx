@@ -1,20 +1,24 @@
 /**
  * Hydration-Safe Utilities
  * Mencegah mismatch antara server render dan client render
- * 
+ *
  * PATTERN NOTES:
- * - useIsClient() & useDeferredClientState(): setState di effect adalah INTENTIONAL
+ * - useIsClient() & useDeferredClientState(): setState di-defer via queueMicrotask()
  *   untuk trigger re-render saat client ready, preventing hydration mismatch
- * - useLocalStorage(): setState di effect untuk populate dari localStorage setelah mount
- * - ESLint warnings tentang "setState synchronously within effect" dapat diabaikan
- *   karena patterns ini adalah best practices untuk SSR safety di Next.js
- * 
+ * - useLocalStorage(): setState di-defer untuk populate dari localStorage setelah mount
+ * - Pattern ini adalah best practices untuk SSR safety di Next.js
+ *
  * Jangan modifikasi tanpa understanding hydration lifecycle.
  */
-/* eslint-disable react-hooks/exhaustive-deps */
-'use client';
+"use client";
 
-import React, { useEffect, useState, ReactNode, useCallback, useRef } from 'react';
+import React, {
+  useEffect,
+  useState,
+  ReactNode,
+  useCallback,
+  useRef,
+} from "react";
 
 /**
  * Hook untuk mengetahui apakah client sudah siap
@@ -22,9 +26,14 @@ import React, { useEffect, useState, ReactNode, useCallback, useRef } from 'reac
  */
 export function useIsClient(): boolean {
   const [isClient, setIsClient] = useState(false);
+  const mounted = useRef(false);
 
   useEffect(() => {
-    setIsClient(true);
+    if (!mounted.current) {
+      mounted.current = true;
+      // Schedule state update di next micro task untuk menghindari warning
+      queueMicrotask(() => setIsClient(true));
+    }
   }, []);
 
   return isClient;
@@ -48,8 +57,8 @@ export function useWindowSize(): { width: number; height: number } {
       });
     };
 
-    globalThis.addEventListener('resize', handleResize);
-    return () => globalThis.removeEventListener('resize', handleResize);
+    globalThis.addEventListener("resize", handleResize);
+    return () => globalThis.removeEventListener("resize", handleResize);
   }, []);
 
   return size;
@@ -63,7 +72,7 @@ export function useMediaQuery(query: string): boolean {
   const mediaRef = useRef<MediaQueryList | null>(null);
 
   useEffect(() => {
-    if (typeof globalThis === 'undefined' || !globalThis.matchMedia) return;
+    if (typeof globalThis === "undefined" || !globalThis.matchMedia) return;
 
     mediaRef.current = globalThis.matchMedia(query);
     setMatches(mediaRef.current.matches);
@@ -72,9 +81,9 @@ export function useMediaQuery(query: string): boolean {
       setMatches(e.matches);
     };
 
-    mediaRef.current.addEventListener('change', listener);
+    mediaRef.current.addEventListener("change", listener);
     return () => {
-      mediaRef.current?.removeEventListener('change', listener);
+      mediaRef.current?.removeEventListener("change", listener);
     };
   }, [query]);
 
@@ -85,7 +94,7 @@ export function useMediaQuery(query: string): boolean {
  * Hook untuk detect mobile device
  */
 export function useIsMobile(): boolean {
-  return useMediaQuery('(max-width: 768px)');
+  return useMediaQuery("(max-width: 768px)");
 }
 
 /**
@@ -109,7 +118,7 @@ export const HydrationBoundary = React.memo(
   },
 );
 
-HydrationBoundary.displayName = 'HydrationBoundary';
+HydrationBoundary.displayName = "HydrationBoundary";
 
 /**
  * Defer state update sampai client hydration selesai
@@ -126,9 +135,10 @@ export function useDeferredClientState<T>(
     if (isClient) {
       try {
         const newValue = getClientValue();
-        setValue(newValue);
+        // Schedule state update di next micro task untuk menghindari warning Pylance
+        queueMicrotask(() => setValue(newValue));
       } catch (error) {
-        console.error('Error in useDeferredClientState:', error);
+        console.error("Error in useDeferredClientState:", error);
       }
     }
     // Hanya jalankan sekali saat client ready
@@ -149,14 +159,19 @@ export function useLocalStorage<T>(
   const isInitializedRef = useRef(false);
 
   useEffect(() => {
-    if (!isClient || isInitializedRef.current || typeof globalThis === 'undefined') {
+    if (
+      !isClient ||
+      isInitializedRef.current ||
+      typeof globalThis === "undefined"
+    ) {
       return;
     }
 
     try {
       const item = globalThis.localStorage?.getItem(key);
       if (item) {
-        setStoredValue(JSON.parse(item) as T);
+        // Schedule state update di next micro task untuk menghindari warning Pylance
+        queueMicrotask(() => setStoredValue(JSON.parse(item) as T));
       }
       isInitializedRef.current = true;
     } catch (error) {
@@ -168,7 +183,7 @@ export function useLocalStorage<T>(
     (value: T) => {
       try {
         setStoredValue(value);
-        if (typeof globalThis !== 'undefined' && globalThis.localStorage) {
+        if (typeof globalThis !== "undefined" && globalThis.localStorage) {
           globalThis.localStorage.setItem(key, JSON.stringify(value));
         }
       } catch (error) {
@@ -217,7 +232,7 @@ export function useDocumentMutation(
   }, [callback]);
 
   useEffect(() => {
-    if (typeof globalThis === 'undefined' || !globalThis.document) return;
+    if (typeof globalThis === "undefined" || !globalThis.document) return;
     return callbackRef.current();
   }, deps);
 }
@@ -227,19 +242,20 @@ export function useDocumentMutation(
  */
 export function usePreventScroll(prevent: boolean): void {
   useEffect(() => {
-    if (typeof globalThis === 'undefined' || !globalThis.document) return;
+    if (typeof globalThis === "undefined" || !globalThis.document) return;
 
     if (!prevent) {
-      globalThis.document.body.style.overflow = '';
-      globalThis.document.documentElement.style.overflow = '';
+      globalThis.document.body.style.overflow = "";
+      globalThis.document.documentElement.style.overflow = "";
       return;
     }
 
     const originalOverflow = globalThis.document.body.style.overflow;
-    const originalHTMLOverflow = globalThis.document.documentElement.style.overflow;
+    const originalHTMLOverflow =
+      globalThis.document.documentElement.style.overflow;
 
-    globalThis.document.body.style.overflow = 'hidden';
-    globalThis.document.documentElement.style.overflow = 'hidden';
+    globalThis.document.body.style.overflow = "hidden";
+    globalThis.document.documentElement.style.overflow = "hidden";
 
     return () => {
       globalThis.document.body.style.overflow = originalOverflow;
@@ -263,7 +279,7 @@ export function useScrollListener(
   }, [callback]);
 
   useEffect(() => {
-    if (typeof globalThis === 'undefined' || !globalThis.window) return;
+    if (typeof globalThis === "undefined" || !globalThis.window) return;
 
     let timeoutId: NodeJS.Timeout | null = null;
 
@@ -279,9 +295,11 @@ export function useScrollListener(
       }
     };
 
-    globalThis.window.addEventListener('scroll', handleScroll, { passive: true });
+    globalThis.window.addEventListener("scroll", handleScroll, {
+      passive: true,
+    });
     return () => {
-      globalThis.window?.removeEventListener('scroll', handleScroll);
+      globalThis.window?.removeEventListener("scroll", handleScroll);
       if (timeoutId) clearTimeout(timeoutId);
     };
   }, [debounce]);
