@@ -197,7 +197,7 @@ export default function DoctorScheduleGrid({
               className="p-3 border border-slate-200 hover:bg-slate-50 transition-all"
               title="Filter Spesialis"
             >
-              <Stethoscope size={20} className="text-[#003f88]" />
+              <Stethoscope size={24} className="text-[#003f88]" />
             </button>
 
             {/* Day Icon Button */}
@@ -206,7 +206,7 @@ export default function DoctorScheduleGrid({
               className="p-3 border border-slate-200 hover:bg-slate-50 transition-all"
               title="Filter Hari"
             >
-              <CalendarDays size={20} className="text-[#003f88]" />
+              <CalendarDays size={24} className="text-[#003f88]" />
             </button>
           </div>
 
