@@ -23,6 +23,10 @@ const CACHE_STRATEGIES: Record<string, number> = {
   schedules: 10 * 60 * 1000,
   doctor_detail: 15 * 60 * 1000,
 
+  // MCU Pages - frequently updated, short cache
+  mcu: 30 * 1000, // 30 seconds only
+  medical_checkup: 30 * 1000, // 30 seconds only
+
   // Dynamic (2-5 minutes)
   mading: 5 * 60 * 1000,
   popups: 2 * 60 * 1000,

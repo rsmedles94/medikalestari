@@ -27,7 +27,7 @@ export default function DoctorSchedulePage() {
     <div className="w-full min-h-screen bg-white">
       <PageTracker pagePath="/jadwal-dokter" />
       {/* MAIN CONTENT AREA */}
-      <main className="max-w-[1175px] mx-auto px-4 md:px-8 py-12 md:py-8">
+      <main className="max-w-[1139px] w-full mx-auto px-4 py-12 md:py-8">
         {/* BREADCRUMB */}
         <div className="mb-8 md:mb-12 border-b border-slate-100 pb-6 -mt-4 md:pt-13">
           <nav className="flex items-center gap-1 text-[14px] text-gray-300 mb-4 ">
