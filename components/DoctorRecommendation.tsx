@@ -36,7 +36,7 @@ export default function DoctorRecommendation({
   };
 
   return (
-    <section className="mt-12 pt-8 border-t border-slate-100">
+    <section className="mt-12 pt-8 border-t border-slate-100 mb-20 md:mb-0">
       <h2 className="text-lg font-bold text-slate-800 mb-4 tracking-tight">
         Rekomendasi {specialty} lainnya
       </h2>
@@ -54,7 +54,7 @@ export default function DoctorRecommendation({
                 {/* overlay CUTI */}
                 <div className="absolute inset-0 z-10 flex items-center justify-center">
                   <span className="text-5xl text-red-400 italic font-extrabold opacity-90">
-                    CUTI
+                    Sedang Cuti
                   </span>
                 </div>
                 <div className="relative z-0 w-full flex items-center">
@@ -81,7 +81,7 @@ export default function DoctorRecommendation({
               </article>
             ) : (
               <Link href={`/dokter/${doctor.id}`} className="block">
-                <article className="group flex items-center p-3 bg-white border border-slate-100 rounded-xl hover:border-blue-200 hover:shadow-md hover:shadow-[#003f88] transition-all duration-200 -mt-2">
+                <article className="group flex items-center p-3 bg-white border border-slate-100 rounded-xl hover:border-blue-200 hover:shadow-md hover:shadow-[#003f88] transition-all duration-200 -mt-2 ">
                   <div className="relative flex-shrink-0 w-16 h-16 rounded-full overflow-hidden bg-slate-50 border border-slate-50">
                     <Image
                       src={doctor.image_url || "/placeholder-doctor.jpg"}
@@ -97,12 +97,9 @@ export default function DoctorRecommendation({
                     <p className="text-[11px] font-medium text-gray-500 mb-1">
                       {doctor.specialty}
                     </p>
-                    <p className="text-xs text-slate-500 line-clamp-1">
-                      {doctor.bio || "Lihat profil lengkap dokter."}
-                    </p>
                   </div>
 
-                  <div className="ml-2 text-slate-300 group-hover:text-[#003f88] transition-colors">
+                  <div className="ml-2 text-slate-300 group-hover:text-[#003f88] transition-colors ">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="16"
