@@ -60,7 +60,7 @@ export default function Emergency() {
               className="flex items-center justify-center gap-3 bg-red-600 text-white py-4 px-6 rounded-xl font-semibold text-md active:bg-red-700 transition-colors cursor-pointer"
             >
               <PhoneCall size={22} />
-              Customer Care (021) 585 4858
+              IGD : +62 8121 0601 963
             </button>
 
             <button

@@ -38,6 +38,7 @@ interface RoomResponse {
 export default function TarifKamar() {
   const [rooms, setRooms] = useState<RoomData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [hoveredRoomId, setHoveredRoomId] = useState<string | null>(null);
 
   useEffect(() => {
     const loadRooms = async () => {
@@ -190,51 +191,65 @@ export default function TarifKamar() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: index * 0.1 }}
-                  /* Menghapus class 'group' dari sini agar hover luar tidak mempengaruhi gambar */
-                  className="bg-white border border-gray-300 hover:shadow-lg transition-shadow duration-300 overflow-hidden cursor-pointer flex flex-col justify-between h-full"
-                  onClick={() => {
-                    // Optional: Navigate to detail page if you create one
-                  }}
+                  className="bg-white border border-gray-300  transition-shadow duration-300 overflow-hidden flex flex-col justify-between h-full"
+                  onMouseEnter={() => setHoveredRoomId(room.id)}
+                  onMouseLeave={() => setHoveredRoomId(null)}
                 >
                   {/* Bagian Atas Card (Gambar + Informasi Utama) */}
-                  <div className="flex flex-col flex-grow">
-                    {/* Image Container - Ditambahkan class 'group' di sini agar efek zoom HANYA saat gambar di-hover */}
-                    <div className="relative w-full h-48 bg-[#f8f9fa] overflow-hidden group">
-                      {displayImage && (
-                        <Image
-                          src={displayImage}
-                          alt={room.name}
-                          fill
-                          className="object-cover  transition-transform duration-300"
-                        />
-                      )}
+                  <div className="flex flex-col grow">
+                    {/* Image Container - Hover effect untuk scale gambar */}
+                    <div className="relative w-full h-48 bg-[#f8f9fa] overflow-hidden cursor-pointer">
+                      <motion.div
+                        className="w-full h-full"
+                        animate={{
+                          scale: hoveredRoomId === room.id ? 1.1 : 1,
+                        }}
+                        transition={{
+                          type: "tween",
+                          duration: 0.6,
+                          ease: "easeInOut",
+                        }}
+                      >
+                        {displayImage && (
+                          <Image
+                            src={displayImage}
+                            alt={room.name}
+                            fill
+                            className="object-cover"
+                          />
+                        )}
+                      </motion.div>
                     </div>
 
                     {/* Content Detail */}
-                    <div className="p-6 flex-grow flex flex-col justify-between">
+                    <div className="p-6 grow flex flex-col justify-between">
                       <div>
-                        {/* Room Name */}
-                        <h2 className="text-xl font-bold text-[#001e3d] mb-2">
-                          {room.name}
-                        </h2>
+                        {/* Room Name - Bisa diklik untuk navigate */}
+                        <Link
+                          href={`/services/kamar-perawatan?room=${room.name}`}
+                        >
+                          <h2 className="text-xl font-bold text-[#001e3d] mb-2 cursor-pointer hover:text-[#e67e22] transition-colors duration-300">
+                            {room.name}
+                          </h2>
+                        </Link>
 
                         {/* Price */}
-                        <p className="text-lg font-bold text-gray-700 mb-4">
+                        <p className="text-lg font-bold text-gray-700 mb-4 cursor-default">
                           Rp.{room.price}{" "}
                           <span className="text-sm font-normal text-gray-400">
                             /malam
                           </span>
                         </p>
 
-                        {/* Description */}
-                        <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                        {/* Description - Tidak bisa diklik */}
+                        <p className="text-gray-600 text-sm mb-4 line-clamp-2 cursor-default">
                           {room.description}
                         </p>
                       </div>
 
                       {/* Facilities */}
                       {room.facilities.length > 0 && (
-                        <div className="mt-auto pt-2">
+                        <div className="mt-auto pt-2 cursor-default">
                           <p className="text-xs font-bold text-gray-700 uppercase mb-2">
                             Fasilitas:
                           </p>
@@ -244,7 +259,7 @@ export default function TarifKamar() {
                               .map((facility, idx) => (
                                 <div
                                   key={idx}
-                                  className="flex items-center gap-2"
+                                  className="flex items-center gap-2 cursor-default"
                                 >
                                   <div className="w-1 h-1 rounded-full bg-[#001e3d]" />
                                   <span className="text-xs text-gray-600">
@@ -263,16 +278,15 @@ export default function TarifKamar() {
                     </div>
                   </div>
 
-                  {/* Bagian Bawah Card (Tombol Selengkapnya Fixed Posisi) */}
+                  {/* Bagian Bawah Card (Tombol Selengkapnya) */}
                   <div className="px-6 pb-6">
                     <Link
-                      href="/services/kamar-perawatan"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        sessionStorage.setItem("selectedRoom", room.name);
-                        window.location.href = `/services/kamar-perawatan?room=${room.name}`;
-                      }}
-                      className="inline-block w-full py-2 px-4 bg-[#003f88] text-white text-center text-sm font-medium hover:bg-[#e67e22] transition-colors"
+                      href={`/services/kamar-perawatan?room=${room.name}`}
+                      className={`inline-block w-full py-2 px-4 text-white text-center text-sm font-medium transition-colors duration-300 cursor-pointer ${
+                        hoveredRoomId === room.id
+                          ? "bg-[#e67e22]"
+                          : "bg-[#003f88] hover:bg-[#e67e22]"
+                      }`}
                     >
                       Selengkapnya →
                     </Link>

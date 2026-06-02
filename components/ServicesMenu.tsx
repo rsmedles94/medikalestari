@@ -57,7 +57,7 @@ const ServicesMenu: React.FC = () => {
     },
     { label: "Poli Klinik", icon: Stethoscope, href: "/services/poli-klinik" },
     { label: "Radiologi", icon: Radio, href: "/services/radiologi" },
-    { label: "Rawat Inap", icon: Bed, href: "/services/rawat-inap" },
+    { label: "Tarif Kamar", icon: Bed, href: "/tarif-kamar" },
     {
       label: "Rehabilitasi Medik",
       icon: Dumbbell,
