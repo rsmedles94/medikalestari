@@ -651,19 +651,38 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <>
-            {/* Panel (Dropdown ke bawah) */}
+            {/* Backdrop */}
 
             <motion.div
-              initial={{ opacity: 0, y: -10, height: 0 }}
-              animate={{ opacity: 1, y: 0, height: "auto" }}
-              exit={{ opacity: 0, y: -10, height: 0 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="fixed inset-0 bg-black/40 backdrop-blur-[2px] z-99 md:hidden"
+            />
+
+            {/* Panel */}
+
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="md:hidden w-full bg-white z-100 overflow-hidden shadow-lg border-b border-gray-200"
+              className="fixed inset-y-0 right-0 w-[85%] bg-white z-100 md:hidden overflow-y-auto shadow-2xl pt-16"
             >
-              <div className="flex flex-col max-h-[70vh] overflow-y-auto">
+              {/* Close Button */}
+              <button
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="fixed top-4 right-4 p-2 hover:bg-gray-100 rounded-lg transition-colors z-50 md:hidden"
+                title="Tutup menu"
+              >
+                <X size={24} className="text-gray-700" />
+              </button>
+
+              <div className="flex flex-col p-4">
                 <button
                   onClick={handleHomeClick}
-                  className="text-left p-3 font-semibold text-gray-700 border-b text-base"
+                  className="text-left p-4 font-semibold text-gray-700 border-b text-lg"
                 >
                   Beranda
                 </button>
@@ -672,7 +691,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                   onClick={() =>
                     setActiveMenu(activeMenu === "Profil" ? null : "Profil")
                   }
-                  className="w-full text-left p-3 font-semibold text-gray-700 flex justify-between items-center text-base border-b"
+                  className="w-full text-left p-4 font-semibold text-gray-700 flex justify-between items-center text-lg border-b"
                 >
                   Profil
                   {activeMenu === "Profil" ? (
@@ -714,7 +733,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
                               setActiveMenu(null);
                             }}
-                            className="block p-3 pl-8 text-gray-600 border-b text-sm hover:bg-[#013a63]/10 hover:text-[#013a63] transition-colors"
+                            className="block p-4 pl-8 text-gray-600 border-b text-sm hover:bg-[#013a63]/10 hover:text-[#013a63] transition-colors"
                           >
                             {subitem}
                           </Link>
@@ -727,7 +746,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                 <Link
                   href="/dokter#section-dokter"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-left p-3 font-semibold text-gray-700 border-b text-base"
+                  className="text-left p-4 font-semibold text-gray-700 border-b text-lg"
                 >
                   Dokter Spesialis
                 </Link>
@@ -735,7 +754,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                 <Link
                   href="/jadwal-dokter"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-left p-3 font-semibold text-gray-700 border-b text-base"
+                  className="text-left p-4 font-semibold text-gray-700 border-b text-lg"
                 >
                   Jadwal Dokter
                 </Link>
@@ -750,7 +769,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                         onClick={() =>
                           setActiveMenu(activeMenu === item ? null : item)
                         }
-                        className="w-full text-left p-3 font-semibold text-gray-700 flex justify-between items-center text-base"
+                        className="w-full text-left p-4 font-semibold text-gray-700 flex justify-between items-center text-lg"
                       >
                         {item}
 
@@ -833,7 +852,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
                                     setActiveMenu(null);
                                   }}
-                                  className="block p-3 pl-8 text-gray-600 border-b text-sm hover:bg-[#013a63]/10 hover:text-[#013a63] transition-colors"
+                                  className="block p-4 pl-8 text-gray-600 border-b text-sm hover:bg-[#013a63]/10 hover:text-[#013a63] transition-colors"
                                 >
                                   {subitem}
                                 </Link>
@@ -978,7 +997,7 @@ function AuthArea({
         onClick={onClick}
         className={`flex items-center gap-2 font-semibold ${
           isMobile
-            ? "p-3 text-gray-700 text-base border-b"
+            ? "p-4 text-gray-700 text-lg border-b"
             : "text-gray-700 text-sm"
         }`}
         title="Panel Admin"
@@ -996,7 +1015,7 @@ function AuthArea({
       onClick={onClick}
       className={`flex items-center gap-2 font-semibold ${
         isMobile
-          ? "p-3 text-gray-700 text-base border-b"
+          ? "p-4 text-gray-700 text-base border-b"
           : "text-gray-700 text-sm"
       }`}
       title="Login"
