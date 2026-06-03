@@ -1,10 +1,45 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
+
+// ==========================================
+// SKELETON SHIMMER COMPONENT
+// ==========================================
+function SkeletonCard() {
+  return (
+    <div
+      className="bg-white border border-gray-300 flex flex-col h-full overflow-hidden"
+      aria-hidden="true"
+    >
+      {/* Image Skeleton */}
+      <div className="relative aspect-square w-full bg-gray-200 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 animate-[shimmer_1.2s_infinite]" />
+      </div>
+
+      {/* Content Skeleton */}
+      <div className="p-4 md:p-5 flex flex-col grow text-center bg-white">
+        {/* Title Skeleton */}
+        <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto mb-3 animate-pulse" />
+
+        {/* Description Skeleton - 3 lines */}
+        <div className="space-y-2 mb-5 flex-1">
+          <div className="h-3 bg-gray-200 rounded w-full animate-pulse" />
+          <div className="h-3 bg-gray-200 rounded w-5/6 animate-pulse" />
+          <div className="h-3 bg-gray-200 rounded w-4/5 animate-pulse" />
+        </div>
+
+        {/* Button Skeleton */}
+        <div className="mt-auto">
+          <div className="h-8 bg-gray-200 rounded w-full animate-pulse" />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // ==========================================
 // DATA PROMO KESEHATAN (Total 12 Item)
@@ -99,6 +134,16 @@ const PROMO_DATA = [
 export default function PromoPage() {
   // State untuk track card promo mana yang di-hover
   const [hoveredPromoId, setHoveredPromoId] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Simulasi loading untuk skeleton shimmer
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div className="w-full min-h-screen bg-white">
@@ -129,9 +174,7 @@ export default function PromoPage() {
               Beranda
             </Link>
             <ChevronRight size={12} className="text-white/70" />
-            <span className="font-normal text-white/90">
-              Promo
-            </span>
+            <span className="font-normal text-white/90">Promo</span>
           </nav>
 
           {/* Title and Description */}
@@ -151,70 +194,76 @@ export default function PromoPage() {
       <section className="relative w-full py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white pb-24 sm:pb-20 lg:pb-16">
         <div className="max-w-[1180px] mx-auto md:px-8">
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-            {PROMO_DATA.map((item) => (
-              <motion.article
-                key={item.id}
-                initial={{ opacity: 1, y: 0 }}
-                className="bg-white border border-gray-300 flex flex-col h-full overflow-hidden transition-all duration-300 group"
-                onMouseEnter={() => setHoveredPromoId(item.id)}
-                onMouseLeave={() => setHoveredPromoId(null)}
-              >
-                {/* Image Container */}
-                <div className="relative aspect-square w-full overflow-hidden bg-gray-50 cursor-pointer">
-                  <motion.div
-                    className="w-full h-full"
-                    animate={{
-                      scale: hoveredPromoId === item.id ? 1.1 : 1,
-                    }}
-                    transition={{
-                      type: "tween",
-                      duration: 0.6,
-                      ease: "easeInOut",
-                    }}
-                  >
-                    <Image
-                      src={item.image}
-                      alt={`Promo ${item.title}`}
-                      width={500}
-                      height={500}
-                      className="object-cover w-full h-full"
-                      priority={item.id <= 4}
-                    />
-                  </motion.div>
-                </div>
-
-                {/* Content Container */}
-                <div className="p-4 md:p-5 flex flex-col grow text-center bg-white">
-                  {/* Title */}
-                  <Link href={`/promo/${item.id}`} passHref>
-                    <h3 className="text-xs md:text-base font-bold text-[#003f88] mb-2 min-h-12 flex items-center justify-center leading-normal cursor-pointer hover:text-[#e67e22] transition-colors duration-300">
-                      {item.title}
-                    </h3>
-                  </Link>
-
-                  {/* Description */}
-                  <p className="text-[10px] md:text-xs text-gray-500 leading-normal mb-5 line-clamp-3 md:line-clamp-4 cursor-default">
-                    {item.description}
-                  </p>
-
-                  {/* Button */}
-                  <div className="mt-auto">
-                    <Link href={`/promo/${item.id}`} passHref>
-                      <button
-                        type="button"
-                        className={`w-full py-2 border text-white text-[10px] md:text-xs font-semibold transition-all duration-300 cursor-pointer ${
-                          hoveredPromoId === item.id
-                            ? "bg-[#e67e22]"
-                            : "bg-[#003f88] hover:bg-[#e67e22]"
-                        }`}
-                      >
-                        Selengkapnya ⭢
-                      </button>
-                    </Link>
+            {isLoading
+              ? Array.from({ length: 12 }).map((_, idx) => (
+                  <div key={`skeleton-promo-${idx}`}>
+                    <SkeletonCard />
                   </div>
-                </div>
-              </motion.article>
-            ))}
+                ))
+              : PROMO_DATA.map((item) => (
+                  <motion.article
+                    key={item.id}
+                    initial={{ opacity: 1, y: 0 }}
+                    className="bg-white border border-gray-300 flex flex-col h-full overflow-hidden transition-all duration-300 group"
+                    onMouseEnter={() => setHoveredPromoId(item.id)}
+                    onMouseLeave={() => setHoveredPromoId(null)}
+                  >
+                    {/* Image Container */}
+                    <div className="relative aspect-square w-full overflow-hidden bg-gray-50 cursor-pointer">
+                      <motion.div
+                        className="w-full h-full"
+                        animate={{
+                          scale: hoveredPromoId === item.id ? 1.1 : 1,
+                        }}
+                        transition={{
+                          type: "tween",
+                          duration: 0.6,
+                          ease: "easeInOut",
+                        }}
+                      >
+                        <Image
+                          src={item.image}
+                          alt={`Promo ${item.title}`}
+                          width={500}
+                          height={500}
+                          className="object-cover w-full h-full"
+                          priority={item.id <= 4}
+                        />
+                      </motion.div>
+                    </div>
+
+                    {/* Content Container */}
+                    <div className="p-4 md:p-5 flex flex-col grow text-center bg-white">
+                      {/* Title */}
+                      <Link href={`/promo/${item.id}`} passHref>
+                        <h3 className="text-xs md:text-base font-bold text-[#003f88] mb-2 min-h-12 flex items-center justify-center leading-normal cursor-pointer hover:text-[#e67e22] transition-colors duration-300">
+                          {item.title}
+                        </h3>
+                      </Link>
+
+                      {/* Description */}
+                      <p className="text-[10px] md:text-xs text-gray-500 leading-normal mb-5 line-clamp-3 md:line-clamp-4 cursor-default">
+                        {item.description}
+                      </p>
+
+                      {/* Button */}
+                      <div className="mt-auto">
+                        <Link href={`/promo/${item.id}`} passHref>
+                          <button
+                            type="button"
+                            className={`w-full py-2 border text-white text-[10px] md:text-xs font-semibold transition-all duration-300 cursor-pointer ${
+                              hoveredPromoId === item.id
+                                ? "bg-[#e67e22]"
+                                : "bg-[#003f88] hover:bg-[#e67e22]"
+                            }`}
+                          >
+                            Selengkapnya ⭢
+                          </button>
+                        </Link>
+                      </div>
+                    </div>
+                  </motion.article>
+                ))}
           </div>
         </div>
       </section>
