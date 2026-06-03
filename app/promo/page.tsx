@@ -130,7 +130,7 @@ export default function PromoPage() {
             </Link>
             <ChevronRight size={12} className="text-white/70" />
             <span className="font-normal text-white/90">
-              Promo Paket Kesehatan
+              Promo
             </span>
           </nav>
 

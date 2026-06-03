@@ -383,6 +383,17 @@ export default function PromoDetailPage() {
               className="text-black/60"
               aria-hidden="true"
             />
+            <Link
+              href="/promo"
+              className="text-black/60 hover:text-gray-300 transition-colors"
+            >
+              Promo
+            </Link>
+            <ChevronRight
+              size={12}
+              className="text-black/60"
+              aria-hidden="true"
+            />
             <span className="font-normal text-gray-300" aria-current="page">
               {promo.title}
             </span>
