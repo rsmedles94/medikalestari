@@ -543,7 +543,7 @@ const PromoKesehatan = () => {
                     <SkeletonCard />
                   </div>
                 ))
-              : PROMO_DATA.map((item) => (
+              : PROMO_DATA.slice(0, 8).map((item) => (
                   <div
                     key={item.id}
                     className="keen-slider__slide w-1/2 lg:w-1/4 shrink-0 p-2 md:p-3"
@@ -606,7 +606,7 @@ const PromoKesehatan = () => {
           </div>
 
           {/* dot card promo */}
-          <div className="mt-12 flex items-center justify-center gap-4">
+          <div className="mt-8 flex items-center justify-center gap-4">
             {promoDots.map((index) => {
               const isActive = index === activeIndex;
               return (
@@ -641,6 +641,15 @@ const PromoKesehatan = () => {
                 </button>
               );
             })}
+          </div>
+
+          {/* Lihat Semua Promo Link */}
+          <div className="mt-12 text-center">
+            <Link href="/promo" passHref>
+              <span className="text-sm md:text-base font-semibold text-[#3D8ECB] hover:text-[#e67e22] hover:underline transition-all duration-300 cursor-pointer inline-block">
+                Lihat Semua Promo →
+              </span>
+            </Link>
           </div>
         </div>
       </section>
