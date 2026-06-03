@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { motion, useAnimationControls } from "framer-motion";
 import Link from "next/link";
@@ -240,12 +240,18 @@ const PromoKesehatan = () => {
   const controls = useAnimationControls();
   const [itemsPerGroup, setItemsPerGroup] = useState(4);
   const totalDots = Math.ceil(PROMO_DATA.length / itemsPerGroup);
+  const promoSliderRef = useRef<HTMLDivElement>(null);
+  const [promoStartX, setPromoStartX] = useState(0);
+  const [promoIsDragging, setPromoIsDragging] = useState(false);
 
   // State & Controls Kustom Baru untuk Slider Award (18 Item, per-grup isi 9 logo sesuai grid gambar)
   const [activeAwardIndex, setActiveAwardIndex] = useState(0);
   const awardControls = useAnimationControls();
   const awardItemsPerGroup = 9; // Grid 3x3 per halaman slider
   const totalAwardDots = Math.ceil(AWARDS_DATA.length / awardItemsPerGroup);
+  const awardSliderRef = useRef<HTMLDivElement>(null);
+  const [awardStartX, setAwardStartX] = useState(0);
+  const [awardIsDragging, setAwardIsDragging] = useState(false);
 
   // State untuk track card promo mana yang di-hover
   const [hoveredPromoId, setHoveredPromoId] = useState<number | null>(null);
@@ -304,6 +310,93 @@ const PromoKesehatan = () => {
         mass: 0.8,
       },
     });
+  };
+
+  // ========== HANDLERS UNTUK DRAG/SWIPE PROMO SLIDER ==========
+  const handlePromoMouseDown = (e: React.MouseEvent) => {
+    setPromoIsDragging(true);
+    setPromoStartX(e.clientX);
+  };
+
+  const handlePromoMouseMove = (e: React.MouseEvent) => {
+    if (!promoIsDragging) return;
+    // Update tracking untuk swipe
+  };
+
+  const handlePromoMouseUp = (e: React.MouseEvent) => {
+    if (!promoIsDragging) return;
+    setPromoIsDragging(false);
+
+    const endX = e.clientX;
+    const diff = promoStartX - endX;
+    const threshold = 50;
+
+    if (Math.abs(diff) > threshold) {
+      const newIndex =
+        diff > 0
+          ? Math.min(activeIndex + 1, totalDots - 1)
+          : Math.max(activeIndex - 1, 0);
+      handleDotClick(newIndex);
+    }
+  };
+
+  const handlePromoTouchStart = (e: React.TouchEvent) => {
+    setPromoStartX(e.touches[0].clientX);
+  };
+
+  const handlePromoTouchEnd = (e: React.TouchEvent) => {
+    const endX = e.changedTouches[0].clientX;
+    const diff = promoStartX - endX;
+    const threshold = 50;
+
+    if (Math.abs(diff) > threshold) {
+      const newIndex =
+        diff > 0
+          ? Math.min(activeIndex + 1, totalDots - 1)
+          : Math.max(activeIndex - 1, 0);
+      handleDotClick(newIndex);
+    }
+  };
+
+  // ========== HANDLERS UNTUK DRAG/SWIPE AWARD SLIDER ==========
+  const handleAwardMouseDown = (e: React.MouseEvent) => {
+    setAwardIsDragging(true);
+    setAwardStartX(e.clientX);
+  };
+
+  const handleAwardMouseUp = (e: React.MouseEvent) => {
+    if (!awardIsDragging) return;
+    setAwardIsDragging(false);
+
+    const endX = e.clientX;
+    const diff = awardStartX - endX;
+    const threshold = 50;
+
+    if (Math.abs(diff) > threshold) {
+      const newIndex =
+        diff > 0
+          ? Math.min(activeAwardIndex + 1, totalAwardDots - 1)
+          : Math.max(activeAwardIndex - 1, 0);
+      handleAwardDotClick(newIndex);
+    }
+  };
+
+  const handleAwardTouchStart = (e: React.TouchEvent) => {
+    setAwardStartX(e.touches[0].clientX);
+  };
+
+  const handleAwardTouchEnd = (e: React.TouchEvent) => {
+    const endX = e.changedTouches[0].clientX;
+    const diff = awardStartX - endX;
+    const threshold = 50;
+
+    if (Math.abs(diff) > threshold) {
+      const newIndex =
+        diff > 0
+          ? Math.min(activeAwardIndex + 1, totalAwardDots - 1)
+          : Math.max(activeAwardIndex - 1, 0);
+      handleAwardDotClick(newIndex);
+    }
   };
 
   return (
@@ -411,7 +504,14 @@ const PromoKesehatan = () => {
 
             {/* Sisi Kanan: Slider Bungkus Kotak Putih Logo Penghargaan (18 Item smooth slider dengan Dot) */}
             <div className="lg:col-span-6 w-full overflow-hidden flex flex-col">
-              <div className="w-full overflow-hidden">
+              <div
+                className="w-full overflow-hidden"
+                onMouseDown={handleAwardMouseDown}
+                onMouseUp={handleAwardMouseUp}
+                onMouseLeave={() => setAwardIsDragging(false)}
+                onTouchStart={handleAwardTouchStart}
+                onTouchEnd={handleAwardTouchEnd}
+              >
                 <motion.div
                   animate={awardControls}
                   initial={{ x: "0%" }}
@@ -513,7 +613,14 @@ const PromoKesehatan = () => {
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-8 -mt-10 text-center">
             Penawaran promo spesial paket kesehatan untuk anda
           </h2>
-          <div className="w-full overflow-hidden">
+          <div
+            className="w-full overflow-hidden"
+            onMouseDown={handlePromoMouseDown}
+            onMouseUp={handlePromoMouseUp}
+            onMouseLeave={() => setPromoIsDragging(false)}
+            onTouchStart={handlePromoTouchStart}
+            onTouchEnd={handlePromoTouchEnd}
+          >
             <motion.div
               animate={controls}
               initial={{ x: "0%" }}
