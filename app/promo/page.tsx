@@ -130,17 +130,18 @@ export default function PromoPage() {
             </Link>
             <ChevronRight size={12} className="text-white/70" />
             <span className="font-normal text-white/90">
-              Semua Promo Kesehatan
+              Promo Paket Kesehatan
             </span>
           </nav>
 
           {/* Title and Description */}
           <div className="text-left">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
-              Semua Promo Kesehatan
+              Promo Paket Kesehatan Spesial
             </h1>
             <p className="text-sm md:text-base text-white/90 max-w-2xl">
-              Temukan berbagai penawaran spesial paket kesehatan terbaik
+              Temukan berbagai penawaran spesial paket kesehatan untuk anda dan
+              keluarga.
             </p>
           </div>
         </div>
@@ -153,11 +154,8 @@ export default function PromoPage() {
             {PROMO_DATA.map((item) => (
               <motion.article
                 key={item.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
-                viewport={{ once: true }}
-                className="bg-white border border-gray-300 flex flex-col h-full overflow-hidden transition-all duration-300 group hover:shadow-lg"
+                initial={{ opacity: 1, y: 0 }}
+                className="bg-white border border-gray-300 flex flex-col h-full overflow-hidden transition-all duration-300 group"
                 onMouseEnter={() => setHoveredPromoId(item.id)}
                 onMouseLeave={() => setHoveredPromoId(null)}
               >
