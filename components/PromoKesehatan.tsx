@@ -1,12 +1,14 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { motion, useAnimationControls } from "framer-motion";
+import { motion } from "framer-motion";
 import Link from "next/link";
+import { useKeenSlider } from "keen-slider/react";
+import "keen-slider/keen-slider.min.css";
 
 // ==========================================
-// DATA DEMO PROMO KESEHATAN (Total 8 Item)
+// DATA DEMO PROMO KESEHATAN (Total 12 Item)
 // ==========================================
 const PROMO_DATA = [
   {
@@ -96,7 +98,7 @@ const PROMO_DATA = [
 ];
 
 // ==========================================
-// DATA LOGO REKANAN / PENGHARGAAN (Total 18 Item)
+// DATA LOGO REKANAN / PENGHARGAAN (Total 17 Item)
 // ==========================================
 const AWARDS_DATA = [
   {
@@ -136,7 +138,6 @@ const AWARDS_DATA = [
     src: "/images/awards/award9.png",
     alt: "The Joint Commission Gold Seal",
   },
-  // 9 Item Tambahan untuk melengkapi menjadi 18 item slider
   {
     id: 10,
     src: "/images/awards/award10.jpeg",
@@ -235,167 +236,92 @@ function SkeletonCard() {
 const PromoKesehatan = () => {
   const [isLoading, setIsLoading] = useState(true);
 
-  // State & Controls untuk Slider Promo Vaksin (Bawaan)
+  // Indeks aktif untuk dot slider
   const [activeIndex, setActiveIndex] = useState(0);
-  const controls = useAnimationControls();
-  const [itemsPerGroup, setItemsPerGroup] = useState(4);
-  const totalDots = Math.ceil(PROMO_DATA.length / itemsPerGroup);
-  const promoSliderRef = useRef<HTMLDivElement>(null);
-  const [promoStartX, setPromoStartX] = useState(0);
-  const [promoIsDragging, setPromoIsDragging] = useState(false);
-
-  // State & Controls Kustom Baru untuk Slider Award (18 Item, per-grup isi 9 logo sesuai grid gambar)
   const [activeAwardIndex, setActiveAwardIndex] = useState(0);
-  const awardControls = useAnimationControls();
-  const awardItemsPerGroup = 9; // Grid 3x3 per halaman slider
-  const totalAwardDots = Math.ceil(AWARDS_DATA.length / awardItemsPerGroup);
-  const awardSliderRef = useRef<HTMLDivElement>(null);
-  const [awardStartX, setAwardStartX] = useState(0);
-  const [awardIsDragging, setAwardIsDragging] = useState(false);
+
+  // Menyimpan array representasi dot slider agar jumlahnya akurat
+  const [promoDots, setPromoDots] = useState<number[]>([]);
+  const [awardDots, setAwardDots] = useState<number[]>([]);
 
   // State untuk track card promo mana yang di-hover
   const [hoveredPromoId, setHoveredPromoId] = useState<number | null>(null);
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 1024) {
-        setItemsPerGroup(4);
-      } else {
-        setItemsPerGroup(2);
+  // 1. REKANAN SLIDER (3x3 grid per halaman)
+  const [awardSliderRef, awardSliderInstance] = useKeenSlider<HTMLDivElement>({
+    initial: 0,
+    slides: { perView: 1 },
+    slideChanged(slider) {
+      setActiveAwardIndex(slider.track.details.rel);
+    },
+    created(slider) {
+      if (slider.track.details?.slides) {
+        setAwardDots(
+          Array.from(Array(slider.track.details.slides.length).keys()),
+        );
       }
-      setActiveIndex(0);
-      setActiveAwardIndex(0);
-      controls.start({ x: "0%" });
-      awardControls.start({ x: "0%" });
-    };
+    },
+    updated(slider) {
+      if (slider.track.details?.slides) {
+        setAwardDots(
+          Array.from(Array(slider.track.details.slides.length).keys()),
+        );
+      }
+    },
+  });
 
-    handleResize();
-    window.addEventListener("resize", handleResize);
+  // 2. PROMO CARD SLIDER (Akurat mendeteksi batas slide perView agar dot tidak kelebihan)
+  const [promoSliderRef, promoSliderInstance] = useKeenSlider<HTMLDivElement>({
+    initial: 0,
+    slides: {
+      perView: 2,
+      spacing: 0,
+    },
+    breakpoints: {
+      "(min-width: 1024px)": {
+        slides: {
+          perView: 4,
+          spacing: 0,
+        },
+      },
+    },
+    slideChanged(slider) {
+      setActiveIndex(slider.track.details.rel);
+    },
+    created(slider) {
+      // Menghitung jumlah dot yang benar berdasarkan total pergeseran maksimum yang valid
+      const maxIdx = slider.track.details.maxIdx;
+      setPromoDots(Array.from(Array(maxIdx + 1).keys()));
+    },
+    updated(slider) {
+      const maxIdx = slider.track.details.maxIdx;
+      setPromoDots(Array.from(Array(maxIdx + 1).keys()));
+    },
+  });
 
-    const t = setTimeout(() => setIsLoading(false), 700);
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setIsLoading(false);
+      // Memaksa KeenSlider membaca ulang dimensi kontainer setelah skeleton hilang
+      setTimeout(() => {
+        if (promoSliderInstance.current) promoSliderInstance.current.update();
+        if (awardSliderInstance.current) awardSliderInstance.current.update();
+      }, 50);
+    }, 700);
 
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      clearTimeout(t);
-    };
-  }, [controls, awardControls]);
+    return () => clearTimeout(t);
+  }, [promoSliderInstance, awardSliderInstance]);
 
-  // Handler Navigasi Slider Promo Vaksin
+  // Handler Navigasi Klik Dot
   const handleDotClick = (index: number) => {
-    setActiveIndex(index);
-    const targetTranslateX = -(index * 100);
-
-    controls.start({
-      x: `${targetTranslateX}%`,
-      transition: {
-        type: "spring",
-        stiffness: 180,
-        damping: 24,
-        mass: 0.8,
-      },
-    });
+    if (promoSliderInstance.current) {
+      promoSliderInstance.current.moveToIdx(index);
+    }
   };
 
-  // Handler Navigasi Slider 18 Logo Rekanan Baru
   const handleAwardDotClick = (index: number) => {
-    setActiveAwardIndex(index);
-    const targetTranslateX = -(index * 100);
-
-    awardControls.start({
-      x: `${targetTranslateX}%`,
-      transition: {
-        type: "spring",
-        stiffness: 180,
-        damping: 24,
-        mass: 0.8,
-      },
-    });
-  };
-
-  // ========== HANDLERS UNTUK DRAG/SWIPE PROMO SLIDER ==========
-  const handlePromoMouseDown = (e: React.MouseEvent) => {
-    setPromoIsDragging(true);
-    setPromoStartX(e.clientX);
-  };
-
-  const handlePromoMouseMove = (e: React.MouseEvent) => {
-    if (!promoIsDragging) return;
-    // Update tracking untuk swipe
-  };
-
-  const handlePromoMouseUp = (e: React.MouseEvent) => {
-    if (!promoIsDragging) return;
-    setPromoIsDragging(false);
-
-    const endX = e.clientX;
-    const diff = promoStartX - endX;
-    const threshold = 50;
-
-    if (Math.abs(diff) > threshold) {
-      const newIndex =
-        diff > 0
-          ? Math.min(activeIndex + 1, totalDots - 1)
-          : Math.max(activeIndex - 1, 0);
-      handleDotClick(newIndex);
-    }
-  };
-
-  const handlePromoTouchStart = (e: React.TouchEvent) => {
-    setPromoStartX(e.touches[0].clientX);
-  };
-
-  const handlePromoTouchEnd = (e: React.TouchEvent) => {
-    const endX = e.changedTouches[0].clientX;
-    const diff = promoStartX - endX;
-    const threshold = 50;
-
-    if (Math.abs(diff) > threshold) {
-      const newIndex =
-        diff > 0
-          ? Math.min(activeIndex + 1, totalDots - 1)
-          : Math.max(activeIndex - 1, 0);
-      handleDotClick(newIndex);
-    }
-  };
-
-  // ========== HANDLERS UNTUK DRAG/SWIPE AWARD SLIDER ==========
-  const handleAwardMouseDown = (e: React.MouseEvent) => {
-    setAwardIsDragging(true);
-    setAwardStartX(e.clientX);
-  };
-
-  const handleAwardMouseUp = (e: React.MouseEvent) => {
-    if (!awardIsDragging) return;
-    setAwardIsDragging(false);
-
-    const endX = e.clientX;
-    const diff = awardStartX - endX;
-    const threshold = 50;
-
-    if (Math.abs(diff) > threshold) {
-      const newIndex =
-        diff > 0
-          ? Math.min(activeAwardIndex + 1, totalAwardDots - 1)
-          : Math.max(activeAwardIndex - 1, 0);
-      handleAwardDotClick(newIndex);
-    }
-  };
-
-  const handleAwardTouchStart = (e: React.TouchEvent) => {
-    setAwardStartX(e.touches[0].clientX);
-  };
-
-  const handleAwardTouchEnd = (e: React.TouchEvent) => {
-    const endX = e.changedTouches[0].clientX;
-    const diff = awardStartX - endX;
-    const threshold = 50;
-
-    if (Math.abs(diff) > threshold) {
-      const newIndex =
-        diff > 0
-          ? Math.min(activeAwardIndex + 1, totalAwardDots - 1)
-          : Math.max(activeAwardIndex - 1, 0);
-      handleAwardDotClick(newIndex);
+    if (awardSliderInstance.current) {
+      awardSliderInstance.current.moveToIdx(index);
     }
   };
 
@@ -502,66 +428,56 @@ const PromoKesehatan = () => {
               </Link>
             </div>
 
-            {/* Sisi Kanan: Slider Bungkus Kotak Putih Logo Penghargaan (18 Item smooth slider dengan Dot) */}
+            {/* Sisi Kanan: Slider Bungkus Kotak Putih Logo Penghargaan */}
             <div className="lg:col-span-6 w-full overflow-hidden flex flex-col">
               <div
-                className="w-full overflow-hidden"
-                onMouseDown={handleAwardMouseDown}
-                onMouseUp={handleAwardMouseUp}
-                onMouseLeave={() => setAwardIsDragging(false)}
-                onTouchStart={handleAwardTouchStart}
-                onTouchEnd={handleAwardTouchEnd}
+                ref={awardSliderRef}
+                className="keen-slider w-full overflow-hidden"
               >
-                <motion.div
-                  animate={awardControls}
-                  initial={{ x: "0%" }}
-                  className="flex w-full"
-                >
-                  {/* Halaman/Grup Pertama (Logo 1-9) */}
-                  <div className="w-full shrink-0 grid grid-cols-3 gap-2 pr-1">
-                    {AWARDS_DATA.slice(0, 9).map((award) => (
-                      <div
-                        key={award.id}
-                        className="bg-white p-2 aspect-[4/3] flex items-center justify-center shadow transition-all duration-300"
-                      >
-                        <div className="relative w-full h-full">
-                          <Image
-                            src={award.src}
-                            alt={award.alt}
-                            fill
-                            sizes="100vw"
-                            className="object-contain"
-                          />
-                        </div>
+                {/* Halaman/Grup Pertama (Logo 1-9) */}
+                <div className="keen-slider__slide w-full shrink-0 grid grid-cols-3 gap-2 pr-1">
+                  {AWARDS_DATA.slice(0, 9).map((award) => (
+                    <div
+                      key={award.id}
+                      className="bg-white p-2 aspect-[4/3] flex items-center justify-center shadow transition-all duration-300"
+                    >
+                      <div className="relative w-full h-full">
+                        <Image
+                          src={award.src}
+                          alt={award.alt}
+                          fill
+                          sizes="100vw"
+                          className="object-contain"
+                        />
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  ))}
+                </div>
 
-                  {/* Halaman/Grup Kedua (Logo 10-18) */}
-                  <div className="w-full shrink-0 grid grid-cols-3 gap-2 pl-1">
-                    {AWARDS_DATA.slice(9, 18).map((award) => (
-                      <div
-                        key={award.id}
-                        className="bg-white p-2 aspect-[4/3] flex items-center justify-center shadow transition-all duration-300 hover:opacity-90"
-                      >
-                        <div className="relative w-full h-full">
-                          <Image
-                            src={award.src}
-                            alt={award.alt}
-                            fill
-                            sizes="100vw"
-                            className="object-contain"
-                          />
-                        </div>
+                {/* Halaman/Grup Kedua (Logo 10-18) */}
+                <div className="keen-slider__slide w-full shrink-0 grid grid-cols-3 gap-2 pl-1">
+                  {AWARDS_DATA.slice(9, 17).map((award) => (
+                    <div
+                      key={award.id}
+                      className="bg-white p-2 aspect-[4/3] flex items-center justify-center shadow transition-all duration-300 hover:opacity-90"
+                    >
+                      <div className="relative w-full h-full">
+                        <Image
+                          src={award.src}
+                          alt={award.alt}
+                          fill
+                          sizes="100vw"
+                          className="object-contain"
+                        />
                       </div>
-                    ))}
-                  </div>
-                </motion.div>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               {/* Indikator Dot Rekanan */}
               <div className="mt-12 flex items-center justify-center gap-4">
-                {Array.from({ length: totalAwardDots }).map((_, index) => {
+                {awardDots.map((index) => {
                   const isAwardActive = index === activeAwardIndex;
                   return (
                     <button
@@ -613,94 +529,85 @@ const PromoKesehatan = () => {
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-8 -mt-10 text-center">
             Penawaran promo spesial paket kesehatan untuk anda
           </h2>
-          <div
-            className="w-full overflow-hidden"
-            onMouseDown={handlePromoMouseDown}
-            onMouseUp={handlePromoMouseUp}
-            onMouseLeave={() => setPromoIsDragging(false)}
-            onTouchStart={handlePromoTouchStart}
-            onTouchEnd={handlePromoTouchEnd}
-          >
-            <motion.div
-              animate={controls}
-              initial={{ x: "0%" }}
-              className="flex w-full"
-            >
-              {isLoading
-                ? Array.from({ length: 4 }).map((_, idx) => (
-                    <div
-                      key={"skeleton-" + idx}
-                      className="w-1/2 lg:w-1/4 shrink-0 p-2 md:p-3"
-                    >
-                      <SkeletonCard />
-                    </div>
-                  ))
-                : PROMO_DATA.map((item) => (
-                    <div
-                      key={item.id}
-                      className="w-1/2 lg:w-1/4 shrink-0 p-2 md:p-3"
-                    >
-                      <article
-                        className="bg-white border border-gray-300 flex flex-col h-full -lg overflow-hidden transition-all duration-300 group"
-                        onMouseEnter={() => setHoveredPromoId(item.id)}
-                        onMouseLeave={() => setHoveredPromoId(null)}
-                      >
-                        <div className="relative aspect-square w-full overflow-hidden bg-gray-50 cursor-pointer">
-                          <motion.div
-                            className="w-full h-full"
-                            animate={{
-                              scale: hoveredPromoId === item.id ? 1.1 : 1,
-                            }}
-                            transition={{
-                              type: "tween",
-                              duration: 0.6,
-                              ease: "easeInOut",
-                            }}
-                          >
-                            <Image
-                              src={item.image}
-                              alt={`Promo ${item.title}`}
-                              width={500}
-                              height={500}
-                              className="object-cover w-full h-full"
-                              priority={item.id <= 4}
-                            />
-                          </motion.div>
-                        </div>
 
-                        <div className="p-4 md:p-5 flex flex-col grow text-center bg-white">
+          <div
+            ref={promoSliderRef}
+            className="keen-slider w-full overflow-hidden"
+          >
+            {isLoading
+              ? Array.from({ length: 4 }).map((_, idx) => (
+                  <div
+                    key={"skeleton-" + idx}
+                    className="keen-slider__slide w-1/2 lg:w-1/4 shrink-0 p-2 md:p-3"
+                  >
+                    <SkeletonCard />
+                  </div>
+                ))
+              : PROMO_DATA.map((item) => (
+                  <div
+                    key={item.id}
+                    className="keen-slider__slide w-1/2 lg:w-1/4 shrink-0 p-2 md:p-3"
+                  >
+                    <article
+                      className="bg-white border border-gray-300 flex flex-col h-full -lg overflow-hidden transition-all duration-300 group"
+                      onMouseEnter={() => setHoveredPromoId(item.id)}
+                      onMouseLeave={() => setHoveredPromoId(null)}
+                    >
+                      <div className="relative aspect-square w-full overflow-hidden bg-gray-50 cursor-pointer">
+                        <motion.div
+                          className="w-full h-full"
+                          animate={{
+                            scale: hoveredPromoId === item.id ? 1.1 : 1,
+                          }}
+                          transition={{
+                            type: "tween",
+                            duration: 0.6,
+                            ease: "easeInOut",
+                          }}
+                        >
+                          <Image
+                            src={item.image}
+                            alt={`Promo ${item.title}`}
+                            width={500}
+                            height={500}
+                            className="object-cover w-full h-full"
+                            priority={item.id <= 4}
+                          />
+                        </motion.div>
+                      </div>
+
+                      <div className="p-4 md:p-5 flex flex-col grow text-center bg-white">
+                        <Link href={`/promo/${item.id}`} passHref>
+                          <h3 className="text-xs md:text-base font-bold text-[#003f88] mb-2 min-h-12 flex items-center justify-center leading-normal cursor-pointer hover:text-[#e67e22] transition-colors duration-300">
+                            {item.title}
+                          </h3>
+                        </Link>
+                        <p className="text-[10px] md:text-xs text-gray-500 leading-normal mb-5 line-clamp-3 md:line-clamp-4 cursor-default">
+                          {item.description}
+                        </p>
+                        <div className="mt-auto">
                           <Link href={`/promo/${item.id}`} passHref>
-                            <h3 className="text-xs md:text-base font-bold text-[#003f88] mb-2 min-h-12 flex items-center justify-center leading-normal cursor-pointer hover:text-[#e67e22] transition-colors duration-300">
-                              {item.title}
-                            </h3>
+                            <button
+                              type="button"
+                              className={`w-full py-2 border text-white text-[10px] md:text-xs font-semibold transition-all duration-300 cursor-pointer ${
+                                hoveredPromoId === item.id
+                                  ? "bg-[#e67e22]"
+                                  : "bg-[#003f88] hover:bg-[#e67e22]"
+                              }`}
+                            >
+                              Selengkapnya ⭢
+                            </button>
                           </Link>
-                          <p className="text-[10px] md:text-xs text-gray-500 leading-normal mb-5 line-clamp-3 md:line-clamp-4 cursor-default">
-                            {item.description}
-                          </p>
-                          <div className="mt-auto">
-                            <Link href={`/promo/${item.id}`} passHref>
-                              <button
-                                type="button"
-                                className={`w-full py-2 border text-white text-[10px] md:text-xs font-semibold transition-all duration-300 cursor-pointer ${
-                                  hoveredPromoId === item.id
-                                    ? "bg-[#e67e22]"
-                                    : "bg-[#003f88] hover:bg-[#e67e22]"
-                                }`}
-                              >
-                                Selengkapnya ⭢
-                              </button>
-                            </Link>
-                          </div>
                         </div>
-                      </article>
-                    </div>
-                  ))}
-            </motion.div>
+                      </div>
+                    </article>
+                  </div>
+                ))}
           </div>
 
           {/* dot card promo */}
           <div className="mt-12 flex items-center justify-center gap-4">
-            {Array.from({ length: totalDots }).map((_, index) => {
+            {promoDots.map((index) => {
               const isActive = index === activeIndex;
               return (
                 <button
