@@ -201,7 +201,11 @@ export default function DoctorScheduleGrid({
               onClick={() =>
                 setShowMobileSpecialtyModal(!showMobileSpecialtyModal)
               }
-              className="p-3 border border-slate-200 hover:bg-slate-50 transition-all"
+              className={`p-3 border transition-all ${
+                showMobileSpecialtyModal
+                  ? "border-[#003f88] bg-slate-50"
+                  : "border-slate-200 hover:bg-slate-50"
+              }`}
               title="Filter Spesialis"
             >
               <Stethoscope size={24} className="text-[#003f88]" />
@@ -210,7 +214,11 @@ export default function DoctorScheduleGrid({
             {/* Day Icon Button */}
             <button
               onClick={() => setShowMobileDayModal(!showMobileDayModal)}
-              className="p-3 border border-slate-200 hover:bg-slate-50 transition-all"
+              className={`p-3 border transition-all ${
+                showMobileDayModal
+                  ? "border-[#003f88] bg-slate-50"
+                  : "border-slate-200 hover:bg-slate-50"
+              }`}
               title="Filter Hari"
             >
               <CalendarDays size={24} className="text-[#003f88]" />
@@ -429,7 +437,11 @@ export default function DoctorScheduleGrid({
             {/* Day Icon Button */}
             <button
               onClick={() => setShowDesktopDayModal(!showDesktopDayModal)}
-              className="p-3 border border-slate-200 hover:bg-slate-50 transition-all"
+              className={`p-3 border transition-all ${
+                showDesktopDayModal
+                  ? "border-[#003f88] bg-slate-50"
+                  : "border-slate-200 hover:bg-slate-50"
+              }`}
               title={
                 selectedDayInput ? `Filter: ${selectedDayInput}` : "Filter Hari"
               }
