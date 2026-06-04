@@ -178,7 +178,7 @@ export default function DoctorScheduleGrid({
             {/* Search Input */}
             <div className="flex-1 relative">
               <Search
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-[#003f88]"
                 size={18}
               />
               <input
@@ -415,7 +415,7 @@ export default function DoctorScheduleGrid({
               </label>
               <div className="relative">
                 <Search
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[#003f88]"
                   size={18}
                 />
                 <input
