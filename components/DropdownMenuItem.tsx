@@ -15,7 +15,7 @@ const DropdownMenuItem = ({ title, href, icon, flag }: DropdownItemProps) => {
   return (
     <Link
       href={href}
-      className="flex items-center justify-between px-6 py-4  hover:bg-gray-100 hover:text-[#003f88] transition-all duration-300 relative overflow-hidden group m-1"
+      className="flex items-center justify-between px-6 py-4  hover:bg-[#003f88] hover:text-[#003f88] transition-all duration-300 relative overflow-hidden group m-1"
     >
       <div className="flex items-center gap-3">
         {/* FLAG atau ICON */}
@@ -41,11 +41,11 @@ const DropdownMenuItem = ({ title, href, icon, flag }: DropdownItemProps) => {
 
         {/* PANAH KIRI */}
         <div className="w-0 opacity-0 -ml-4 group-hover:w-5 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300 ease-out">
-          <ArrowRight size={18} className="text-[#003f88]" />
+          <ArrowRight size={18} className="text-white" />
         </div>
 
         {/* TEKS */}
-        <span className="text-[14px] text-gray-800 group-hover:text-[#003f88] group-hover:font-medium transition-colors duration-300">
+        <span className="text-[14px] text-gray-800 group-hover:text-white group-hover:font-medium transition-colors duration-300">
           {title}
         </span>
       </div>
