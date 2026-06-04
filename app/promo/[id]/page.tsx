@@ -404,7 +404,7 @@ export default function PromoDetailPage() {
           <p className="text-slate-600">{promo.shortDescription}</p>
         </header>
 
-        {/* Pembagian grid gambar kiri dan detail teks kanan */}
+        {/* grid gambar kiri dan deskripsi */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           <section className="flex flex-col">
             <div className="relative w-full aspect-square overflow-hidden shadow-lg bg-gray-100">
