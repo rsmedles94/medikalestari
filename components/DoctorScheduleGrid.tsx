@@ -522,10 +522,10 @@ export default function DoctorScheduleGrid({
                 }
               }}
               disabled={doctor.status === "cuti"}
-              className={`relative bg-white shadow-lg overflow-hidden transition-all border border-slate-200 text-left ${
+              className={`relative bg-white shadow-lg overflow-hidden border border-slate-200 text-left group ${
                 doctor.status === "cuti"
                   ? "opacity-60 cursor-not-allowed pointer-events-none"
-                  : "cursor-pointer hover:-translate-y-2 hover:shadow-xl hover:border-slate-100"
+                  : "cursor-pointer"
               }`}
             >
               {/* Doctor Header */}
@@ -538,7 +538,7 @@ export default function DoctorScheduleGrid({
                         alt={doctor.name}
                         fill
                         sizes="56px"
-                        className="object-cover"
+                        className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
                       />
                     </div>
                   )}
@@ -566,9 +566,11 @@ export default function DoctorScheduleGrid({
                         return (
                           <th
                             key={day}
-                            className={`py-2 px-1 font-semibold border-b border-slate-200 text-center text-white ${
-                              isFirstDay ? "border-l border-slate-200" : ""
-                            } ${isLastDay ? "border-r border-slate-200" : ""} ${
+                            className={`py-2 px-1 font-semibold text-center text-white ${
+                              isFirstDay
+                                ? "border-l border-slate-200"
+                                : "border-l border-white"
+                            } ${isLastDay ? "border-r border-slate-200" : "border-r border-white"} ${
                               isCutiDay ? "bg-red-100 text-red-700" : ""
                             }`}
                           >
@@ -725,10 +727,10 @@ export default function DoctorScheduleGrid({
                     }
                   }}
                   disabled={doctor.status === "cuti"}
-                  className={`relative bg-white border border-slate-200 shadow-sm overflow-hidden transition-transform text-left ${
+                  className={`relative bg-white border border-slate-200 shadow-sm overflow-hidden text-left ${
                     doctor.status === "cuti"
                       ? "opacity-60 cursor-not-allowed pointer-events-none"
-                      : "active:scale-[0.99] cursor-pointer"
+                      : "cursor-pointer"
                   }`}
                 >
                   {/* Bagian Atas: Profil Dokter */}
@@ -739,7 +741,7 @@ export default function DoctorScheduleGrid({
                           src={doctor.image_url}
                           alt={doctor.name}
                           fill
-                          className="object-cover"
+                          className="object-cover transition-transform duration-500 ease-out hover:scale-110"
                         />
                       </div>
                     )}
