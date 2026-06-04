@@ -72,7 +72,7 @@ export default function AsuransiRekanPage() {
               {asuransiList.slice(0, 5).map((asuransi) => (
                 <div
                   key={asuransi.id}
-                  className="relative bg-white  overflow-hidden flex items-center justify-center p-4 h-32 md:h-40"
+                  className="relative bg-white shadow-md overflow-hidden flex items-center justify-center p-4 h-32 md:h-40"
                 >
                   <Image
                     src={asuransi.image}
@@ -91,7 +91,7 @@ export default function AsuransiRekanPage() {
               {asuransiList.slice(5, 10).map((asuransi) => (
                 <div
                   key={asuransi.id}
-                  className="relative bg-white overflow-hidden flex items-center justify-center p-4 h-32 md:h-40"
+                  className="relative bg-white shadow-md overflow-hidden flex items-center justify-center p-4 h-32 md:h-40"
                 >
                   <Image
                     src={asuransi.image}
