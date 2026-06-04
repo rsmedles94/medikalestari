@@ -3,6 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 
 export default function AsuransiRekanPage() {
   // Array of insurance logos
@@ -35,45 +36,34 @@ export default function AsuransiRekanPage() {
         <div className="max-w-[1172px] mx-auto px-4 md:px-8 py-0 md:py-2 relative z-10">
           {/* Breadcrumb Navigation */}
           <nav className="mb-6" aria-label="Breadcrumb">
-            <ol className="flex items-center space-x-2 text-sm">
-              <li className="flex items-center">
-                <Link
-                  href="/"
-                  className="text-blue-100 hover:text-white transition-colors"
-                >
-                  Beranda
-                </Link>
-              </li>
-              <li className="flex items-center">
-                <span className="mx-2 text-blue-200">
-                  <svg
-                    className="w-4 h-4"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" />
-                  </svg>
-                </span>
-              </li>
-              <li className="flex items-center">
-                <span className="text-white font-medium">Asuransi Rekanan</span>
-              </li>
-            </ol>
+            <div className="flex items-center gap-1 text-[14px] font-normal">
+              <Link
+                href="/"
+                className="text-white/70 hover:text-white transition-colors"
+              >
+                Beranda
+              </Link>
+              <ChevronRight
+                size={12}
+                className="text-white/70"
+                aria-hidden="true"
+              />
+              <span className="font-normal text-white">Asuransi Rekanan</span>
+            </div>
           </nav>
 
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white">
             Asuransi dan Rekanan
           </h1>
           <p className="text-lg md:text-xl text-blue-100 max-w-2xl">
             RS Medika Lestari bekerja sama dengan berbagai asuransi kesehatan
-            untuk memberikan kemudahan akses layanan kesehatan
-            berkualitas.
+            untuk memberikan kemudahan akses layanan kesehatan berkualitas.
           </p>
         </div>
       </section>
 
       {/* Insurance Gallery Section */}
-      <section className="w-full py-12 md:py-16 pb-32 md:pb-0">
+      <section className="w-full py-12 md:py-16 pb-32 md:pb-24">
         <div className="max-w-[1172px] mx-auto px-4 md:px-8">
           {/* Grid Layout - 2 columns, 5 items each side */}
           <div className="grid grid-cols-2 gap-6 md:gap-8">
