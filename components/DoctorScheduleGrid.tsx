@@ -85,6 +85,21 @@ export default function DoctorScheduleGrid({
   const [currentPage, setCurrentPage] = useState(1);
   const [isPaging, setIsPaging] = useState(false);
 
+  // Auto-close dropdown logic untuk mobile
+  const handleOpenMobileSpecialtyModal = () => {
+    setShowMobileSpecialtyModal(!showMobileSpecialtyModal);
+    if (!showMobileSpecialtyModal) {
+      setShowMobileDayModal(false); // Close day modal when opening specialty
+    }
+  };
+
+  const handleOpenMobileDayModal = () => {
+    setShowMobileDayModal(!showMobileDayModal);
+    if (!showMobileDayModal) {
+      setShowMobileSpecialtyModal(false); // Close specialty modal when opening day
+    }
+  };
+
   const specialties = useMemo(() => {
     if (!doctorsWithSchedules) return [];
     const specs = new Set(doctorsWithSchedules.map((doc) => doc.specialty));
@@ -198,9 +213,7 @@ export default function DoctorScheduleGrid({
 
             {/* Specialty Icon Button */}
             <button
-              onClick={() =>
-                setShowMobileSpecialtyModal(!showMobileSpecialtyModal)
-              }
+              onClick={() => handleOpenMobileSpecialtyModal()}
               className={`p-3 border transition-all ${
                 showMobileSpecialtyModal
                   ? "border-[#003f88] bg-slate-50"
@@ -213,7 +226,7 @@ export default function DoctorScheduleGrid({
 
             {/* Day Icon Button */}
             <button
-              onClick={() => setShowMobileDayModal(!showMobileDayModal)}
+              onClick={() => handleOpenMobileDayModal()}
               className={`p-3 border transition-all ${
                 showMobileDayModal
                   ? "border-[#003f88] bg-slate-50"

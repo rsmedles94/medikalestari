@@ -212,19 +212,25 @@ const DoctorSection = ({
   const handleSpecialtySelect = (specialty: string) => {
     setTempFilter((prev) => ({ ...prev, specialty }));
     setShowMobileSpecialtyModal(false);
-    setTimeout(() => {
-      setActiveFilter((prev) => ({ ...prev, specialty }));
-      setCurrentPage(1);
-    }, 0);
   };
 
   const handleDaySelect = (day: string) => {
     setTempFilter((prev) => ({ ...prev, day }));
     setShowMobileDayModal(false);
-    setTimeout(() => {
-      setActiveFilter((prev) => ({ ...prev, day }));
-      setCurrentPage(1);
-    }, 0);
+  };
+
+  const handleOpenSpecialtyModal = () => {
+    setShowMobileSpecialtyModal(!showMobileSpecialtyModal);
+    if (!showMobileSpecialtyModal) {
+      setShowMobileDayModal(false); // Close day modal when opening specialty
+    }
+  };
+
+  const handleOpenDayModal = () => {
+    setShowMobileDayModal(!showMobileDayModal);
+    if (!showMobileDayModal) {
+      setShowMobileSpecialtyModal(false); // Close specialty modal when opening day
+    }
   };
 
   const handlePageChange = (newPage: number) => {
@@ -441,9 +447,14 @@ const DoctorSection = ({
                   type="text"
                   placeholder="Masukkan Nama Dokter"
                   value={tempFilter.name}
-                  onChange={(e) =>
-                    setTempFilter({ ...tempFilter, name: e.target.value })
-                  }
+                  onChange={(e) => {
+                    setTempFilter({ ...tempFilter, name: e.target.value });
+                    // Auto-reset search ketika input kosong
+                    if (e.target.value === "") {
+                      setActiveFilter((prev) => ({ ...prev, name: "" }));
+                      setCurrentPage(1);
+                    }
+                  }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       handleApplyFilter();
@@ -458,10 +469,12 @@ const DoctorSection = ({
 
               {/* Specialty Icon Button */}
               <button
-                onClick={() =>
-                  setShowMobileSpecialtyModal(!showMobileSpecialtyModal)
-                }
-                className="p-3 border border-slate-200 hover:bg-slate-50 transition-all"
+                onClick={handleOpenSpecialtyModal}
+                className={`p-3 border transition-all ${
+                  showMobileSpecialtyModal
+                    ? "border-[#003f88] bg-slate-50"
+                    : "border-slate-200 hover:bg-slate-50"
+                }`}
                 title="Filter Spesialis"
               >
                 <Stethoscope size={20} className="text-[#003f88]" />
@@ -469,11 +482,25 @@ const DoctorSection = ({
 
               {/* Day Icon Button */}
               <button
-                onClick={() => setShowMobileDayModal(!showMobileDayModal)}
-                className="p-3 border border-slate-200  hover:bg-slate-50 transition-all"
+                onClick={handleOpenDayModal}
+                className={`p-3 border transition-all ${
+                  showMobileDayModal
+                    ? "border-[#003f88] bg-slate-50"
+                    : "border-slate-200 hover:bg-slate-50"
+                }`}
                 title="Filter Hari"
               >
                 <CalendarDays size={20} className="text-[#003f88]" />
+              </button>
+
+              {/* Search Button */}
+              <button
+                onClick={() => {
+                  handleApplyFilter();
+                }}
+                className="px-4 py-2.5 bg-[#003f88] text-white font-semibold hover:bg-[#003f88]/90 transition-all border border-[#003f88] text-sm"
+              >
+                Cari
               </button>
             </div>
 
@@ -485,7 +512,7 @@ const DoctorSection = ({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.2 }}
-                  className="absolute top-20 left-0 right-0 mx-4 bg-white border border-slate-200 rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto"
+                  className="w-full bg-white border border-slate-200 shadow-lg z-50 max-h-64 overflow-y-auto"
                 >
                   <div className="p-2">
                     <div className="px-4 py-2 text-xs font-bold text-[#003f88] sticky top-0 bg-white">
@@ -495,7 +522,7 @@ const DoctorSection = ({
                       <button
                         key={s}
                         onClick={() => handleSpecialtySelect(s)}
-                        className={`w-full text-left px-4 py-2 text-sm rounded-md transition-all ${
+                        className={`w-full text-left px-4 py-2 text-sm transition-all ${
                           tempFilter.specialty === s
                             ? "bg-[#003f88]/10 text-[#003f88] font-semibold"
                             : "text-slate-700 hover:bg-slate-50"
@@ -517,7 +544,7 @@ const DoctorSection = ({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.2 }}
-                  className="absolute top-20 right-0 mx-4 bg-white border border-slate-200 rounded-lg shadow-lg z-50"
+                  className="w-full bg-white border border-slate-200 shadow-lg z-50 overflow-y-auto"
                 >
                   <div className="p-2">
                     <div className="px-4 py-2 text-xs font-bold text-[#003f88] bg-white">
@@ -527,7 +554,7 @@ const DoctorSection = ({
                       <button
                         key={d}
                         onClick={() => handleDaySelect(d)}
-                        className={`w-full text-left px-4 py-2 text-sm rounded-md transition-all whitespace-nowrap ${
+                        className={`w-full text-left px-4 py-2 text-sm transition-all whitespace-nowrap ${
                           tempFilter.day === d
                             ? "bg-[#003f88]/10 text-[#003f88] font-semibold"
                             : "text-slate-700 hover:bg-slate-50"
