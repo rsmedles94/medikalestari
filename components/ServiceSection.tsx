@@ -102,28 +102,16 @@ const ServiceSection = () => {
     <section className="w-full bg-[#3D8ECB] py-16 md:py-20 font-sans overflow-hidden">
       <div className="max-w-[1180px] mx-auto">
         {/* 1. CONTAINER HEADER */}
-        <div className="px-4 md:px-8 mb-12 flex items-end justify-between w-full gap-4">
-          <div className="text-left min-w-0">
+        <div className="px-4 md:px-8 mb-12 flex items-end justify-center w-full gap-4">
+          <div className="text-center min-w-0">
             <h2 className="text-3xl md:text-4xl font-bold text-white tracking-wide mb-3">
               Ulasan Pasien
             </h2>
-            <p className="text-sm md:text-base text-white leading-relaxed whitespace-nowrap overflow-hidden text-ellipsis">
+            <p className="text-sm md:text-base text-white leading-relaxed">
               Apa kata mereka yang telah merasakan langsung pelayanan dan
               fasilitas medis di Rumah Sakit Medika Lestari?
             </p>
           </div>
-          <button
-            onClick={() =>
-              window.open(
-                "https://www.google.com/maps/place/RS+Medika+Lestari/@-6.2248952,106.708865,866m/data=!3m2!1e3!5s0x2e69fb20f9710f11:0xb1df070900c513d2!4m16!1m9!3m8!1s0x2e69fa1cb5b440a1:0xe21244587f98ac8f!2sRS+Medika+Lestari!8m2!3d-6.2248952!4d106.7114399!9m1!1b1!16s%2Fg%2F11h0hgmvp!3m5!1s0x2e69fa1cb5b440a1:0xe21244587f98ac8f!8m2!3d-6.2248952!4d106.7114399!16s%2Fg%2F11h0hgmvp?hl=id-ID&entry=ttu&g_ep=EgoyMDI2MDUyNi4wIKXMDSoASAFQAw%3D%3D",
-                "_blank",
-                "noopener,noreferrer",
-              )
-            }
-            className="text-white font-semibold text-sm hover:opacity-80 flex items-center gap-1 transition-all shrink-0 border-b border-transparent hover:border-white pb-0.5 mb-0.5 whitespace-nowrap"
-          >
-            Lihat ulasan lainnya <span className="text-base">→</span>
-          </button>
         </div>
 
         {/* 2. AREA WRAPPER SLIDER (Mengintip presisi) */}
@@ -199,8 +187,8 @@ const ServiceSection = () => {
           </div>
         </div>
 
-        {/* 3. INDIKATOR DOT NAVIGASI (Menggunakan struktur persis pilihanmu) */}
-        <div className="px-4 md:px-8 mt-12">
+        {/* 3. INDIKATOR DOT NAVIGASI & BUTTON (Sejajar tingginya) */}
+        <div className="px-4 md:px-8 mt-12 flex items-center justify-between md:justify-start md:gap-8">
           <div className="flex items-center justify-start gap-4">
             {Array.from({ length: totalDots }).map((_, index) => {
               const isActive = index === activeIndex;
@@ -241,6 +229,20 @@ const ServiceSection = () => {
               );
             })}
           </div>
+
+          {/* BUTTON LIHAT ULASAN LAINNYA */}
+          <button
+            onClick={() =>
+              window.open(
+                "https://www.google.com/maps/place/RS+Medika+Lestari/@-6.2248952,106.708865,866m/data=!3m2!1e3!5s0x2e69fb20f9710f11:0xb1df070900c513d2!4m16!1m9!3m8!1s0x2e69fa1cb5b440a1:0xe21244587f98ac8f!2sRS+Medika+Lestari!8m2!3d-6.2248952!4d106.7114399!9m1!1b1!16s%2Fg%2F11h0hgmvp!3m5!1s0x2e69fa1cb5b440a1:0xe21244587f98ac8f!8m2!3d-6.2248952!4d106.7114399!16s%2Fg%2F11h0hgmvp?hl=id-ID&entry=ttu&g_ep=EgoyMDI2MDUyNi4wIKXMDSoASAFQAw%3D%3D",
+                "_blank",
+                "noopener,noreferrer",
+              )
+            }
+            className="text-white font-semibold text-sm flex items-center gap-1 transition-all duration-300 hover:text-[#e67e22] hover:underline"
+          >
+            Lihat ulasan lainnya <span className="text-base">→</span>
+          </button>
         </div>
       </div>
     </section>

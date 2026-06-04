@@ -71,11 +71,17 @@ export default function DoctorScheduleGrid({
   const [selectedSpecialty, setSelectedSpecialty] = useState<string | null>(
     null,
   );
+  const [selectedSpecialtyInput, setSelectedSpecialtyInput] = useState<
+    string | null
+  >(null);
   const [searchDoctor, setSearchDoctor] = useState("");
+  const [searchDoctorInput, setSearchDoctorInput] = useState("");
   const [showMobileSpecialtyModal, setShowMobileSpecialtyModal] =
     useState(false);
   const [showMobileDayModal, setShowMobileDayModal] = useState(false);
+  const [showDesktopDayModal, setShowDesktopDayModal] = useState(false);
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
+  const [selectedDayInput, setSelectedDayInput] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [isPaging, setIsPaging] = useState(false);
 
@@ -178,11 +184,12 @@ export default function DoctorScheduleGrid({
               <input
                 type="text"
                 placeholder="Masukkan Nama Dokter"
-                value={searchDoctor}
-                onChange={(e) => setSearchDoctor(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    // Auto-apply on enter
+                value={searchDoctorInput}
+                onChange={(e) => {
+                  setSearchDoctorInput(e.target.value);
+                  // Auto-reset search ketika input kosong
+                  if (e.target.value === "") {
+                    setSearchDoctor("");
                   }
                 }}
                 className="w-full border border-slate-200 py-3 pl-10 pr-4 outline-none focus:border-[#003f88] text-base bg-white"
@@ -208,6 +215,18 @@ export default function DoctorScheduleGrid({
             >
               <CalendarDays size={24} className="text-[#003f88]" />
             </button>
+
+            {/* Search Button */}
+            <button
+              onClick={() => {
+                setSelectedSpecialty(selectedSpecialtyInput);
+                setSearchDoctor(searchDoctorInput);
+                setSelectedDay(selectedDayInput);
+              }}
+              className="px-4 py-3 bg-[#003f88] text-white font-semibold hover:bg-[#003f88]/90 transition-all border border-[#003f88] text-sm"
+            >
+              Cari
+            </button>
           </div>
 
           {/* Specialty Dropdown Modal */}
@@ -226,11 +245,15 @@ export default function DoctorScheduleGrid({
                   </div>
                   <button
                     onClick={() => {
+                      setSelectedSpecialtyInput(null);
                       setSelectedSpecialty(null);
                       setShowMobileSpecialtyModal(false);
+                      // Reset search ketika memilih "Semua Spesialis"
+                      setSearchDoctor("");
+                      setSearchDoctorInput("");
                     }}
                     className={`w-full text-left px-4 py-2 text-sm rounded-md transition-all ${
-                      selectedSpecialty === null
+                      selectedSpecialtyInput === null
                         ? "bg-[#003f88]/10 text-[#003f88] font-semibold"
                         : "text-slate-700 hover:bg-slate-50"
                     }`}
@@ -241,11 +264,11 @@ export default function DoctorScheduleGrid({
                     <button
                       key={s}
                       onClick={() => {
-                        setSelectedSpecialty(s);
+                        setSelectedSpecialtyInput(s);
                         setShowMobileSpecialtyModal(false);
                       }}
                       className={`w-full text-left px-4 py-2 text-sm rounded-md transition-all ${
-                        selectedSpecialty === s
+                        selectedSpecialtyInput === s
                           ? "bg-[#003f88]/10 text-[#003f88] font-semibold"
                           : "text-slate-700 hover:bg-slate-50"
                       }`}
@@ -274,11 +297,15 @@ export default function DoctorScheduleGrid({
                   </div>
                   <button
                     onClick={() => {
+                      setSelectedDayInput(null);
                       setSelectedDay(null);
                       setShowMobileDayModal(false);
+                      // Reset search ketika memilih "Semua Hari"
+                      setSearchDoctor("");
+                      setSearchDoctorInput("");
                     }}
                     className={`w-full text-left px-4 py-2 text-sm rounded-md transition-all whitespace-nowrap ${
-                      selectedDay === null
+                      selectedDayInput === null
                         ? "bg-[#003f88]/10 text-[#003f88] font-semibold"
                         : "text-slate-700 hover:bg-slate-50"
                     }`}
@@ -289,11 +316,11 @@ export default function DoctorScheduleGrid({
                     <button
                       key={d}
                       onClick={() => {
-                        setSelectedDay(d);
+                        setSelectedDayInput(d);
                         setShowMobileDayModal(false);
                       }}
                       className={`w-full text-left px-4 py-2 text-sm rounded-md transition-all whitespace-nowrap ${
-                        selectedDay === d
+                        selectedDayInput === d
                           ? "bg-[#003f88]/10 text-[#003f88] font-semibold"
                           : "text-slate-700 hover:bg-slate-50"
                       }`}
@@ -307,56 +334,173 @@ export default function DoctorScheduleGrid({
           </AnimatePresence>
         </div>
 
-        {/* DESKTOP SEARCH BAR */}
-        <div className="hidden lg:block relative">
-          <Search
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-            size={18}
-          />
-          <input
-            type="text"
-            placeholder="Masukkan Nama Dokter"
-            value={searchDoctor}
-            onChange={(e) => setSearchDoctor(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                // Auto-apply on enter
+        {/* DESKTOP SEARCH BAR - TWO COLUMN LAYOUT */}
+        <div className="hidden lg:grid grid-cols-2 gap-4">
+          {/* LEFT COLUMN - Specialty Dropdown */}
+          <div className="relative">
+            <label className="block text-xs font-semibold text-slate-700 mb-2">
+              Spesialis
+            </label>
+            <button
+              onClick={() =>
+                setShowMobileSpecialtyModal(!showMobileSpecialtyModal)
               }
-            }}
-            className="w-full border border-slate-200 py-3 pl-10 pr-4 outline-none focus:border-[#003f88] text-sm bg-white"
-          />
-        </div>
+              className="w-full px-4 py-3 border border-slate-200 text-left bg-white hover:bg-slate-50 transition-all focus:border-[#003f88] focus:outline-none text-sm flex items-center justify-between"
+            >
+              <span>{selectedSpecialtyInput || "Pilih Spesialis"}</span>
+              <Stethoscope size={18} className="text-[#003f88] shrink-0" />
+            </button>
+            <AnimatePresence>
+              {showMobileSpecialtyModal && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute top-full left-0 right-0 bg-white border border-slate-200 shadow-lg z-50 mt-1 max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-slate-100"
+                >
+                  <div className="p-2">
+                    <button
+                      onClick={() => {
+                        setSelectedSpecialtyInput(null);
+                        setSelectedSpecialty(null);
+                        setShowMobileSpecialtyModal(false);
+                        // Reset search ketika memilih "Semua Spesialis"
+                        setSearchDoctor("");
+                        setSearchDoctorInput("");
+                      }}
+                      className={`w-full text-left px-4 py-2 text-sm rounded-md transition-all ${
+                        selectedSpecialtyInput === null
+                          ? "bg-[#003f88]/10 text-[#003f88] font-semibold"
+                          : "text-slate-700 hover:bg-slate-50"
+                      }`}
+                    >
+                      Semua Spesialis
+                    </button>
+                    {specialties.map((s) => (
+                      <button
+                        key={s}
+                        onClick={() => {
+                          setSelectedSpecialtyInput(s);
+                          setShowMobileSpecialtyModal(false);
+                        }}
+                        className={`w-full text-left px-4 py-2 text-sm rounded-md transition-all ${
+                          selectedSpecialtyInput === s
+                            ? "bg-[#003f88]/10 text-[#003f88] font-semibold"
+                            : "text-slate-700 hover:bg-slate-50"
+                        }`}
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
 
-        {/* DESKTOP FILTER - Specialty Filter Buttons */}
-        <div className="hidden lg:flex flex-wrap gap-2">
-          <button
-            onClick={() => setSelectedSpecialty(null)}
-            className={`px-4 py-2 rounded-full font-medium transition-all text-sm whitespace-nowrap ${
-              selectedSpecialty === null
-                ? "bg-[#003f88] text-white shadow-md"
-                : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-            }`}
-          >
-            Semua ({doctorsWithSchedules.length})
-          </button>
-          {specialties.map((specialty) => {
-            const count = doctorsWithSchedules.filter(
-              (doc) => doc.specialty === specialty,
-            ).length;
-            return (
-              <button
-                key={specialty}
-                onClick={() => setSelectedSpecialty(specialty)}
-                className={`px-4 py-2 rounded-full font-medium transition-all text-sm whitespace-nowrap ${
-                  selectedSpecialty === specialty
-                    ? "bg-[#003f88] text-white "
-                    : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                }`}
-              >
-                {specialty} ({count})
-              </button>
-            );
-          })}
+          {/* RIGHT COLUMN - Doctor Name Search + Day Icon + Button */}
+          <div className="flex gap-2 items-end relative">
+            <div className="flex-1 relative">
+              <label className="block text-xs font-semibold text-slate-700 mb-2">
+                Nama Dokter
+              </label>
+              <div className="relative">
+                <Search
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                  size={18}
+                />
+                <input
+                  type="text"
+                  placeholder="Masukkan Nama Dokter"
+                  value={searchDoctorInput}
+                  onChange={(e) => {
+                    setSearchDoctorInput(e.target.value);
+                    // Auto-reset search ketika input kosong
+                    if (e.target.value === "") {
+                      setSearchDoctor("");
+                    }
+                  }}
+                  className="w-full border border-slate-200 py-3 pl-10 pr-4 outline-none focus:border-[#003f88] text-sm bg-white"
+                />
+              </div>
+            </div>
+
+            {/* Day Icon Button */}
+            <button
+              onClick={() => setShowDesktopDayModal(!showDesktopDayModal)}
+              className="p-3 border border-slate-200 hover:bg-slate-50 transition-all"
+              title={
+                selectedDayInput ? `Filter: ${selectedDayInput}` : "Filter Hari"
+              }
+            >
+              <CalendarDays
+                size={20}
+                className="text-[#003f88]"
+                strokeWidth={1.5}
+              />
+            </button>
+
+            {/* Day Dropdown Modal */}
+            <AnimatePresence>
+              {showDesktopDayModal && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute top-full right-0 bg-white border border-slate-200 shadow-lg z-50 mt-1 max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-slate-100"
+                >
+                  <div className="p-2">
+                    <button
+                      onClick={() => {
+                        setSelectedDayInput(null);
+                        setSelectedDay(null);
+                        setShowDesktopDayModal(false);
+                        // Reset search ketika memilih "Semua Hari"
+                        setSearchDoctor("");
+                        setSearchDoctorInput("");
+                      }}
+                      className={`w-full text-left px-4 py-2 text-sm transition-all whitespace-nowrap ${
+                        selectedDayInput === null
+                          ? "bg-[#003f88]/10 text-[#003f88] font-semibold"
+                          : "text-slate-700 hover:bg-slate-50"
+                      }`}
+                    >
+                      Semua Hari
+                    </button>
+                    {DAYS.map((d) => (
+                      <button
+                        key={d}
+                        onClick={() => {
+                          setSelectedDayInput(d);
+                          setShowDesktopDayModal(false);
+                        }}
+                        className={`w-full text-left px-4 py-2 text-sm transition-all whitespace-nowrap ${
+                          selectedDayInput === d
+                            ? "bg-[#003f88]/10 text-[#003f88] font-semibold"
+                            : "text-slate-700 hover:bg-slate-50"
+                        }`}
+                      >
+                        {d}
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <button
+              onClick={() => {
+                setSelectedSpecialty(selectedSpecialtyInput);
+                setSearchDoctor(searchDoctorInput);
+                setSelectedDay(selectedDayInput);
+              }}
+              className="px-6 py-2.5 bg-[#003f88] text-white font-semibold hover:bg-[#003f88]/90 transition-all border border-[#003f88]"
+            >
+              Cari
+            </button>
+          </div>
         </div>
       </div>
 
@@ -413,7 +557,7 @@ export default function DoctorScheduleGrid({
               <div className="p-4 overflow-x-auto">
                 <table className="w-full text-xs">
                   <thead>
-                    <tr className="bg-[#003f88]/10">
+                    <tr className="bg-[#003f88]">
                       {DAYS.map((day, index) => {
                         const cutiDay = getCutiDay(doctor);
                         const isCutiDay = cutiDay === day;
@@ -422,12 +566,10 @@ export default function DoctorScheduleGrid({
                         return (
                           <th
                             key={day}
-                            className={`py-2 px-1 font-semibold border-b border-slate-200 text-center ${
+                            className={`py-2 px-1 font-semibold border-b border-slate-200 text-center text-white ${
                               isFirstDay ? "border-l border-slate-200" : ""
                             } ${isLastDay ? "border-r border-slate-200" : ""} ${
-                              isCutiDay
-                                ? "bg-red-100 text-red-700"
-                                : "text-slate-700"
+                              isCutiDay ? "bg-red-100 text-red-700" : ""
                             }`}
                           >
                             {day.substring(0, 3)}
@@ -447,7 +589,6 @@ export default function DoctorScheduleGrid({
                           doctor.schedules,
                         );
                         const isFirstDay = index === 0;
-                        const isLastDay = index === DAYS.length - 1;
                         return (
                           <td
                             key={`${doctor.id}-${day}-1`}
@@ -616,17 +757,15 @@ export default function DoctorScheduleGrid({
                   <div className="border-t border-slate-100">
                     <table className="w-full table-fixed border-collapse">
                       <thead>
-                        <tr className="bg-slate-50/80">
+                        <tr className="bg-[#003f88]">
                           {DAYS.map((day) => {
                             const cutiDay = getCutiDay(doctor);
                             const isCutiDay = cutiDay === day;
                             return (
                               <th
                                 key={day}
-                                className={`py-2 px-0.5 text-center text-[10px] font-bold uppercase border-r border-slate-100 last:border-0 ${
-                                  isCutiDay
-                                    ? "bg-red-100 text-red-700"
-                                    : "text-slate-500"
+                                className={`py-2 px-0.5 text-center text-[10px] font-bold uppercase border-r border-slate-100 last:border-0 text-white ${
+                                  isCutiDay ? "bg-red-100 text-red-700" : ""
                                 }`}
                               >
                                 {day.substring(0, 3)}
