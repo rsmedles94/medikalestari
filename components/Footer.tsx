@@ -39,20 +39,12 @@ const socialMedia = [
 
 // Menu Utama
 const menuItems = [
-  { name: "Pasien & Pengunjung", href: "/pasien" },
-  { name: "Cari Dokter", href: "/dokter" },
+  { name: "Dokter Spesialis", href: "/dokter" },
   { name: "Tentang Kami", href: "/tentang-kami" },
-  { name: "Donasi", href: "/donasi" },
   { name: "Portal Pasien", href: "/portal" },
-  { name: "Lokasi", href: "/lokasi" },
   { name: "Karir", href: "/careers" },
-  { name: "Layanan Khusus", href: "/layanan" },
-  { name: "Transparansi Biaya", href: "/biaya" },
   { name: "Jadwal Dokter", href: "/jadwal-dokter" },
-  { name: "Berita", href: "/news" },
-  { name: "Komunitas", href: "/komunitas" },
   { name: "Kamar Perawatan", href: "/services/kamar-perawatan" },
-  { name: "Layanan Medis", href: "/services" },
   { name: "Syarat & Ketentuan", href: "/syarat-ketentuan" },
   { name: "Kontak Kami", href: "/kontak-kami" },
 ];

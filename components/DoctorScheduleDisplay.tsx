@@ -35,11 +35,11 @@ export default function DoctorScheduleDisplay({
         )}
         <table className="w-full border-collapse table-fixed min-w-[650px]">
           <thead>
-            <tr className="bg-[#003f88]/10">
+            <tr className="bg-[#003f88]">
               {DAYS.map((day, index) => (
                 <th
                   key={day}
-                  className={`py-4 px-2 text-[12px] font-semibold text-slate-500 border-b border-r border-slate-200 last:border-r-0 text-center ${
+                  className={`py-4 px-2 text-[12px] font-semibold text-white border-b border-r border-slate-200 last:border-r-0 text-center ${
                     index === 0 ? "border-l border-slate-200" : ""
                   } ${index === DAYS.length - 1 ? "border-r border-slate-200" : ""}`}
                 >
@@ -110,7 +110,7 @@ export default function DoctorScheduleDisplay({
         <button
           onClick={onBooking}
           disabled={doctorStatus === "cuti"}
-          className={`px-10 py-4 rounded-full font-bold transition-all duration-300 text-sm uppercase tracking-wide cursor-pointer active:scale-95 ${
+          className={`px-10 py-4 rounded-full font-bold transition-all duration-300 text-sm  tracking-wide cursor-pointer active:scale-95 ${
             doctorStatus === "cuti"
               ? "bg-gray-300 text-white cursor-not-allowed"
               : "bg-[#003f88] hover:bg-[#003f88]/90 text-white"

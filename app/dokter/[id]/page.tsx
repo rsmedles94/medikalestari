@@ -189,6 +189,7 @@ const DoctorDetailPage = () => {
           doctorName={doctor.name}
           specialty={doctor.specialty}
           onClose={() => setShowBookingForm(false)}
+          schedules={schedules}
         />
       )}
     </div>

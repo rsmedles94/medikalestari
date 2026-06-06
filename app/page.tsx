@@ -4,6 +4,7 @@ import ServicesMenu from "@/components/ServicesMenu";
 import PromoKesehatan from "@/components/PromoKesehatan";
 import MadingSection from "@/components/MadingSection";
 import { PageTracker } from "@/components/PageTracker";
+import FlottingButton from "@/components/FlottingButton";
 
 export default async function Home() {
   return (
@@ -16,6 +17,8 @@ export default async function Home() {
 
         <ServiceSection />
         <MadingSection />
+        {/* Floating action buttons - desktop only on landing page */}
+        <FlottingButton />
       </main>
     </div>
   );

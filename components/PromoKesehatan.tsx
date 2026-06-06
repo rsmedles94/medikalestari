@@ -178,6 +178,7 @@ const AWARDS_DATA = [
     src: "/images/awards/award17.webp",
     alt: "Best Nursing Homes US News 2",
   },
+  
 ];
 
 // ==========================================

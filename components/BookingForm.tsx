@@ -3,24 +3,29 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, CheckCircle, AlertCircle } from "lucide-react";
 import { sendWhatsAppBooking } from "@/lib/whatsapp";
+import { Schedule } from "@/lib/types";
 
 interface BookingFormProps {
   readonly doctorName: string;
   readonly specialty: string;
   readonly onClose: () => void;
+  readonly schedules?: Schedule[]; // optional schedules: when provided show day+time selects
 }
 
 export default function BookingForm({
   doctorName,
   specialty,
   onClose,
+  schedules,
 }: Readonly<BookingFormProps>) {
   const [formData, setFormData] = useState({
     patientName: "",
     patientPhone: "",
-    preferredDate: "",
+    preferredDate: "", // fallback when schedules not provided
     keluhan: "",
   });
+  const [selectedDay, setSelectedDay] = useState<string>("");
+  const [selectedTime, setSelectedTime] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
@@ -51,6 +56,39 @@ export default function BookingForm({
     setError("");
   };
 
+  const DAYS_ORDER = [
+    "Senin",
+    "Selasa",
+    "Rabu",
+    "Kamis",
+    "Jumat",
+    "Sabtu",
+    "Minggu",
+  ];
+
+  const availableDays = (propsSchedules?: Schedule[]) => {
+    if (!propsSchedules || propsSchedules.length === 0) return [] as string[];
+    const unique = Array.from(
+      new Set(propsSchedules.map((s) => s.day_of_week)),
+    );
+    // sort according to DAYS_ORDER
+    return unique.sort((a, b) => DAYS_ORDER.indexOf(a) - DAYS_ORDER.indexOf(b));
+  };
+
+  const timeSlotsForDay = (day: string, propsSchedules?: Schedule[]) => {
+    if (!propsSchedules || !day) return [] as string[];
+    const slots = propsSchedules
+      .filter((s) => s.day_of_week === day)
+      .map(
+        (s) =>
+          `${s.start_time.substring(0, 5)} - ${s.end_time.substring(0, 5)}`,
+      )
+      // dedupe
+      .filter((v, i, arr) => arr.indexOf(v) === i)
+      .sort();
+    return slots;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -61,15 +99,31 @@ export default function BookingForm({
       return setError("Nomor telepon wajib diisi");
     if (!formData.keluhan.trim()) return setError("Keluhan wajib diisi");
 
+    // If schedules provided, require day and time selection
+    if (schedules && schedules.length > 0) {
+      if (!selectedDay) return setError("Pilih hari praktik dokter");
+      if (!selectedTime) return setError("Pilih jam praktik dokter");
+      // set preferredDate to combined day + time
+      setFormData((prev) => ({
+        ...prev,
+        preferredDate: `${selectedDay} ${selectedTime}`,
+      }));
+    }
+
     setLoading(true);
 
     try {
+      const preferred =
+        schedules && schedules.length > 0
+          ? `${selectedDay} ${selectedTime}`
+          : formData.preferredDate;
+
       sendWhatsAppBooking({
         patientName: formData.patientName,
         doctorName,
         specialty,
         patientPhone: formData.patientPhone,
-        preferredDate: formData.preferredDate,
+        preferredDate: preferred,
         keluhan: formData.keluhan,
       });
 
@@ -93,7 +147,7 @@ export default function BookingForm({
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={onClose}
-        className="fixed inset-0 bg-black/40 backdrop-blur-[2px] z-[60]"
+        className="fixed inset-0 bg-black/40 backdrop-blur-[2px] z-60"
       />
 
       <motion.div
@@ -101,7 +155,7 @@ export default function BookingForm({
         initial={{ opacity: 0, scale: 0.98, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.98, y: 10 }}
-        className="fixed inset-0 z-[70] flex items-center justify-center p-4 pointer-events-none"
+        className="fixed inset-0 z-70 flex items-center justify-center p-4 pointer-events-none"
       >
         {/* container modal utama */}
         <section className="bg-white rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] w-full max-w-sm overflow-hidden pointer-events-auto border border-slate-100">
@@ -122,7 +176,6 @@ export default function BookingForm({
               <X size={20} />
             </button>
           </header>
-
 
           <main className="p-7">
             <AnimatePresence mode="wait">
@@ -169,13 +222,49 @@ export default function BookingForm({
                         placeholder="Masukan No Tlp"
                         className="w-full px-5 py-3.5 bg-slate-50 border border-slate-100  focus:bg-white focus:ring-2 focus:ring-blue-500/10 transition-all text-sm outline-none  rounded-xl"
                       />
-                      <input
-                        type="date"
-                        name="preferredDate"
-                        value={formData.preferredDate}
-                        onChange={handleChange}
-                        className="w-full px-5 py-3.5 bg-slate-50 border border-slate-100  focus:bg-white focus:ring-2 focus:ring-blue-500/10 transition-all text-sm outline-none text-slate-400 rounded-xl"
-                      />
+
+                      {schedules && schedules.length > 0 ? (
+                        <div className="w-full">
+                          <select
+                            value={selectedDay}
+                            onChange={(e) => {
+                              setSelectedDay(e.target.value);
+                              setSelectedTime("");
+                            }}
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-sm outline-none"
+                          >
+                            <option value="">Pilih Hari</option>
+                            {availableDays(schedules).map((d) => (
+                              <option key={d} value={d}>
+                                {d}
+                              </option>
+                            ))}
+                          </select>
+                          <select
+                            value={selectedTime}
+                            onChange={(e) => setSelectedTime(e.target.value)}
+                            className="w-full mt-2 px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-sm outline-none"
+                            disabled={!selectedDay}
+                          >
+                            <option value="">Pilih Jam</option>
+                            {timeSlotsForDay(selectedDay, schedules).map(
+                              (t) => (
+                                <option key={t} value={t}>
+                                  {t}
+                                </option>
+                              ),
+                            )}
+                          </select>
+                        </div>
+                      ) : (
+                        <input
+                          type="date"
+                          name="preferredDate"
+                          value={formData.preferredDate}
+                          onChange={handleChange}
+                          className="w-full px-5 py-3.5 bg-slate-50 border border-slate-100  focus:bg-white focus:ring-2 focus:ring-blue-500/10 transition-all text-sm outline-none text-slate-400 rounded-xl"
+                        />
+                      )}
                     </div>
 
                     <textarea
