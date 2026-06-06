@@ -527,7 +527,7 @@ const PromoKesehatan = () => {
 
         <div className="relative z-10 max-w-[1190px] mx-auto md:px-8">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-8 -mt-10 text-center">
-            Penawaran promo spesial paket kesehatan untuk anda
+            Penawaran promo spesial paket kesehatan
           </h2>
 
           <div
