@@ -135,7 +135,7 @@ const ServiceSection = () => {
                     onClick={() =>
                       window.open(item.href, "_blank", "noopener,noreferrer")
                     }
-                    className="w-[280px] md:w-[360px] h-[380px] flex-shrink-0 flex flex-col justify-between bg-white rounded-3xl p-6 shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer text-left select-none"
+                    className="w-[280px] md:w-[360px] h-[380px] flex-shrink-0 flex flex-col justify-between bg-white p-6 shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer text-left select-none"
                   >
                     <div>
                       {/* Profil Reviewer */}

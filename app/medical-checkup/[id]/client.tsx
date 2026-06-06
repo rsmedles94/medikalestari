@@ -272,14 +272,14 @@ Keluhan/Catatan: ${formData.keluhan}`;
                   href={`/medical-checkup/${item.id}`}
                   className="group"
                 >
-                  <div className="bg-white border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
+                  <div className="bg-white border border-gray-200 overflow-hidden">
                     <figure className="flex items-center justify-center bg-gray-50 overflow-hidden">
                       <Image
                         src={item.image}
                         alt={item.title}
                         width={500}
                         height={500}
-                        className="w-full h-auto object-cover"
+                        className="w-full h-auto object-contain group-hover:scale-105 transition-transform duration-700"
                         priority
                       />
                     </figure>
