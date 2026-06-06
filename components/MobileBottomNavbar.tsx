@@ -121,47 +121,49 @@ const MobileBottomNavbar = () => {
         onClose={() => setIsBookingOpen(false)}
       />
       <nav
-        className={`md:hidden fixed bottom-0 left-0 right-0 bg-[#003f88] z-50 border-t border-white/10 pb-safe shadow-lg will-change-transform transform-gpu transition-opacity ${
+        className={`fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 will-change-transform transform-gpu transition-opacity ${
           isSearchOpen ? "hidden" : "block"
         }`}
-        aria-label="Mobile Bottom Navigation"
+        style={{
+          background: "rgba(15, 23, 42, 0.6)",
+          backdropFilter: "blur(30px) saturate(200%)",
+          WebkitBackdropFilter: "blur(30px) saturate(200%)",
+          border: "1px solid rgba(255, 255, 255, 0.2)",
+          boxShadow:
+            "0 -8px 32px 0 rgba(0, 0, 0, 0.2), inset 0 1px 0 0 rgba(255, 255, 255, 0.1)",
+          borderRadius: "9999px",
+          padding: "8px 12px",
+        }}
+        aria-label="Navigation"
       >
-        <ul className="flex justify-around items-stretch h-20 list-none p-0 m-0">
+        <ul className="flex justify-around items-center h-14 gap-2 list-none p-0 m-0">
           {navItems.map((item) => {
             const isItemActive = pathname === item.href;
 
             // Jika ini adalah button, render sebagai button bukan Link
             if (item.isButton) {
               return (
-                <li key={item.label} className="w-1/4 flex">
+                <li key={item.label} className="flex-1 flex">
                   <button
                     onClick={() => setIsBookingOpen(true)}
-                    className="flex flex-col items-center justify-center w-full relative tap-highlight-transparent overflow-hidden select-none border-0 bg-transparent cursor-pointer"
+                    className="flex items-center justify-center w-full relative tap-highlight-transparent overflow-hidden select-none border-0 bg-transparent cursor-pointer hover:bg-white/10 rounded-full transition-colors duration-200 p-3"
+                    title={item.label}
+                    aria-label={item.label}
                   >
-                    {/* Active indicator bar - tidak ada untuk button */}
-                    <div className="absolute top-0 w-12 h-0.75 bg-white rounded-b-full z-10 transition-all duration-200 ease-in-out opacity-0 scale-75 pointer-events-none" />
-
-                    {/* Menu content wrapper */}
-                    <div className="relative flex flex-col items-center justify-center active:scale-95 transition-transform duration-100 ease-out transform-gpu">
-                      <div className="relative h-6 w-6 flex items-center justify-center">
-                        <svg
-                          viewBox="0 0 24 24"
-                          className="w-6 h-6 transition-colors duration-200 text-white/60 hover:text-white"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="1.8"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <g className="transition-all duration-150 ease-in-out">
-                            {item.outline}
-                          </g>
-                        </svg>
-                      </div>
-
-                      <span className="text-[10px] mt-1 tracking-wide transition-all duration-200 text-white/60 font-medium opacity-90">
-                        {item.label}
-                      </span>
+                    <div className="relative h-5 w-5 flex items-center justify-center">
+                      <svg
+                        viewBox="0 0 24 24"
+                        className="w-5 h-5 transition-colors duration-200 text-white/70 hover:text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <g className="transition-all duration-150 ease-in-out">
+                          {item.outline}
+                        </g>
+                      </svg>
                     </div>
                   </button>
                 </li>
@@ -169,58 +171,46 @@ const MobileBottomNavbar = () => {
             }
 
             return (
-              <li key={item.label} className="w-1/4 flex">
+              <li key={item.label} className="flex-1 flex">
                 <Link
                   href={item.href}
                   prefetch={true}
                   aria-current={isItemActive ? "page" : undefined}
+                  title={item.label}
                   onClick={(e) => {
                     if (isItemActive) {
                       e.preventDefault();
                       window.scrollTo({ top: 0, behavior: "smooth" });
                     }
                   }}
-                  className="flex flex-col items-center justify-center w-full relative tap-highlight-transparent overflow-hidden select-none"
+                  className="flex items-center justify-center w-full relative tap-highlight-transparent overflow-hidden select-none hover:bg-white/10 rounded-full transition-colors duration-200 p-3"
                 >
-                  {/* Active indicator bar */}
+                  {/* Active indicator dot */}
                   <div
-                    className={`absolute top-0 w-12 h-0.75 bg-white rounded-b-full z-10 transition-all duration-200 ease-in-out ${
+                    className={`absolute -bottom-1 w-1.5 h-1.5 bg-white rounded-full transition-all duration-200 ease-in-out ${
                       isItemActive
                         ? "opacity-100 scale-100"
-                        : "opacity-0 scale-75 pointer-events-none"
+                        : "opacity-0 scale-0 pointer-events-none"
                     }`}
                   />
 
-                  {/* Menu content wrapper */}
-                  <div className="relative flex flex-col items-center justify-center active:scale-95 transition-transform duration-100 ease-out transform-gpu">
-                    <div className="relative h-6 w-6 flex items-center justify-center">
-                      <svg
-                        viewBox="0 0 24 24"
-                        className={`w-6 h-6 transition-colors duration-200 ${
-                          isItemActive ? "text-white" : "text-white/60"
-                        }`}
-                        fill={isItemActive ? "white" : "none"}
-                        stroke="currentColor"
-                        strokeWidth={isItemActive ? "0.5" : "1.8"}
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        {/* Icon transition between active and inactive state */}
-                        <g className="transition-all duration-150 ease-in-out">
-                          {isItemActive ? item.solid : item.outline}
-                        </g>
-                      </svg>
-                    </div>
-
-                    <span
-                      className={`text-[10px] mt-1 tracking-wide transition-all duration-200 ${
-                        isItemActive
-                          ? "text-white font-semibold opacity-100"
-                          : "text-white/60 font-medium opacity-90"
+                  <div className="relative h-5 w-5 flex items-center justify-center">
+                    <svg
+                      viewBox="0 0 24 24"
+                      className={`w-5 h-5 transition-colors duration-200 ${
+                        isItemActive ? "text-white" : "text-white/60"
                       }`}
+                      fill={isItemActive ? "white" : "none"}
+                      stroke="currentColor"
+                      strokeWidth={isItemActive ? "0.5" : "1.8"}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     >
-                      {item.label}
-                    </span>
+                      {/* Icon transition between active and inactive state */}
+                      <g className="transition-all duration-150 ease-in-out">
+                        {isItemActive ? item.solid : item.outline}
+                      </g>
+                    </svg>
                   </div>
                 </Link>
               </li>
