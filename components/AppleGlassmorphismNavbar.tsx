@@ -22,7 +22,30 @@ const AppleGlassmorphismNavbar = () => {
   const itemsRef = useRef<Array<HTMLElement | null>>([]);
   // ...existing code...
 
-  const navItems = useMemo(
+  // typed nav items: icon can be either a Lucide-like component or an inline svg fragment
+  interface LucideLikeProps extends React.SVGProps<SVGSVGElement> {
+    size?: number | string;
+    color?: string;
+    strokeWidth?: number | string;
+  }
+
+  type IconComponentType = React.ComponentType<LucideLikeProps>;
+
+  type NavIcon = IconComponentType | React.ReactNode;
+
+  interface NavItem {
+    label: string;
+    href: string;
+    icon: NavIcon;
+    isButton?: boolean;
+  }
+
+  const isElementType = (icon: NavIcon): icon is IconComponentType =>
+    // functional components are functions; React.memo/forwardRef may be objects with a `.render` function
+    typeof icon === "function" ||
+    (typeof icon === "object" && icon !== null && "render" in icon);
+
+  const navItems = useMemo<NavItem[]>(
     () => [
       {
         label: "Beranda",
@@ -34,7 +57,8 @@ const AppleGlassmorphismNavbar = () => {
       {
         label: "Dokter",
         href: "/dokter",
-        icon: <Stethoscope />,
+        // store component reference (not element) for clean rendering
+        icon: Stethoscope,
       },
       {
         label: "Booking",
@@ -275,17 +299,23 @@ const AppleGlassmorphismNavbar = () => {
                             : "none",
                         }}
                       >
-                        {React.isValidElement(item.icon) &&
-                        typeof item.icon.type !== "string" ? (
-                          // component icon (lucide) — render directly with size and color
-                          React.cloneElement(item.icon as React.ReactElement, {
-                            size: 20,
-                            color:
-                              item.label === "Beranda" && isActive
-                                ? "black"
-                                : undefined,
-                            className: "w-7 h-7",
-                          })
+                        {isElementType(item.icon) ? (
+                          // component icon (lucide) — render as component with props
+                          (() => {
+                            const IconComp = item.icon as IconComponentType;
+                            return (
+                              <IconComp
+                                size={20}
+                                strokeWidth={1.5}
+                                className="w-7 h-7"
+                                color={
+                                  item.label === "Beranda" && isActive
+                                    ? "black"
+                                    : undefined
+                                }
+                              />
+                            );
+                          })()
                         ) : (
                           <svg
                             viewBox="0 0 24 24"
@@ -310,7 +340,7 @@ const AppleGlassmorphismNavbar = () => {
                             strokeLinecap="round"
                             strokeLinejoin="round"
                           >
-                            {item.icon}
+                            {item.icon as React.ReactNode}
                           </svg>
                         )}
                       </span>
@@ -347,31 +377,49 @@ const AppleGlassmorphismNavbar = () => {
                             : "none",
                         }}
                       >
-                        <svg
-                          viewBox="0 0 24 24"
-                          className="w-7 h-7"
-                          fill={
-                            item.label === "Beranda" && isActive
-                              ? "currentColor"
-                              : "none"
-                          }
-                          stroke={
-                            item.label === "Beranda" && isActive
-                              ? "none"
-                              : "currentColor"
-                          }
-                          strokeWidth={
-                            item.label === "Beranda" && isActive
-                              ? "0"
-                              : isActive
-                                ? "1.9"
-                                : "1.6"
-                          }
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          {item.icon}
-                        </svg>
+                        {isElementType(item.icon) ? (
+                          (() => {
+                            const IconComp = item.icon as IconComponentType;
+                            return (
+                              <IconComp
+                                size={20}
+                                strokeWidth={1.5}
+                                className="w-7 h-7"
+                                color={
+                                  item.label === "Beranda" && isActive
+                                    ? "black"
+                                    : undefined
+                                }
+                              />
+                            );
+                          })()
+                        ) : (
+                          <svg
+                            viewBox="0 0 24 24"
+                            className="w-7 h-7"
+                            fill={
+                              item.label === "Beranda" && isActive
+                                ? "currentColor"
+                                : "none"
+                            }
+                            stroke={
+                              item.label === "Beranda" && isActive
+                                ? "none"
+                                : "currentColor"
+                            }
+                            strokeWidth={
+                              item.label === "Beranda" && isActive
+                                ? "0"
+                                : isActive
+                                  ? "1.9"
+                                  : "1.6"
+                            }
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            {item.icon as React.ReactNode}
+                          </svg>
+                        )}
                       </span>
                     </Link>
                   )}
