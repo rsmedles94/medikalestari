@@ -14,28 +14,12 @@ import BookingModalFloating from "./BookingModalFloating";
 const AppleGlassmorphismNavbar = () => {
   const pathname = usePathname();
   const [isBookingOpen, setIsBookingOpen] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
-  const [isPressed, setIsPressed] = useState(false);
-
-  // slider position in px from container left
-  const [sliderX, setSliderX] = useState(0);
-  const [sliderW, setSliderW] = useState(38);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isBrightBg, setIsBrightBg] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const itemsRef = useRef<Array<HTMLElement | null>>([]);
-  const startXRef = useRef(0);
-  const startSliderXRef = useRef(0);
-  const sliderXRef = useRef(0);
-  const velocityRef = useRef(0);
-  const animRef = useRef<number | null>(null);
-  const pressTimeoutRef = useRef<number | null>(null);
-  const lastMoveTimeRef = useRef<number>(0);
-  const lastClientXRef = useRef<number>(0);
-  const releaseVelocityRef = useRef(0);
-  const positionsRef = useRef<{ left: number; width: number }[]>([]);
-  const springRef = useRef<(target: number) => void>(() => {});
+  // ...existing code...
 
   const navItems = useMemo(
     () => [
@@ -105,20 +89,11 @@ const AppleGlassmorphismNavbar = () => {
       const r = el.getBoundingClientRect();
       pos.push({ left: r.left - containerRect.left, width: r.width });
     });
-    positionsRef.current = pos;
-
-    // adapt slider width to item width (slightly smaller than item)
+    // positions measured for potential future use (kept locally)
     if (pos.length) {
-      // choose width based on active item (larger fraction for a longer slider)
-      const idx = Math.max(0, Math.min(activeIndex, pos.length - 1));
-      const itemW = pos[idx].width;
-      const desired = Math.max(36, Math.round(itemW * 0.92));
-      setSliderW(desired);
-      const left = pos[idx].left + (pos[idx].width - desired) / 2;
-      setSliderX(left);
-      sliderXRef.current = left;
+      // nothing else needed for click-only nav
     }
-  }, [activeIndex]);
+  }, []);
 
   useEffect(() => {
     measure();
@@ -133,14 +108,13 @@ const AppleGlassmorphismNavbar = () => {
 
   // cleanup lingering timeout on unmount
   useEffect(() => {
-    return () => {
-      if (pressTimeoutRef.current) {
-        window.clearTimeout(pressTimeoutRef.current);
-        pressTimeoutRef.current = null;
-      }
-      if (animRef.current) cancelAnimationFrame(animRef.current);
-    };
+    return () => {};
   }, []);
+
+  // dock visual constants
+  const dockPadding = "8px 16px";
+  const dockMinWidth = "360px";
+  const dockBlur = isBrightBg ? "blur(6px)" : "blur(8px)";
 
   // brightness adaptation: sample body background color
   useEffect(() => {
@@ -179,166 +153,11 @@ const AppleGlassmorphismNavbar = () => {
     };
   }, []);
 
-  // Drag handlers updated to move sliderX directly and snap
-  const handlePointerDown = (clientX: number) => {
-    setIsDragging(true);
-    startXRef.current = clientX;
-    startSliderXRef.current = sliderXRef.current;
-    // cancel any lingering hide timeout and show slider immediately
-    if (pressTimeoutRef.current) {
-      window.clearTimeout(pressTimeoutRef.current);
-      pressTimeoutRef.current = null;
-    }
-    // prepare velocity tracking
-    lastMoveTimeRef.current = performance.now();
-    lastClientXRef.current = clientX;
-    velocityRef.current = 0;
-    releaseVelocityRef.current = 0;
-    setIsPressed(true);
-  };
+  // click-only interactions (slider removed)
+  const handleMouseDown = () => undefined;
+  const handleTouchStart = () => undefined;
 
-  const handleMouseDown = (e: React.MouseEvent) => handlePointerDown(e.clientX);
-  const handleTouchStart = (e: React.TouchEvent) =>
-    handlePointerDown(e.touches[0].clientX);
-
-  useEffect(() => {
-    if (!isDragging) return;
-
-    const handleMove = (clientX: number) => {
-      const delta = clientX - startXRef.current;
-      const newX = startSliderXRef.current + delta;
-      // velocity tracking (px per ms -> convert to px/frame)
-      const now = performance.now();
-      const dt = Math.max(8, now - lastMoveTimeRef.current);
-      const v = (clientX - lastClientXRef.current) / dt; // px per ms
-      // convert to px per frame estimate and amplify for stronger inertial feel
-      velocityRef.current = v * 16 * 2.4;
-      lastClientXRef.current = clientX;
-      lastMoveTimeRef.current = now;
-      const last = positionsRef.current.at(-1) ?? { left: 0, width: 0 };
-      const max = positionsRef.current.length
-        ? last.left + last.width - sliderW
-        : 0;
-      const clamped = Math.max(0, Math.min(newX, max));
-      setSliderX(clamped);
-      sliderXRef.current = clamped;
-    };
-
-    const onMouseMove = (e: MouseEvent) => handleMove(e.clientX);
-    const onMouseUp = () => {
-      // capture release velocity
-      releaseVelocityRef.current = velocityRef.current * 1.05;
-      setIsDragging(false);
-      // keep slider visible briefly to show spring animation, then hide
-      if (pressTimeoutRef.current) window.clearTimeout(pressTimeoutRef.current);
-      pressTimeoutRef.current = window.setTimeout(() => {
-        setIsPressed(false);
-        pressTimeoutRef.current = null;
-      }, 420) as unknown as number;
-    };
-
-    document.addEventListener("mousemove", onMouseMove);
-    document.addEventListener("mouseup", onMouseUp);
-
-    return () => {
-      document.removeEventListener("mousemove", onMouseMove);
-      document.removeEventListener("mouseup", onMouseUp);
-    };
-  }, [isDragging, sliderW]);
-
-  useEffect(() => {
-    if (!isDragging) return;
-    const onTouchMove = (e: TouchEvent) => {
-      const t = e.touches[0];
-      const delta = t.clientX - startXRef.current;
-      const newX = startSliderXRef.current + delta;
-      const last = positionsRef.current.at(-1) ?? { left: 0, width: 0 };
-      const max = positionsRef.current.length
-        ? last.left + last.width - sliderW
-        : 0;
-      const clamped = Math.max(0, Math.min(newX, max));
-      setSliderX(clamped);
-      sliderXRef.current = clamped;
-    };
-    const onTouchEnd = () => {
-      // capture release velocity
-      releaseVelocityRef.current = velocityRef.current * 1.05;
-      setIsDragging(false);
-      if (pressTimeoutRef.current) window.clearTimeout(pressTimeoutRef.current);
-      pressTimeoutRef.current = window.setTimeout(() => {
-        setIsPressed(false);
-        pressTimeoutRef.current = null;
-      }, 420) as unknown as number;
-    };
-
-    document.addEventListener("touchmove", onTouchMove, { passive: false });
-    document.addEventListener("touchend", onTouchEnd);
-
-    return () => {
-      document.removeEventListener("touchmove", onTouchMove);
-      document.removeEventListener("touchend", onTouchEnd);
-    };
-  }, [isDragging, sliderW]);
-
-  // Snap to nearest item when drag ends or when item clicked
-  useEffect(() => {
-    if (isDragging) return;
-    const pos = positionsRef.current;
-    if (!pos.length) return;
-    const center = sliderX + sliderW / 2;
-    let best = 0;
-    let bestDist = Infinity;
-    pos.forEach((p, i) => {
-      const itemCenter = p.left + p.width / 2;
-      const d = Math.abs(itemCenter - center);
-      if (d < bestDist) {
-        bestDist = d;
-        best = i;
-      }
-    });
-    setActiveIndex(best);
-    // update width based on selected item for better visual alignment
-    const newW = Math.max(30, Math.round(pos[best].width * 0.82));
-    setSliderW(newW);
-    const targetLeft = pos[best].left + (pos[best].width - newW) / 2;
-    // animate to target using spring
-    const springTo = (target: number) => {
-      // cancel existing
-      if (animRef.current) cancelAnimationFrame(animRef.current);
-      // tuned for stronger inertial/fling: higher stiffness, lower damping
-      const stiffness = 0.42;
-      const damping = 0.45;
-      // use amplified release velocity to simulate stronger inertia
-      const baseVel = (releaseVelocityRef.current || 0) * 1.4;
-      // add small distance-proportional push as well
-      const currentInit = sliderXRef.current;
-      const distInit = target - currentInit;
-      velocityRef.current = baseVel + distInit * 0.04;
-
-      const step = () => {
-        const current = sliderXRef.current;
-        const dist = current - target;
-        const accel = -stiffness * dist - damping * velocityRef.current;
-        velocityRef.current += accel;
-        const next = current + velocityRef.current;
-        setSliderX(next);
-        sliderXRef.current = next;
-        // stop when nearly settled
-        if (Math.abs(velocityRef.current) < 0.12 && Math.abs(dist) < 1.0) {
-          setSliderX(target);
-          sliderXRef.current = target;
-          velocityRef.current = 0;
-          releaseVelocityRef.current = 0;
-          animRef.current = null;
-          return;
-        }
-        animRef.current = requestAnimationFrame(step);
-      };
-      animRef.current = requestAnimationFrame(step);
-    };
-    springRef.current = springTo;
-    springTo(targetLeft);
-  }, [isDragging, sliderW, sliderX]);
+  // removed drag/slider effects — interactions are click-only now
 
   return (
     <>
@@ -358,19 +177,15 @@ const AppleGlassmorphismNavbar = () => {
             background: isBrightBg
               ? "linear-gradient(180deg, rgba(180,210,255,0.08), rgba(170,200,255,0.06))"
               : "linear-gradient(180deg, rgba(8,40,120,0.10), rgba(6,30,100,0.06))",
-            backdropFilter: isBrightBg
-              ? "blur(6px) saturate(150%)"
-              : "blur(8px) saturate(160%)",
-            WebkitBackdropFilter: isBrightBg
-              ? "blur(6px) saturate(150%)"
-              : "blur(8px) saturate(160%)",
+            backdropFilter: `${dockBlur} saturate(150%)`,
+            WebkitBackdropFilter: `${dockBlur} saturate(150%)`,
             border: isBrightBg
               ? "1px solid rgba(120,190,255,0.12)"
               : "1px solid rgba(60,140,255,0.12)",
             boxShadow:
               "0 14px 40px rgba(6,30,80,0.08), inset 0 1px 0 rgba(255, 255, 255, 0.55)",
-            padding: "10px 18px",
-            minWidth: "320px",
+            padding: dockPadding,
+            minWidth: dockMinWidth,
           }}
         >
           {/* soft sheen overlay */}
@@ -430,53 +245,7 @@ const AppleGlassmorphismNavbar = () => {
                 "linear-gradient(180deg, rgba(255, 255, 255, 0.8), transparent, rgba(255, 255, 255, 0.3))",
             }}
           />
-          {/* Draggable Slider Indicator - Glass style (fluid & adaptive) */}
-          <div
-            className="absolute left-0 rounded-full"
-            style={{
-              top: "20px",
-              height: "42px",
-              opacity: isPressed || isDragging ? 1 : 0,
-              pointerEvents: isPressed || isDragging ? "auto" : "none",
-              // stronger bluish translucent slider to match the dock color
-              background: isBrightBg
-                ? "rgba(10,36,80,0.14)"
-                : "rgba(40,140,255,0.18)",
-              width: `${sliderW}px`,
-              transform: `translateX(${sliderX}px) scale(${isPressed ? 1.04 : 1})`,
-              transition: isDragging
-                ? "none"
-                : "transform 450ms cubic-bezier(0.22,1,0.36,1), width 280ms ease, opacity 220ms, box-shadow 300ms",
-              backdropFilter: "blur(6px)",
-              WebkitBackdropFilter: "blur(6px)",
-              border: isBrightBg
-                ? "1px solid rgba(200,230,255,0.08)"
-                : "1px solid rgba(120,200,255,0.18)",
-              boxShadow: isDragging
-                ? "inset 0 1px 0 rgba(255,255,255,0.5), 0 14px 34px rgba(6,30,80,0.18)"
-                : "inset 0 1px 0 rgba(255,255,255,0.5), inset 0 -1px 0 rgba(255,255,255,0.06), 0 10px 20px rgba(6,30,80,0.12)",
-            }}
-          />
-
-          {/* subtle shadow under the slider to enhance floating illusion */}
-          <div
-            aria-hidden
-            style={{
-              position: "absolute",
-              left: `${sliderX + Math.max(30, sliderW / 2) - 28}px`,
-              top: `calc(20px + 42px)`,
-              width: `${Math.max(52, Math.round(sliderW * 0.7))}px`,
-              height: "12px",
-              background:
-                "radial-gradient(closest-side, rgba(0,0,0,0.26), rgba(0,0,0,0.02))",
-              filter: "blur(10px)",
-              opacity: isPressed || isDragging ? 0.98 : 0.56,
-              transition:
-                "left 220ms ease, opacity 220ms ease, width 220ms ease",
-              borderRadius: "9999px",
-              pointerEvents: "none",
-            }}
-          />
+          {/* slider removed — click-only navigation */}
 
           {/* Navigation Items */}
           <ul className="flex gap-0 list-none p-0 m-0 relative z-10">
@@ -491,13 +260,7 @@ const AppleGlassmorphismNavbar = () => {
                       }}
                       onClick={() => {
                         setIsBookingOpen(true);
-                        // snap to this item using spring
-                        const pos = positionsRef.current[i];
-                        if (pos) {
-                          const target = pos.left + (pos.width - sliderW) / 2;
-                          springRef.current(target);
-                          setActiveIndex(i);
-                        }
+                        setActiveIndex(i);
                       }}
                       className={`flex items-center justify-center w-18 h-14 rounded-lg cursor-pointer border-0 bg-transparent transition-transform duration-200 ${
                         isActive
@@ -521,9 +284,23 @@ const AppleGlassmorphismNavbar = () => {
                         <svg
                           viewBox="0 0 24 24"
                           className="w-7 h-7"
-                          fill={isActive ? "currentColor" : "none"}
-                          stroke="currentColor"
-                          strokeWidth={isActive ? "0" : "1.5"}
+                          fill={
+                            item.label === "Beranda" && isActive
+                              ? "currentColor"
+                              : "none"
+                          }
+                          stroke={
+                            item.label === "Beranda" && isActive
+                              ? "none"
+                              : "currentColor"
+                          }
+                          strokeWidth={
+                            item.label === "Beranda" && isActive
+                              ? "0"
+                              : isActive
+                                ? "1.9"
+                                : "1.6"
+                          }
                           strokeLinecap="round"
                           strokeLinejoin="round"
                         >
@@ -542,13 +319,7 @@ const AppleGlassmorphismNavbar = () => {
                           e.preventDefault();
                           window.scrollTo({ top: 0, behavior: "smooth" });
                         }
-                        // snap first, then allow navigation
-                        const pos = positionsRef.current[i];
-                        if (pos) {
-                          const target = pos.left + (pos.width - sliderW) / 2;
-                          springRef.current(target);
-                          setActiveIndex(i);
-                        }
+                        setActiveIndex(i);
                       }}
                       onMouseDown={handleMouseDown}
                       onTouchStart={handleTouchStart}
@@ -572,9 +343,23 @@ const AppleGlassmorphismNavbar = () => {
                         <svg
                           viewBox="0 0 24 24"
                           className="w-7 h-7"
-                          fill={isActive ? "currentColor" : "none"}
-                          stroke="currentColor"
-                          strokeWidth={isActive ? "0" : "1.5"}
+                          fill={
+                            item.label === "Beranda" && isActive
+                              ? "currentColor"
+                              : "none"
+                          }
+                          stroke={
+                            item.label === "Beranda" && isActive
+                              ? "none"
+                              : "currentColor"
+                          }
+                          strokeWidth={
+                            item.label === "Beranda" && isActive
+                              ? "0"
+                              : isActive
+                                ? "1.9"
+                                : "1.6"
+                          }
                           strokeLinecap="round"
                           strokeLinejoin="round"
                         >
