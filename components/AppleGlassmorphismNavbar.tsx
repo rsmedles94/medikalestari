@@ -30,6 +30,10 @@ const AppleGlassmorphismNavbar = () => {
   const sliderXRef = useRef(0);
   const velocityRef = useRef(0);
   const animRef = useRef<number | null>(null);
+  const pressTimeoutRef = useRef<number | null>(null);
+  const lastMoveTimeRef = useRef<number>(0);
+  const lastClientXRef = useRef<number>(0);
+  const releaseVelocityRef = useRef(0);
   const positionsRef = useRef<{ left: number; width: number }[]>([]);
   const springRef = useRef<(target: number) => void>(() => {});
 
@@ -127,6 +131,17 @@ const AppleGlassmorphismNavbar = () => {
     measure();
   }, [activeIndex, measure]);
 
+  // cleanup lingering timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (pressTimeoutRef.current) {
+        window.clearTimeout(pressTimeoutRef.current);
+        pressTimeoutRef.current = null;
+      }
+      if (animRef.current) cancelAnimationFrame(animRef.current);
+    };
+  }, []);
+
   // brightness adaptation: sample body background color
   useEffect(() => {
     const sampleBrightness = () => {
@@ -169,6 +184,16 @@ const AppleGlassmorphismNavbar = () => {
     setIsDragging(true);
     startXRef.current = clientX;
     startSliderXRef.current = sliderXRef.current;
+    // cancel any lingering hide timeout and show slider immediately
+    if (pressTimeoutRef.current) {
+      window.clearTimeout(pressTimeoutRef.current);
+      pressTimeoutRef.current = null;
+    }
+    // prepare velocity tracking
+    lastMoveTimeRef.current = performance.now();
+    lastClientXRef.current = clientX;
+    velocityRef.current = 0;
+    releaseVelocityRef.current = 0;
     setIsPressed(true);
   };
 
@@ -182,6 +207,14 @@ const AppleGlassmorphismNavbar = () => {
     const handleMove = (clientX: number) => {
       const delta = clientX - startXRef.current;
       const newX = startSliderXRef.current + delta;
+      // velocity tracking (px per ms -> convert to px/frame)
+      const now = performance.now();
+      const dt = Math.max(8, now - lastMoveTimeRef.current);
+      const v = (clientX - lastClientXRef.current) / dt; // px per ms
+      // convert to px per frame estimate and amplify for stronger inertial feel
+      velocityRef.current = v * 16 * 2.4;
+      lastClientXRef.current = clientX;
+      lastMoveTimeRef.current = now;
       const last = positionsRef.current.at(-1) ?? { left: 0, width: 0 };
       const max = positionsRef.current.length
         ? last.left + last.width - sliderW
@@ -193,8 +226,15 @@ const AppleGlassmorphismNavbar = () => {
 
     const onMouseMove = (e: MouseEvent) => handleMove(e.clientX);
     const onMouseUp = () => {
+      // capture release velocity
+      releaseVelocityRef.current = velocityRef.current * 1.05;
       setIsDragging(false);
-      setIsPressed(false);
+      // keep slider visible briefly to show spring animation, then hide
+      if (pressTimeoutRef.current) window.clearTimeout(pressTimeoutRef.current);
+      pressTimeoutRef.current = window.setTimeout(() => {
+        setIsPressed(false);
+        pressTimeoutRef.current = null;
+      }, 420) as unknown as number;
     };
 
     document.addEventListener("mousemove", onMouseMove);
@@ -221,8 +261,14 @@ const AppleGlassmorphismNavbar = () => {
       sliderXRef.current = clamped;
     };
     const onTouchEnd = () => {
+      // capture release velocity
+      releaseVelocityRef.current = velocityRef.current * 1.05;
       setIsDragging(false);
-      setIsPressed(false);
+      if (pressTimeoutRef.current) window.clearTimeout(pressTimeoutRef.current);
+      pressTimeoutRef.current = window.setTimeout(() => {
+        setIsPressed(false);
+        pressTimeoutRef.current = null;
+      }, 420) as unknown as number;
     };
 
     document.addEventListener("touchmove", onTouchMove, { passive: false });
@@ -259,9 +305,15 @@ const AppleGlassmorphismNavbar = () => {
     const springTo = (target: number) => {
       // cancel existing
       if (animRef.current) cancelAnimationFrame(animRef.current);
-      const stiffness = 0.15; // spring stiffness
-      const damping = 0.75; // damping
-      velocityRef.current = 0;
+      // tuned for stronger inertial/fling: higher stiffness, lower damping
+      const stiffness = 0.42;
+      const damping = 0.45;
+      // use amplified release velocity to simulate stronger inertia
+      const baseVel = (releaseVelocityRef.current || 0) * 1.4;
+      // add small distance-proportional push as well
+      const currentInit = sliderXRef.current;
+      const distInit = target - currentInit;
+      velocityRef.current = baseVel + distInit * 0.04;
 
       const step = () => {
         const current = sliderXRef.current;
@@ -272,10 +324,11 @@ const AppleGlassmorphismNavbar = () => {
         setSliderX(next);
         sliderXRef.current = next;
         // stop when nearly settled
-        if (Math.abs(velocityRef.current) < 0.02 && Math.abs(dist) < 0.5) {
+        if (Math.abs(velocityRef.current) < 0.12 && Math.abs(dist) < 1.0) {
           setSliderX(target);
           sliderXRef.current = target;
           velocityRef.current = 0;
+          releaseVelocityRef.current = 0;
           animRef.current = null;
           return;
         }
@@ -379,7 +432,7 @@ const AppleGlassmorphismNavbar = () => {
           <div
             className="absolute left-0 rounded-full"
             style={{
-              top: "10px",
+              top: "14px",
               height: "34px",
               opacity: isPressed || isDragging ? 1 : 0,
               pointerEvents: isPressed || isDragging ? "auto" : "none",
@@ -408,7 +461,7 @@ const AppleGlassmorphismNavbar = () => {
             style={{
               position: "absolute",
               left: `${sliderX + Math.max(24, sliderW / 2) - 22}px`,
-              top: `calc(10px + 34px)`,
+              top: `calc(14px + 34px)`,
               width: `${Math.max(40, Math.round(sliderW * 0.6))}px`,
               height: "8px",
               background:
@@ -443,26 +496,37 @@ const AppleGlassmorphismNavbar = () => {
                           setActiveIndex(i);
                         }
                       }}
-                      className={`flex items-center justify-center w-14 h-10 rounded-lg cursor-pointer border-0 bg-transparent transition-colors duration-200 ${
+                      className={`flex items-center justify-center w-16 h-12 rounded-lg cursor-pointer border-0 bg-transparent transition-transform duration-200 ${
                         isActive
-                          ? "text-white"
-                          : "text-white/70 hover:text-white"
+                          ? "text-white scale-105"
+                          : "text-white/70 hover:text-white hover:scale-105"
                       }`}
                       title={item.label}
                       onMouseDown={handleMouseDown}
                       onTouchStart={handleTouchStart}
                     >
-                      <svg
-                        viewBox="0 0 24 24"
-                        className="w-5 h-5"
-                        fill={isActive ? "currentColor" : "none"}
-                        stroke="currentColor"
-                        strokeWidth={isActive ? "0" : "1.5"}
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
+                      <span
+                        className="flex items-center justify-center"
+                        style={{
+                          transition: "transform 220ms ease, filter 220ms ease",
+                          transform: isActive ? "scale(1.08)" : "none",
+                          filter: isActive
+                            ? "drop-shadow(0 8px 18px rgba(0,0,0,0.22))"
+                            : "none",
+                        }}
                       >
-                        {item.icon}
-                      </svg>
+                        <svg
+                          viewBox="0 0 24 24"
+                          className="w-6 h-6"
+                          fill={isActive ? "currentColor" : "none"}
+                          stroke="currentColor"
+                          strokeWidth={isActive ? "0" : "1.5"}
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          {item.icon}
+                        </svg>
+                      </span>
                     </button>
                   ) : (
                     <Link
@@ -485,24 +549,35 @@ const AppleGlassmorphismNavbar = () => {
                       }}
                       onMouseDown={handleMouseDown}
                       onTouchStart={handleTouchStart}
-                      className={`flex items-center justify-center w-14 h-10 rounded-lg transition-colors duration-200 border-0 bg-transparent cursor-pointer ${
+                      className={`flex items-center justify-center w-16 h-12 rounded-lg transition-transform duration-200 border-0 bg-transparent cursor-pointer ${
                         isActive
-                          ? "text-white"
-                          : "text-white/70 hover:text-white"
+                          ? "text-white scale-105"
+                          : "text-white/70 hover:text-white hover:scale-105"
                       }`}
                       title={item.label}
                     >
-                      <svg
-                        viewBox="0 0 24 24"
-                        className="w-5 h-5"
-                        fill={isActive ? "currentColor" : "none"}
-                        stroke="currentColor"
-                        strokeWidth={isActive ? "0" : "1.5"}
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
+                      <span
+                        className="flex items-center justify-center"
+                        style={{
+                          transition: "transform 220ms ease, filter 220ms ease",
+                          transform: isActive ? "scale(1.08)" : "none",
+                          filter: isActive
+                            ? "drop-shadow(0 8px 18px rgba(0,0,0,0.22))"
+                            : "none",
+                        }}
                       >
-                        {item.icon}
-                      </svg>
+                        <svg
+                          viewBox="0 0 24 24"
+                          className="w-6 h-6"
+                          fill={isActive ? "currentColor" : "none"}
+                          stroke="currentColor"
+                          strokeWidth={isActive ? "0" : "1.5"}
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          {item.icon}
+                        </svg>
+                      </span>
                     </Link>
                   )}
                 </li>
