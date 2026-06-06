@@ -10,6 +10,7 @@ import React, {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import BookingModalFloating from "./BookingModalFloating";
+import { Stethoscope } from "lucide-react";
 
 const AppleGlassmorphismNavbar = () => {
   const pathname = usePathname();
@@ -33,14 +34,7 @@ const AppleGlassmorphismNavbar = () => {
       {
         label: "Dokter",
         href: "/dokter",
-        icon: (
-          <g>
-            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2H16Z" />
-            <circle cx="9" cy="7" r="4" />
-            <path d="M19 15.13A4 4 0 0 1 22 19V21H18V19C18 17.2 17.1 15.7 15.7 14.8C16.8 14.4 18 14.5 19 15.13Z" />
-            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-          </g>
-        ),
+        icon: <Stethoscope />,
       },
       {
         label: "Booking",
@@ -281,31 +275,44 @@ const AppleGlassmorphismNavbar = () => {
                             : "none",
                         }}
                       >
-                        <svg
-                          viewBox="0 0 24 24"
-                          className="w-7 h-7"
-                          fill={
-                            item.label === "Beranda" && isActive
-                              ? "currentColor"
-                              : "none"
-                          }
-                          stroke={
-                            item.label === "Beranda" && isActive
-                              ? "none"
-                              : "currentColor"
-                          }
-                          strokeWidth={
-                            item.label === "Beranda" && isActive
-                              ? "0"
-                              : isActive
-                                ? "1.9"
-                                : "1.6"
-                          }
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          {item.icon}
-                        </svg>
+                        {React.isValidElement(item.icon) &&
+                        typeof item.icon.type !== "string" ? (
+                          // component icon (lucide) — render directly with size and color
+                          React.cloneElement(item.icon as React.ReactElement, {
+                            size: 20,
+                            color:
+                              item.label === "Beranda" && isActive
+                                ? "black"
+                                : undefined,
+                            className: "w-7 h-7",
+                          })
+                        ) : (
+                          <svg
+                            viewBox="0 0 24 24"
+                            className="w-7 h-7"
+                            fill={
+                              item.label === "Beranda" && isActive
+                                ? "currentColor"
+                                : "none"
+                            }
+                            stroke={
+                              item.label === "Beranda" && isActive
+                                ? "none"
+                                : "currentColor"
+                            }
+                            strokeWidth={
+                              item.label === "Beranda" && isActive
+                                ? "0"
+                                : isActive
+                                  ? "1.9"
+                                  : "1.6"
+                            }
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            {item.icon}
+                          </svg>
+                        )}
                       </span>
                     </button>
                   ) : (
