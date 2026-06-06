@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import Link from "next/link"; // ini untuk memperbaiki error merah pada (e)
 import { usePathname } from "next/navigation";
 import { useSearchModal } from "@/context/SearchModalContext";
+import BookingModalFloating from "./BookingModalFloating";
 
 /**
  * ini untuk komponen navigasi bawah khusus tampilan mobile dengan optimasi performa tinggi tanpa framer-motion
@@ -11,6 +12,7 @@ import { useSearchModal } from "@/context/SearchModalContext";
 const MobileBottomNavbar = () => {
   const pathname = usePathname();
   const { isSearchOpen } = useSearchModal();
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
 
   // Memoize navbar items untuk optimize performa
   const navItems = useMemo(
@@ -42,6 +44,27 @@ const MobileBottomNavbar = () => {
             <circle cx="9" cy="7" r="4" />
             <path d="M19 15.13A4 4 0 0 1 22 19V21H18V19C18 17.2 17.1 15.7 15.7 14.8C16.8 14.4 18 14.5 19 15.13Z" />
             <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </g>
+        ),
+      },
+      {
+        label: "Janji Temu",
+        href: "#booking",
+        isButton: true,
+        outline: (
+          <g>
+            <path d="M19 4H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Z" />
+            <path d="M16 2v4M8 2v4M3 10h18" />
+          </g>
+        ),
+        solid: (
+          <g>
+            <path d="M19 4H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Z" />
+            <path
+              d="M16 2v4M8 2v4M3 10h18"
+              stroke="#003f88"
+              strokeWidth="1.5"
+            />
           </g>
         ),
       },
@@ -92,76 +115,120 @@ const MobileBottomNavbar = () => {
   );
 
   return (
-    <nav
-      className={`md:hidden fixed bottom-0 left-0 right-0 bg-[#003f88] z-50 border-t border-white/10 pb-safe shadow-lg will-change-transform transform-gpu transition-opacity ${
-        isSearchOpen ? "hidden" : "block"
-      }`}
-      aria-label="Mobile Bottom Navigation"
-    >
-      <ul className="flex justify-around items-stretch h-20 list-none p-0 m-0">
-        {navItems.map((item) => {
-          const isItemActive = pathname === item.href;
+    <>
+      <BookingModalFloating
+        isOpen={isBookingOpen}
+        onClose={() => setIsBookingOpen(false)}
+      />
+      <nav
+        className={`md:hidden fixed bottom-0 left-0 right-0 bg-[#003f88] z-50 border-t border-white/10 pb-safe shadow-lg will-change-transform transform-gpu transition-opacity ${
+          isSearchOpen ? "hidden" : "block"
+        }`}
+        aria-label="Mobile Bottom Navigation"
+      >
+        <ul className="flex justify-around items-stretch h-20 list-none p-0 m-0">
+          {navItems.map((item) => {
+            const isItemActive = pathname === item.href;
 
-          return (
-            <li key={item.label} className="w-1/4 flex">
-              <Link
-                href={item.href}
-                prefetch={true}
-                aria-current={isItemActive ? "page" : undefined}
-                onClick={(e) => {
-                  if (isItemActive) {
-                    e.preventDefault();
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                  }
-                }}
-                className="flex flex-col items-center justify-center w-full relative tap-highlight-transparent overflow-hidden select-none"
-              >
-                {/* Active indicator bar */}
-                <div
-                  className={`absolute top-0 w-12 h-0.75 bg-white rounded-b-full z-10 transition-all duration-200 ease-in-out ${
-                    isItemActive
-                      ? "opacity-100 scale-100"
-                      : "opacity-0 scale-75 pointer-events-none"
-                  }`}
-                />
-
-                {/* Menu content wrapper */}
-                <div className="relative flex flex-col items-center justify-center active:scale-95 transition-transform duration-100 ease-out transform-gpu">
-                  <div className="relative h-6 w-6 flex items-center justify-center">
-                    <svg
-                      viewBox="0 0 24 24"
-                      className={`w-6 h-6 transition-colors duration-200 ${
-                        isItemActive ? "text-white" : "text-white/60"
-                      }`}
-                      fill={isItemActive ? "white" : "none"}
-                      stroke="currentColor"
-                      strokeWidth={isItemActive ? "0.5" : "1.8"}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      {/* Icon transition between active and inactive state */}
-                      <g className="transition-all duration-150 ease-in-out">
-                        {isItemActive ? item.solid : item.outline}
-                      </g>
-                    </svg>
-                  </div>
-
-                  <span
-                    className={`text-[10px] mt-1 tracking-wide transition-all duration-200 ${
-                      isItemActive
-                        ? "text-white font-semibold opacity-100"
-                        : "text-white/60 font-medium opacity-90"
-                    }`}
+            // Jika ini adalah button, render sebagai button bukan Link
+            if (item.isButton) {
+              return (
+                <li key={item.label} className="w-1/4 flex">
+                  <button
+                    onClick={() => setIsBookingOpen(true)}
+                    className="flex flex-col items-center justify-center w-full relative tap-highlight-transparent overflow-hidden select-none border-0 bg-transparent cursor-pointer"
                   >
-                    {item.label}
-                  </span>
-                </div>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
-    </nav>
+                    {/* Active indicator bar - tidak ada untuk button */}
+                    <div className="absolute top-0 w-12 h-0.75 bg-white rounded-b-full z-10 transition-all duration-200 ease-in-out opacity-0 scale-75 pointer-events-none" />
+
+                    {/* Menu content wrapper */}
+                    <div className="relative flex flex-col items-center justify-center active:scale-95 transition-transform duration-100 ease-out transform-gpu">
+                      <div className="relative h-6 w-6 flex items-center justify-center">
+                        <svg
+                          viewBox="0 0 24 24"
+                          className="w-6 h-6 transition-colors duration-200 text-white/60 hover:text-white"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.8"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <g className="transition-all duration-150 ease-in-out">
+                            {item.outline}
+                          </g>
+                        </svg>
+                      </div>
+
+                      <span className="text-[10px] mt-1 tracking-wide transition-all duration-200 text-white/60 font-medium opacity-90">
+                        {item.label}
+                      </span>
+                    </div>
+                  </button>
+                </li>
+              );
+            }
+
+            return (
+              <li key={item.label} className="w-1/4 flex">
+                <Link
+                  href={item.href}
+                  prefetch={true}
+                  aria-current={isItemActive ? "page" : undefined}
+                  onClick={(e) => {
+                    if (isItemActive) {
+                      e.preventDefault();
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }
+                  }}
+                  className="flex flex-col items-center justify-center w-full relative tap-highlight-transparent overflow-hidden select-none"
+                >
+                  {/* Active indicator bar */}
+                  <div
+                    className={`absolute top-0 w-12 h-0.75 bg-white rounded-b-full z-10 transition-all duration-200 ease-in-out ${
+                      isItemActive
+                        ? "opacity-100 scale-100"
+                        : "opacity-0 scale-75 pointer-events-none"
+                    }`}
+                  />
+
+                  {/* Menu content wrapper */}
+                  <div className="relative flex flex-col items-center justify-center active:scale-95 transition-transform duration-100 ease-out transform-gpu">
+                    <div className="relative h-6 w-6 flex items-center justify-center">
+                      <svg
+                        viewBox="0 0 24 24"
+                        className={`w-6 h-6 transition-colors duration-200 ${
+                          isItemActive ? "text-white" : "text-white/60"
+                        }`}
+                        fill={isItemActive ? "white" : "none"}
+                        stroke="currentColor"
+                        strokeWidth={isItemActive ? "0.5" : "1.8"}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        {/* Icon transition between active and inactive state */}
+                        <g className="transition-all duration-150 ease-in-out">
+                          {isItemActive ? item.solid : item.outline}
+                        </g>
+                      </svg>
+                    </div>
+
+                    <span
+                      className={`text-[10px] mt-1 tracking-wide transition-all duration-200 ${
+                        isItemActive
+                          ? "text-white font-semibold opacity-100"
+                          : "text-white/60 font-medium opacity-90"
+                      }`}
+                    >
+                      {item.label}
+                    </span>
+                  </div>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+    </>
   );
 };
 

@@ -394,7 +394,7 @@ export default function BookingModalFloating({
                           {loading ? (
                             <div className="w-5 h-5 border-3 border-white/30 border-t-white rounded-full animate-spin" />
                           ) : (
-                            "Kirim ke WhatsApp"
+                            "Kirim"
                           )}
                         </button>
                       </div>
