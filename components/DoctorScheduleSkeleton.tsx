@@ -5,8 +5,13 @@ import React, { useMemo } from "react";
 const DAYS = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
 
 export default function DoctorScheduleSkeleton() {
-  const cardIds = useMemo(
-    () => Array.from({ length: 3 }, (_, i) => `card-${i}`),
+  const groupIds = useMemo(() => ["spec-1", "spec-2"], []);
+
+  const doctorsPerGroup = useMemo(
+    () => [
+      ["doc-1", "doc-2"],
+      ["doc-3", "doc-4"],
+    ],
     [],
   );
 
@@ -15,7 +20,7 @@ export default function DoctorScheduleSkeleton() {
     [],
   );
 
-  const legendIds = useMemo(() => ["legend-1", "legend-2"], []);
+  const legendIds = useMemo(() => ["legend-1", "legend-2", "legend-3"], []);
 
   return (
     <div className="w-full space-y-6">
@@ -45,74 +50,85 @@ export default function DoctorScheduleSkeleton() {
         </div>
       </div>
 
-      {/* GRID CARDS SKELETON (DESKTOP) */}
-      <div className="hidden lg:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {cardIds.map((id) => (
-          <div
-            key={id}
-            className="bg-white border border-slate-200 shadow-sm overflow-hidden"
-          >
-            <div className="p-4 bg-slate-50 flex items-center gap-4">
-              <div className="w-14 h-14 rounded-full bg-slate-300 animate-pulse" />
-              <div className="flex-1">
-                <div className="h-4 bg-slate-300 rounded w-3/4 mb-2 animate-pulse" />
-                <div className="h-3 bg-slate-200 rounded w-1/2 animate-pulse" />
-              </div>
-            </div>
+      {/* DESKTOP TABLE SKELETON (matches new UI: Nama Dokter + 7 hari) */}
+      <div className="hidden lg:block w-full overflow-x-auto bg-white border border-slate-200 shadow-sm">
+        <table className="w-full text-left border-collapse min-w-[800px]">
+          <thead>
+            <tr className="bg-[#003f88] text-white text-sm font-semibold">
+              <th className="p-3 border-r border-slate-300 w-1/4">
+                <div className="h-4 w-36 bg-slate-200 rounded animate-pulse" />
+              </th>
+              {DAYS.map((d) => (
+                <th
+                  key={d}
+                  className="p-3 text-center border-r border-slate-300 last:border-r-0"
+                >
+                  <div className="h-3 w-14 bg-slate-300 rounded mx-auto animate-pulse" />
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {groupIds.map((g, gi) => (
+              <React.Fragment key={g}>
+                <tr className="bg-slate-50">
+                  <td
+                    colSpan={DAYS.length + 1}
+                    className="p-3 font-semibold text-lg text-black border-b border-slate-200"
+                  >
+                    <div className="h-4 w-48 bg-slate-200 rounded animate-pulse" />
+                  </td>
+                </tr>
 
-            <div className="p-4 overflow-x-auto">
-              <table className="w-full text-xs">
-                <thead>
-                  <tr className="bg-slate-300">
+                {doctorsPerGroup[gi].map((doc) => (
+                  <tr key={doc} className="border-b border-slate-200 text-sm">
+                    <td className="p-3 border-r border-slate-200 align-middle">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-slate-300 animate-pulse" />
+                        <div className="flex-1">
+                          <div className="h-4 bg-slate-300 rounded w-3/4 mb-2 animate-pulse" />
+                          <div className="h-3 bg-slate-200 rounded w-1/2 animate-pulse" />
+                        </div>
+                      </div>
+                    </td>
                     {DAYS.map((d) => (
-                      <th key={d} className="py-2 px-1 text-center text-white">
-                        <div className="h-3 w-8 bg-slate-300 rounded mx-auto animate-pulse" />
-                      </th>
+                      <td
+                        key={`${doc}-${d}`}
+                        className="p-3 text-center border-r border-slate-200 last:border-r-0 align-middle"
+                      >
+                        <div className="h-4 w-12 bg-slate-200 rounded mx-auto animate-pulse" />
+                      </td>
                     ))}
                   </tr>
-                </thead>
-                <tbody>
-                  {([0, 1] as const).map((r) => (
-                    <tr key={`row-${r}`}>
-                      {DAYS.map((d) => (
-                        <td
-                          key={`${d}-${r}`}
-                          className="py-2 px-1 text-center h-12 align-middle"
-                        >
-                          <div className="h-4 w-8 bg-slate-200 rounded mx-auto animate-pulse" />
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        ))}
+                ))}
+              </React.Fragment>
+            ))}
+          </tbody>
+        </table>
       </div>
 
-      {/* MOBILE LIST SKELETON */}
+      {/* MOBILE LIST SKELETON (compact cards matching new mobile UI) */}
       <div className="lg:hidden flex flex-col gap-6">
         {mobileListIds.map((id) => (
           <div
             key={id}
-            className="bg-white border border-slate-200 shadow-sm overflow-hidden animate-pulse"
+            className="bg-white border border-slate-200 shadow-sm overflow-hidden"
           >
             <div className="p-4 flex items-center gap-4 bg-slate-50">
-              <div className="w-14 h-14 rounded-full bg-slate-300" />
+              <div className="w-12 h-12 rounded-full bg-slate-300 animate-pulse" />
               <div className="flex-1">
-                <div className="h-4 bg-slate-300 rounded mb-2" />
-                <div className="h-3 bg-slate-200 rounded w-1/2" />
+                <div className="h-4 bg-slate-300 rounded mb-2 animate-pulse" />
+                <div className="h-3 bg-slate-200 rounded w-1/2 animate-pulse" />
               </div>
             </div>
 
             <div className="border-t border-slate-100 p-3">
-              <div className="grid grid-cols-7 gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 {DAYS.map((d) => (
-                  <div
-                    key={d}
-                    className="h-8 bg-slate-200 rounded animate-pulse"
-                  />
+                  <div key={d} className="p-2 rounded bg-slate-100">
+                    <div className="h-3 bg-slate-200 rounded w-24 mb-2 animate-pulse" />
+                    <div className="h-3 bg-slate-200 rounded w-16 animate-pulse" />
+                  </div>
                 ))}
               </div>
             </div>
@@ -122,7 +138,7 @@ export default function DoctorScheduleSkeleton() {
 
       {/* LEGEND */}
       <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-        <div className="h-4 w-28 bg-slate-300 rounded animate-pulse mb-3"></div>
+        <div className="h-4 w-36 bg-slate-300 rounded animate-pulse mb-3"></div>
         <div className="space-y-2">
           {legendIds.map((id) => (
             <div

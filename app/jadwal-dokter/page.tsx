@@ -44,8 +44,7 @@ export default function DoctorSchedulePage() {
             Jadwal Dokter
           </h1>
           <p className="text-slate-600">
-            Lihat jadwal praktek lengkap semua dokter spesialis yang sedang anda
-            cari.
+            Lihat jadwal praktek lengkap semua dokter.
           </p>
         </div>
 
@@ -70,7 +69,7 @@ export default function DoctorSchedulePage() {
           <a
             href="https://wa.me/6282246232527"
             target="_blank"
-            className="inline-flex items-center gap-2 px-4 py-3 bg-[#003f88] text-white text-[11px] sm:text-sm font-semibold hover:bg-[#003f88]/90 transition-all hover:scale-95 shrink-0"
+            className="inline-flex items-center gap-2 px-4 py-3 bg-[#003f88] text-white text-[11px] sm:text-sm font-semibold hover:bg-[#003f88]/90 transition-all hover:scale-95 shrink-0 rounded-md"
           >
             <span className="hidden lg:inline">Hubungi Customer Care</span>
             <span className="md:hidden">Hubungi Customer Care</span>
