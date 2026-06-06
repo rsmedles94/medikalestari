@@ -233,7 +233,7 @@ export default function PromoPage() {
                     </div>
 
                     {/* Content Container */}
-                    <div className="p-4 md:p-5 flex flex-col grow text-center bg-white">
+                    <div className="p-4 md:p-10 flex flex-col grow text-center bg-white">
                       {/* Title */}
                       <Link href={`/promo/${item.id}`} passHref>
                         <h3 className="text-xs md:text-base font-bold text-[#003f88] mb-2 min-h-12 flex items-center justify-center leading-normal cursor-pointer hover:text-[#e67e22] transition-colors duration-300">
@@ -242,7 +242,7 @@ export default function PromoPage() {
                       </Link>
 
                       {/* Description */}
-                      <p className="text-[10px] md:text-xs text-gray-500 leading-normal mb-5 line-clamp-3 md:line-clamp-4 cursor-default">
+                      <p className="text-[10px] md:text-xs text-gray-500 leading-normal mb-5 line-clamp-3 md:line-clamp-4 cursor-default mt-10">
                         {item.description}
                       </p>
 
@@ -257,7 +257,7 @@ export default function PromoPage() {
                                 : "bg-[#003f88] hover:bg-[#e67e22]"
                             }`}
                           >
-                            Selengkapnya ⭢
+                            ⭢ Selengkapnya
                           </button>
                         </Link>
                       </div>
