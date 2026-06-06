@@ -445,7 +445,6 @@ export default function PromoDetailPage() {
               {isLoadingRelated ? (
                 <PromoCardSkeleton count={relatedItemsPerGroup} />
               ) : (
-                /* Penggunaan minus-margin agar card kiri dan kanan sejajar tegak lurus dengan judul di atasnya */
                 <div className="w-full overflow-hidden -mx-2 lg:-mx-3">
                   <motion.div
                     animate={relatedControls}
@@ -493,11 +492,11 @@ export default function PromoDetailPage() {
 
                           <div className="p-4 md:p-5 flex flex-col grow text-center bg-white">
                             <Link href={`/promo/${relatedPromo.id}`} passHref>
-                              <h3 className="text-sm md:text-base font-bold text-[#003f88] mb-2 min-h-12 flex items-center justify-center leading-snug line-clamp-2 cursor-pointer hover:text-[#e67e22] transition-colors duration-300">
+                              <h3 className="text-xl md:text-xl font-bold text-[#003f88] mb-2 min-h-12 flex items-center justify-center leading-normal cursor-pointer hover:text-[#e67e22] transition-colors duration-300">
                                 {relatedPromo.title}
                               </h3>
                             </Link>
-                            <p className="text-xs text-gray-500 leading-normal mb-5 line-clamp-3 md:line-clamp-4 cursor-default">
+                            <p className="text-[10px] md:text-xs text-gray-500 leading-normal mb-5 line-clamp-3 md:line-clamp-4 cursor-default mt-10">
                               {relatedPromo.shortDescription}
                             </p>
                             <div className="mt-auto">
@@ -510,7 +509,7 @@ export default function PromoDetailPage() {
                                       : "bg-[#003f88] hover:bg-[#e67e22]"
                                   }`}
                                 >
-                                  Selengkapnya →
+                                  ⭢ Selengkapnya
                                 </button>
                               </Link>
                             </div>

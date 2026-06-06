@@ -154,13 +154,13 @@ Keluhan/Catatan: ${formData.keluhan}`;
             <div className="flex flex-col sm:flex-row gap-4">
               <button
                 onClick={() => setShowWhatsAppForm(true)}
-                className="px-8 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+                className="px-8 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Image
                   src="/images/icons/whatsapp-fill.svg"
                   alt="WhatsApp"
-                  width={20}
-                  height={20}
+                  width={30}
+                  height={30}
                   className="invert"
                 />
                 Pesan via WhatsApp
@@ -403,22 +403,15 @@ Keluhan/Catatan: ${formData.keluhan}`;
                 <button
                   type="button"
                   onClick={() => setShowWhatsAppForm(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors"
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+                  className="flex-1 px-4 py-2 bg-[#003f88] hover:bg-[#003f88] text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <Image
-                    src="/images/icons/whatsapp-fill.svg"
-                    alt="WhatsApp"
-                    width={18}
-                    height={18}
-                    className="invert"
-                  />
-                  Kirim via WhatsApp
+                  Kirim
                 </button>
               </div>
             </form>

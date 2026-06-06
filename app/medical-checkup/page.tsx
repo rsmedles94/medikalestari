@@ -51,7 +51,7 @@ export default function MedicalCheckup() {
                 href={`/medical-checkup/${item.id}`}
                 className="group"
               >
-                <article className="bg-white border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col h-full">
+                <article className="bg-white border border-gray-200 overflow-hidden  transition-all duration-300 flex flex-col h-full">
                   {/* Image Area */}
                   <figure className="w-full relative bg-gray-50 aspect-auto overflow-hidden">
                     <Image
@@ -59,7 +59,7 @@ export default function MedicalCheckup() {
                       alt={item.title}
                       width={340}
                       height={380}
-                      className="w-full h-auto object-contain group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-auto object-contain group-hover:scale-105 transition-transform duration-700"
                     />
                   </figure>
 
@@ -95,7 +95,7 @@ export default function MedicalCheckup() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
               href="https://wa.me/6281234567890?text=Saya%20ingin%20mendaftar%20Medical%20Checkup"
-              className="px-8 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg transition-colors inline-flex items-center justify-center gap-2"
+              className="px-8 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg transition-colors inline-flex items-center justify-center gap-2 cursor-pointer"
             >
               <Phone size={20} />
               Pesan via WhatsApp
