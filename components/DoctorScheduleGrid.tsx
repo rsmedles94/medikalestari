@@ -515,7 +515,7 @@ export default function DoctorScheduleGrid({
                   <tr className="bg-slate-50">
                     <td
                       colSpan={DAYS.length + 1}
-                      className="p-3 font-semibold text-xl text-black border-b border-slate-200"
+                      className="p-3 font-normal text-2xl text-black border-b border-slate-200"
                     >
                       Dokter {specialtyName}
                     </td>
