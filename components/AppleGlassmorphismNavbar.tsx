@@ -109,10 +109,10 @@ const AppleGlassmorphismNavbar = () => {
 
     // adapt slider width to item width (slightly smaller than item)
     if (pos.length) {
-      // choose width based on active item (fraction of its width)
+      // choose width based on active item (larger fraction for a longer slider)
       const idx = Math.max(0, Math.min(activeIndex, pos.length - 1));
       const itemW = pos[idx].width;
-      const desired = Math.max(30, Math.round(itemW * 0.82));
+      const desired = Math.max(36, Math.round(itemW * 0.92));
       setSliderW(desired);
       const left = pos[idx].left + (pos[idx].width - desired) / 2;
       setSliderX(left);
@@ -354,22 +354,23 @@ const AppleGlassmorphismNavbar = () => {
         <div
           className="relative rounded-full overflow-hidden"
           style={{
-            // adaptive base: more saturated on dark bg, slightly dim on bright bg
+            // stronger blue-transparent Apple-like glass; slightly wider padding for a broader dock
             background: isBrightBg
-              ? "linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.04))"
-              : "linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.08))",
+              ? "linear-gradient(180deg, rgba(180,210,255,0.08), rgba(170,200,255,0.06))"
+              : "linear-gradient(180deg, rgba(8,40,120,0.10), rgba(6,30,100,0.06))",
             backdropFilter: isBrightBg
-              ? "blur(6px) saturate(140%)"
+              ? "blur(6px) saturate(150%)"
               : "blur(8px) saturate(160%)",
             WebkitBackdropFilter: isBrightBg
-              ? "blur(6px) saturate(140%)"
+              ? "blur(6px) saturate(150%)"
               : "blur(8px) saturate(160%)",
             border: isBrightBg
-              ? "1px solid rgba(255,255,255,0.22)"
-              : "1px solid rgba(255, 255, 255, 0.25)",
+              ? "1px solid rgba(120,190,255,0.12)"
+              : "1px solid rgba(60,140,255,0.12)",
             boxShadow:
-              "0 12px 36px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.6)",
-            padding: "8px 12px",
+              "0 14px 40px rgba(6,30,80,0.08), inset 0 1px 0 rgba(255, 255, 255, 0.55)",
+            padding: "10px 18px",
+            minWidth: "320px",
           }}
         >
           {/* soft sheen overlay */}
@@ -377,10 +378,11 @@ const AppleGlassmorphismNavbar = () => {
             aria-hidden
             className="absolute inset-0 pointer-events-none"
             style={{
+              // light sheen with a stronger blue hint
               background:
-                "linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02))",
+                "linear-gradient(180deg, rgba(220,240,255,0.08), rgba(210,235,255,0.03))",
               mixBlendMode: isBrightBg ? "normal" : "overlay",
-              opacity: isBrightBg ? 0.55 : 0.8,
+              opacity: isBrightBg ? 0.6 : 0.82,
               transition: "opacity 220ms ease",
             }}
           />
@@ -390,11 +392,11 @@ const AppleGlassmorphismNavbar = () => {
             aria-hidden
             className="absolute inset-0 pointer-events-none"
             style={{
-              // subtle tint overlay to make dock respond stronger to bg
+              // subtle blue tint to emphasize glass color
               background: isBrightBg
-                ? "rgba(255,255,255,0.02)"
-                : "rgba(0,0,0,0.02)",
-              opacity: isBrightBg ? 0.6 : 0.28,
+                ? "rgba(220,235,255,0.03)"
+                : "rgba(8,30,80,0.04)",
+              opacity: isBrightBg ? 0.64 : 0.32,
               transition: "background 260ms ease, opacity 260ms ease",
             }}
           />
@@ -432,26 +434,27 @@ const AppleGlassmorphismNavbar = () => {
           <div
             className="absolute left-0 rounded-full"
             style={{
-              top: "14px",
-              height: "34px",
+              top: "20px",
+              height: "42px",
               opacity: isPressed || isDragging ? 1 : 0,
               pointerEvents: isPressed || isDragging ? "auto" : "none",
+              // stronger bluish translucent slider to match the dock color
               background: isBrightBg
-                ? "rgba(0,0,0,0.08)"
-                : "rgba(255, 255, 255, 0.12)",
+                ? "rgba(10,36,80,0.14)"
+                : "rgba(40,140,255,0.18)",
               width: `${sliderW}px`,
-              transform: `translateX(${sliderX}px) scale(${isPressed ? 1.03 : 1})`,
+              transform: `translateX(${sliderX}px) scale(${isPressed ? 1.04 : 1})`,
               transition: isDragging
                 ? "none"
                 : "transform 450ms cubic-bezier(0.22,1,0.36,1), width 280ms ease, opacity 220ms, box-shadow 300ms",
               backdropFilter: "blur(6px)",
               WebkitBackdropFilter: "blur(6px)",
               border: isBrightBg
-                ? "1px solid rgba(255,255,255,0.06)"
-                : "1px solid rgba(255, 255, 255, 0.32)",
+                ? "1px solid rgba(200,230,255,0.08)"
+                : "1px solid rgba(120,200,255,0.18)",
               boxShadow: isDragging
-                ? "inset 0 1px 0 rgba(255,255,255,0.5), 0 10px 26px rgba(0,0,0,0.14)"
-                : "inset 0 1px 0 rgba(255,255,255,0.5), inset 0 -1px 0 rgba(255,255,255,0.06), 0 6px 16px rgba(0,0,0,0.09)",
+                ? "inset 0 1px 0 rgba(255,255,255,0.5), 0 14px 34px rgba(6,30,80,0.18)"
+                : "inset 0 1px 0 rgba(255,255,255,0.5), inset 0 -1px 0 rgba(255,255,255,0.06), 0 10px 20px rgba(6,30,80,0.12)",
             }}
           />
 
@@ -460,14 +463,14 @@ const AppleGlassmorphismNavbar = () => {
             aria-hidden
             style={{
               position: "absolute",
-              left: `${sliderX + Math.max(24, sliderW / 2) - 22}px`,
-              top: `calc(14px + 34px)`,
-              width: `${Math.max(40, Math.round(sliderW * 0.6))}px`,
-              height: "8px",
+              left: `${sliderX + Math.max(30, sliderW / 2) - 28}px`,
+              top: `calc(20px + 42px)`,
+              width: `${Math.max(52, Math.round(sliderW * 0.7))}px`,
+              height: "12px",
               background:
-                "radial-gradient(closest-side, rgba(0,0,0,0.18), rgba(0,0,0,0.02))",
-              filter: "blur(6px)",
-              opacity: isPressed || isDragging ? 0.9 : 0.45,
+                "radial-gradient(closest-side, rgba(0,0,0,0.26), rgba(0,0,0,0.02))",
+              filter: "blur(10px)",
+              opacity: isPressed || isDragging ? 0.98 : 0.56,
               transition:
                 "left 220ms ease, opacity 220ms ease, width 220ms ease",
               borderRadius: "9999px",
@@ -496,10 +499,10 @@ const AppleGlassmorphismNavbar = () => {
                           setActiveIndex(i);
                         }
                       }}
-                      className={`flex items-center justify-center w-16 h-12 rounded-lg cursor-pointer border-0 bg-transparent transition-transform duration-200 ${
+                      className={`flex items-center justify-center w-18 h-14 rounded-lg cursor-pointer border-0 bg-transparent transition-transform duration-200 ${
                         isActive
-                          ? "text-white scale-105"
-                          : "text-white/70 hover:text-white hover:scale-105"
+                          ? "text-black scale-105"
+                          : "text-black/70 hover:text-black hover:scale-105"
                       }`}
                       title={item.label}
                       onMouseDown={handleMouseDown}
@@ -509,7 +512,7 @@ const AppleGlassmorphismNavbar = () => {
                         className="flex items-center justify-center"
                         style={{
                           transition: "transform 220ms ease, filter 220ms ease",
-                          transform: isActive ? "scale(1.08)" : "none",
+                          transform: isActive ? "scale(1.1)" : "none",
                           filter: isActive
                             ? "drop-shadow(0 8px 18px rgba(0,0,0,0.22))"
                             : "none",
@@ -517,7 +520,7 @@ const AppleGlassmorphismNavbar = () => {
                       >
                         <svg
                           viewBox="0 0 24 24"
-                          className="w-6 h-6"
+                          className="w-7 h-7"
                           fill={isActive ? "currentColor" : "none"}
                           stroke="currentColor"
                           strokeWidth={isActive ? "0" : "1.5"}
@@ -549,10 +552,10 @@ const AppleGlassmorphismNavbar = () => {
                       }}
                       onMouseDown={handleMouseDown}
                       onTouchStart={handleTouchStart}
-                      className={`flex items-center justify-center w-16 h-12 rounded-lg transition-transform duration-200 border-0 bg-transparent cursor-pointer ${
+                      className={`flex items-center justify-center w-18 h-14 rounded-lg transition-transform duration-200 border-0 bg-transparent cursor-pointer ${
                         isActive
-                          ? "text-white scale-105"
-                          : "text-white/70 hover:text-white hover:scale-105"
+                          ? "text-black scale-105"
+                          : "text-black/70 hover:text-black hover:scale-105"
                       }`}
                       title={item.label}
                     >
@@ -560,7 +563,7 @@ const AppleGlassmorphismNavbar = () => {
                         className="flex items-center justify-center"
                         style={{
                           transition: "transform 220ms ease, filter 220ms ease",
-                          transform: isActive ? "scale(1.08)" : "none",
+                          transform: isActive ? "scale(1.1)" : "none",
                           filter: isActive
                             ? "drop-shadow(0 8px 18px rgba(0,0,0,0.22))"
                             : "none",
@@ -568,7 +571,7 @@ const AppleGlassmorphismNavbar = () => {
                       >
                         <svg
                           viewBox="0 0 24 24"
-                          className="w-6 h-6"
+                          className="w-7 h-7"
                           fill={isActive ? "currentColor" : "none"}
                           stroke="currentColor"
                           strokeWidth={isActive ? "0" : "1.5"}
