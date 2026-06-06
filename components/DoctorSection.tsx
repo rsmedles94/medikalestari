@@ -442,7 +442,7 @@ const DoctorSection = ({
               <div className="flex-1 relative">
                 <Search
                   className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-                  size={18}
+                  size={16}
                 />
                 <input
                   type="text"
@@ -463,35 +463,34 @@ const DoctorSection = ({
                   }}
                   inputMode="search"
                   enterKeyHint="search"
-                  className="w-full border border-slate-200 py-2.5 pl-10 pr-4 outline-none focus:border-[#003f88] text-base bg-white"
-                  style={{ fontSize: "16px" }}
+                  className="w-full border border-slate-200 h-11 pl-10 pr-4 outline-none focus:border-[#003f88] text-sm bg-white"
                 />
               </div>
 
               {/* Specialty Icon Button */}
               <button
                 onClick={handleOpenSpecialtyModal}
-                className={`p-3 border transition-all ${
+                className={`w-11 h-11 flex items-center justify-center border transition-all ${
                   showMobileSpecialtyModal
                     ? "border-[#003f88] bg-slate-50"
                     : "border-slate-200 hover:bg-slate-50"
                 }`}
                 title="Filter Spesialis"
               >
-                <Stethoscope size={20} className="text-[#003f88]" />
+                <Stethoscope size={18} className="text-[#003f88]" />
               </button>
 
               {/* Day Icon Button */}
               <button
                 onClick={handleOpenDayModal}
-                className={`p-3 border transition-all ${
+                className={`w-11 h-11 flex items-center justify-center border transition-all ${
                   showMobileDayModal
                     ? "border-[#003f88] bg-slate-50"
                     : "border-slate-200 hover:bg-slate-50"
                 }`}
                 title="Filter Hari"
               >
-                <CalendarDays size={20} className="text-[#003f88]" />
+                <CalendarDays size={18} className="text-[#003f88]" />
               </button>
 
               {/* Search Button */}
@@ -499,7 +498,7 @@ const DoctorSection = ({
                 onClick={() => {
                   handleApplyFilter();
                 }}
-                className="px-4 py-2.5 bg-[#003f88] text-white font-semibold hover:bg-[#003f88]/90 transition-all border border-[#003f88] text-sm"
+                className="px-4 h-11 bg-[#003f88] text-white font-semibold hover:bg-[#003f88]/90 transition-all border border-[#003f88] text-sm flex items-center justify-center"
               >
                 Cari
               </button>

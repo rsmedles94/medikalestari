@@ -194,7 +194,7 @@ export default function DoctorScheduleGrid({
             <div className="flex-1 relative">
               <Search
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-[#003f88]"
-                size={18}
+                size={16}
               />
               <input
                 type="text"
@@ -207,34 +207,34 @@ export default function DoctorScheduleGrid({
                     setSearchDoctor("");
                   }
                 }}
-                className="w-full border border-slate-200 py-3 pl-10 pr-4 outline-none focus:border-[#003f88] text-base bg-white"
+                className="w-full border border-slate-200 h-11 pl-10 pr-4 outline-none focus:border-[#003f88] text-sm bg-white"
               />
             </div>
 
             {/* Specialty Icon Button */}
             <button
               onClick={() => handleOpenMobileSpecialtyModal()}
-              className={`p-3 border transition-all ${
+              className={`w-11 h-11 flex items-center justify-center border transition-all ${
                 showMobileSpecialtyModal
                   ? "border-[#003f88] bg-slate-50"
                   : "border-slate-200 hover:bg-slate-50"
               }`}
               title="Filter Spesialis"
             >
-              <Stethoscope size={24} className="text-[#003f88]" />
+              <Stethoscope size={20} className="text-[#003f88]" />
             </button>
 
             {/* Day Icon Button */}
             <button
               onClick={() => handleOpenMobileDayModal()}
-              className={`p-3 border transition-all ${
+              className={`w-11 h-11 flex items-center justify-center border transition-all ${
                 showMobileDayModal
                   ? "border-[#003f88] bg-slate-50"
                   : "border-slate-200 hover:bg-slate-50"
               }`}
               title="Filter Hari"
             >
-              <CalendarDays size={24} className="text-[#003f88]" />
+              <CalendarDays size={20} className="text-[#003f88]" />
             </button>
 
             {/* Search Button */}
@@ -244,7 +244,7 @@ export default function DoctorScheduleGrid({
                 setSearchDoctor(searchDoctorInput);
                 setSelectedDay(selectedDayInput);
               }}
-              className="px-4 py-3 bg-[#003f88] text-white font-semibold hover:bg-[#003f88]/90 transition-all border border-[#003f88] text-sm"
+              className="px-4 h-11 bg-[#003f88] text-white font-semibold hover:bg-[#003f88]/90 transition-all border border-[#003f88] text-sm flex items-center justify-center"
             >
               Cari
             </button>
@@ -366,7 +366,7 @@ export default function DoctorScheduleGrid({
               onClick={() =>
                 setShowMobileSpecialtyModal(!showMobileSpecialtyModal)
               }
-              className="w-full px-4 py-3 border border-slate-200 text-left bg-white hover:bg-slate-50 transition-all focus:border-[#003f88] focus:outline-none text-sm flex items-center justify-between"
+              className="w-full h-11 px-4 border border-slate-200 text-left bg-white hover:bg-slate-50 transition-all focus:border-[#003f88] focus:outline-none text-sm flex items-center justify-between"
             >
               <span>{selectedSpecialtyInput || "Pilih Spesialis"}</span>
               <Stethoscope size={18} className="text-[#003f88] shrink-0" />
@@ -442,7 +442,7 @@ export default function DoctorScheduleGrid({
                       setSearchDoctor("");
                     }
                   }}
-                  className="w-full border border-slate-200 py-3 pl-10 pr-4 outline-none focus:border-[#003f88] text-sm bg-white"
+                  className="w-full border border-slate-200 h-11 pl-10 pr-4 outline-none focus:border-[#003f88] text-sm bg-white"
                 />
               </div>
             </div>
@@ -450,7 +450,7 @@ export default function DoctorScheduleGrid({
             {/* Day Icon Button */}
             <button
               onClick={() => setShowDesktopDayModal(!showDesktopDayModal)}
-              className={`p-3 border transition-all ${
+              className={`w-11 h-11 flex items-center justify-center border transition-all ${
                 showDesktopDayModal
                   ? "border-[#003f88] bg-slate-50"
                   : "border-slate-200 hover:bg-slate-50"
@@ -460,7 +460,7 @@ export default function DoctorScheduleGrid({
               }
             >
               <CalendarDays
-                size={20}
+                size={18}
                 className="text-[#003f88]"
                 strokeWidth={1.5}
               />
@@ -521,7 +521,7 @@ export default function DoctorScheduleGrid({
                 setSearchDoctor(searchDoctorInput);
                 setSelectedDay(selectedDayInput);
               }}
-              className="px-6 py-2.5 bg-[#003f88] text-white font-semibold hover:bg-[#003f88]/90 transition-all border border-[#003f88]"
+              className="px-6 h-11 bg-[#003f88] text-white font-semibold hover:bg-[#003f88]/90 transition-all border border-[#003f88] flex items-center justify-center"
             >
               Cari
             </button>
