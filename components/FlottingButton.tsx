@@ -47,7 +47,7 @@ export default function FlottingButton() {
                 key={a.id}
                 onClick={() => handleActionClick(a)}
                 aria-label={a.aria}
-                className={`w-14 px-2 flex flex-col items-center justify-center py-4 transition-colors hover:bg-[#002f68] ${
+                className={`w-14 px-2 flex flex-col items-center justify-center py-4 transition-colors  ${
                   index !== actions.length - 1 ? "border-b border-gray-200" : ""
                 }`}
               >
