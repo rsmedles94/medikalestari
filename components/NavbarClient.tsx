@@ -254,7 +254,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
             let itemHref = "/";
 
             if (title === "Dokter Spesialis")
-              itemHref = "/dokter#section-dokter";
+              itemHref = "/dokter/dokter-spesialis";
             else if (title === "Jadwal Dokter") itemHref = "/jadwal-dokter";
             else if (title === "Tentang Kami") itemHref = "/tentang-kami";
             else if (title === "Indikator Mutu") itemHref = "/indikator-mutu";
@@ -744,7 +744,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                 </AnimatePresence>
 
                 <Link
-                  href="/dokter#section-dokter"
+                  href="/dokter/dokter-spesialis"
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="text-left p-4 font-semibold text-gray-700 border-b text-lg"
                 >
@@ -792,7 +792,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                               let itemHref = "/";
 
                               if (subitem === "Dokter Spesialis")
-                                itemHref = "/dokter#section-dokter";
+                                itemHref = "/dokter/dokter-spesialis";
                               else if (subitem === "Tentang Kami")
                                 itemHref = "/tentang-kami";
                               else if (subitem === "Indikator Mutu")

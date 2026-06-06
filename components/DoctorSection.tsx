@@ -402,7 +402,7 @@ const DoctorSection = ({
     <section
       ref={sectionRef}
       className="w-full bg-white min-h-screen text-slate-800 relative mb-20"
-      id="section-dokter"
+      id="dokter-spesialis"
     >
       {/* MODAL BOOKING */}
       <AnimatePresence>
