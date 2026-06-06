@@ -411,6 +411,7 @@ const DoctorSection = ({
             doctorName={selectedDoctor.name}
             specialty={selectedDoctor.specialty}
             onClose={() => setSelectedDoctor(null)}
+            schedules={selectedDoctor.schedules ?? []}
           />
         )}
       </AnimatePresence>
