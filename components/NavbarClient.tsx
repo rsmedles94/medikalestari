@@ -23,7 +23,6 @@ import {
   Bed,
   Dumbbell,
   Syringe,
-  ChevronDown,
   Plus,
   Minus,
 } from "lucide-react";
@@ -174,11 +173,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
       "Vaccination Services",
     ],
 
-    "Portal Pasien": [
-      "Alur Pendaftaran",
-      "Asuransi & Rekanan",
-      "Tarif Kamar",
-    ],
+    "Portal Pasien": ["Alur Pendaftaran", "Asuransi & Rekanan", "Tarif Kamar"],
 
     Profil: [
       "Karir",
@@ -398,12 +393,15 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
             >
               <button className="flex items-center h-full px-6 transition-colors font-semibold relative group gap-2 text-gray-700">
                 Cari Dokter
-                <ChevronDown
-                  size={18}
+                <span
+                  aria-hidden
                   className={`transition-transform duration-300 text-gray-700 ${
                     activeMenu === "Dokter Kami" ? "scale-y-[-1]" : ""
                   }`}
-                />
+                  style={{ fontSize: 18 }}
+                >
+                  ⏷
+                </span>
                 <div
                   className={`absolute bottom-0 left-6 right-6 h-1 bg-gray-400 rounded-t-full transition-transform duration-300 ${
                     activeMenu === "Dokter Kami"
@@ -439,12 +437,15 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                 >
                   <button className="flex items-center h-full px-6 transition-colors font-semibold relative group gap-2 text-gray-700">
                     {item}
-                    <ChevronDown
-                      size={18}
+                    <span
+                      aria-hidden
                       className={`transition-transform duration-300 text-gray-700 ${
                         activeMenu === item ? "scale-y-[-1]" : ""
                       }`}
-                    />
+                      style={{ fontSize: 18 }}
+                    >
+                      ⏷
+                    </span>
 
                     <div
                       className={`absolute bottom-0 left-6 right-6 h-1 bg-gray-400 rounded-t-full transition-transform duration-300 ${
@@ -472,12 +473,15 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
             >
               <button className="flex items-center h-full px-6 transition-colors font-semibold relative group gap-2 text-gray-700">
                 Informasi
-                <ChevronDown
-                  size={18}
+                <span
+                  aria-hidden
                   className={`transition-transform duration-300 text-gray-700 ${
                     activeMenu === "Profil" ? "scale-y-[-1]" : ""
                   }`}
-                />
+                  style={{ fontSize: 18 }}
+                >
+                  ⏷
+                </span>
                 <div
                   className={`absolute bottom-0 left-6 right-6 h-1 bg-gray-400 rounded-t-full transition-transform duration-300 ${
                     activeMenu === "Profil"
