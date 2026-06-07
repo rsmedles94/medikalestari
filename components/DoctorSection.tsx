@@ -280,9 +280,6 @@ const DoctorSection = ({
             >
               {doctor.status === "cuti" && (
                 <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
-                  <span className="text-6xl md:text-8xl text-red-400 italic font-extrabold opacity-90">
-                    CUTI
-                  </span>
                 </div>
               )}
               {/* Foto Dokter */}

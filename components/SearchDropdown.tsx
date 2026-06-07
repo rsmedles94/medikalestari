@@ -167,8 +167,8 @@ const SearchDropdown: React.FC<SearchDropdownProps> = memo(
                                   </p>
                                 </div>
                                 <div className="ml-2 flex items-center">
-                                  <span className="text-sm italic text-red-500 font-semibold">
-                                    Cuti
+                                  <span className="text-sm text-red-500 font-bold">
+                                    C
                                   </span>
                                 </div>
                               </div>
