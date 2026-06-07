@@ -145,7 +145,7 @@ const MobileBottomNavbar = () => {
   const renderIcon = (item: NavItem, isActive: boolean) => {
     const getStrokeWidth = (label: string, active: boolean) => {
       if (label === "Beranda" && active) return "0";
-      if (active) return "1.9";
+      if (active) return "2.0";
       return "1.6";
     };
 
@@ -155,8 +155,8 @@ const MobileBottomNavbar = () => {
       const IconComp = item.icon;
       iconNode = (
         <IconComp
-          size={20}
-          strokeWidth={1.5}
+          size={20} 
+          strokeWidth={isActive ? 2.0 : 1.6}
           className="w-6 h-6"
           color={item.label === "Beranda" && isActive ? "#1c1c1e" : undefined}
         />
@@ -167,7 +167,7 @@ const MobileBottomNavbar = () => {
       iconNode = (
         <svg
           viewBox="0 0 24 24"
-          className="w-6 h-6"
+          className="w-6 h-6" // DIUBAH: Ukuran ikon pas ke 20px (Tinggi 20)
           fill={isBerandaActive ? "currentColor" : "none"}
           stroke={isBerandaActive ? "none" : "currentColor"}
           strokeWidth={strokeWidth}
@@ -190,9 +190,8 @@ const MobileBottomNavbar = () => {
       title: item.label,
       onMouseDown: handleMouseDown,
       onTouchStart: handleTouchStart,
-      // DIUBAH: Menggunakan warna abu-abu sistem (#8e8e93) saat tidak aktif dan hitam gelap (#1c1c1e) saat aktif.
-      // DIUBAH: Menghapus semua utility class pembesaran (hover:scale-105, scale-105).
-      className: `flex flex-col items-center justify-center w-full h-16 border-0 bg-transparent cursor-pointer active:opacity-60 transition-opacity duration-100 ${
+      // DIUBAH: pt-1.5 menaikkan posisi ikon lebih ke atas secara seimbang
+      className: `flex flex-col items-center justify-start w-full h-16 pt-1 border-0 bg-transparent cursor-pointer active:opacity-60 transition-opacity duration-100 ${
         isActive ? "text-[#1c1c1e] font-medium" : "text-[#8e8e93]"
       }`,
     };
@@ -209,11 +208,11 @@ const MobileBottomNavbar = () => {
           }}
           {...commonProps}
         >
-          {/* DIUBAH: Menghapus total inline style transform: scale(1.1) dan filter drop shadow */}
           <span className="flex items-center justify-center">
             {renderIcon(item, isActive)}
           </span>
-          <span className="text-[10px] mt-1 leading-tight select-none">
+          {/* DIUBAH: mt-1 menjaga kerapatan teks di bawah ikon */}
+          <span className="text-[10px] mt-1 leading-tight select-none tracking-tight">
             {item.label}
           </span>
         </button>
@@ -235,11 +234,11 @@ const MobileBottomNavbar = () => {
         }}
         {...commonProps}
       >
-        {/* DIUBAH: Menghapus total inline style transform: scale(1.1) dan filter drop shadow */}
         <span className="flex items-center justify-center">
           {renderIcon(item, isActive)}
         </span>
-        <span className="text-[10px] mt-1 leading-tight select-none">
+        {/* DIUBAH: mt-1 menjaga kerapatan teks di bawah ikon */}
+        <span className="text-[10px] mt-1 leading-tight select-none tracking-tight">
           {item.label}
         </span>
       </Link>
@@ -256,22 +255,18 @@ const MobileBottomNavbar = () => {
         className="fixed bottom-0 left-0 right-0 z-50 lg:hidden"
         ref={containerRef}
       >
-        {/* True Apple Glassmorphism - with subtle glass effect */}
         <div
           className="relative overflow-hidden"
           style={{
-            // full-width dock at bottom, plain white background
             background: "#ffffff",
             borderTop: "1px solid rgba(0,0,0,0.08)",
             boxShadow: "0 -2px 10px rgba(0,0,0,0.03)",
-            // DIUBAH: Mengunci tinggi agar konsisten rata air seperti app native
-            padding: `6px 0px calc(6px + env(safe-area-inset-bottom, 0px))`,
+            // DIUBAH: Padding atas-bawah diperketat (4px) agar porsi area tombol naik ke atas
+            padding: `4px 0px calc(4px + env(safe-area-inset-bottom, 0px))`,
             width: "100%",
-            // remove minWidth for full container layout
           }}
         >
           {/* soft sheen overlay */}
-          {/* neutralize sheen overlay for solid white background */}
           <div
             aria-hidden
             className="absolute inset-0 pointer-events-none"
@@ -282,8 +277,7 @@ const MobileBottomNavbar = () => {
             }}
           />
 
-          {/* adaptive darken/light overlay to make dock respond to bright backgrounds */}
-          {/* remove adaptive tint overlay */}
+          {/* adaptive darken/light overlay */}
           <div
             aria-hidden
             className="absolute inset-0 pointer-events-none"
@@ -294,8 +288,7 @@ const MobileBottomNavbar = () => {
             }}
           />
 
-          {/* inner shadow to give depth to the glass dock */}
-          {/* remove inner shadow to keep the bar visually flat */}
+          {/* inner shadow */}
           <div
             aria-hidden
             className="absolute inset-0 pointer-events-none"
@@ -323,7 +316,6 @@ const MobileBottomNavbar = () => {
                 "linear-gradient(180deg, rgba(255, 255, 255, 0.8), transparent, rgba(255, 255, 255, 0.3))",
             }}
           />
-          {/* slider removed — click-only navigation */}
 
           {/* Navigation Items */}
           <ul className="flex gap-0 list-none p-0 m-0 relative z-10 w-full">
