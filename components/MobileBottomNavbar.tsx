@@ -63,7 +63,7 @@ const MobileBottomNavbar = () => {
         icon: Stethoscope,
       },
       {
-        label: "Booking",
+        label: "Janji Temu",
         href: "#booking",
         isButton: true,
         icon: (
@@ -74,7 +74,7 @@ const MobileBottomNavbar = () => {
         ),
       },
       {
-        label: "Jadwal",
+        label: "Jadwal Dokter",
         href: "/jadwal-dokter",
         icon: (
           <g>
