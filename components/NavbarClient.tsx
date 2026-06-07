@@ -177,12 +177,10 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
     "Portal Pasien": [
       "Alur Pendaftaran",
       "Asuransi & Rekanan",
-      "Panduan Kunjungan",
       "Tarif Kamar",
     ],
 
     Profil: [
-      "Indikator Mutu",
       "Karir",
       "Kontak",
       "Rekanan Kami",
@@ -257,7 +255,6 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               itemHref = "/dokter/dokter-spesialis";
             else if (title === "Jadwal Dokter") itemHref = "/jadwal-dokter";
             else if (title === "Tentang Kami") itemHref = "/tentang-kami";
-            else if (title === "Indikator Mutu") itemHref = "/indikator-mutu";
             else if (title === "Rekanan Kami") itemHref = "/rekanan-kami";
             else if (title === "Karir") itemHref = "/careers";
             else if (title === "Kontak") itemHref = "/kontak-kami";
@@ -293,8 +290,6 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               itemHref = "/alur-pendaftaran";
             else if (title === "Asuransi & Rekanan")
               itemHref = "/asuransi-rekanan";
-            else if (title === "Panduan Kunjungan")
-              itemHref = "/panduan-kunjungan";
 
             return (
               <div
@@ -714,8 +709,6 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
                         if (subitem === "Tentang Kami")
                           itemHref = "/tentang-kami";
-                        else if (subitem === "Indikator Mutu")
-                          itemHref = "/indikator-mutu";
                         else if (subitem === "Rekanan Kami")
                           itemHref = "/rekanan-kami";
                         else if (subitem === "Karir") itemHref = "/careers";
@@ -795,8 +788,6 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                                 itemHref = "/dokter/dokter-spesialis";
                               else if (subitem === "Tentang Kami")
                                 itemHref = "/tentang-kami";
-                              else if (subitem === "Indikator Mutu")
-                                itemHref = "/indikator-mutu";
                               else if (subitem === "Rekanan Kami")
                                 itemHref = "/rekanan-kami";
                               else if (subitem === "Karir")
@@ -836,8 +827,6 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                                 itemHref = "/alur-pendaftaran";
                               else if (subitem === "Asuransi & Rekanan")
                                 itemHref = "/asuransi-rekanan";
-                              else if (subitem === "Panduan Kunjungan")
-                                itemHref = "/panduan-kunjungan";
                               else if (subitem === "Kontak")
                                 itemHref = "/kontak-kami";
                               else if (subitem === "Syarat & Ketentuan")

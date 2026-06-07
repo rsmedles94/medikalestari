@@ -36,8 +36,8 @@ export default function FlottingButton() {
   return (
     <>
       {/* Floating Buttons */}
-      <div className="hidden lg:flex fixed left-0 top-1/2 transform -translate-y-1/2 z-40">
-        <div className="pr-1 bg-[#003f88] rounded-tr-xl rounded-br-xl shadow-md overflow-hidden">
+      <div className="hidden lg:flex fixed right-0 top-1/2 transform -translate-y-1/2 z-40">
+        <div className="pr-0 bg-[#003f88] rounded-tl-xl rounded-bl-xl shadow-md overflow-hidden">
           {actions.map((a, index) => {
             const Icon = a.icon as React.ComponentType<
               React.SVGProps<SVGSVGElement>

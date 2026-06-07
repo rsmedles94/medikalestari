@@ -15,14 +15,14 @@ const KetentruanUmum = () => {
 
       {/* Header */}
       <section className="bg-gradient-to-r from-[#003f88] to-[#003f88] text-white py-8 px-6">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-[1180px] mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl font-bold">Ketentuan Umum</h1>
         </div>
       </section>
 
       {/* Content */}
       <section className="py-12 px-6">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-[1180px] mx-auto px-4 sm:px-6 lg:px-8 mb-20 md:mb-0">
           <div className="prose prose-blue max-w-none">
             <h2 className="text-2xl font-bold text-[#003f88] mb-6">
               Ketentuan Umum Penggunaan Layanan

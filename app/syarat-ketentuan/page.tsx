@@ -52,7 +52,7 @@ const SyaratKetentuan = () => {
 
       {/* Header Section */}
       <section className="bg-gradient-to-r from-[#003f88] to-[#003f88] text-white py-12 px-6">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-[1180px] mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             Syarat & Ketentuan
           </h1>
@@ -65,11 +65,11 @@ const SyaratKetentuan = () => {
 
       {/* Main Content */}
       <section className="py-12 px-6">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-[1180px] mx-auto px-4 sm:px-6 lg:px-8 mb-20 md:mb-0">
           <div className="grid gap-6">
             {sections.map((section) => (
               <Link key={section.id} href={section.href}>
-                <div className="p-6 border border-gray-200 rounded-lg hover:shadow-lg hover:border-[#003f88] transition-all cursor-pointer group">
+                <div className="p-6 border border-gray-200 rounded-lg hover:shadow-lg transition-all cursor-pointer group">
                   <h3 className="text-xl font-bold text-[#003f88] group-hover:text-[#003f88] mb-2">
                     {section.title}
                   </h3>
