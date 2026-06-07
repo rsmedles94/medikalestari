@@ -191,7 +191,7 @@ const MobileBottomNavbar = () => {
       onMouseDown: handleMouseDown,
       onTouchStart: handleTouchStart,
       // DIUBAH: pt-1.5 menaikkan posisi ikon lebih ke atas secara seimbang
-      className: `flex flex-col items-center justify-start w-full h-16 pt-1 border-0 bg-transparent cursor-pointer active:opacity-60 transition-opacity duration-100 ${
+      className: `flex flex-col items-center justify-start w-full h-20 pt-2 border-0 bg-transparent cursor-pointer active:opacity-60 transition-opacity duration-100 ${
         isActive ? "text-[#1c1c1e] font-medium" : "text-[#8e8e93]"
       }`,
     };
