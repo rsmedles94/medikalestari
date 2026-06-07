@@ -156,14 +156,14 @@ const PopupDisplay = memo(() => {
         {/* close button  */}
         <button
           onClick={handleAction}
-          className="absolute -top-10 -right-4 bg-white rounded-full text-black transition-colors p-1 active:scale-95"
+          className="absolute -top-10 -right-4 bg-white rounded-full text-black transition-colors p-1"
         >
           <X size={18} strokeWidth={3} />
         </button>
 
         {/* Image Content */}
         <div
-          className="relative cursor-pointer flex justify-center items-center overflow-hidden shadow-2xl"
+          className="relative flex justify-center items-center overflow-hidden shadow-2xl"
           onClick={handleAction}
         >
           <img

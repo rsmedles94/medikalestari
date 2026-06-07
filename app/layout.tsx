@@ -3,6 +3,7 @@
 import "./globals.css";
 import { AuthProvider, useAuth } from "@/context/AuthProvider";
 import { SearchModalProvider } from "@/context/SearchModalContext";
+import Providers from "./providers";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AdminSidebar from "@/components/AdminSidebar";
@@ -104,11 +105,13 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen bg-white text-black">
-        <AuthProvider>
-          <SearchModalProvider>
-            <LayoutContent>{children}</LayoutContent>
-          </SearchModalProvider>
-        </AuthProvider>
+        <Providers>
+          <AuthProvider>
+            <SearchModalProvider>
+              <LayoutContent>{children}</LayoutContent>
+            </SearchModalProvider>
+          </AuthProvider>
+        </Providers>
       </body>
     </html>
   );
