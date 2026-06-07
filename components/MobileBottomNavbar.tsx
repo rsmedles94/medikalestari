@@ -158,7 +158,7 @@ const MobileBottomNavbar = () => {
           size={20} 
           strokeWidth={isActive ? 2.0 : 1.6}
           className="w-6 h-6"
-          color={item.label === "Beranda" && isActive ? "#1c1c1e" : undefined}
+          color={item.label === "Beranda" && isActive ? "#ffffff" : undefined}
         />
       );
     } else {
@@ -191,8 +191,8 @@ const MobileBottomNavbar = () => {
       onMouseDown: handleMouseDown,
       onTouchStart: handleTouchStart,
       // DIUBAH: pt-1.5 menaikkan posisi ikon lebih ke atas secara seimbang
-      className: `flex flex-col items-center justify-start w-full h-20 pt-2 border-0 bg-transparent cursor-pointer active:opacity-60 transition-opacity duration-100 ${
-        isActive ? "text-[#1c1c1e] font-medium" : "text-[#8e8e93]"
+      className: `flex flex-col items-center justify-start w-full h-18 pt-2 border-0 bg-transparent cursor-pointer active:opacity-60 transition-opacity duration-100 ${
+        isActive ? "text-white font-medium" : "text-[#8e8e93]"
       }`,
     };
 
@@ -258,7 +258,7 @@ const MobileBottomNavbar = () => {
         <div
           className="relative overflow-hidden"
           style={{
-            background: "#ffffff",
+            background: "#003f88",
             borderTop: "1px solid rgba(0,0,0,0.08)",
             boxShadow: "0 -2px 10px rgba(0,0,0,0.03)",
             // DIUBAH: Padding atas-bawah diperketat (4px) agar porsi area tombol naik ke atas
