@@ -90,7 +90,7 @@ const MobileBottomNavbar = () => {
           <g>
             <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18H6Z" />
             <path d="M2 14a2 2 0 0 1 2-2h2v10H4a2 2 0 0 1-2-2v-6Z" />
-            <path d="M18 9a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2V9Z" />
+            <path d="M18 9a2 2 0 0 1 2 2v9a2 2 0 0 1-18 2h-2V9Z" />
           </g>
         ),
       },
@@ -157,8 +157,8 @@ const MobileBottomNavbar = () => {
         <IconComp
           size={20}
           strokeWidth={1.5}
-          className="w-7 h-7"
-          color={item.label === "Beranda" && isActive ? "black" : undefined}
+          className="w-6 h-6"
+          color={item.label === "Beranda" && isActive ? "#1c1c1e" : undefined}
         />
       );
     } else {
@@ -167,7 +167,7 @@ const MobileBottomNavbar = () => {
       iconNode = (
         <svg
           viewBox="0 0 24 24"
-          className="w-7 h-7"
+          className="w-6 h-6"
           fill={isBerandaActive ? "currentColor" : "none"}
           stroke={isBerandaActive ? "none" : "currentColor"}
           strokeWidth={strokeWidth}
@@ -190,10 +190,10 @@ const MobileBottomNavbar = () => {
       title: item.label,
       onMouseDown: handleMouseDown,
       onTouchStart: handleTouchStart,
-      className: `flex flex-col items-center justify-center w-18 h-14 transition-transform duration-200 border-0 bg-transparent cursor-pointer ${
-        isActive
-          ? "text-black scale-105"
-          : "text-black/70 hover:text-black hover:scale-105"
+      // DIUBAH: Menggunakan warna abu-abu sistem (#8e8e93) saat tidak aktif dan hitam gelap (#1c1c1e) saat aktif.
+      // DIUBAH: Menghapus semua utility class pembesaran (hover:scale-105, scale-105).
+      className: `flex flex-col items-center justify-center w-full h-16 border-0 bg-transparent cursor-pointer active:opacity-60 transition-opacity duration-100 ${
+        isActive ? "text-[#1c1c1e] font-medium" : "text-[#8e8e93]"
       }`,
     };
 
@@ -209,16 +209,8 @@ const MobileBottomNavbar = () => {
           }}
           {...commonProps}
         >
-          <span
-            className="flex items-center justify-center"
-            style={{
-              transition: "transform 220ms ease, filter 220ms ease",
-              transform: isActive ? "scale(1.1)" : "none",
-              filter: isActive
-                ? "drop-shadow(0 8px 18px rgba(0,0,0,0.22))"
-                : "none",
-            }}
-          >
+          {/* DIUBAH: Menghapus total inline style transform: scale(1.1) dan filter drop shadow */}
+          <span className="flex items-center justify-center">
             {renderIcon(item, isActive)}
           </span>
           <span className="text-[10px] mt-1 leading-tight select-none">
@@ -243,16 +235,8 @@ const MobileBottomNavbar = () => {
         }}
         {...commonProps}
       >
-        <span
-          className="flex items-center justify-center"
-          style={{
-            transition: "transform 220ms ease, filter 220ms ease",
-            transform: isActive ? "scale(1.1)" : "none",
-            filter: isActive
-              ? "drop-shadow(0 8px 18px rgba(0,0,0,0.22))"
-              : "none",
-          }}
-        >
+        {/* DIUBAH: Menghapus total inline style transform: scale(1.1) dan filter drop shadow */}
+        <span className="flex items-center justify-center">
           {renderIcon(item, isActive)}
         </span>
         <span className="text-[10px] mt-1 leading-tight select-none">
@@ -278,9 +262,10 @@ const MobileBottomNavbar = () => {
           style={{
             // full-width dock at bottom, plain white background
             background: "#ffffff",
-            borderTop: "1px solid rgba(0,0,0,0.06)",
-            boxShadow: "0 -6px 20px rgba(0,0,0,0.04)",
-            padding: `8px 12px calc(${dockPadding.split(" ")[0]} + env(safe-area-inset-bottom, 0px))`,
+            borderTop: "1px solid rgba(0,0,0,0.08)",
+            boxShadow: "0 -2px 10px rgba(0,0,0,0.03)",
+            // DIUBAH: Mengunci tinggi agar konsisten rata air seperti app native
+            padding: `6px 0px calc(6px + env(safe-area-inset-bottom, 0px))`,
             width: "100%",
             // remove minWidth for full container layout
           }}
