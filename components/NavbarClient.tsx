@@ -645,135 +645,150 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
         <SearchDropdown isOpen={isSearchOpen} onClose={() => closeSearch()} />
       </motion.div>
 
-      {/* --- Mobile Menu --- */}
-
+      {/* --- Mobile Navbar Menu --- */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <>
             {/* Backdrop */}
-
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsMobileMenuOpen(false)}
-              className="fixed inset-0 bg-black/40 backdrop-blur-[2px] z-99 md:hidden"
+              className="fixed inset-0 bg-black/30 backdrop-blur-[4px] z-99 md:hidden"
             />
 
-            {/* Panel */}
-
+            {/* Panel: Dropdown dari Atas, Full Screen Scrollable */}
             <motion.div
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed inset-y-0 right-0 w-[85%] bg-white z-100 md:hidden overflow-y-auto shadow-2xl pt-16"
+              initial={{ y: "-100%", opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: "-100%", opacity: 0 }}
+              transition={{ type: "tween", duration: 0.35, ease: "easeInOut" }}
+              className="fixed top-0 inset-x-0 w-full max-h-screen bg-white z-100 md:hidden flex flex-col shadow-xl border-b border-gray-200/40 rounded-b-2xl"
             >
-              {/* Close Button */}
-              <button
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="fixed top-4 right-4 p-2 hover:bg-gray-100 rounded-lg transition-colors z-50 md:hidden"
-                title="Tutup menu"
-              >
-                <X size={24} className="text-gray-700" />
-              </button>
+              {/* Header di dalam panel untuk tombol close agar posisinya stabil */}
+              <div className="flex justify-end p-4 border-b border-gray-100/50 min-h-[64px] items-center">
+                <button
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="p-2 hover:bg-gray-50 rounded-lg transition-colors"
+                  title="Tutup menu"
+                >
+                  <X size={22} className="text-gray-500" />
+                </button>
+              </div>
 
-              <div className="flex flex-col p-4">
+              {/* Area Menu yang Bisa Di-scroll */}
+              <div className="overflow-y-auto flex-1 px-6 pb-8 custom-scrollbar">
+                {/* Beranda */}
                 <button
                   onClick={handleHomeClick}
-                  className="text-left p-4 font-semibold text-gray-700 border-b text-lg"
+                  className="w-full text-left py-4 font-medium text-gray-700 border-b border-gray-100 text-base"
                 >
                   Beranda
                 </button>
 
-                <button
-                  onClick={() =>
-                    setActiveMenu(activeMenu === "Profil" ? null : "Profil")
-                  }
-                  className="w-full text-left p-4 font-semibold text-gray-700 flex justify-between items-center text-lg border-b"
-                >
-                  Profil
-                  {activeMenu === "Profil" ? (
-                    <Minus size={20} />
-                  ) : (
-                    <Plus size={20} />
-                  )}
-                </button>
-
-                <AnimatePresence>
-                  {activeMenu === "Profil" && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      className="overflow-hidden bg-gray-50"
+                {/* Profil */}
+                <div className="border-b border-gray-100">
+                  <button
+                    onClick={() =>
+                      setActiveMenu(activeMenu === "Profil" ? null : "Profil")
+                    }
+                    className="w-full text-left py-4 font-medium text-gray-700 flex justify-between items-center text-base"
+                  >
+                    <span
+                      className={
+                        activeMenu === "Profil" ? "text-[#013a63]" : ""
+                      }
                     >
-                      {menuData["Profil"].map((subitem) => {
-                        let itemHref = "/";
+                      Profil
+                    </span>
+                    {activeMenu === "Profil" ? (
+                      <Minus size={18} className="text-[#013a63]" />
+                    ) : (
+                      <Plus size={18} className="text-gray-400" />
+                    )}
+                  </button>
 
-                        if (subitem === "Tentang Kami")
-                          itemHref = "/tentang-kami";
-                        else if (subitem === "Rekanan Kami")
-                          itemHref = "/rekanan-kami";
-                        else if (subitem === "Karir") itemHref = "/careers";
-                        else if (subitem === "Kontak")
-                          itemHref = "/kontak-kami";
-                        else if (subitem === "Syarat & Ketentuan")
-                          itemHref = "/syarat-ketentuan";
+                  <AnimatePresence>
+                    {activeMenu === "Profil" && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden bg-gray-50/50"
+                      >
+                        {menuData["Profil"].map((subitem) => {
+                          let itemHref = "/";
 
-                        return (
-                          <Link
-                            key={subitem}
-                            href={itemHref}
-                            onClick={() => {
-                              setIsMobileMenuOpen(false);
+                          if (subitem === "Tentang Kami")
+                            itemHref = "/tentang-kami";
+                          else if (subitem === "Rekanan Kami")
+                            itemHref = "/rekanan-kami";
+                          else if (subitem === "Karir") itemHref = "/careers";
+                          else if (subitem === "Kontak")
+                            itemHref = "/kontak-kami";
+                          else if (subitem === "Syarat & Ketentuan")
+                            itemHref = "/syarat-ketentuan";
 
-                              setActiveMenu(null);
-                            }}
-                            className="block p-4 pl-8 text-gray-600 border-b text-sm hover:bg-[#013a63]/10 hover:text-[#013a63] transition-colors"
-                          >
-                            {subitem}
-                          </Link>
-                        );
-                      })}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                          return (
+                            <Link
+                              key={subitem}
+                              href={itemHref}
+                              onClick={() => {
+                                setIsMobileMenuOpen(false);
+                                setActiveMenu(null);
+                              }}
+                              className="block py-3.5 pl-4 text-gray-600 border-b border-gray-100 text-sm hover:bg-[#013a63]/5 hover:text-[#013a63] transition-colors"
+                            >
+                              {subitem}
+                            </Link>
+                          );
+                        })}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
 
+                {/* Dokter Spesialis */}
                 <Link
                   href="/dokter/dokter-spesialis"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-left p-4 font-semibold text-gray-700 border-b text-lg"
+                  className="block text-left py-4 font-medium text-gray-700 border-b border-gray-100 text-base"
                 >
                   Dokter Spesialis
                 </Link>
 
+                {/* Jadwal Dokter */}
                 <Link
                   href="/jadwal-dokter"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-left p-4 font-semibold text-gray-700 border-b text-lg"
+                  className="block text-left py-4 font-medium text-gray-700 border-b border-gray-100 text-base"
                 >
                   Jadwal Dokter
                 </Link>
 
+                {/* Menu Dinamis Lainnya */}
                 {Object.keys(menuData)
-
                   .filter((item) => item !== "Profil")
-
                   .map((item) => (
-                    <div key={item} className="border-b">
+                    <div key={item} className="border-b border-gray-100">
                       <button
                         onClick={() =>
                           setActiveMenu(activeMenu === item ? null : item)
                         }
-                        className="w-full text-left p-4 font-semibold text-gray-700 flex justify-between items-center text-lg"
+                        className="w-full text-left py-4 font-medium text-gray-700 flex justify-between items-center text-base"
                       >
-                        {item}
-
+                        <span
+                          className={
+                            activeMenu === item ? "text-[#013a63]" : ""
+                          }
+                        >
+                          {item}
+                        </span>
                         {activeMenu === item ? (
-                          <Minus size={20} />
+                          <Minus size={18} className="text-[#013a63]" />
                         ) : (
-                          <Plus size={20} />
+                          <Plus size={18} className="text-gray-400" />
                         )}
                       </button>
 
@@ -783,7 +798,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: "auto", opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
-                            className="overflow-hidden bg-gray-50"
+                            className="overflow-hidden bg-gray-50/50"
                           >
                             {menuData[item].map((subitem) => {
                               let itemHref = "/";
@@ -842,10 +857,9 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                                   href={itemHref}
                                   onClick={() => {
                                     setIsMobileMenuOpen(false);
-
                                     setActiveMenu(null);
                                   }}
-                                  className="block p-4 pl-8 text-gray-600 border-b text-sm hover:bg-[#013a63]/10 hover:text-[#013a63] transition-colors"
+                                  className="block py-3.5 pl-4 text-gray-600 border-b border-gray-100 text-sm hover:bg-[#013a63]/5 hover:text-[#013a63] transition-colors"
                                 >
                                   {subitem}
                                 </Link>
@@ -857,7 +871,13 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                     </div>
                   ))}
 
-                <AuthArea isMobile onClick={() => setIsMobileMenuOpen(false)} />
+                {/* Area Auth */}
+                <div className="pt-6">
+                  <AuthArea
+                    isMobile
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  />
+                </div>
               </div>
             </motion.div>
           </>
