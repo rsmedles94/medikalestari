@@ -217,7 +217,7 @@ export default function KamarPerawatan() {
   if (!currentKamar) return null;
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white pb-20 md:pb-0">
       {/* Container Utama */}
       <div className="max-w-[1142px] mx-auto px-4">
         {/* Navigasi Breadcrumb - Posisi Tetap */}
@@ -286,7 +286,7 @@ export default function KamarPerawatan() {
         </div>
 
         {/* Card Utama  */}
-        <div className="bg-white rounded-none shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-gray-100 overflow-hidden mb-20 md:mb-0">
+        <div className="bg-white rounded-none shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-gray-100 overflow-hidden">
           <div className="flex flex-col md:flex-row md:min-h-[450px] items-stretch ">
             {/* Sisi Kiri: Slider Gambar */}
             <div className="md:w-1/2 relative bg-[#f8f9fa] overflow-hidden min-h-[280px] md:min-h-full ">
