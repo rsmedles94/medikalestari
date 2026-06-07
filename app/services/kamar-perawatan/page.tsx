@@ -285,9 +285,9 @@ export default function KamarPerawatan() {
           ))}
         </div>
 
-        {/* Card Utama - Tanpa Rounded (Tajam) */}
+        {/* Card Utama  */}
         <div className="bg-white rounded-none shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-gray-100 overflow-hidden ">
-          <div className="flex flex-col md:flex-row md:min-h-[450px] items-stretch mb-30 md:mb-0 ">
+          <div className="flex flex-col md:flex-row md:min-h-[450px] items-stretch ">
             {/* Sisi Kiri: Slider Gambar */}
             <div className="md:w-1/2 relative bg-[#f8f9fa] overflow-hidden min-h-[280px] md:min-h-full ">
               <AnimatePresence
@@ -395,8 +395,8 @@ export default function KamarPerawatan() {
                 </div>
               </div>
 
-              {/* Bagian Share */}
-              <div className="pt-6 border-t border-gray-100 flex items-center gap-5 mt-auto">
+              {/* medsos */}
+              <div className="pt-6 border-t border-gray-100 flex items-center gap-5 mt-auto ">
                 <button className="text-gray-400 hover:text-[#001e3d] transition-colors">
                   <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
                     <path d="M22.675 0h-21.35C.595 0 0 .595 0 1.326v21.348C0 23.405.595 24 1.326 24H12.82v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116c.73 0 1.323-.595 1.323-1.326V1.326C24 .595 23.405 0 22.675 0z" />

@@ -16,7 +16,6 @@ const AppleGlassmorphismNavbar = () => {
   const pathname = usePathname();
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isBrightBg, setIsBrightBg] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const itemsRef = useRef<Array<HTMLElement | null>>([]);
@@ -132,44 +131,9 @@ const AppleGlassmorphismNavbar = () => {
   // dock visual constants
   const dockPadding = "8px 16px";
   const dockMinWidth = "360px";
-  const dockBlur = isBrightBg ? "blur(6px)" : "blur(8px)";
+  // plain white background - no blur/backdrop
 
-  // brightness adaptation: sample body background color
-  useEffect(() => {
-    const sampleBrightness = () => {
-      try {
-        const bg = globalThis.getComputedStyle(document.body).backgroundColor;
-        const m = /rgba?\((\d+),\s*(\d+),\s*(\d+)/.exec(bg || "");
-        if (m) {
-          const r = Number(m[1]);
-          const g = Number(m[2]);
-          const b = Number(m[3]);
-          const lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-          requestAnimationFrame(() => setIsBrightBg(lum > 200));
-          return;
-        }
-      } catch {}
-      requestAnimationFrame(() => setIsBrightBg(false));
-    };
-
-    // initial sample
-    sampleBrightness();
-
-    // observe body attribute/class/style changes to re-sample automatically
-    const obs = new MutationObserver(() => sampleBrightness());
-    obs.observe(document.body, {
-      attributes: true,
-      attributeFilter: ["class", "style"],
-    });
-
-    // also resample on resize (layout/theme changes)
-    window.addEventListener("resize", sampleBrightness);
-
-    return () => {
-      obs.disconnect();
-      window.removeEventListener("resize", sampleBrightness);
-    };
-  }, []);
+  // brightness adaptation removed — bar is always plain white
 
   // click-only interactions (slider removed)
   const handleMouseDown = () => undefined;
@@ -191,58 +155,49 @@ const AppleGlassmorphismNavbar = () => {
         <div
           className="relative rounded-full overflow-hidden"
           style={{
-            // stronger blue-transparent Apple-like glass; slightly wider padding for a broader dock
-            background: isBrightBg
-              ? "linear-gradient(180deg, rgba(180,210,255,0.08), rgba(170,200,255,0.06))"
-              : "linear-gradient(180deg, rgba(8,40,120,0.10), rgba(6,30,100,0.06))",
-            backdropFilter: `${dockBlur} saturate(150%)`,
-            WebkitBackdropFilter: `${dockBlur} saturate(150%)`,
-            border: isBrightBg
-              ? "1px solid rgba(120,190,255,0.12)"
-              : "1px solid rgba(60,140,255,0.12)",
-            boxShadow:
-              "0 14px 40px rgba(6,30,80,0.08), inset 0 1px 0 rgba(255, 255, 255, 0.55)",
+            // plain white background, no blur/backdrop
+            background: "#ffffff",
+            // removed backdropFilter for a solid background
+            border: "1px solid rgba(0,0,0,0.06)",
+            boxShadow: "0 8px 24px rgba(0,0,0,0.06)",
             padding: dockPadding,
             minWidth: dockMinWidth,
           }}
         >
           {/* soft sheen overlay */}
+          {/* neutralize sheen overlay for solid white background */}
           <div
             aria-hidden
             className="absolute inset-0 pointer-events-none"
             style={{
-              // light sheen with a stronger blue hint
-              background:
-                "linear-gradient(180deg, rgba(220,240,255,0.08), rgba(210,235,255,0.03))",
-              mixBlendMode: isBrightBg ? "normal" : "overlay",
-              opacity: isBrightBg ? 0.6 : 0.82,
+              background: "transparent",
+              opacity: 0,
               transition: "opacity 220ms ease",
             }}
           />
 
           {/* adaptive darken/light overlay to make dock respond to bright backgrounds */}
+          {/* remove adaptive tint overlay */}
           <div
             aria-hidden
             className="absolute inset-0 pointer-events-none"
             style={{
-              // subtle blue tint to emphasize glass color
-              background: isBrightBg
-                ? "rgba(220,235,255,0.03)"
-                : "rgba(8,30,80,0.04)",
-              opacity: isBrightBg ? 0.64 : 0.32,
+              background: "transparent",
+              opacity: 0,
               transition: "background 260ms ease, opacity 260ms ease",
             }}
           />
 
           {/* inner shadow to give depth to the glass dock */}
+          {/* remove inner shadow to keep the bar visually flat */}
           <div
             aria-hidden
             className="absolute inset-0 pointer-events-none"
             style={{
-              boxShadow: "inset 0 -8px 24px rgba(0,0,0,0.08)",
+              boxShadow: "none",
               borderRadius: "9999px",
               mixBlendMode: "normal",
-              opacity: 1,
+              opacity: 0,
               pointerEvents: "none",
             }}
           />

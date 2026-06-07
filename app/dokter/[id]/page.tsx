@@ -116,7 +116,7 @@ const DoctorDetailPage = () => {
               </div>
             )}
 
-            {/* Social Share Section */}
+            {/* medsos */}
             <div className="mt-10 flex flex-col items-center gap-4">
               <p className="text-[12px] font-bold text-slate-600 uppercase">
                 Profil Dokter
