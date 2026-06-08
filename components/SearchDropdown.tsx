@@ -235,12 +235,12 @@ const SearchDropdown: React.FC<SearchDropdownProps> = memo(
                     <li key={specialty}>
                       <button
                         onClick={() => handleSpecialtyClick(specialty)}
-                        className="w-full group flex justify-between items-center text-[13px] text-[#003f88] font-medium hover:text-[#003f88]/70 transition-colors border-b border-transparent hover:border-[#003f88] pb-1 text-left"
+                        className="w-full group flex justify-between items-center text-[13px] text-[#003f88] font-medium hover:text-[#e67e22] transition-colors border-b border-transparent hover:border-[#e67e22] pb-1 text-left"
                       >
                         <span>{specialty}</span>
                         <ArrowRight
                           size={14}
-                          className="text-[#003f88] opacity-0 group-hover:opacity-100 transition-all transform -translate-x-2 group-hover:translate-x-0"
+                          className="text-[#e67e22] opacity-0 group-hover:opacity-100 transition-all transform -translate-x-2 group-hover:translate-x-0"
                         />
                       </button>
                     </li>

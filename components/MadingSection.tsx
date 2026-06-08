@@ -274,7 +274,7 @@ const MadingSection = memo(() => {
                                 <a
                                   href={item.link || "#"}
                                   target="_blank"
-                                  className="text-[11px] md:text-[13px] font-semibold text-[#003f88] hover:underline block"
+                                  className="text-[11px] md:text-[13px] font-semibold text-[#003f88] hover:text-[#e67e22] hover:underline block"
                                 >
                                   → Selengkapnya
                                 </a>
@@ -317,13 +317,9 @@ const MadingSection = memo(() => {
                                 <a
                                   href={item.link || "#"}
                                   target="_blank"
-                                  className="flex items-center gap-1 md:gap-2 text-gray-500 font-bold text-[9px] md:text-[11px] group-hover:text-[#003f88]"
+                                  className="flex items-center gap-1 md:gap-2 text-[#003f88] font-bold text-[12px] md:text-[11px] group-hover:text-[#e67e22]"
                                 >
-                                  <span>Baca Selengkapnya</span>
-                                  <ChevronRight
-                                    size={16}
-                                    className="transition-all group-hover:scale-125"
-                                  />
+                                  <span> ⭢ Selengkapnya</span>
                                 </a>
                               </div>
                             </div>

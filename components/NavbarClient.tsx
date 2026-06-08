@@ -992,7 +992,7 @@ function AuthDropdown({ activeMenu, setActiveMenu }: AuthDropdownProps) {
   );
 }
 
-function AuthArea({
+function AuthArea({ 
   isMobile,
 
   onClick,
