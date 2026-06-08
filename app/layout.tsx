@@ -10,6 +10,7 @@ import AdminSidebar from "@/components/AdminSidebar";
 import PopupDisplay from "@/components/PopupDisplay";
 import MobileBottomNavbar from "@/components/MobileBottomNavbar";
 import { PageTracker } from "@/components/PageTracker";
+import { ServiceWorkerInitializer } from "@/components/ServiceWorkerInitializer";
 import { usePathname } from "next/navigation";
 
 export default function RootLayout({
@@ -148,6 +149,7 @@ function LayoutContent({
         <>
           <Navbar />
           <MobileBottomNavbar />
+          <ServiceWorkerInitializer debug={false} />
           <main className="min-h-screen pt-28 md:pt-26">{children}</main>
           <PopupDisplay />
           <Footer />

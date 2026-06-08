@@ -58,14 +58,115 @@ export function useCachedFetch<T>(
       abortControllerRef.current = new AbortController();
 
       try {
-        setState({ data: null, loading: true, error: null });
+        // Fast-path: try localStorage first (synchronous) so UI can show cached data instantly
+        let cachedData: T | null = null;
+        const cacheKeyUrl = `/__cached/${cacheKey}`;
+        try {
+          if (typeof globalThis !== "undefined" && globalThis.window) {
+            const raw = localStorage.getItem(cacheKeyUrl);
+            if (raw) {
+              try {
+                cachedData = JSON.parse(raw) as T;
+              } catch {
+                cachedData = null;
+              }
+            }
+          }
+        } catch {
+          // ignore localStorage errors
+          cachedData = null;
+        }
 
-        const data = deduplicate
-          ? await deduplicateRequest(cacheKey, fetchFnRef.current)
-          : await fetchFnRef.current();
+        // If localStorage didn't have it, fallback to Cache Storage (async)
+        if (!cachedData) {
+          try {
+            if (typeof globalThis !== "undefined" && "caches" in globalThis) {
+              const cache = await caches.open("rs-medika-api-v1");
+              const match = await cache.match(new Request(cacheKeyUrl));
+              if (match) {
+                try {
+                  cachedData = (await match.json()) as T;
+                } catch {
+                  cachedData = null;
+                }
+              }
+            }
+          } catch {
+            // ignore cache reading errors
+          }
+        }
 
-        if (isMountedRef.current) {
-          setState({ data, loading: false, error: null });
+        if (cachedData) {
+          if (isMountedRef.current) {
+            setState({ data: cachedData, loading: false, error: null });
+          }
+          // still perform network fetch in background to update cache/state
+          const data = deduplicate
+            ? await deduplicateRequest(cacheKey, fetchFnRef.current)
+            : await fetchFnRef.current();
+
+          if (isMountedRef.current) {
+            setState({ data, loading: false, error: null });
+          }
+
+          // update cache with fresh data (Cache Storage) and also write to localStorage for instant fallback
+          try {
+            if (typeof globalThis !== "undefined" && "caches" in globalThis) {
+              const cache = await caches.open("rs-medika-api-v1");
+              await cache.put(
+                new Request(cacheKeyUrl),
+                new Response(JSON.stringify(data), {
+                  headers: { "content-type": "application/json" },
+                }),
+              );
+            }
+          } catch (e) {
+            // ignore cache write errors
+            console.warn("[useCachedFetch] cache write failed:", e);
+          }
+
+          try {
+            if (typeof globalThis !== "undefined" && globalThis.window) {
+              localStorage.setItem(cacheKeyUrl, JSON.stringify(data));
+            }
+          } catch {
+            // ignore localStorage write errors
+          }
+        } else {
+          // no cache found -> show loading state while fetching
+          if (isMountedRef.current)
+            setState({ data: null, loading: true, error: null });
+
+          const data = deduplicate
+            ? await deduplicateRequest(cacheKey, fetchFnRef.current)
+            : await fetchFnRef.current();
+
+          if (isMountedRef.current) {
+            setState({ data, loading: false, error: null });
+          }
+
+          // store into cache for next navigations and localStorage for instant fallback
+          try {
+            if (typeof globalThis !== "undefined" && "caches" in globalThis) {
+              const cache = await caches.open("rs-medika-api-v1");
+              await cache.put(
+                new Request(cacheKeyUrl),
+                new Response(JSON.stringify(data), {
+                  headers: { "content-type": "application/json" },
+                }),
+              );
+            }
+          } catch (e) {
+            console.warn("[useCachedFetch] cache write failed:", e);
+          }
+
+          try {
+            if (typeof globalThis !== "undefined" && globalThis.window) {
+              localStorage.setItem(cacheKeyUrl, JSON.stringify(data));
+            }
+          } catch {
+            // ignore localStorage write errors
+          }
         }
       } catch (err) {
         if (isMountedRef.current) {
