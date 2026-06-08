@@ -1,51 +1,42 @@
 "use client";
 
-import React, {
-  useMemo,
-  useState,
-  useRef,
-  useEffect,
-  useCallback,
-} from "react";
+import React, { useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import BookingModalFloating from "./BookingModalFloating";
 import { Stethoscope } from "lucide-react";
+import BookingModalFloating from "./BookingModalFloating";
 
-/**
- * Mobile bottom navbar (moved from AppleGlassmorphismNavbar).
- * Note: removed "rounded" styles as requested (no rounded corners).
- */
+// ==========================================
+// TYPES & INTERFACES
+// ==========================================
+interface LucideLikeProps extends React.SVGProps<SVGSVGElement> {
+  size?: number | string;
+  color?: string;
+  strokeWidth?: number | string;
+}
+
+type IconComponentType = React.ComponentType<LucideLikeProps>;
+type NavIcon = IconComponentType | React.ReactNode;
+
+interface NavItem {
+  label: string;
+  href: string;
+  icon: NavIcon;
+  isButton?: boolean;
+}
+
+// Helper to check if icon is a component (like Lucide)
+const isElementType = (icon: NavIcon): icon is IconComponentType =>
+  typeof icon === "function" ||
+  (typeof icon === "object" && icon !== null && "render" in icon);
+
+// ==========================================
+// MAIN COMPONENT
+// ==========================================
 const MobileBottomNavbar = () => {
   const pathname = usePathname();
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
-
-  const containerRef = useRef<HTMLDivElement>(null);
-  const itemsRef = useRef<Array<HTMLElement | null>>([]);
-
-  // typed nav items: icon can be either a Lucide-like component or an inline svg fragment
-  interface LucideLikeProps extends React.SVGProps<SVGSVGElement> {
-    size?: number | string;
-    color?: string;
-    strokeWidth?: number | string;
-  }
-
-  type IconComponentType = React.ComponentType<LucideLikeProps>;
-
-  type NavIcon = IconComponentType | React.ReactNode;
-
-  interface NavItem {
-    label: string;
-    href: string;
-    icon: NavIcon;
-    isButton?: boolean;
-  }
-
-  const isElementType = (icon: NavIcon): icon is IconComponentType =>
-    // functional components are functions; React.memo/forwardRef may be objects with a `.render` function
-    typeof icon === "function" ||
-    (typeof icon === "object" && icon !== null && "render" in icon);
 
   const navItems = useMemo<NavItem[]>(
     () => [
@@ -59,7 +50,6 @@ const MobileBottomNavbar = () => {
       {
         label: "Dokter",
         href: "/dokter",
-        // store component reference (not element) for clean rendering
         icon: Stethoscope,
       },
       {
@@ -98,134 +88,79 @@ const MobileBottomNavbar = () => {
     [],
   );
 
-  // Measure items and container to compute slider positions
-  const measure = useCallback(() => {
-    const container = containerRef.current;
-    if (!container) return;
-    const containerRect = container.getBoundingClientRect();
-    const pos: { left: number; width: number }[] = [];
-    itemsRef.current.forEach((el) => {
-      if (!el) return;
-      const r = el.getBoundingClientRect();
-      pos.push({ left: r.left - containerRect.left, width: r.width });
-    });
-    // positions measured for potential future use (kept locally)
-    if (pos.length) {
-      // nothing else needed for click-only nav
-    }
-  }, []);
-
-  useEffect(() => {
-    measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
-  }, [measure]);
-
-  // re-measure when active index changes (width/position depend on selected item)
-  useEffect(() => {
-    measure();
-  }, [activeIndex, measure]);
-
-  // cleanup lingering timeout on unmount
-  useEffect(() => {
-    return () => {};
-  }, []);
-
-  // dock visual constants
-  const dockPadding = "8px 16px";
-  // plain white background - no blur/backdrop
-
-  // brightness adaptation removed — bar is always plain white
-
-  // click-only interactions (slider removed)
-  const handleMouseDown = () => undefined;
-  const handleTouchStart = () => undefined;
-
-  // removed drag/slider effects — interactions are click-only now
+  // Helper to render icon node based on its type
   const renderIcon = (item: NavItem, isActive: boolean) => {
-    const getStrokeWidth = (label: string, active: boolean) => {
-      if (label === "Beranda" && active) return "0";
-      if (active) return "2.0";
-      return "1.6";
-    };
-
-    let iconNode: React.ReactNode = null;
-
     if (isElementType(item.icon)) {
       const IconComp = item.icon;
-      iconNode = (
+      return (
         <IconComp
-          size={20} 
+          size={20}
           strokeWidth={isActive ? 2.0 : 1.6}
           className="w-6 h-6"
           color={item.label === "Beranda" && isActive ? "#ffffff" : undefined}
         />
       );
-    } else {
-      const isBerandaActive = item.label === "Beranda" && isActive;
-      const strokeWidth = getStrokeWidth(item.label, isActive);
-      iconNode = (
-        <svg
-          viewBox="0 0 24 24"
-          className="w-6 h-6" // DIUBAH: Ukuran ikon pas ke 20px (Tinggi 20)
-          fill={isBerandaActive ? "currentColor" : "none"}
-          stroke={isBerandaActive ? "none" : "currentColor"}
-          strokeWidth={strokeWidth}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          {item.icon as React.ReactNode}
-        </svg>
-      );
     }
 
-    return iconNode;
+    const isBerandaActive = item.label === "Beranda" && isActive;
+    const strokeWidth =
+      item.label === "Beranda" && isActive ? "0" : isActive ? "2.0" : "1.6";
+
+    return (
+      <svg
+        viewBox="0 0 24 24"
+        className="w-6 h-6"
+        fill={isBerandaActive ? "currentColor" : "none"}
+        stroke={isBerandaActive ? "none" : "currentColor"}
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        {item.icon}
+      </svg>
+    );
   };
 
   const renderNavItem = (item: NavItem, i: number) => {
     const isActive = i === activeIndex || pathname === item.href;
 
-    const commonProps: React.AnchorHTMLAttributes<HTMLAnchorElement> &
-      React.ButtonHTMLAttributes<HTMLButtonElement> = {
+    const commonProps = {
       title: item.label,
-      onMouseDown: handleMouseDown,
-      onTouchStart: handleTouchStart,
-      // DIUBAH: pt-1.5 menaikkan posisi ikon lebih ke atas secara seimbang
       className: `flex flex-col items-center justify-start w-full h-18 pt-2 border-0 bg-transparent cursor-pointer active:opacity-60 transition-opacity duration-100 ${
         isActive ? "text-white font-medium" : "text-[#8e8e93]"
       }`,
     };
 
+    const content = (
+      <>
+        <span className="flex items-center justify-center">
+          {renderIcon(item, isActive)}
+        </span>
+        <span className="text-[10px] mt-1 leading-tight select-none tracking-tight">
+          {item.label}
+        </span>
+      </>
+    );
+
     if (item.isButton) {
       return (
         <button
-          ref={(el) => {
-            itemsRef.current[i] = el;
-          }}
+          type="button"
           onClick={() => {
             setIsBookingOpen(true);
             setActiveIndex(i);
           }}
           {...commonProps}
         >
-          <span className="flex items-center justify-center">
-            {renderIcon(item, isActive)}
-          </span>
-          {/* DIUBAH: mt-1 menjaga kerapatan teks di bawah ikon */}
-          <span className="text-[10px] mt-1 leading-tight select-none tracking-tight">
-            {item.label}
-          </span>
+          {content}
         </button>
       );
     }
 
     return (
       <Link
-        ref={(el: HTMLAnchorElement | null) => {
-          itemsRef.current[i] = el;
-        }}
         href={item.href}
-        onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
+        onClick={(e) => {
           if (pathname === item.href) {
             e.preventDefault();
             window.scrollTo({ top: 0, behavior: "smooth" });
@@ -234,13 +169,7 @@ const MobileBottomNavbar = () => {
         }}
         {...commonProps}
       >
-        <span className="flex items-center justify-center">
-          {renderIcon(item, isActive)}
-        </span>
-        {/* DIUBAH: mt-1 menjaga kerapatan teks di bawah ikon */}
-        <span className="text-[10px] mt-1 leading-tight select-none tracking-tight">
-          {item.label}
-        </span>
+        {content}
       </Link>
     );
   };
@@ -251,74 +180,22 @@ const MobileBottomNavbar = () => {
         isOpen={isBookingOpen}
         onClose={() => setIsBookingOpen(false)}
       />
-      <div
-        className="fixed bottom-0 left-0 right-0 z-50 lg:hidden"
-        ref={containerRef}
-      >
+
+      <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden">
         <div
-          className="relative overflow-hidden"
+          className="relative w-full overflow-hidden bg-[#003f88] border-t border-black/5 shadow-[0_-2px_10px_rgba(0,0,0,0.03)] pt-1"
           style={{
-            background: "#003f88",
-            borderTop: "1px solid rgba(0,0,0,0.08)",
-            boxShadow: "0 -2px 10px rgba(0,0,0,0.03)",
-            // DIUBAH: Padding atas-bawah diperketat (4px) agar porsi area tombol naik ke atas
-            padding: `4px 0px calc(4px + env(safe-area-inset-bottom, 0px))`,
-            width: "100%",
+            paddingBottom: "calc(4px + env(safe-area-inset-bottom, 0px))",
           }}
         >
-          {/* soft sheen overlay */}
-          <div
-            aria-hidden
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background: "transparent",
-              opacity: 0,
-              transition: "opacity 220ms ease",
-            }}
-          />
+          {/* Top glass edge highlight */}
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/80 to-transparent pointer-events-none" />
 
-          {/* adaptive darken/light overlay */}
-          <div
-            aria-hidden
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background: "transparent",
-              opacity: 0,
-              transition: "background 260ms ease, opacity 260ms ease",
-            }}
-          />
-
-          {/* inner shadow */}
-          <div
-            aria-hidden
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              boxShadow: "none",
-              mixBlendMode: "normal",
-              opacity: 0,
-              pointerEvents: "none",
-            }}
-          />
-          {/* Glass edge highlight - top */}
-          <div
-            className="absolute top-0 left-0 right-0 h-px pointer-events-none"
-            style={{
-              background:
-                "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent)",
-            }}
-          />
-
-          {/* Glass edge highlight - left */}
-          <div
-            className="absolute top-0 left-0 w-px h-full pointer-events-none"
-            style={{
-              background:
-                "linear-gradient(180deg, rgba(255, 255, 255, 0.8), transparent, rgba(255, 255, 255, 0.3))",
-            }}
-          />
+          {/* Left glass edge highlight */}
+          <div className="absolute top-0 left-0 w-px h-full bg-gradient-to-b from-white/80 via-transparent to-white/30 pointer-events-none" />
 
           {/* Navigation Items */}
-          <ul className="flex gap-0 list-none p-0 m-0 relative z-10 w-full">
+          <ul className="relative z-10 flex m-0 list-none p-0 w-full">
             {navItems.map((item, i) => (
               <li key={item.label} className="flex-1 flex justify-center">
                 {renderNavItem(item, i)}
