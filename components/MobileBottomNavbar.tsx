@@ -75,6 +75,7 @@ const MobileBottomNavbar = () => {
   );
 
   // SINKRONISASI OTOMATIS: Reset menu jika user ke Beranda via Logo Atas
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (pathname === "/") {
       setActiveIndex(-1); // Matikan semua bg biru
@@ -86,6 +87,7 @@ const MobileBottomNavbar = () => {
       }
     }
   }, [pathname, navItems]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const renderNavItem = (item: NavItem, i: number) => {
     // Aktif hanya jika index state cocok DAN bukan sedang di Beranda (/)
@@ -97,7 +99,7 @@ const MobileBottomNavbar = () => {
     const getCapsuleStyles = () => {
       if (isActive) {
         // Kapsul Biru Terang dengan teks & ikon putih di dalamnya
-        return "text-white bg-[#004aad] px-4 py-2.5 rounded-xl shadow-md flex-row justify-center gap-2 w-full max-w-[150px]";
+        return "text-white bg-[#003f88] px-4 py-2.5 rounded-xl shadow-md flex-row justify-center gap-2 w-full max-w-[150px]";
       }
       return "text-slate-400 bg-transparent flex-col justify-center w-auto";
     };
