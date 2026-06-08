@@ -25,7 +25,6 @@ interface NavItem {
   isButton?: boolean;
 }
 
-// Helper to check if icon is a component (like Lucide)
 const isElementType = (icon: NavIcon): icon is IconComponentType =>
   typeof icon === "function" ||
   (typeof icon === "object" && icon !== null && "render" in icon);
@@ -64,7 +63,7 @@ const MobileBottomNavbar = () => {
         ),
       },
       {
-        label: "Jadwal Dokter",
+        label: "Jadwal",
         href: "/jadwal-dokter",
         icon: (
           <g>
@@ -88,15 +87,14 @@ const MobileBottomNavbar = () => {
     [],
   );
 
-  // Helper to render icon node based on its type
   const renderIcon = (item: NavItem, isActive: boolean) => {
     if (isElementType(item.icon)) {
       const IconComp = item.icon;
       return (
         <IconComp
-          size={20}
-          strokeWidth={isActive ? 2.0 : 1.6}
-          className="w-6 h-6"
+          size={22}
+          strokeWidth={isActive ? 2.2 : 1.8}
+          className="w-[22px] h-[22px]"
           color={item.label === "Beranda" && isActive ? "#ffffff" : undefined}
         />
       );
@@ -104,12 +102,12 @@ const MobileBottomNavbar = () => {
 
     const isBerandaActive = item.label === "Beranda" && isActive;
     const strokeWidth =
-      item.label === "Beranda" && isActive ? "0" : isActive ? "2.0" : "1.6";
+      item.label === "Beranda" && isActive ? "0" : isActive ? "2.2" : "1.8";
 
     return (
       <svg
         viewBox="0 0 24 24"
-        className="w-6 h-6"
+        className="w-[22px] h-[22px]"
         fill={isBerandaActive ? "currentColor" : "none"}
         stroke={isBerandaActive ? "none" : "currentColor"}
         strokeWidth={strokeWidth}
@@ -126,20 +124,20 @@ const MobileBottomNavbar = () => {
 
     const commonProps = {
       title: item.label,
-      className: `flex flex-col items-center justify-start w-full h-18 pt-2 border-0 bg-transparent cursor-pointer active:opacity-60 transition-opacity duration-100 ${
-        isActive ? "text-white font-medium" : "text-[#8e8e93]"
+      className: `flex flex-col items-center justify-center w-full h-16 border-0 bg-transparent cursor-pointer transition-all duration-150 select-none active:scale-95 ${
+        isActive ? "text-white font-bold" : "text-slate-300 hover:text-white"
       }`,
     };
 
     const content = (
-      <>
-        <span className="flex items-center justify-center">
+      <div className="flex flex-col items-center justify-center gap-1 w-full">
+        <span className="flex items-center justify-center h-6 w-6">
           {renderIcon(item, isActive)}
         </span>
-        <span className="text-[10px] mt-1 leading-tight select-none tracking-tight">
+        <span className="text-[10px] font-medium tracking-wide leading-none text-center block">
           {item.label}
         </span>
-      </>
+      </div>
     );
 
     if (item.isButton) {
@@ -183,21 +181,19 @@ const MobileBottomNavbar = () => {
 
       <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden">
         <div
-          className="relative w-full overflow-hidden bg-[#003f88] border-t border-black/5 shadow-[0_-2px_10px_rgba(0,0,0,0.03)] pt-1"
-          style={{
-            paddingBottom: "calc(4px + env(safe-area-inset-bottom, 0px))",
-          }}
+          className="relative w-full overflow-hidden bg-[#003f88] border-t border-white/10 shadow-[0_-4px_16px_rgba(0,0,0,0.15)]"
+          style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
         >
-          {/* Top glass edge highlight */}
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/80 to-transparent pointer-events-none" />
+          {/* Garis highlight atas yang simetris & tipis */}
+          <div className="absolute top-0 left-0 right-0 h-px bg-white/10 pointer-events-none" />
 
-          {/* Left glass edge highlight */}
-          <div className="absolute top-0 left-0 w-px h-full bg-gradient-to-b from-white/80 via-transparent to-white/30 pointer-events-none" />
-
-          {/* Navigation Items */}
-          <ul className="relative z-10 flex m-0 list-none p-0 w-full">
+          {/* Navigation Grid (Sempurna di Tengah) */}
+          <ul className="relative z-10 flex m-0 list-none p-0 w-full h-16 items-center">
             {navItems.map((item, i) => (
-              <li key={item.label} className="flex-1 flex justify-center">
+              <li
+                key={item.label}
+                className="flex-1 h-full flex justify-center items-center"
+              >
                 {renderNavItem(item, i)}
               </li>
             ))}
