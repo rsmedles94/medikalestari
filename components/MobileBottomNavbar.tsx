@@ -181,7 +181,7 @@ const MobileBottomNavbar = () => {
           className="relative w-full overflow-hidden bg-white border-t border-slate-100 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] px-3"
           style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
         >
-          <ul className="relative z-10 flex m-0 list-none p-0 w-full h-16 items-center justify-between">
+          <ul className="relative z-10 flex m-0 list-none p-0 w-full h-20 items-center justify-between">
             {navItems.map((item, i) => renderNavItem(item, i))}
           </ul>
         </div>
