@@ -106,8 +106,9 @@ const MobileBottomNavbar = () => {
 
     const commonProps = {
       title: item.label,
+      // Diubah ke h-20 agar area klik mengikuti tinggi dock baru
       className:
-        "flex items-center justify-center w-full h-16 border-0 bg-transparent cursor-pointer select-none active:scale-95 transition-transform duration-150",
+        "flex items-center justify-center w-full h-20 border-0 bg-transparent cursor-pointer select-none active:scale-95 transition-transform duration-150",
     };
 
     const IconComponent = item.icon;
@@ -116,9 +117,10 @@ const MobileBottomNavbar = () => {
       <div
         className={`flex items-center mx-auto transition-all duration-300 ease-in-out ${getCapsuleStyles()}`}
       >
-        <span className="flex items-center justify-center h-5 w-5 shrink-0 transition-transform duration-300">
+        {/* Mengubah h-5 w-5 menjadi h-6 w-6 agar container pembungkus ikon tidak memotong ikon yang membesar */}
+        <span className="flex items-center justify-center h-6 w-6 shrink-0 transition-transform duration-300">
           <IconComponent
-            size={19}
+            size={22} // Diubah dari 19 ke 22 (Ikon lebih besar)
             strokeWidth={isActive ? 2.4 : 1.8}
             color={isActive ? "#ffffff" : "#94a3b8"}
           />
@@ -181,6 +183,7 @@ const MobileBottomNavbar = () => {
           className="relative w-full overflow-hidden bg-white border-t border-slate-100 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] px-3"
           style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
         >
+          {/* Diubah ke h-20 untuk meninggikan background putih */}
           <ul className="relative z-10 flex m-0 list-none p-0 w-full h-20 items-center justify-between">
             {navItems.map((item, i) => renderNavItem(item, i))}
           </ul>
