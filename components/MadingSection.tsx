@@ -184,7 +184,7 @@ const MadingSection = memo(() => {
                         >
                           {activeTab === "Informasi" ? (
                             /* --- Informasi --- */
-                            <div className="bg-white border border-gray-200 flex flex-col overflow-hidden shadow-sm h-[550px] relative">
+                            <div className="bg-white border border-gray-200 flex flex-col overflow-hidden shadow-sm h-[550px] relative group">
                               {/* Header Nickname & Tanggal */}
                               <div className="p-2 md:p-3 flex items-center justify-between shrink-0">
                                 <div className="flex items-center gap-2 min-w-0">
@@ -219,6 +219,7 @@ const MadingSection = memo(() => {
                                 rel="noopener noreferrer"
                                 className="aspect-square overflow-hidden bg-gray-100 block shrink-0"
                               >
+                                {/* Opsional: Tambahkan efek scale sedikit saat di-hover biar makin interaktif */}
                                 <img
                                   src={item.image_url}
                                   alt=""
@@ -271,10 +272,12 @@ const MadingSection = memo(() => {
 
                               {/* Link Fixed di Bottom */}
                               <div className="absolute bottom-0 left-0 right-0 p-2 md:p-3 bg-white">
+                                {/* 2. Menggunakan group-hover agar aktif saat area card (termasuk gambar) disentuh mouse */}
                                 <a
                                   href={item.link || "#"}
                                   target="_blank"
-                                  className="text-[11px] md:text-[13px] font-semibold text-[#003f88] hover:text-[#e67e22] hover:underline block"
+                                  rel="noopener noreferrer"
+                                  className="text-[11px] md:text-[13px] font-semibold text-[#003f88] group-hover:text-[#e67e22] group-hover:underline transition-colors duration-200 block"
                                 >
                                   → Selengkapnya
                                 </a>
@@ -317,7 +320,7 @@ const MadingSection = memo(() => {
                                 <a
                                   href={item.link || "#"}
                                   target="_blank"
-                                  className="flex items-center gap-1 md:gap-2 text-[#003f88] font-bold text-[12px] md:text-[11px] group-hover:text-[#e67e22]"
+                                  className="flex items-center gap-1 md:gap-2 text-[#003f88] font-bold text-[11px] md:text-[13px] group-hover:text-[#e67e22]"
                                 >
                                   <span> ⭢ Selengkapnya</span>
                                 </a>
