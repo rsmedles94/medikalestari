@@ -5,10 +5,11 @@ export default function NotFound() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-white">
       <div className="text-center space-y-4">
         <p className="text-2xl font-semibold text-gray-700">
-          Halaman Tidak Ditemukan
+          Kesehatan adalah tentang keseimbangan. Saat halaman ini tumbang, kami
+          siap membangunnya kembali
         </p>
         <p className="text-gray-500 mb-8">
-          Maaf, halaman yang anda cari sedang dalam pengembangan.
+          Sedang dalam perbaikan. Silakan akses layanan kami yang lain
         </p>
         <Link
           href="/"

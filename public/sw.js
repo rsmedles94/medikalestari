@@ -1,7 +1,7 @@
 /**
  * Service Worker
  * Optimized caching strategy untuk offline support dan performance
- *
+ * 
  * Strategies:
  * - Cache First: Static assets (js, css, images)
  * - Stale While Revalidate: API responses
@@ -35,8 +35,8 @@ self.addEventListener("install", (event) => {
       try {
         const cache = await caches.open(CACHE_NAMES.STATIC);
         await cache.addAll(STATIC_ASSETS);
-        console.log("[SW] Static assets cached");
-        await globalThis.skipWaiting?.();
+  console.log("[SW] Static assets cached");
+  await globalThis.skipWaiting?.();
       } catch (error) {
         console.error("[SW] Installation failed:", error);
       }
@@ -70,7 +70,7 @@ self.addEventListener("activate", (event) => {
       try {
         await globalThis.registration?.navigationPreload?.enable?.();
       } catch (err) {
-        console.warn("[SW] navigationPreload enable failed:", err);
+        console.warn('[SW] navigationPreload enable failed:', err);
       }
       await globalThis.clients?.claim?.();
     })(),
@@ -101,10 +101,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  if (
-    request.mode === "navigate" ||
-    request.headers.get?.("accept")?.includes("text/html")
-  ) {
+  if (request.mode === "navigate" || request.headers.get?.("accept")?.includes("text/html")) {
     event.respondWith(navigationCacheStrategy(event));
     return;
   }
@@ -134,9 +131,7 @@ async function navigationCacheStrategy(eventOrRequest) {
   try {
     // If navigation preload provided a response, use it and cache it
     try {
-      const preloadResp = eventOrRequest.preloadResponse
-        ? await eventOrRequest.preloadResponse
-        : null;
+      const preloadResp = eventOrRequest.preloadResponse ? await eventOrRequest.preloadResponse : null;
       if (preloadResp) {
         if (preloadResp.ok) {
           await cache.put(request, preloadResp.clone());
@@ -145,7 +140,7 @@ async function navigationCacheStrategy(eventOrRequest) {
       }
     } catch (err) {
       // ignore preload errors
-      console.warn("[SW] preloadResponse error:", err);
+      console.warn('[SW] preloadResponse error:', err);
     }
 
     const cached = await cache.match(request);
@@ -190,7 +185,7 @@ async function navigationCacheStrategy(eventOrRequest) {
 // cacheFirstStrategy optionally accepts a cacheName to use instead of STATIC
 async function cacheFirstStrategy(request, cacheName = CACHE_NAMES.STATIC) {
   try {
-    const cache = await caches.open(cacheName);
+  const cache = await caches.open(cacheName);
     const cached = await cache.match(request);
 
     if (cached) {
@@ -227,10 +222,7 @@ async function cacheImageStrategy(request) {
     if (response?.status === 200) {
       // Check if size is reasonable (< 5MB)
       const contentLength = response.headers.get("content-length");
-      if (
-        !contentLength ||
-        Number.parseInt(contentLength, 10) < 5 * 1024 * 1024
-      ) {
+      if (!contentLength || Number.parseInt(contentLength, 10) < 5 * 1024 * 1024) {
         cache.put(request, response.clone());
       }
     }
@@ -269,10 +261,7 @@ async function staleWhileRevalidateStrategy(request) {
     // Return cached immediately if available, otherwise wait for network
     return cached || (await fetchPromise);
   } catch (error) {
-    console.warn(
-      `[SW] Stale While Revalidate failed for ${request.url}:`,
-      error,
-    );
+    console.warn(`[SW] Stale While Revalidate failed for ${request.url}:`, error);
 
     if (cached) {
       return cached;

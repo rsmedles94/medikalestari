@@ -149,7 +149,7 @@ function LayoutContent({
         <>
           <Navbar />
           <MobileBottomNavbar />
-          <ServiceWorkerInitializer debug={false} />
+              <ServiceWorkerInitializer debug={false} />
           <main className="min-h-screen pt-28 md:pt-26">{children}</main>
           <PopupDisplay />
           <Footer />
