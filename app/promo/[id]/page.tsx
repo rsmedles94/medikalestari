@@ -7,6 +7,8 @@ import { useParams } from "next/navigation";
 import { motion, useAnimationControls } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 import PromoCardSkeleton from "@/components/PromoCardSkeleton";
+import { useKeenSlider } from "keen-slider/react";
+import "keen-slider/keen-slider.min.css";
 
 // Data mentah paket promo rumah sakit
 const PROMO_DATA = [
@@ -290,16 +292,55 @@ export default function PromoDetailPage() {
   const id = params.id as string;
   const numId = Number.parseInt(id, 10);
 
-  // Mengatur navigasi dot aktif dan durasi skeleton loading
   const [relatedIndex, setRelatedIndex] = useState(0);
   const [isLoadingRelated, setIsLoadingRelated] = useState(true);
-  const relatedControls = useAnimationControls();
   const [relatedItemsPerGroup, setRelatedItemsPerGroup] = useState(4);
 
-  // Menentukan jumlah card per grup berdasarkan lebar viewport layar
+  const promo = PROMO_DATA.find((item) => item.id === numId);
+  const relatedPromos = PROMO_DATA.filter((p) => p.id !== numId);
+
+  // State untuk melacak jumlah langkah indeks maksimal yang bisa digeser
+  const [totalRelatedDots, setTotalRelatedDots] = useState(0);
+
+  // --- INTEGRASI KEEN SLIDER ---
+  const [sliderRef, instanceRef] = useKeenSlider({
+    initial: 0,
+    slides: {
+      perView: relatedItemsPerGroup === 4 ? 4 : 2,
+      spacing: 0,
+    },
+    // Menggunakan maxIdx + 1 untuk menghitung jumlah dot navigasi yang sebenarnya bisa diklik
+    created(slider) {
+      if (slider.track.details) {
+        setTotalRelatedDots(slider.track.details.maxIdx + 1);
+      }
+    },
+    updated(slider) {
+      if (slider.track.details) {
+        setTotalRelatedDots(slider.track.details.maxIdx + 1);
+      }
+    },
+    slideChanged(slider) {
+      // Menggunakan rel untuk mengunci indeks dot yang aktif secara aktual
+      setRelatedIndex(slider.track.details.rel);
+    },
+  });
+
+  useEffect(() => {
+    if (instanceRef.current) {
+      instanceRef.current.update({
+        slides: {
+          perView: relatedItemsPerGroup === 4 ? 4 : 2,
+          spacing: 0,
+        },
+      });
+    }
+  }, [relatedItemsPerGroup, instanceRef]);
+
   const [hoveredRelatedPromoId, setHoveredRelatedPromoId] = useState<
     number | null
   >(null);
+
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1024) {
@@ -308,7 +349,7 @@ export default function PromoDetailPage() {
         setRelatedItemsPerGroup(2);
       }
       setRelatedIndex(0);
-      relatedControls.start({ x: "0%" });
+      if (instanceRef.current) instanceRef.current.moveToIdx(0);
     };
 
     handleResize();
@@ -322,31 +363,15 @@ export default function PromoDetailPage() {
       window.removeEventListener("resize", handleResize);
       clearTimeout(timer);
     };
-  }, [relatedControls]);
+  }, [instanceRef]);
 
-  // Mengatur pergeseran animasi ketika dot indikator di-klik
   const handleRelatedDotClick = (index: number) => {
     setRelatedIndex(index);
-    const targetTranslateX = -(index * 100);
-    relatedControls.start({
-      x: `${targetTranslateX}%`,
-      transition: {
-        type: "spring",
-        stiffness: 180,
-        damping: 24,
-        mass: 0.8,
-      },
-    });
+    if (instanceRef.current) {
+      instanceRef.current.moveToIdx(index);
+    }
   };
 
-  // Memisahkan promo utama yang aktif dengan promo relasi di bawahnya
-  const promo = PROMO_DATA.find((item) => item.id === numId);
-  const relatedPromos = PROMO_DATA.filter((p) => p.id !== numId);
-  const totalRelatedDots = Math.ceil(
-    relatedPromos.length / relatedItemsPerGroup,
-  );
-
-  // Tampilan fallback apabila ID promo tidak cocok
   if (!promo) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center px-4">
@@ -364,9 +389,7 @@ export default function PromoDetailPage() {
 
   return (
     <div className="w-full min-h-screen bg-white">
-      {/* Kontainer area utama isi konten dikunci ke max-w-[1175px] */}
       <main className="max-w-[1175px] mx-auto px-4 md:px-8">
-        {/* Kepala halaman berisi judul dan remah roti */}
         <header className="mb-8 md:mb-12 border-b border-slate-100 pb-6 pt-8 md:pt-17">
           <nav
             className="flex items-center gap-1 text-[14px] text-gray-300 mb-4"
@@ -404,7 +427,6 @@ export default function PromoDetailPage() {
           <p className="text-slate-600">{promo.shortDescription}</p>
         </header>
 
-        {/* grid gambar kiri dan deskripsi */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           <section className="flex flex-col">
             <div className="relative w-full aspect-square overflow-hidden shadow-lg bg-gray-100">
@@ -431,7 +453,6 @@ export default function PromoDetailPage() {
           </section>
         </div>
 
-        {/* Blok carousel rekomendasi produk kesehatan lainnya */}
         <section className="pt-16 pb-16 mt-12 border-t border-slate-100">
           <div className="w-full">
             <header className="mb-4">
@@ -440,22 +461,20 @@ export default function PromoDetailPage() {
               </h2>
             </header>
 
-            {/* Pembungkus luar carousel menggunakan lebar penuh mengikuti induknya */}
             <div className="w-full overflow-hidden py-1 relative">
               {isLoadingRelated ? (
                 <PromoCardSkeleton count={relatedItemsPerGroup} />
               ) : (
                 <div className="w-full overflow-hidden -mx-2 lg:-mx-3">
-                  <motion.div
-                    animate={relatedControls}
-                    initial={{ x: "0%" }}
-                    className="flex"
+                  <div
+                    ref={sliderRef}
+                    className="keen-slider flex"
                     style={{ width: "100%" }}
                   >
                     {relatedPromos.map((relatedPromo) => (
                       <div
                         key={`promo-${relatedPromo.id}`}
-                        className="w-1/2 lg:w-1/4 shrink-0 grow-0 space-y-0 p-2 lg:p-3 box-border"
+                        className="keen-slider__slide w-1/2 lg:w-1/4 shrink-0 grow-0 space-y-0 p-2 lg:p-3 box-border"
                       >
                         <article
                           className="bg-white border border-gray-300 flex flex-col h-full rounded-none overflow-hidden transition-all duration-300 origin-center"
@@ -517,12 +536,11 @@ export default function PromoDetailPage() {
                         </article>
                       </div>
                     ))}
-                  </motion.div>
+                  </div>
                 </div>
               )}
             </div>
 
-            {/* Navigasi berupa lingkaran penanda baris halaman aktif */}
             <div className="mt-8 flex items-center justify-center gap-4 mb-12 md:mb-0">
               {Array.from({ length: totalRelatedDots }).map((_, index) => {
                 const isActive = index === relatedIndex;
