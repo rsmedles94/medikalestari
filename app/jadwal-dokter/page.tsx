@@ -44,7 +44,7 @@ export default function DoctorSchedulePage() {
             Jadwal Dokter
           </h1>
           <p className="text-slate-600">
-            Lihat jadwal praktek lengkap semua dokter.
+            Lihat jadwal praktek lengkap semua Dokter Spesialis.
           </p>
         </div>
 
