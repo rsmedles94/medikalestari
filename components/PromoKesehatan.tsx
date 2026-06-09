@@ -103,79 +103,137 @@ const PROMO_DATA = [
 const AWARDS_DATA = [
   {
     id: 1,
-    src: "/images/awards/award1.png",
+    src: "/images/awards/bpjs.png",
     alt: "America's Best Nursing Homes",
   },
   {
     id: 2,
-    src: "/images/awards/award2.jpeg",
+    src: "/images/awards/bpjamsostek.png",
     alt: "Best Nursing Homes US News",
   },
-  { id: 3, src: "/images/awards/award3.png", alt: "Best Hospitals US News" },
+  {
+    id: 3,
+    src: "/images/awards/tafakurkeluarga.png",
+    alt: "Best Hospitals US News",
+  },
   {
     id: 4,
-    src: "/images/awards/award4.jpeg",
+    src: "/images/awards/jasaraharja.png",
     alt: "LGBTQ Healthcare Equality Leader",
   },
   {
     id: 5,
-    src: "/images/awards/award5.jpeg",
+    src: "/images/awards/sinarmas.png",
     alt: "Lown Institute Hospitals Index",
   },
-  { id: 6, src: "/images/awards/award6.jpeg", alt: "Healthgrades Gold Plus" },
+  {
+    id: 6,
+    src: "/images/awards/brilife.png",
+    alt: "Healthgrades Gold Plus",
+  },
   {
     id: 7,
-    src: "/images/awards/award7.jpeg",
+    src: "/images/awards/adira.png",
     alt: "Designated a Baby Friendly Hospital",
   },
   {
     id: 8,
-    src: "/images/awards/award8.png",
+    src: "/images/awards/fwd.webp",
     alt: "American College of Surgeons",
   },
   {
     id: 9,
-    src: "/images/awards/award9.png",
+    src: "/images/awards/allianz.jpeg",
     alt: "The Joint Commission Gold Seal",
   },
   {
     id: 10,
-    src: "/images/awards/award10.jpeg",
+    src: "/images/awards/fullerton.jpeg",
     alt: "America's Best Nursing Homes 2",
   },
   {
     id: 11,
-    src: "/images/awards/award11.png",
+    src: "/images/awards/aca.jpeg",
     alt: "Best Nursing Homes US News 2",
   },
   {
     id: 12,
-    src: "/images/awards/award12.webp",
+    src: "/images/awards/aa.png",
     alt: "Best Nursing Homes US News 2",
   },
   {
     id: 13,
-    src: "/images/awards/award13.webp",
+    src: "/images/awards/mega.png",
     alt: "Best Nursing Homes US News 2",
   },
   {
     id: 14,
-    src: "/images/awards/award14.webp",
+    src: "/images/awards/lippo.jpeg",
     alt: "Best Nursing Homes US News 2",
   },
   {
     id: 15,
-    src: "/images/awards/award15.webp",
+    src: "/images/awards/msig.png",
     alt: "Best Nursing Homes US News 2",
   },
   {
     id: 16,
-    src: "/images/awards/award16.webp",
+    src: "/images/awards/greateastern.jpeg",
     alt: "Best Nursing Homes US News 2",
   },
   {
     id: 17,
-    src: "/images/awards/award17.webp",
+    src: "/images/awards/prudential.jpeg",
+    alt: "Best Nursing Homes US News 2",
+  },
+  {
+    id: 18,
+    src: "/images/awards/bca.png",
+    alt: "Best Nursing Homes USs News 2",
+  },
+  {
+    id: 19,
+    src: "/images/awards/meditap.png",
+    alt: "Best Nursing Homes US News 2",
+  },
+  {
+    id: 20,
+    src: "/images/awards/pacificcross.png",
+    alt: "Best Nursing Homes US News 2",
+  },
+  {
+    id: 21,
+    src: "/images/awards/zurich.png",
+    alt: "Best Nursing Homes US News 2",
+  },
+  {
+    id: 22,
+    src: "/images/awards/aia.jpeg",
+    alt: "Best Nursing Homes US News 2",
+  },
+  {
+    id: 23,
+    src: "/images/awards/mag.png",
+    alt: "Best Nursing Homes US News 2",
+  },
+  {
+    id: 24,
+    src: "/images/awards/carlife.webp",
+    alt: "Best Nursing Homes US News 2",
+  },
+  {
+    id: 25,
+    src: "/images/awards/admedika.png",
+    alt: "Best Nursing Homes US News 2",
+  },
+  {
+    id: 26,
+    src: "/images/awards/alodokter.jpeg",
+    alt: "Best Nursing Homes US News 2",
+  },
+  {
+    id: 27,
+    src: "/images/awards/ocbc.png",
     alt: "Best Nursing Homes US News 2",
   },
 ];
@@ -423,7 +481,7 @@ const PromoKesehatan = () => {
                   type="button"
                   className="px-5 py-2.5 bg-[#e67e22] text-white text-xs font-semibold transition-colors inline-flex items-center gap-2 cursor-pointer"
                 >
-                  Selengkapnya Tentang Kami →
+                  Selengkapnya Tentang Kami ⭢
                 </button>
               </Link>
             </div>
@@ -456,7 +514,27 @@ const PromoKesehatan = () => {
 
                 {/* Halaman/Grup Kedua (Logo 10-18) */}
                 <div className="keen-slider__slide w-full shrink-0 grid grid-cols-3 gap-2 pl-1">
-                  {AWARDS_DATA.slice(9, 17).map((award) => (
+                  {AWARDS_DATA.slice(9, 18).map((award) => (
+                    <div
+                      key={award.id}
+                      className="bg-white p-2 aspect-[4/3] flex items-center justify-center shadow transition-all duration-300 hover:opacity-90"
+                    >
+                      <div className="relative w-full h-full">
+                        <Image
+                          src={award.src}
+                          alt={award.alt}
+                          fill
+                          sizes="100vw"
+                          className="object-contain"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Halaman/Grup Kedua (Logo 18-27) */}
+                <div className="keen-slider__slide w-full shrink-0 grid grid-cols-3 gap-2 pl-1">
+                  {AWARDS_DATA.slice(18, 27).map((award) => (
                     <div
                       key={award.id}
                       className="bg-white p-2 aspect-[4/3] flex items-center justify-center shadow transition-all duration-300 hover:opacity-90"

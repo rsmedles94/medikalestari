@@ -288,7 +288,7 @@ export default function TarifKamar() {
                           : "bg-[#003f88] hover:bg-[#e67e22]"
                       }`}
                     >
-                      Selengkapnya →
+                      ⭢ Selengkapnya
                     </Link>
                   </div>
                 </motion.article>
