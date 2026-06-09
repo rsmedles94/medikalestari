@@ -152,7 +152,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
     };
   }, [isMobileMenuOpen]);
 
-  // Close search dropdown when pathname changes
+  // Tutup menu dropdown pencarian saat nama jalur berubah
   useEffect(() => {
     closeSearch();
   }, [pathname, closeSearch]);
@@ -173,7 +173,12 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
       "Vaccination Services",
     ],
 
-    "Portal Pasien": ["Alur Pendaftaran", "Asuransi & Rekanan", "Tarif Kamar"],
+    "Portal Pasien": [
+      "Alur Pendaftaran",
+      "Asuransi & Rekanan",
+      "Tarif Kamar",
+      "Ketersediaan Kamar",
+    ],
 
     Profil: [
       "Karir",
@@ -281,6 +286,8 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
             else if (title === "Vaccination Services")
               itemHref = "/services/vaccination-services";
             else if (title === "Tarif Kamar") itemHref = "/tarif-kamar";
+            else if (title === "Ketersediaan Kamar")
+              itemHref = "/ketersediaan-kamar";
             else if (title === "Alur Pendaftaran")
               itemHref = "/alur-pendaftaran";
             else if (title === "Asuransi & Rekanan")
@@ -842,6 +849,8 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                                 itemHref = "/services/vaccination-services";
                               else if (subitem === "Tarif Kamar")
                                 itemHref = "/tarif-kamar";
+                              else if (subitem === "Ketersediaan Kamar")
+                                itemHref = "/ketersediaan-kamar";
                               else if (subitem === "Alur Pendaftaran")
                                 itemHref = "/alur-pendaftaran";
                               else if (subitem === "Asuransi & Rekanan")
@@ -992,7 +1001,7 @@ function AuthDropdown({ activeMenu, setActiveMenu }: AuthDropdownProps) {
   );
 }
 
-function AuthArea({ 
+function AuthArea({
   isMobile,
 
   onClick,
