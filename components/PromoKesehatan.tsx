@@ -517,7 +517,7 @@ const PromoKesehatan = () => {
                   {AWARDS_DATA.slice(9, 18).map((award) => (
                     <div
                       key={award.id}
-                      className="bg-white p-2 aspect-[4/3] flex items-center justify-center shadow transition-all duration-300 hover:opacity-90"
+                      className="bg-white p-2 aspect-[4/3] flex items-center justify-center shadow transition-all duration-300"
                     >
                       <div className="relative w-full h-full">
                         <Image
@@ -537,7 +537,7 @@ const PromoKesehatan = () => {
                   {AWARDS_DATA.slice(18, 27).map((award) => (
                     <div
                       key={award.id}
-                      className="bg-white p-2 aspect-[4/3] flex items-center justify-center shadow transition-all duration-300 hover:opacity-90"
+                      className="bg-white p-2 aspect-[4/3] flex items-center justify-center shadow transition-all duration-300"
                     >
                       <div className="relative w-full h-full">
                         <Image
