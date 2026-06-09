@@ -183,7 +183,6 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
     Profil: [
       "Karir",
       "Kontak",
-      "Rekanan Kami",
       "Syarat & Ketentuan",
       "Tentang Kami",
     ],
@@ -255,7 +254,6 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               itemHref = "/dokter/dokter-spesialis";
             else if (title === "Jadwal Dokter") itemHref = "/jadwal-dokter";
             else if (title === "Tentang Kami") itemHref = "/tentang-kami";
-            else if (title === "Rekanan Kami") itemHref = "/rekanan-kami";
             else if (title === "Karir") itemHref = "/careers";
             else if (title === "Kontak") itemHref = "/kontak-kami";
             else if (title === "Syarat & Ketentuan")
@@ -729,8 +727,6 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
                           if (subitem === "Tentang Kami")
                             itemHref = "/tentang-kami";
-                          else if (subitem === "Rekanan Kami")
-                            itemHref = "/rekanan-kami";
                           else if (subitem === "Karir") itemHref = "/careers";
                           else if (subitem === "Kontak")
                             itemHref = "/kontak-kami";
@@ -814,8 +810,6 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                                 itemHref = "/dokter/dokter-spesialis";
                               else if (subitem === "Tentang Kami")
                                 itemHref = "/tentang-kami";
-                              else if (subitem === "Rekanan Kami")
-                                itemHref = "/rekanan-kami";
                               else if (subitem === "Karir")
                                 itemHref = "/careers";
                               else if (

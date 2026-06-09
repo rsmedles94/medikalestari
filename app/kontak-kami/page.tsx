@@ -3,14 +3,7 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import {
-  ChevronRight,
-  Send,
-  Mail,
-  MapPin,
-  ArrowRight,
-  AlertCircle,
-} from "lucide-react";
+import { ChevronRight, Send, ArrowRight, AlertCircle } from "lucide-react";
 
 const FEATURES_DATA = [
   {
@@ -56,10 +49,18 @@ const KontakKami = () => {
   const contactInfo = [
     {
       id: 2,
-      title: "Korespondensi Email",
+      title: "Email",
       details: "marketing@rsmedikalestari.com",
       subtitle: "Hubungan Masyarakat & Kemitraan",
-      icon: <Mail className="w-5 h-5 text-[#003f88]" />,
+      icon: (
+        <Image
+          src="/images/icons/gmail.svg"
+          alt="Gmail Icon"
+          width={40}
+          height={40}
+          className="object-contain"
+        />
+      ),
       action: () => {
         const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=marketing@rsmedikalestari.com`;
         window.open(gmailUrl, "_blank");
@@ -67,11 +68,20 @@ const KontakKami = () => {
     },
     {
       id: 3,
-      title: "Lokasi Fisik",
-      details: "Jl. HOS Cokroaminoto No.1",
-      subtitle: "Ciledug, Tangerang",
-      icon: <MapPin className="w-5 h-5 text-[#003f88]" />,
-      action: () => window.open("https://maps.google.com", "_blank"),
+      title: "Lokasi Kami",
+      details:
+        "Jl. HOS Cokroaminoto No.56, RT.001/RW.012, Kec. Karang Tengah, Kota Tangerang, Banten 15151",
+      icon: (
+        <Image
+          src="/images/icons/gmaps.svg"
+          alt="Map Icon"
+          width={40}
+          height={40}
+          className="object-contain"
+        />
+      ),
+      action: () =>
+        window.open("https://maps.app.goo.gl/zgcaBi6iNRcpiNWFA", "_blank"),
     },
   ];
 
@@ -99,9 +109,9 @@ const KontakKami = () => {
 
   return (
     <main className="min-h-screen bg-slate-50 text-slate-700 pb-20">
-      <div className="max-w-[1175px] mx-auto px-4 md:px-8">
+      <div className="max-w-[1172px] mx-auto px-4 md:px-8">
         {/* BREADCRUMB & TITLE SECTION */}
-        <div className="pt-8 md:pt-25 pb-12">
+        <div className="pt-8 md:pt-16 pb-12">
           <nav className="flex items-center gap-1 text-[14px] font-normal text-gray-300 mb-4">
             <Link
               href="/"
@@ -132,7 +142,7 @@ const KontakKami = () => {
                 href={feat.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between p-5 bg-white rounded-none border border-transparent hover:border-gray-300 hover:shadow-md transition-all duration-200 min-h-[88px] group"
+                className="flex items-center justify-between p-5 bg-white rounded-none border border-transparent hover:shadow-md transition-all duration-200 min-h-[88px] group"
               >
                 <div className="flex items-center gap-4">
                   <div className="shrink-0 w-10 h-10 flex items-center justify-center">
@@ -174,17 +184,17 @@ const KontakKami = () => {
             <div
               key={item.id}
               onClick={item.action}
-              className="flex flex-col sm:flex-row sm:items-center justify-between p-5 bg-white rounded-none border border-transparent hover:border-gray-300 hover:shadow-md cursor-pointer transition-all duration-200 group"
+              className="flex flex-col sm:flex-row sm:items-center justify-between p-5 bg-white rounded-none border border-transparent hover:shadow-md cursor-pointer transition-all duration-200 group"
             >
               <div className="flex items-center gap-4 mb-3 sm:mb-0">
-                <div className="shrink-0 w-10 h-10 flex items-center justify-center bg-slate-50">
+                <div className="shrink-0 w-10 h-10 flex items-center justify-center">
                   {item.icon}
                 </div>
                 <div>
-                  <span className="text-xs font-bold text-[#003f88] uppercase tracking-wider block mb-0.5">
+                  <span className="text-base font-semibold text-[#003f88]  tracking-wider block mb-0.5">
                     {item.title}
                   </span>
-                  <p className="text-base font-bold text-slate-900 group-hover:text-[#003f88] transition-colors">
+                  <p className="text-base font-bold text-slate-900 transition-colors">
                     {item.details}
                   </p>
                 </div>
@@ -205,7 +215,7 @@ const KontakKami = () => {
         {/* LAYOUT DUA KOLOM SIMETRIS (50:50) */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
           {/* FORM KIRIM PESAN */}
-          <div className="bg-white rounded-none border border-transparent hover:border-gray-300 hover:shadow-md p-6 md:p-8 transition-all duration-200 flex flex-col justify-between">
+          <div className="bg-white rounded-none border border-transparent p-6 md:p-8 transition-all duration-200 flex flex-col justify-between">
             <div>
               <h2 className="text-lg font-bold text-slate-900 mb-6 pb-3 border-b border-slate-100">
                 Kirim Pesan
@@ -275,7 +285,7 @@ const KontakKami = () => {
 
                 <button
                   type="submit"
-                  className="w-full sm:w-auto bg-[#003f88] hover:bg-[#002b5c] text-white px-6 py-3 rounded-none text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer mt-2"
+                  className="w-full sm:w-auto bg-[#003f88] hover:bg-[#002b5c] text-white px-6 py-3 rounded-none text-xs font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer mt-2"
                 >
                   Kirim Pesan <Send size={13} />
                 </button>
@@ -284,10 +294,10 @@ const KontakKami = () => {
           </div>
 
           {/* DAFTAR EKSTENSI */}
-          <div className="bg-white rounded-none border border-transparent hover:border-gray-300 hover:shadow-md p-6 md:p-8 transition-all duration-200 flex flex-col justify-between">
+          <div className="bg-white rounded-none border border-transparent p-6 md:p-8 transition-all duration-200 flex flex-col justify-between mb-5 md:mb-0">
             <div>
               <h2 className="text-lg font-bold text-slate-900 mb-6 pb-3 border-b border-slate-100">
-                Daftar Hubungan Internal (Extension)
+                Silahkan hubungi nomer dibawah
               </h2>
 
               <div className="divide-y divide-slate-100">
