@@ -84,7 +84,7 @@ export default function KetersediaanKamarPage() {
               Ketersediaan Kamar
             </h1>
             <p className="text-sm text-gray-500">
-              Data diambil SIRANAP Kemenkes RI, silahkan refresh untuk melihat data ketersediaan kamar terbaru.
+              Data diambil dari website resmi SIRANAP Kemenkes RI, silahkan refresh untuk melihat data ketersediaan kamar terbaru.
             </p>
           </div>
 
