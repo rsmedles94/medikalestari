@@ -1,47 +1,59 @@
-"use client";
-
+// layout.tsx
 import "./globals.css";
-import { AuthProvider, useAuth } from "@/context/AuthProvider";
-import { SearchModalProvider } from "@/context/SearchModalContext";
 import Providers from "./providers";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import AdminSidebar from "@/components/AdminSidebar";
-import PopupDisplay from "@/components/PopupDisplay";
-import MobileBottomNavbar from "@/components/MobileBottomNavbar";
-import { PageTracker } from "@/components/PageTracker";
-import { ServiceWorkerInitializer } from "@/components/ServiceWorkerInitializer";
-import { usePathname } from "next/navigation";
+import { AuthProvider } from "@/context/AuthProvider";
+import { SearchModalProvider } from "@/context/SearchModalContext";
+// Import komponen client yang sudah kita perbaiki tadi:
+import LayoutContent from "./LayoutContentClient";
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Hospital",
-    name: "RS Medika Lestari",
-    url: "https://www.rsmedikalestari.com",
-    logo: "https://www.rsmedikalestari.com/icons/icon-512x512.png",
-    hasPart: [
-      {
-        "@type": "WebPage",
-        name: "Cari Dokter",
-        url: "https://www.rsmedikalestari.com/admin/doctors",
-      },
-      {
-        "@type": "WebPage",
-        name: "Jadwal Dokter",
-        url: "https://www.rsmedikalestari.com/admin/schedules",
-      },
-      {
-        "@type": "WebPage",
-        name: "Layanan Farmasi",
-        url: "https://www.rsmedikalestari.com/farmasi",
-      },
-    ],
-  };
+  // Sitelinks Menu 
+  const jsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "Hospital",
+      name: "RS Medika Lestari",
+      url: "https://www.rsmedikalestari.com",
+      logo: "https://www.rsmedikalestari.com/icons/icon-512x512.png",
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: "RS Medika Lestari",
+      url: "https://www.rsmedikalestari.com",
+      hasPart: [
+        {
+          "@type": "WebPage",
+          name: "Dokter Kami",
+          url: "https://www.rsmedikalestari.com/dokter",
+        },
+        {
+          "@type": "WebPage",
+          name: "Jadwal Dokter",
+          url: "https://www.rsmedikalestari.com/jadwal-dokter",
+        },
+        {
+          "@type": "WebPage",
+          name: "Kamar Perawatan",
+          url: "https://www.rsmedikalestari.com/kamar-perawatan",
+        },
+        {
+          "@type": "WebPage",
+          name: "Medical Checkup",
+          url: "https://www.rsmedikalestari.com/medical-checkup",
+        },
+        {
+          "@type": "WebPage",
+          name: "Karir",
+          url: "https://www.rsmedikalestari.com/careers",
+        },
+      ],
+    },
+  ];
 
   return (
     <html lang="id" className="h-full antialiased" suppressHydrationWarning>
@@ -57,17 +69,14 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
 
-        {/* --- PWA & iOS Settings  --- */}
+        {/* PWA & iOS Settings */}
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#ffffff" />
         <meta name="mobile-web-app-capable" content="yes" />
-
-        {/* iOS Specific */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="RS Medika Lestari" />
 
-        {/* Apple Touch Icon */}
         <link
           rel="apple-touch-icon"
           sizes="180x180"
@@ -79,13 +88,12 @@ export default function RootLayout({
           href="/icons/icon-192x192.png"
         />
 
-        {/* Viewport - Prevent zoom on input focus */}
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
         />
 
-        {/* Google Fonts - Google Sans */}
+        {/* Fonts & Icons */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
@@ -96,7 +104,6 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap"
           rel="stylesheet"
         />
-
         <link
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
@@ -109,52 +116,12 @@ export default function RootLayout({
         <Providers>
           <AuthProvider>
             <SearchModalProvider>
+              {/* Dipanggil normal tanpa eror merah */}
               <LayoutContent>{children}</LayoutContent>
             </SearchModalProvider>
           </AuthProvider>
         </Providers>
       </body>
     </html>
-  );
-}
-
-function LayoutContent({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  const pathname = usePathname();
-  const { isAuthenticated, loading: authLoading } = useAuth();
-
-  const isAdminPage = pathname?.startsWith(`/admin`);
-  const isLoginPage = pathname === `/admin/login`;
-
-  // Jika di halaman login atau sedang loading auth atau belum authenticated, gunakan bg-white
-  const shouldUseLightBackground =
-    isLoginPage || authLoading || !isAuthenticated;
-
-  return (
-    <>
-      <PageTracker pagePath={pathname || "/"} />
-      {isAdminPage ? (
-        <div
-          className={`min-h-screen ${shouldUseLightBackground ? "bg-white" : "bg-gray-100 md:ml-64"}`}
-        >
-          <AdminSidebar />
-          <div className="flex-1 flex flex-col">
-            <div className="flex-1 overflow-auto">{children}</div>
-          </div>
-        </div>
-      ) : (
-        <>
-          <Navbar />
-          <MobileBottomNavbar />
-              <ServiceWorkerInitializer debug={false} />
-          <main className="min-h-screen pt-28 md:pt-26">{children}</main>
-          <PopupDisplay />
-          <Footer />
-        </>
-      )}
-    </>
   );
 }
