@@ -279,8 +279,7 @@ const DoctorSection = ({
               }`}
             >
               {doctor.status === "cuti" && (
-                <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
-                </div>
+                <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none"></div>
               )}
               {/* Foto Dokter */}
               <div className="relative w-24 h-24 sm:w-32 sm:h-32 md:w-44 md:h-44 shrink-0 rounded-full overflow-hidden border-4 border-slate-50 group-hover:border-blue-50 transition-colors shadow-sm bg-slate-100 flex items-center justify-center">
