@@ -9,7 +9,7 @@ interface BookingFormProps {
   readonly doctorName: string;
   readonly specialty: string;
   readonly onClose: () => void;
-  readonly schedules?: Schedule[]; // optional schedules: when provided show day+time selects
+  readonly schedules?: Schedule[]; // Jadwal opsional: jika tersedia, tampilkan pilihan hari+waktu
 }
 
 export default function BookingForm({
@@ -21,7 +21,7 @@ export default function BookingForm({
   const [formData, setFormData] = useState({
     patientName: "",
     patientPhone: "",
-    preferredDate: "", // fallback when schedules not provided
+    preferredDate: "", // fallback / Alternatif jika jadwal tidak tersedia
     keluhan: "",
   });
   const [selectedDay, setSelectedDay] = useState<string>("");
@@ -38,7 +38,7 @@ export default function BookingForm({
     document.body.style.overflow = "hidden";
     document.body.style.paddingRight = `${scrollbarWidth}px`;
 
-    // Cleanup - kembalikan style saat modal ditutup
+    // Cleanup / kembalikan style saat modal ditutup
     return () => {
       document.body.style.overflow = "";
       document.body.style.paddingRight = "";
@@ -71,7 +71,7 @@ export default function BookingForm({
     const unique = Array.from(
       new Set(propsSchedules.map((s) => s.day_of_week)),
     );
-    // sort according to DAYS_ORDER
+    // Urutkan berdasarkan DAYS_ORDER
     return unique.sort((a, b) => DAYS_ORDER.indexOf(a) - DAYS_ORDER.indexOf(b));
   };
 
@@ -99,11 +99,11 @@ export default function BookingForm({
       return setError("Nomor telepon wajib diisi");
     if (!formData.keluhan.trim()) return setError("Keluhan wajib diisi");
 
-    // If schedules provided, require day and time selection
+    // Jika jadwal tersedia, wajib memilih hari dan waktu.
     if (schedules && schedules.length > 0) {
       if (!selectedDay) return setError("Pilih hari praktik dokter");
       if (!selectedTime) return setError("Pilih jam praktik dokter");
-      // set preferredDate to combined day + time
+      // Atur tanggal pilihan untuk menggabungkan hari + waktu
       setFormData((prev) => ({
         ...prev,
         preferredDate: `${selectedDay} ${selectedTime}`,
@@ -157,7 +157,7 @@ export default function BookingForm({
         exit={{ opacity: 0, scale: 0.98, y: 10 }}
         className="fixed inset-0 z-70 flex items-center justify-center p-4 pointer-events-none"
       >
-        {/* container modal utama */}
+        {/* Container Booking Form */}
         <section className="bg-white rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] w-full max-w-sm overflow-hidden pointer-events-auto border border-slate-100">
           {/* Header */}
           <header className="p-7 pb-2 flex items-start justify-between">

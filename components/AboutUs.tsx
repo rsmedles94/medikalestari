@@ -161,7 +161,7 @@ const AboutUs = () => {
                 key={item.title}
                 className="group relative h-[420px] w-full overflow-hidden bg-white shadow-xl border border-slate-100"
               >
-                {/* background image  */}
+                {/* image tentang kami  */}
                 <div
                   className="absolute inset-0 z-0 bg-cover bg-center transition-transform duration-[800ms] md:scale-105 md:group-hover:scale-100"
                   style={{ backgroundImage: `url('${item.img}')` }}

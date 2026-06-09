@@ -45,7 +45,7 @@ export default function BookingModalFloating({
     }
   }, [isOpen, doctorsData.length]);
 
-  // Scroll Lock - mencegah scroll saat modal terbuka
+  // Scroll Lock / mencegah scroll saat modal terbuka
   useEffect(() => {
     if (isOpen) {
       const scrollbarWidth =
@@ -157,20 +157,20 @@ export default function BookingModalFloating({
     }
   };
 
-  // Get unique specialties dari data dokter
+  // Dapatkan spesialisasi unik dari data dokter
   const specialties = Array.from(
     new Set(doctorsData.map((d) => d.specialty)),
   ).sort((a, b) => a.localeCompare(b));
 
-  // Get doctors berdasarkan specialty yang dipilih
+  // Dapatkan dokter berdasarkan spesialisasi yang dipilih
   const availableDoctors = formData.specialty
     ? doctorsData.filter((d) => d.specialty === formData.specialty)
     : [];
 
-  // Get time slots berdasarkan dokter dan hari yang dipilih
+  // Dapatkan slot waktu berdasarkan dokter dan hari yang dipilih
   const selectedDoctor = doctorsData.find((d) => d.name === formData.doctor);
 
-  // Get unique days dari schedule dokter yang dipilih
+  // Dapatkan hari unik dari jadwal dokter yang dipilih
   const availableDays = selectedDoctor
     ? Array.from(
         new Set(
@@ -192,7 +192,7 @@ export default function BookingModalFloating({
       })
     : [];
 
-  // Get time slots untuk hari dan dokter yang dipilih
+  // Dapatkan slot waktu untuk hari dan dokter yang dipilih
   const timeSlots =
     selectedDoctor && formData.dayOfWeek
       ? selectedDoctor.schedules

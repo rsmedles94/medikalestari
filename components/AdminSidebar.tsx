@@ -26,7 +26,7 @@ const AdminSidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  // detect mobile / desktop - ONLY RUNS ONCE
+  // detect mobile / desktop 
   useEffect(() => {
     // Check authentication first
     if (!authLoading && !isAuthenticated) {
@@ -55,7 +55,7 @@ const AdminSidebar = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // ambil session user - cukup sekali
+  // ambil session user, cukup sekali
   useEffect(() => {
     let active = true;
 

@@ -3,7 +3,7 @@
 import React, { useMemo } from "react";
 
 export default function DoctorDetailSkeleton() {
-  // Generate stable IDs
+  // Hasilkan ID yang stabil untuk elemen skeleton agar tidak berubah saat re-render
   const socialIds = useMemo(
     () => Array.from({ length: 3 }, (_, i) => `social-${i}`),
     [],
@@ -28,7 +28,7 @@ export default function DoctorDetailSkeleton() {
   return (
     <div className="min-h-screen bg-white text-[#1A1A1A]">
       <main className="max-w-7xl mx-auto px-6 py-12">
-        {/* Kontainer Grid Utama */}
+        {/* Kontainer  */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mt-6">
           {/* KOLOM KIRI: STICKY IMAGE & SOCIALS */}
           <aside className="lg:col-span-4 lg:sticky lg:top-60 flex flex-col items-center">

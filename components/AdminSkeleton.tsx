@@ -20,10 +20,10 @@ export const AdminPageSkeleton = ({
         {/* Content Area */}
         <main className="max-w-[1220px] mx-auto px-4 md:px-8 py-8">
           <div className="space-y-6">
-            {/* Button/Action Bar Skeleton */}
+            {/* ButtonBar Skeleton */}
             <div className="h-12 bg-slate-200 rounded w-40" />
 
-            {/* Table/Content Skeleton */}
+            {/* Table Skeleton */}
             <section className="bg-white rounded-lg shadow-md overflow-hidden">
               <div className="p-6 space-y-6">
                 {new Array(5).fill(0).map((_, i) => (
