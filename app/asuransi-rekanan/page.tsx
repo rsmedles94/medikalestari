@@ -1,35 +1,75 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+import { useKeenSlider } from "keen-slider/react";
+import { motion } from "framer-motion";
+import "keen-slider/keen-slider.min.css";
+
+// Data Asuransi Rekanan (27 Item)
+const ASURANSI_DATA = [
+  { id: 1, src: "/images/awards/bpjs.png", alt: "BPJS Kesehatan" },
+  { id: 2, src: "/images/awards/bpjamsostek.png", alt: "BPJAMSOSTEK" },
+  { id: 3, src: "/images/awards/tafakurkeluarga.png", alt: "Tafakur Keluarga" },
+  { id: 4, src: "/images/awards/jasaraharja.png", alt: "Jasa Raharja" },
+  { id: 5, src: "/images/awards/sinarmas.png", alt: "Asuransi Sinar Mas" },
+  { id: 6, src: "/images/awards/brilife.png", alt: "BRI Life" },
+  { id: 7, src: "/images/awards/adira.png", alt: "Adira Insurance" },
+  { id: 8, src: "/images/awards/fwd.webp", alt: "FWD Insurance" },
+  { id: 9, src: "/images/awards/allianz.jpeg", alt: "Allianz" },
+  { id: 10, src: "/images/awards/fullerton.jpeg", alt: "Fullerton Health" },
+  { id: 11, src: "/images/awards/aca.jpeg", alt: "ACA Asuransi" },
+  { id: 12, src: "/images/awards/aa.png", alt: "Asuransi Astra" },
+  { id: 13, src: "/images/awards/mega.png", alt: "PFI Mega Life" },
+  { id: 14, src: "/images/awards/lippo.jpeg", alt: "Lippo Insurance" },
+  { id: 15, src: "/images/awards/msig.png", alt: "MSIG" },
+  { id: 16, src: "/images/awards/greateastern.jpeg", alt: "Great Eastern" },
+  { id: 17, src: "/images/awards/prudential.jpeg", alt: "Prudential" },
+  { id: 18, src: "/images/awards/bca.png", alt: "BCA Insurance" },
+  { id: 19, src: "/images/awards/meditap.png", alt: "Meditap" },
+  { id: 20, src: "/images/awards/pacificcross.png", alt: "Pacific Cross" },
+  { id: 21, src: "/images/awards/zurich.png", alt: "Zurich Insurance" },
+  { id: 22, src: "/images/awards/aia.jpeg", alt: "AIA Financial" },
+  { id: 23, src: "/images/awards/mag.png", alt: "Asuransi MAG" },
+  { id: 24, src: "/images/awards/carlife.webp", alt: "Central Asia Raya" },
+  { id: 25, src: "/images/awards/admedika.png", alt: "AdMedika" },
+  { id: 26, src: "/images/awards/alodokter.jpeg", alt: "Alodokter" },
+  { id: 27, src: "/images/awards/ocbc.png", alt: "OCBC NISP" },
+];
 
 export default function AsuransiRekanPage() {
-  // Array of insurance logos
-  const asuransiList = [
-    { id: 1, name: "Asuransi 1", image: "/images/asuransi/asuransi1.png" },
-    { id: 2, name: "Asuransi 2", image: "/images/asuransi/asuransi2.png" },
-    { id: 3, name: "Asuransi 3", image: "/images/asuransi/asuransi3.png" },
-    { id: 4, name: "Asuransi 4", image: "/images/asuransi/asuransi4.png" },
-    { id: 5, name: "Asuransi 5", image: "/images/asuransi/asuransi5.png" },
-    { id: 6, name: "Asuransi 6", image: "/images/asuransi/asuransi6.png" },
-    { id: 7, name: "Asuransi 7", image: "/images/asuransi/asuransi7.png" },
-    { id: 8, name: "Asuransi 8", image: "/images/asuransi/asuransi8.png" },
-    { id: 9, name: "Asuransi 9", image: "/images/asuransi/asuransi9.png" },
-    { id: 10, name: "Asuransi 10", image: "/images/asuransi/asuransi10.png" },
-  ];
+  const [activeAwardIndex, setActiveAwardIndex] = useState(0);
+
+  // Inisialisasi Keen Slider
+  const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
+    initial: 0,
+    slideChanged(slider) {
+      setActiveAwardIndex(slider.track.details.rel);
+    },
+    loop: true,
+  });
+
+  // Hitung jumlah halaman dot (27 data / 9 per halaman = 3 halaman)
+  const totalPages = Math.ceil(ASURANSI_DATA.length / 9);
+  const awardDots = Array.from({ length: totalPages }, (_, i) => i);
+
+  // Handler klik dot slider
+  const handleAwardDotClick = (index: number) => {
+    instanceRef.current?.moveToIdx(index);
+  };
 
   return (
     <main className="min-h-screen bg-white">
-      {/* Header Section with Background Image */}
+      {/* Header Section dengan Background Image */}
       <section
         className="bg-cover bg-center bg-no-repeat text-white py-8 md:py-15 relative"
         style={{
           backgroundImage: "url(/informasi.jpg)",
         }}
       >
-        {/* Blue Overlay with 90% opacity */}
+        {/* Blue Overlay dengan 90% opacity */}
         <div className="absolute inset-0 bg-gradient-to-r from-[#003f88]/90 to-[#013a63]/90 z-0" />
 
         {/* Content */}
@@ -62,48 +102,109 @@ export default function AsuransiRekanPage() {
         </div>
       </section>
 
-      {/* Insurance Gallery Section */}
-      <section className="w-full py-12 md:py-16 pb-32 md:pb-24">
+      {/* Insurance Gallery Section - Ditambahkan latar belakang soft agar dot putih terlihat kontras */}
+      <section className="w-full py-12 md:py-16 pb-32 md:pb-24 bg-slate-100">
         <div className="max-w-[1172px] mx-auto px-4 md:px-8">
-          {/* Grid Layout - 2 columns, 5 items each side */}
-          <div className="grid grid-cols-2 gap-6 md:gap-8">
-            {/* Left Column - Items 1-5 */}
-            <div className="space-y-4 md:space-y-6">
-              {asuransiList.slice(0, 5).map((asuransi) => (
+          {/* Slider Container */}
+          <div ref={sliderRef} className="keen-slider overflow-hidden">
+            {/* Halaman/Grup Pertama (Logo 1-9) */}
+            <div className="keen-slider__slide w-full shrink-0 grid grid-cols-3 gap-2 pr-1">
+              {ASURANSI_DATA.slice(0, 9).map((award) => (
                 <div
-                  key={asuransi.id}
-                  className="relative bg-white shadow-md  overflow-hidden flex items-center justify-center p-4 h-32 md:h-40"
+                  key={award.id}
+                  className="bg-white p-2 aspect-[4/3] flex items-center justify-center shadow transition-all duration-300"
                 >
-                  <Image
-                    src={asuransi.image}
-                    alt={asuransi.name}
-                    fill
-                    className="object-contain p-3"
-                    sizes="(max-width: 768px) 40vw, 25vw"
-                    priority={asuransi.id <= 5}
-                  />
+                  <div className="relative w-full h-full">
+                    <Image
+                      src={award.src}
+                      alt={award.alt}
+                      fill
+                      sizes="(max-width: 768px) 33vw, 20vw"
+                      className="object-contain"
+                      priority={award.id <= 9}
+                    />
+                  </div>
                 </div>
               ))}
             </div>
 
-            {/* Right Column - Items 6-10 */}
-            <div className="space-y-4 md:space-y-6">
-              {asuransiList.slice(5, 10).map((asuransi) => (
+            {/* Halaman/Grup Kedua (Logo 10-18) */}
+            <div className="keen-slider__slide w-full shrink-0 grid grid-cols-3 gap-2 pl-1">
+              {ASURANSI_DATA.slice(9, 18).map((award) => (
                 <div
-                  key={asuransi.id}
-                  className="relative bg-white shadow-md overflow-hidden flex items-center justify-center p-4 h-32 md:h-40"
+                  key={award.id}
+                  className="bg-white p-2 aspect-[4/3] flex items-center justify-center shadow transition-all duration-300"
                 >
-                  <Image
-                    src={asuransi.image}
-                    alt={asuransi.name}
-                    fill
-                    className="object-contain p-3"
-                    sizes="(max-width: 768px) 40vw, 25vw"
-                    priority={asuransi.id <= 10}
-                  />
+                  <div className="relative w-full h-full">
+                    <Image
+                      src={award.src}
+                      alt={award.alt}
+                      fill
+                      sizes="(max-width: 768px) 33vw, 20vw"
+                      className="object-contain"
+                    />
+                  </div>
                 </div>
               ))}
             </div>
+
+            {/* Halaman/Grup Ketiga (Logo 18-27) */}
+            <div className="keen-slider__slide w-full shrink-0 grid grid-cols-3 gap-2 pl-1">
+              {ASURANSI_DATA.slice(18, 27).map((award) => (
+                <div
+                  key={award.id}
+                  className="bg-white p-2 aspect-[4/3] flex items-center justify-center shadow transition-all duration-300"
+                >
+                  <div className="relative w-full h-full">
+                    <Image
+                      src={award.src}
+                      alt={award.alt}
+                      fill
+                      sizes="(max-width: 768px) 33vw, 20vw"
+                      className="object-contain"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Indikator Dot Rekanan - Sesuai Permintaan Anda */}
+          <div className="mt-12 flex items-center justify-center gap-4">
+            {awardDots.map((index) => {
+              const isAwardActive = index === activeAwardIndex;
+              return (
+                <button
+                  key={index}
+                  type="button"
+                  onClick={() => handleAwardDotClick(index)}
+                  className="focus:outline-none flex items-center justify-center h-8 w-8 relative"
+                  aria-label={`Go to award page ${index + 1}`}
+                >
+                  <motion.div
+                    animate={{
+                      backgroundColor: isAwardActive ? "#ffffff" : "#3D8ECB",
+                    }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute w-5 h-5 rounded-full z-10 pointer-events-none"
+                  />
+
+                  <motion.div
+                    initial={{ scale: 0.4, opacity: 0 }}
+                    animate={{
+                      scale: isAwardActive ? 1 : 0.4,
+                      opacity: isAwardActive ? 1 : 0,
+                    }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 280,
+                      damping: 22,
+                    }}
+                    className="absolute w-9 h-9 rounded-full border-[5px] border-[#3D8ECB] bg-[#3D8ECB] z-0 origin-center pointer-events-none"
+                  />
+                </button>
+              );
+            })}
           </div>
         </div>
       </section>
