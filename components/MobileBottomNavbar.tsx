@@ -242,7 +242,7 @@ export default function MobileBottomNavbar() {
                       layoutId="liquidActiveGlow"
                       className="absolute pointer-events-none rounded-full"
                       style={{
-                        width: "92px",
+                        width: "95px",
                         height: "52px",
                         zIndex: -1,
                       }}
