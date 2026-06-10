@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useMemo, useState, useEffect, useRef } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   CalendarCheck2,
   UserRoundPlus,
@@ -25,9 +26,9 @@ export default function MobileBottomNavbar() {
 
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
-  const [displayActive, setDisplayActive] = useState(-1);
-  const rafRef = useRef<number | null>(null);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // State untuk mendeteksi apakah user sedang menekan/menggeser tombol (untuk opasitas liquid glass)
+  const [isPressing, setIsPressing] = useState(false);
 
   const navItems = useMemo<NavItem[]>(
     () => [
@@ -48,7 +49,6 @@ export default function MobileBottomNavbar() {
   useEffect(() => {
     if (pathname === "/") {
       setActiveIndex(-1);
-      setDisplayActive(-1);
       return;
     }
     const idx = navItems.findIndex(
@@ -56,38 +56,8 @@ export default function MobileBottomNavbar() {
     );
     if (idx !== -1) {
       setActiveIndex(idx);
-      setDisplayActive(idx);
     }
   }, [pathname, navItems]);
-
-  /**
-   * Two-phase activation:
-   * 1. Immediately set displayActive = -1 to wipe ALL active styling (border, bg)
-   * 2. On next RAF, commit the new active index so styles re-apply cleanly
-   */
-  const handleSetActive = (i: number) => {
-    if (i === activeIndex) return;
-
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    if (rafRef.current) cancelAnimationFrame(rafRef.current);
-
-    // Phase 1 — blank slate (removes any lingering border/bg from old item)
-    setDisplayActive(-1);
-    setActiveIndex(i);
-
-    // Phase 2 — re-apply active styles on the NEW item one frame later
-    rafRef.current = requestAnimationFrame(() => {
-      setDisplayActive(i);
-    });
-  };
-
-  useEffect(
-    () => () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    },
-    [],
-  );
 
   return (
     <>
@@ -97,144 +67,125 @@ export default function MobileBottomNavbar() {
       />
 
       <div className="fixed inset-x-0 bottom-5 z-50 flex justify-center px-4 lg:hidden">
+        {/* DOCK CONTAINER (Liquid Glass Base) */}
         <div
           className="relative w-full max-w-md h-[70px] rounded-full overflow-hidden"
           style={{
-            background: "rgba(255, 255, 255, 0.16)",
-            backdropFilter: "blur(8px)",
-            WebkitBackdropFilter: "blur(8px)",
-            border: "1px solid rgba(255, 255, 255, 0.3)",
+            background: "rgba(255, 255, 255, 0.12)",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            border: "1px solid rgba(255, 255, 255, 0.25)",
             boxShadow: `
-              0 8px 32px rgba(0, 0, 0, 0.1),
-              inset 0 1px 0 rgba(255, 255, 255, 0.5),
-              inset 0 -1px 0 rgba(255, 255, 255, 0.1),
-              inset 0 0 2px 1px rgba(255, 255, 255, 0.1)
+              0 12px 40px rgba(0, 0, 0, 0.15),
+              inset 0 1px 1px rgba(255, 255, 255, 0.4),
+              inset 0 -1px 2px rgba(0, 0, 0, 0.1)
             `,
           }}
         >
-          {/* TOP REFLECTION */}
+          {/* EFEK KILAUAN CAHAYA UTAMA DOCK */}
           <div
-            className="absolute top-0 left-8 right-8 h-px pointer-events-none"
+            className="absolute top-0 left-6 right-6 h-[1px] pointer-events-none"
             style={{
               background:
-                "linear-gradient(90deg,transparent,rgba(255,255,255,.8),transparent)",
+                "linear-gradient(90deg, transparent, rgba(255,255,255,0.7), transparent)",
+            }}
+          />
+          <div
+            className="absolute top-[1px] inset-x-0 h-[30px] pointer-events-none"
+            style={{
+              background:
+                "linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0))",
             }}
           />
 
-          {/* LEFT REFLECTION */}
-          <div
-            className="absolute top-0 left-0 w-px h-full pointer-events-none"
-            style={{
-              background:
-                "linear-gradient(180deg,rgba(255,255,255,.8),transparent,rgba(255,255,255,.3))",
-            }}
-          />
-
-          {/* GLOSS SHIMMER */}
-          <div
-            className="absolute left-5 right-5 top-1 h-8 rounded-full pointer-events-none"
-            style={{
-              background:
-                "linear-gradient(180deg,rgba(255,255,255,.4),rgba(255,255,255,0))",
-              filter: "blur(8px)",
-            }}
-          />
-
-          {/* INNER GLOW */}
-          <div
-            className="absolute inset-0 rounded-full pointer-events-none"
-            style={{ boxShadow: "inset 0 0 30px rgba(255,255,255,.15)" }}
-          />
-
-          <ul className="relative z-10 flex items-center justify-between h-full px-2">
+          {/* NAV ITEMS LIST */}
+          <ul className="relative z-10 flex items-center justify-between h-full px-3">
             {navItems.map((item, i) => {
-              const isActive = i === displayActive;
+              const isActive = i === activeIndex;
               const Icon = item.icon;
 
               const buttonContent = (
-                <span
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "2px",
-                    pointerEvents: "none",
-                    userSelect: "none",
-                  }}
-                >
-                  {/* ICON BUBBLE */}
-                  <span
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      width: isActive ? "52px" : "40px",
-                      height: isActive ? "52px" : "40px",
-                      borderRadius: "9999px",
-                      background: isActive
-                        ? "linear-gradient(160deg,  #003f88 60%, #002a5c 100%)"
-                        : "transparent",
-                      /*
-                       * CRITICAL: always keep a transparent border so the element
-                       * never loses its border-box — prevents a 1-frame "ring" flash
-                       * when old active loses its white border before new active gains it.
-                       */
-                      border: isActive
-                        ? "1.5px solid rgba(255,255,255,0.55)"
-                        : "1.5px solid transparent",
+                <div className="relative flex flex-col items-center justify-center w-full h-full">
+                  {/* LIQUID GLASS ACTIVE SLIDER INDICATOR */}
+                  <AnimatePresence>
+                    {isActive && (
+                      <motion.div
+                        layoutId="liquidActiveGlow"
+                        className="absolute pointer-events-none rounded-full"
+                        style={{
+                          width: "100px",
+                          height: "60px",
+                          zIndex: -1,
+                        }}
+                        initial={{
+                          background: "rgba(255, 255, 255, 0.4)",
+                          boxShadow: `
+                            0 4px 16px rgba(255, 255, 255, 0.2),
+                            inset 0 1px 2px rgba(255, 255, 255, 0.6),
+                            inset 0 -1px 2px rgba(0, 0, 0, 0.05)
+                          `,
+                          border: "1px solid rgba(255, 255, 255, 0.5)",
+                          backdropFilter: "blur(4px)",
+                          WebkitBackdropFilter: "blur(4px)",
+                        }}
+                        animate={{
+                          // Otomatis berubah 80% saat ditekan/di-slide, 40% saat dilepas
+                          background: isPressing
+                            ? "rgba(255, 255, 255, 0.8)"
+                            : "rgba(255, 255, 255, 0.4)",
+                          boxShadow: isPressing
+                            ? `
+                              0 6px 24px rgba(255, 255, 255, 0.4),
+                              inset 0 1px 2px rgba(255, 255, 255, 0.8),
+                              inset 0 -1px 2px rgba(0, 0, 0, 0.05)
+                            `
+                            : `
+                              0 4px 16px rgba(255, 255, 255, 0.2),
+                              inset 0 1px 2px rgba(255, 255, 255, 0.6),
+                              inset 0 -1px 2px rgba(0, 0, 0, 0.05)
+                            `,
+                        }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 380,
+                          damping: 30, // Efek lentur/snappy mirip iOS original
+                        }}
+                      >
+                        {/* Efek Refleksi Internal Tambahan di dalam Kaca Aktif */}
+                        <div
+                          className="absolute inset-x-2 top-0.5 h-[1px]"
+                          style={{
+                            background:
+                              "linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent)",
+                          }}
+                        />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
 
-                        
-
-                      transform: isActive ? "scale(1.08)" : "scale(1)",
-                      willChange:
-                        "transform, width, height, background, box-shadow",
-                      transition: [
-                        "width 380ms cubic-bezier(0.34,1.56,0.64,1)",
-                        "height 380ms cubic-bezier(0.34,1.56,0.64,1)",
-                        "transform 380ms cubic-bezier(0.34,1.56,0.64,1)",
-                        "background 300ms ease",
-                        "box-shadow 300ms ease",
-                        "border-color 300ms ease",
-                      ].join(", "),
+                  {/* ICON & LABEL WRAPPER */}
+                  <motion.div
+                    animate={{
+                      y: isActive ? -2 : 0,
+                      scale: isActive ? 1.05 : 1,
                     }}
+                    transition={{ type: "spring", stiffness: 400, damping: 28 }}
+                    className="flex flex-col items-center justify-center gap-0.5"
                   >
                     <Icon
-                      size={isActive ? 22 : 20}
-                      strokeWidth={isActive ? 2.2 : 1.8}
+                      size={22}
+                      strokeWidth={isActive ? 2.3 : 1.8}
+                      className="transition-colors duration-300"
                       style={{
-                        color: isActive ? "#ffffff" : "#64748b",
-                        transition:
-                          "color 300ms ease, width 300ms ease, height 300ms ease",
-                        display: "block",
-                        flexShrink: 0,
+                        color: isActive ? "#000000" : "#000000",
+                        filter: isActive
+                          ? "drop-shadow(0 1px 2px rgba(255,255,255,0.6))"
+                          : "none",
                       }}
                     />
-                  </span>
 
-                  {/* LABEL — fades out when active */}
-                  <span
-                    style={{
-                      fontSize: "11px",
-                      fontWeight: 500,
-                      color: "#64748b",
-                      lineHeight: 1,
-                      opacity: isActive ? 0 : 1,
-                      transform: isActive
-                        ? "translateY(-2px)"
-                        : "translateY(0)",
-                      maxHeight: isActive ? "0px" : "14px",
-                      overflow: "hidden",
-                      transition: [
-                        "opacity 250ms ease",
-                        "transform 300ms ease",
-                        "max-height 350ms cubic-bezier(0.4,0,0.2,1)",
-                      ].join(", "),
-                    }}
-                  >
-                    {item.label}
-                  </span>
-                </span>
+                  </motion.div>
+                </div>
               );
 
               const sharedLinkStyle: React.CSSProperties = {
@@ -249,18 +200,27 @@ export default function MobileBottomNavbar() {
                 cursor: "pointer",
               };
 
+              // Listener interaksi sentuhan/klik untuk pemicu perubahan opasitas
+              const touchHandlers = {
+                onMouseDown: () => setIsPressing(true),
+                onMouseUp: () => setIsPressing(false),
+                onTouchStart: () => setIsPressing(true),
+                onTouchEnd: () => setIsPressing(false),
+              };
+
               return (
                 <li
                   key={item.label}
-                  style={{ display: "flex", flex: 1, justifyContent: "center" }}
+                  className="flex flex-1 justify-center h-full items-center"
                 >
                   {item.isButton ? (
                     <button
                       type="button"
                       onClick={() => {
                         setIsBookingOpen(true);
-                        handleSetActive(i);
+                        setActiveIndex(i);
                       }}
+                      {...touchHandlers}
                       style={sharedLinkStyle}
                       className="select-none focus:outline-none focus-visible:outline-none"
                     >
@@ -274,8 +234,9 @@ export default function MobileBottomNavbar() {
                           e.preventDefault();
                           window.scrollTo({ top: 0, behavior: "smooth" });
                         }
-                        handleSetActive(i);
+                        setActiveIndex(i);
                       }}
+                      {...touchHandlers}
                       style={sharedLinkStyle}
                       className="select-none focus:outline-none focus-visible:outline-none"
                     >
