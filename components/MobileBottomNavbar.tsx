@@ -24,12 +24,12 @@ export default function MobileBottomNavbar() {
   const pathname = usePathname();
 
   const [isBookingOpen, setIsBookingOpen] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(-1);
 
   const navItems = useMemo<NavItem[]>(
     () => [
       {
-        label: "Buat Janji",
+        label: "Janji",
         href: "#booking",
         icon: CalendarCheck2,
         isButton: true,
@@ -40,7 +40,7 @@ export default function MobileBottomNavbar() {
         icon: UserRoundPlus,
       },
       {
-        label: "Jadwal Dokter",
+        label: "Jadwal",
         href: "/jadwal-dokter",
         icon: CalendarDays,
       },
@@ -59,15 +59,19 @@ export default function MobileBottomNavbar() {
   );
 
   useEffect(() => {
-    const idx = navItems.findIndex((item) => item.href === pathname);
+    if (pathname === "/") {
+      setActiveIndex(-1);
+      return;
+    }
 
-    if (idx >= 0) {
+    const idx = navItems.findIndex(
+      (item) => !item.isButton && item.href === pathname,
+    );
+
+    if (idx !== -1) {
       setActiveIndex(idx);
     }
   }, [pathname, navItems]);
-
-  // posisi notch
-  const activeX = 40 + activeIndex * 80;
 
   return (
     <>
@@ -76,115 +80,188 @@ export default function MobileBottomNavbar() {
         onClose={() => setIsBookingOpen(false)}
       />
 
-      <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden">
-        <div className="relative h-[78px]">
-          {/* SVG DOCK */}
-          <svg
-            className="absolute inset-0 w-full h-full drop-shadow-[0_-6px_20px_rgba(0,0,0,0.08)]"
-            viewBox="0 0 400 78"
-            preserveAspectRatio="none"
-          >
-            <path
-              fill="white"
-              d={`
-                M0 0
+      <div className="fixed inset-x-0 bottom-5 z-50 flex justify-center px-4 lg:hidden">
+        <div
+          className="
+            relative
+            w-full
+            max-w-md
+            h-[85px]
+            rounded-full
+            overflow-hidden
+          "
+          style={{
+            // Membuat background lebih transparan dan efek glass (blur) lebih kuat
+            background: "rgba(255, 255, 255, 0.05)",
+            backdropFilter: "blur(30px) saturate(210%)",
+            WebkitBackdropFilter: "blur(30px) saturate(210%)",
+            border: "1px solid rgba(255, 255, 255, 0.25)",
+            boxShadow: `
+              0 12px 40px rgba(0, 0, 0, 0.15),
+              inset 0 1px 0 rgba(255, 255, 255, 0.5),
+              inset 0 -1px 0 rgba(255, 255, 255, 0.05),
+              inset 0 0 12px 6px rgba(255, 255, 255, 0.15)
+            `,
+          }}
+        >
+          {/* TOP REFLECTION */}
+          <div
+            className="absolute top-0 left-8 right-8 h-px"
+            style={{
+              background:
+                "linear-gradient(90deg,transparent,rgba(255,255,255,.8),transparent)",
+            }}
+          />
 
-                H${activeX - 42}
+          {/* LEFT REFLECTION */}
+          <div
+            className="absolute top-0 left-0 w-px h-full"
+            style={{
+              background:
+                "linear-gradient(180deg,rgba(255,255,255,.8),transparent,rgba(255,255,255,.1))",
+            }}
+          />
 
-                C${activeX - 32} 0
-                 ${activeX - 28} 30
-                 ${activeX - 18} 42
-
-                C${activeX - 8} 55
-                 ${activeX + 8} 55
-                 ${activeX + 18} 42
-
-                C${activeX + 28} 30
-                 ${activeX + 32} 0
-                 ${activeX + 42} 0
-
-                H400
-                V78
-                H0
-                Z
-              `}
-            />
-          </svg>
-
-          {/* ACTIVE BUTTON */}
+          {/* BIG GLOSS */}
           <div
             className="
               absolute
-              -top-6
-              h-16
-              w-16
+              left-5
+              right-5
+              top-1
+              h-8
               rounded-full
-              bg-[#003f88]
-              shadow-[0_12px_30px_rgba(0,0,0,0.25)]
-              flex
-              items-center
-              justify-center
-              transition-all
-              duration-500
-              ease-[cubic-bezier(.34,1.56,.64,1)]
-              z-20
+              pointer-events-none
             "
             style={{
-              left: `calc(${activeIndex * 20}% + 10%)`,
-              transform: "translateX(-50%)",
+              background:
+                "linear-gradient(180deg,rgba(255,255,255,.4),rgba(255,255,255,0))",
+              filter: "blur(8px)",
             }}
-          >
-            {React.createElement(navItems[activeIndex].icon, {
-              size: 24,
-              strokeWidth: 2.5,
-              className: "text-white",
-            })}
-          </div>
+          />
 
-          {/* NAVIGATION */}
-          <ul className="relative z-10 flex h-full">
+          {/* INNER LIGHT */}
+          <div
+            className="
+              absolute
+              inset-0
+              rounded-full
+              pointer-events-none
+            "
+            style={{
+              boxShadow: "inset 0 0 30px rgba(255,255,255,.15)",
+            }}
+          />
+
+          <ul className="relative z-10 flex items-center justify-between h-full px-2">
             {navItems.map((item, i) => {
+              const isActive = i === activeIndex;
               const Icon = item.icon;
-              const active = activeIndex === i;
+
+              const buttonContent = (
+                <>
+                  <div
+                    className={`
+                      flex items-center justify-center
+                      transition-all duration-300 ease-out
+                      ${
+                        isActive
+                          ? `
+                          h-14
+                          w-14
+                          rounded-full
+                          scale-105
+                        `
+                          : `
+                          h-11
+                          w-11
+                        `
+                      }
+                    `}
+                    style={
+                      isActive
+                        ? {
+                            background:
+                              "linear-gradient(180deg, #4f8dff, #2563eb)",
+                            border: "1px solid rgba(255, 255, 255, 0.8)",
+                            boxShadow: `
+                              0 4px 20px rgba(37, 99, 235, 0.5),
+                              inset 0 1px 0 rgba(255, 255, 255, 0.6)
+                            `,
+                          }
+                        : {}
+                    }
+                  >
+                    <Icon
+                      size={isActive ? 24 : 22}
+                      strokeWidth={2}
+                      color={isActive ? "#ffffff" : "#64748b"}
+                    />
+                  </div>
+
+                  {!isActive && (
+                    <span className="mt-1 text-[11px] font-medium text-slate-500">
+                      {item.label}
+                    </span>
+                  )}
+                </>
+              );
 
               return (
-                <li
-                  key={item.label}
-                  className="flex flex-1 items-center justify-center"
-                >
+                <li key={item.label} className="flex flex-1 justify-center">
                   {item.isButton ? (
                     <button
+                      type="button"
                       onClick={() => {
-                        setActiveIndex(i);
                         setIsBookingOpen(true);
+                        setActiveIndex(i);
                       }}
-                      className="flex h-full w-full flex-col items-center justify-center"
+                      className="
+                        flex
+                        flex-col
+                        items-center
+                        justify-center
+                        h-full
+                        w-full
+                        outline-none
+                        focus:outline-none
+                        focus-visible:outline-none
+                        select-none
+                        -tap-highlight-transparent
+                      "
+                      style={{ WebkitTapHighlightColor: "transparent" }}
                     >
-                      {!active && (
-                        <>
-                          <Icon size={22} className="text-zinc-500" />
-
-                          <span className="mt-1 text-[10px] font-medium text-zinc-500">
-                            {item.label}
-                          </span>
-                        </>
-                      )}
+                      {buttonContent}
                     </button>
                   ) : (
                     <Link
                       href={item.href}
-                      onClick={() => setActiveIndex(i)}
-                      className="flex h-full w-full flex-col items-center justify-center"
+                      onClick={(e) => {
+                        if (pathname === item.href) {
+                          e.preventDefault();
+                          window.scrollTo({
+                            top: 0,
+                            behavior: "smooth",
+                          });
+                        }
+                        setActiveIndex(i);
+                      }}
+                      className="
+                        flex
+                        flex-col
+                        items-center
+                        justify-center
+                        h-full
+                        w-full
+                        outline-none
+                        focus:outline-none
+                        focus-visible:outline-none
+                        select-none
+                        -tap-highlight-transparent
+                      "
+                      style={{ WebkitTapHighlightColor: "transparent" }}
                     >
-                      {!active && (
-                        <>
-                          <Icon size={22} className="text-zinc-500" />
-
-                          <span className="mt-1 text-[10px] font-medium text-zinc-500">
-                            {item.label}
-                          </span>
-                        </>
-                      )}
+                      {buttonContent}
                     </Link>
                   )}
                 </li>
