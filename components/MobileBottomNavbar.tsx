@@ -60,7 +60,7 @@ export default function MobileBottomNavbar() {
   // ✅ FIX 1: Gunakan type assertion untuk mengatasi error WebkitBackdropFilter
   const liquidGlassStyle = {
     background: "rgba(255, 255, 255, 0.12)",
-    backdropFilter: "blur(10px)",
+    backdropFilter: "blur(5px)",
     WebkitBackdropFilter: "blur(20px)",
     border: "1px solid rgba(255, 255, 255, 0.25)",
     boxShadow: `
