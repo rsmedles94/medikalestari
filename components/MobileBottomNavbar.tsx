@@ -10,45 +10,29 @@ import {
   TicketPercent,
   Bed,
 } from "lucide-react";
+
 import BookingModalFloating from "./BookingModalFloating";
-
-// ==========================================
-// TYPES & INTERFACES
-// ==========================================
-interface LucideLikeProps extends React.SVGProps<SVGSVGElement> {
-  size?: number | string;
-  color?: string;
-  strokeWidth?: number | string;
-}
-
-type IconComponentType = React.ComponentType<LucideLikeProps>;
-type NavIcon = IconComponentType;
 
 interface NavItem {
   label: string;
   href: string;
-  icon: NavIcon;
+  icon: React.ElementType;
   isButton?: boolean;
 }
 
-// ==========================================
-// MAIN COMPONENT
-// ==========================================
-const MobileBottomNavbar = () => {
+export default function MobileBottomNavbar() {
   const pathname = usePathname();
+
   const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
 
-  // Default awal -1 supaya jika pertama load di Beranda, tidak ada kapsul biru yang menyala
-  const [activeIndex, setActiveIndex] = useState(-1);
-
-  // Urutan: Buat Janji, Dokter, Jadwal, Promo, Kamar
   const navItems = useMemo<NavItem[]>(
     () => [
       {
         label: "Buat Janji",
         href: "#booking",
-        isButton: true,
         icon: CalendarCheck2,
+        isButton: true,
       },
       {
         label: "Dokter",
@@ -56,7 +40,7 @@ const MobileBottomNavbar = () => {
         icon: UserRoundPlus,
       },
       {
-        label: "Jadwal",
+        label: "Jadwal Dokter",
         href: "/jadwal-dokter",
         icon: CalendarDays,
       },
@@ -74,101 +58,16 @@ const MobileBottomNavbar = () => {
     [],
   );
 
-  // SINKRONISASI OTOMATIS: Reset menu jika user ke Beranda via Logo Atas
-  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
-    if (pathname === "/") {
-      setActiveIndex(-1); // Matikan semua bg biru
-    } else {
-      // Jika pindah ke page lain, cari index-nya berdasarkan url yang cocok
-      const currentIdx = navItems.findIndex((item) => item.href === pathname);
-      if (currentIdx !== -1) {
-        setActiveIndex(currentIdx);
-      }
+    const idx = navItems.findIndex((item) => item.href === pathname);
+
+    if (idx >= 0) {
+      setActiveIndex(idx);
     }
   }, [pathname, navItems]);
-  /* eslint-enable react-hooks/set-state-in-effect */
 
-  const renderNavItem = (item: NavItem, i: number) => {
-    // Aktif hanya jika index state cocok DAN bukan sedang di Beranda (/)
-    const isActive = i === activeIndex && pathname !== "/";
-
-    // Flexgrow membesar untuk kapsul aktif memberikan ruang ke samping
-    const liStyles = isActive ? "flex-[2.2]" : "flex-1";
-
-    const getCapsuleStyles = () => {
-      if (isActive) {
-        // Kapsul Biru Terang dengan teks & ikon putih di dalamnya
-        return "text-white bg-[#003f88] px-4 py-2.5 rounded-xl shadow-md flex-row justify-center gap-2 w-full max-w-[150px]";
-      }
-      return "text-slate-400 bg-transparent flex-col justify-center w-auto";
-    };
-
-    const commonProps = {
-      title: item.label,
-      // Diubah ke h-20 agar area klik mengikuti tinggi dock baru
-      className:
-        "flex items-center justify-center w-full h-20 border-0 bg-transparent cursor-pointer select-none active:scale-95 transition-transform duration-150",
-    };
-
-    const IconComponent = item.icon;
-
-    const content = (
-      <div
-        className={`flex items-center mx-auto transition-all duration-300 ease-in-out ${getCapsuleStyles()}`}
-      >
-        {/* Mengubah h-5 w-5 menjadi h-6 w-6 agar container pembungkus ikon tidak memotong ikon yang membesar */}
-        <span className="flex items-center justify-center h-6 w-6 shrink-0 transition-transform duration-300">
-          <IconComponent
-            size={22} // Diubah dari 19 ke 22 (Ikon lebih besar)
-            strokeWidth={isActive ? 2.4 : 1.8}
-            color={isActive ? "#ffffff" : "#94a3b8"}
-          />
-        </span>
-
-        {/* Teks label hanya dirender jika menu berstatus AKTIF */}
-        {isActive && (
-          <span className="text-[12px] font-bold tracking-wide leading-none text-center block whitespace-nowrap animate-fadeIn">
-            {item.label}
-          </span>
-        )}
-      </div>
-    );
-
-    return (
-      <li
-        key={item.label}
-        className={`h-full flex justify-center items-center transition-all duration-300 ease-in-out ${liStyles}`}
-      >
-        {item.isButton ? (
-          <button
-            type="button"
-            onClick={() => {
-              setIsBookingOpen(true);
-              setActiveIndex(i);
-            }}
-            {...commonProps}
-          >
-            {content}
-          </button>
-        ) : (
-          <Link
-            href={item.href}
-            onClick={(e) => {
-              if (pathname === item.href) {
-                e.preventDefault();
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }
-              setActiveIndex(i);
-            }}
-            {...commonProps}
-          >
-            {content}
-          </Link>
-        )}
-      </li>
-    );
-  };
+  // posisi notch
+  const activeX = 40 + activeIndex * 80;
 
   return (
     <>
@@ -178,19 +77,122 @@ const MobileBottomNavbar = () => {
       />
 
       <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden">
-        {/* Dock Bar Putih */}
-        <div
-          className="relative w-full overflow-hidden bg-white border-t border-slate-100 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] px-3"
-          style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
-        >
-          {/* Diubah ke h-20 untuk meninggikan background putih */}
-          <ul className="relative z-10 flex m-0 list-none p-0 w-full h-20 items-center justify-between">
-            {navItems.map((item, i) => renderNavItem(item, i))}
+        <div className="relative h-[78px]">
+          {/* SVG DOCK */}
+          <svg
+            className="absolute inset-0 w-full h-full drop-shadow-[0_-6px_20px_rgba(0,0,0,0.08)]"
+            viewBox="0 0 400 78"
+            preserveAspectRatio="none"
+          >
+            <path
+              fill="white"
+              d={`
+                M0 0
+
+                H${activeX - 42}
+
+                C${activeX - 32} 0
+                 ${activeX - 28} 30
+                 ${activeX - 18} 42
+
+                C${activeX - 8} 55
+                 ${activeX + 8} 55
+                 ${activeX + 18} 42
+
+                C${activeX + 28} 30
+                 ${activeX + 32} 0
+                 ${activeX + 42} 0
+
+                H400
+                V78
+                H0
+                Z
+              `}
+            />
+          </svg>
+
+          {/* ACTIVE BUTTON */}
+          <div
+            className="
+              absolute
+              -top-6
+              h-16
+              w-16
+              rounded-full
+              bg-[#003f88]
+              shadow-[0_12px_30px_rgba(0,0,0,0.25)]
+              flex
+              items-center
+              justify-center
+              transition-all
+              duration-500
+              ease-[cubic-bezier(.34,1.56,.64,1)]
+              z-20
+            "
+            style={{
+              left: `calc(${activeIndex * 20}% + 10%)`,
+              transform: "translateX(-50%)",
+            }}
+          >
+            {React.createElement(navItems[activeIndex].icon, {
+              size: 24,
+              strokeWidth: 2.5,
+              className: "text-white",
+            })}
+          </div>
+
+          {/* NAVIGATION */}
+          <ul className="relative z-10 flex h-full">
+            {navItems.map((item, i) => {
+              const Icon = item.icon;
+              const active = activeIndex === i;
+
+              return (
+                <li
+                  key={item.label}
+                  className="flex flex-1 items-center justify-center"
+                >
+                  {item.isButton ? (
+                    <button
+                      onClick={() => {
+                        setActiveIndex(i);
+                        setIsBookingOpen(true);
+                      }}
+                      className="flex h-full w-full flex-col items-center justify-center"
+                    >
+                      {!active && (
+                        <>
+                          <Icon size={22} className="text-zinc-500" />
+
+                          <span className="mt-1 text-[10px] font-medium text-zinc-500">
+                            {item.label}
+                          </span>
+                        </>
+                      )}
+                    </button>
+                  ) : (
+                    <Link
+                      href={item.href}
+                      onClick={() => setActiveIndex(i)}
+                      className="flex h-full w-full flex-col items-center justify-center"
+                    >
+                      {!active && (
+                        <>
+                          <Icon size={22} className="text-zinc-500" />
+
+                          <span className="mt-1 text-[10px] font-medium text-zinc-500">
+                            {item.label}
+                          </span>
+                        </>
+                      )}
+                    </Link>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         </div>
       </div>
     </>
   );
-};
-
-export default MobileBottomNavbar;
+}
