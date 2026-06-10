@@ -127,7 +127,7 @@ export default function MobileBottomNavbar() {
     boxShadow: `
       0 12px 40px rgba(0, 0, 0, 0.15),
       inset 0 1px 1px rgba(255, 255, 255, 0.4),
-      inset 0 -1px 2px rgba(255, 255, 255, 0.1)
+      inset 0 -1px 2px rgba(0, 0, 0, 0.1)
     `,
     willChange: "transform, opacity",
   } as React.CSSProperties & { WebkitBackdropFilter: string };
@@ -145,16 +145,16 @@ export default function MobileBottomNavbar() {
         {isActionMenuOpen && isVisible && (
           <motion.div
             ref={actionMenuRef}
-            initial={{ opacity: 0, y: 15, x: "-50%", scale: 0.92, filter: "blur(4px)" }}
-            animate={{ opacity: 1, y: 0, x: "-50%", scale: 1, filter: "blur(0px)" }}
-            exit={{ opacity: 0, y: 20, x: "-50%", scale: 0.92, filter: "blur(4px)" }}
+            initial={{ opacity: 0, y: 15, scale: 0.92, filter: "blur(4px)" }}
+            animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+            exit={{ opacity: 0, y: 20, scale: 0.92, filter: "blur(4px)" }}
             transition={{
               type: "spring",
               mass: 0.8,
               stiffness: 350,
               damping: 25,
             }}
-            className="fixed left-1/2 bottom-[95px] z-50 w-[220px] rounded-2xl overflow-hidden p-1.5 flex flex-col gap-1"
+            className="fixed left-0 right-0 bottom-[95px] z-50 mx-auto w-[220px] rounded-2xl overflow-hidden p-1.5 flex flex-col gap-1"
             style={liquidGlassStyle}
           >
             {/* Kilauan reflektif internal untuk sub-menu pop up */}
@@ -200,15 +200,9 @@ export default function MobileBottomNavbar() {
 
       {/* DOCK UTAMA CONTAINER */}
       <motion.div
-        className="fixed left-1/2 bottom-5 z-50 w-[calc(100%-2rem)] max-w-md h-[60px] rounded-full lg:hidden overflow-hidden"
+        className="fixed inset-x-4 bottom-5 z-50 mx-auto w-full max-w-md h-[60px] rounded-full lg:hidden overflow-hidden"
         style={liquidGlassStyle}
-        initial={{
-          x: "-50%",
-          y: 0,
-          opacity: 1
-        }}
         animate={{
-          x: "-50%",
           y: isVisible ? 0 : 120,
           opacity: isVisible ? 1 : 0,
         }}
@@ -246,12 +240,10 @@ export default function MobileBottomNavbar() {
                   {isActive && (
                     <motion.div
                       layoutId="liquidActiveGlow"
-                      className="absolute pointer-events-none rounded-full inset-y-1" // Hapus inset-x-1
+                      className="absolute pointer-events-none rounded-full"
                       style={{
-                        width: "100px", // Kembalikan ke 100px agar tidak mengecil
+                        width: "100px",
                         height: "51px",
-                        left: "50%", // Set titik awal dari tengah kolom menu
-                        x: "-50%", // Tarik mundur 50% agar posisi background pas di tengah ikon
                         zIndex: -1,
                       }}
                       initial={{
