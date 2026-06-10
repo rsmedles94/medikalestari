@@ -200,7 +200,7 @@ export default function MobileBottomNavbar() {
 
       {/* DOCK UTAMA CONTAINER */}
       <motion.div
-        className="fixed inset-x-4 bottom-5 z-50 mx-auto w-full max-w-md h-[60px] rounded-full lg:hidden overflow-hidden"
+        className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 h-[60px] w-[calc(100vw-32px)] max-w-md rounded-full lg:hidden overflow-hidden"
         style={liquidGlassStyle}
         animate={{
           y: isVisible ? 0 : 120,
