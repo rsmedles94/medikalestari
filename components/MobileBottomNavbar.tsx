@@ -145,10 +145,15 @@ export default function MobileBottomNavbar() {
         {isActionMenuOpen && isVisible && (
           <motion.div
             ref={actionMenuRef}
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 15, scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 400, damping: 28 }}
+            initial={{ opacity: 0, y: 15, scale: 0.92, filter: "blur(4px)" }}
+            animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+            exit={{ opacity: 0, y: 20, scale: 0.92, filter: "blur(4px)" }}
+            transition={{
+              type: "spring",
+              mass: 0.8,
+              stiffness: 350,
+              damping: 25,
+            }}
             className="fixed left-0 right-0 bottom-[95px] z-50 mx-auto w-[220px] rounded-2xl overflow-hidden p-1.5 flex flex-col gap-1"
             style={liquidGlassStyle}
           >
@@ -162,7 +167,7 @@ export default function MobileBottomNavbar() {
                 setIsActionMenuOpen(false);
                 setIsBookingOpen(true);
               }}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors active:bg-black/10 text-black text-sm font-medium text-left outline-none"
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 active:bg-black/10 text-black text-sm font-medium text-left outline-none hover:bg-white/10"
               style={{ WebkitTapHighlightColor: "transparent" }}
             >
               <CalendarCheck2
@@ -183,7 +188,7 @@ export default function MobileBottomNavbar() {
                 setIsActionMenuOpen(false);
                 router.push("/jadwal-dokter");
               }}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[45px] transition-colors active:bg-black/10 text-black text-sm font-medium text-left outline-none"
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 active:bg-black/10 text-black text-sm font-medium text-left outline-none hover:bg-white/10"
               style={{ WebkitTapHighlightColor: "transparent" }}
             >
               <CalendarDays size={18} strokeWidth={2} className="text-black" />
@@ -247,7 +252,7 @@ export default function MobileBottomNavbar() {
                       animate={{
                         background: isPressing
                           ? "rgba(0, 0, 0, 0.15)"
-                          : "rgba(0, 0, 0, 0.06)",
+                          : "rgba(0, 0, 0, 0.08)",
                       }}
                       exit={{
                         opacity: 0,
@@ -264,21 +269,46 @@ export default function MobileBottomNavbar() {
                 <motion.div
                   animate={{
                     y: isActive ? -2 : 0,
+                    scale: isActive ? 1.08 : 1,
                   }}
-                  transition={{ type: "spring", stiffness: 400, damping: 28 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 22 }}
                   className="flex flex-col items-center justify-center"
                 >
-                  <Icon
-                    size={22}
-                    strokeWidth={isActive ? 2.5 : 1.8}
-                    // Mengubah fill menjadi warna hitam penuh jika item sedang aktif (Fill/Solid Effect)
-                    fill={isActive ? "#000000" : "none"}
-                    className="transition-all duration-300"
-                    style={{
-                      color: "#000000",
-                      filter: "none",
-                    }}
-                  />
+                  {item.isButton ? (
+                    /* Animasi khusus rotasi untuk tombol Plus (+) saat menu terbuka */
+                    <motion.div
+                      animate={{ rotate: isActionMenuOpen ? 135 : 0 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 20,
+                      }}
+                    >
+                      <Icon
+                        size={22}
+                        strokeWidth={2.5}
+                        className="text-black transition-all duration-300"
+                        style={{ filter: "none" }}
+                      />
+                    </motion.div>
+                  ) : (
+                    <Icon
+                      size={22}
+                      strokeWidth={isActive ? 2.5 : 1.8}
+                      fill={
+                        isActive &&
+                        (item.label === "Beranda" || item.label === "Kamar")
+                          ? "#000000"
+                          : "none"
+                      }
+                      className="transition-all duration-300 text-black"
+                      style={{
+                        filter: isActive
+                          ? "drop-shadow(0px 1px 4px rgba(0,0,0,0.15))"
+                          : "none",
+                      }}
+                    />
+                  )}
                 </motion.div>
               </div>
             );
