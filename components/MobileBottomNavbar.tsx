@@ -98,7 +98,7 @@ export default function MobileBottomNavbar() {
 
       <div className="fixed inset-x-0 bottom-5 z-50 flex justify-center px-4 lg:hidden">
         <div
-          className="relative w-full max-w-md h-[85px] rounded-full overflow-hidden"
+          className="relative w-full max-w-md h-[70px] rounded-full overflow-hidden"
           style={{
             background: "rgba(255, 255, 255, 0.16)",
             backdropFilter: "blur(8px)",
