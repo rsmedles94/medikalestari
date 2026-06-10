@@ -85,7 +85,7 @@ const FooterContent = () => (
         </div>
       </div>
 
-      {/* --- MENU GRID  --- */}
+      {/* --- Menu Grid  --- */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-8 gap-x-12">
         {menuItems.map((item) => (
           <Link
@@ -99,7 +99,7 @@ const FooterContent = () => (
       </div>
     </div>
 
-    {/* --- BOTTOM BAR  --- */}
+    {/* --- Bar Bawah  --- */}
     <div className="bg-white text-[#003f88] py-6 border-t">
       <div className="max-w-[1200px] mx-auto px-8 md:px-16 flex flex-col md:flex-row justify-between items-center gap-8">
         {/* Copyright */}
