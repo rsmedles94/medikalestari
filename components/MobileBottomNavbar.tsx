@@ -127,7 +127,7 @@ export default function MobileBottomNavbar() {
     boxShadow: `
       0 12px 40px rgba(0, 0, 0, 0.15),
       inset 0 1px 1px rgba(255, 255, 255, 0.4),
-      inset 0 -1px 2px rgba(0, 0, 0, 0.1)
+      inset 0 -1px 2px rgba(255, 255, 255, 0.1)
     `,
     willChange: "transform, opacity",
   } as React.CSSProperties & { WebkitBackdropFilter: string };
