@@ -121,7 +121,7 @@ export default function MobileBottomNavbar() {
   // Style Dock Utama & Sub-menu: Sangat Glassmorphism & Reflektif Mewah
   const liquidGlassStyle = {
     background: "rgba(255, 255, 255, 0.12)",
-    backdropFilter: "blur(20px)",
+    backdropFilter: "blur(2px)",
     WebkitBackdropFilter: "blur(20px)",
     border: "1px solid rgba(255, 255, 255, 0.25)",
     boxShadow: `
@@ -242,7 +242,7 @@ export default function MobileBottomNavbar() {
                       layoutId="liquidActiveGlow"
                       className="absolute pointer-events-none rounded-full"
                       style={{
-                        width: "97px",
+                        width: "90px",
                         height: "51px",
                         zIndex: -1,
                       }}
