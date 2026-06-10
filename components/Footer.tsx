@@ -24,7 +24,7 @@ const socialMedia = [
         fill="currentColor"
         className="w-5 h-5"
       >
-        <path d="M12.53.02C13.84 0 15.14.01 16.44 0c.08 1.53.82 2.82 1.99 3.67.7.51 1.49.85 2.32 1.01V7.9c-1.39-.17-2.66-.78-3.69-1.74-.01 2.89-.01 5.79-.02 8.68a6.12 6.12 0 0 1-5.32 6.11A6.133 6.133 0 0 1 5.3 16.2c.42-3.37 3.3-5.94 6.7-5.86.01 1.17.01 2.34.01 3.51-.43-.13-.88-.17-1.33-.11-1.46.2-2.58 1.4-2.61 2.88-.04 1.76 1.39 3.19 3.15 3.16 1.63-.03 2.87-1.31 2.92-2.94.02-2.31.01-4.62.01-6.93V.02h.38z" />
+        <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25h-3.13v12.98a2.8 2.8 0 1 1-2.8-2.8c.31 0 .61.05.89.15V9.59a6.03 6.03 0 0 0-.89-.07A5.94 5.94 0 1 0 15.82 15V8.39a8.03 8.03 0 0 0 4.69 1.5V6.69h-.92z" />
       </svg>
     ),
   },
@@ -72,14 +72,15 @@ const FooterContent = () => (
           />
         </div>
         {/* Deskripsi Atas */}
-        <div className="max-w-2xl text-lg md:text-xl leading-relaxed font-light opacity-90">
+        <div className="max-w-2xl text-lg md:text-xl leading-relaxed font-light opacity-90 text-justify">
           <p className="mb-4">
-            RS Medika Lestari adalah sistem layanan kesehatan terintegrasi yang
-            berdedikasi untuk memberikan perawatan terbaik.
+            RS Medika Lestari bermula dari sebuah klinik pada tahun 1994, kini telah
+            berkembang menjadi fasilitas kesehatan terakreditasi Paripurna
+            (KARS) yang menyediakan layanan medis lengkap dan modern.
           </p>
           <p>
-            Kami menyediakan layanan rawat inap, rawat jalan, dan gawat darurat
-            berkualitas tinggi untuk menjamin kesehatan masyarakat.
+            Berlokasi di Jl. HOS Cokroaminoto No.56, RT.001/RW.012, Kec. Karang Tengah, Kota
+            Tangerang, Banten 15151
           </p>
         </div>
       </div>

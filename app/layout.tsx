@@ -62,7 +62,9 @@ export default function RootLayout({
         <title>RS Medika Lestari</title>
         <meta
           name="description"
-          content="RS Medika Lestari menyediakan layanan kesehatan profesional, farmasi 24 jam, dan tim dokter spesialis berpengalaman untuk kesembuhan anda dan keluarga."
+          content="RS Medika Lestari bermula dari sebuah klinik pada tahun 1994, kini telah
+            berkembang menjadi fasilitas kesehatan terakreditasi Paripurna
+            (KARS) yang menyediakan layanan medis lengkap dan modern."
         />
         <script
           type="application/ld+json"
