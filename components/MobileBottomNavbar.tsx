@@ -1,15 +1,17 @@
 "use client";
 
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  CalendarCheck2,
+  Home,
   UserRoundPlus,
-  CalendarDays,
+  Plus,
   TicketPercent,
   Bed,
+  CalendarCheck2,
+  CalendarDays,
 } from "lucide-react";
 
 import BookingModalFloating from "./BookingModalFloating";
@@ -23,43 +25,73 @@ interface NavItem {
 
 export default function MobileBottomNavbar() {
   const pathname = usePathname();
+  const router = useRouter();
 
   const [isBookingOpen, setIsBookingOpen] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(-1);
+  const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [isPressing, setIsPressing] = useState(false);
 
   // State untuk melacak visibilitas navbar berdasarkan scroll
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
+  const actionMenuRef = useRef<HTMLDivElement>(null);
+
+  // Susunan 5 item simetris dengan tombol Plus (+) tepat berada di tengah (index 2)
   const navItems = useMemo<NavItem[]>(
     () => [
+      { label: "Beranda", href: "/", icon: Home },
+      { label: "Dokter", href: "/dokter", icon: UserRoundPlus },
       {
-        label: "Janji",
-        href: "#booking",
-        icon: CalendarCheck2,
+        label: "Tambah",
+        href: "#action-menu",
+        icon: Plus,
         isButton: true,
       },
-      { label: "Dokter", href: "/dokter", icon: UserRoundPlus },
-      { label: "Jadwal", href: "/jadwal-dokter", icon: CalendarDays },
       { label: "Promo", href: "/promo", icon: TicketPercent },
       { label: "Kamar", href: "/services/kamar-perawatan", icon: Bed },
     ],
     [],
   );
 
+  // Sinkronisasi index aktif berdasarkan URL saat ini
   useEffect(() => {
     if (pathname === "/") {
-      setActiveIndex(-1);
+      setActiveIndex(0);
       return;
     }
+
+    // Jika sedang berada di halaman jadwal dokter, set index aktif ke tombol tengah (+)
+    if (pathname === "/jadwal-dokter") {
+      setActiveIndex(2);
+      return;
+    }
+
     const idx = navItems.findIndex(
       (item) => !item.isButton && item.href === pathname,
     );
+
     if (idx !== -1) {
       setActiveIndex(idx);
     }
   }, [pathname, navItems]);
+
+  // Sembunyikan sub-menu jika user mengklik area di luar menu tersebut
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        actionMenuRef.current &&
+        !actionMenuRef.current.contains(event.target as Node)
+      ) {
+        setIsActionMenuOpen(false);
+      }
+    };
+    if (isActionMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isActionMenuOpen]);
 
   // Logika Scroll: Kebawah = HIDE, Keatas = SHOW
   useEffect(() => {
@@ -74,6 +106,7 @@ export default function MobileBottomNavbar() {
 
       if (currentScrollY > lastScrollY) {
         setIsVisible(false); // Scroll kebawah -> Sembunyi
+        setIsActionMenuOpen(false); // Tutup juga sub-menu jika terbuka
       } else if (currentScrollY < lastScrollY) {
         setIsVisible(true); // Scroll keatas -> Muncul
       }
@@ -85,7 +118,7 @@ export default function MobileBottomNavbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
-  // Style Dock Utama: Sangat Glassmorphism & Reflektif Mewah
+  // Style Dock Utama & Sub-menu: Sangat Glassmorphism & Reflektif Mewah
   const liquidGlassStyle = {
     background: "rgba(255, 255, 255, 0.12)",
     backdropFilter: "blur(20px)",
@@ -96,22 +129,76 @@ export default function MobileBottomNavbar() {
       inset 0 1px 1px rgba(255, 255, 255, 0.4),
       inset 0 -1px 2px rgba(0, 0, 0, 0.1)
     `,
-    willChange: "transform, opacity", // Mengunci performa GPU agar blur tidak patah/berubah saat scroll
+    willChange: "transform, opacity",
   } as React.CSSProperties & { WebkitBackdropFilter: string };
 
   return (
     <>
+      {/* Modal Utama untuk Janji Temu */}
       <BookingModalFloating
         isOpen={isBookingOpen}
         onClose={() => setIsBookingOpen(false)}
       />
 
-      {/* Wrapper animasi hide/show smooth */}
+      {/* POP UP SUB-MENU (JANJI TEMU & JADWAL) */}
+      <AnimatePresence>
+        {isActionMenuOpen && isVisible && (
+          <motion.div
+            ref={actionMenuRef}
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 15, scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 28 }}
+            className="fixed left-0 right-0 bottom-[95px] z-50 mx-auto w-[220px] rounded-2xl overflow-hidden p-1.5 flex flex-col gap-1"
+            style={liquidGlassStyle}
+          >
+            {/* Kilauan reflektif internal untuk sub-menu pop up */}
+            <div className="absolute top-0 inset-x-0 h-[15px] pointer-events-none bg-gradient-to-b from-white/10 to-transparent" />
+
+            {/* Pilihan 1: Janji Temu */}
+            <button
+              type="button"
+              onClick={() => {
+                setIsActionMenuOpen(false);
+                setIsBookingOpen(true);
+              }}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors active:bg-black/10 text-black text-sm font-medium text-left outline-none"
+              style={{ WebkitTapHighlightColor: "transparent" }}
+            >
+              <CalendarCheck2
+                size={18}
+                strokeWidth={2}
+                className="text-black"
+              />
+              <span>Janji Temu</span>
+            </button>
+
+            {/* Garis Pembatas Tipis Glass */}
+            <div className="h-[1px] w-full bg-white/20" />
+
+            {/* Pilihan 2: Jadwal Dokter */}
+            <button
+              type="button"
+              onClick={() => {
+                setIsActionMenuOpen(false);
+                router.push("/jadwal-dokter");
+              }}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors active:bg-black/10 text-black text-sm font-medium text-left outline-none"
+              style={{ WebkitTapHighlightColor: "transparent" }}
+            >
+              <CalendarDays size={18} strokeWidth={2} className="text-black" />
+              <span>Jadwal Dokter</span>
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* DOCK UTAMA CONTAINER */}
       <motion.div
         className="fixed inset-x-4 bottom-5 z-50 mx-auto w-full max-w-md h-[60px] rounded-full lg:hidden overflow-hidden"
         style={liquidGlassStyle}
         animate={{
-          y: isVisible ? 0 : 120, // Diturunkan melewati batas layar saat sembunyi
+          y: isVisible ? 0 : 120,
           opacity: isVisible ? 1 : 0,
         }}
         transition={{
@@ -150,15 +237,14 @@ export default function MobileBottomNavbar() {
                       layoutId="liquidActiveGlow"
                       className="absolute pointer-events-none rounded-full"
                       style={{
-                        width: "100px", // Lebar dikembalikan sesuai kode asli Anda
-                        height: "51px", // Tinggi dikembalikan sesuai kode asli Anda
+                        width: "100px",
+                        height: "51px",
                         zIndex: -1,
                       }}
                       initial={{
                         background: "rgba(0, 0, 0, 0.05)",
                       }}
                       animate={{
-                        // Background Flat Gelap Tipis (Tanpa bayangan emboss internal/eksternal)
                         background: isPressing
                           ? "rgba(0, 0, 0, 0.15)"
                           : "rgba(0, 0, 0, 0.06)",
@@ -184,11 +270,13 @@ export default function MobileBottomNavbar() {
                 >
                   <Icon
                     size={22}
-                    strokeWidth={isActive ? 2.3 : 1.8}
-                    className="transition-colors duration-300"
+                    strokeWidth={isActive ? 2.5 : 1.8}
+                    // Mengubah fill menjadi warna hitam penuh jika item sedang aktif (Fill/Solid Effect)
+                    fill={isActive ? "#000000" : "none"}
+                    className="transition-all duration-300"
                     style={{
                       color: "#000000",
-                      filter: "none", // Menjamin icon flat bersih tanpa drop-shadow/emboss putih
+                      filter: "none",
                     }}
                   />
                 </motion.div>
@@ -223,8 +311,7 @@ export default function MobileBottomNavbar() {
                   <button
                     type="button"
                     onClick={() => {
-                      setIsBookingOpen(true);
-                      setActiveIndex(i);
+                      setIsActionMenuOpen((prev) => !prev);
                     }}
                     {...touchHandlers}
                     style={sharedLinkStyle}
@@ -240,7 +327,7 @@ export default function MobileBottomNavbar() {
                         e.preventDefault();
                         window.scrollTo({ top: 0, behavior: "smooth" });
                       }
-                      setActiveIndex(i);
+                      setIsActionMenuOpen(false);
                     }}
                     {...touchHandlers}
                     style={sharedLinkStyle}
