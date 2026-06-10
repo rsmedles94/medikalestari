@@ -200,7 +200,7 @@ export default function MobileBottomNavbar() {
 
       {/* DOCK UTAMA CONTAINER */}
       <motion.div
-        className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 h-[60px] w-[calc(100vw-32px)] max-w-md rounded-full lg:hidden overflow-hidden"
+        className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 h-[65px] w-[calc(100vw-32px)] max-w-md rounded-full lg:hidden overflow-hidden"
         style={liquidGlassStyle}
         animate={{
           y: isVisible ? 0 : 120,
@@ -242,8 +242,8 @@ export default function MobileBottomNavbar() {
                       layoutId="liquidActiveGlow"
                       className="absolute pointer-events-none rounded-full"
                       style={{
-                        width: "90px",
-                        height: "51px",
+                        width: "92px",
+                        height: "52px",
                         zIndex: -1,
                       }}
                       initial={{
@@ -285,7 +285,7 @@ export default function MobileBottomNavbar() {
                       }}
                     >
                       <Icon
-                        size={22}
+                        size={28}
                         strokeWidth={2.5}
                         className="text-black transition-all duration-300"
                         style={{ filter: "none" }}
@@ -293,7 +293,7 @@ export default function MobileBottomNavbar() {
                     </motion.div>
                   ) : (
                     <Icon
-                      size={22}
+                      size={28}
                       strokeWidth={isActive ? 2.5 : 1.8}
                       fill={
                         isActive &&
