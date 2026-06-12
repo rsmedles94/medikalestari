@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import { BedDouble, Book, BookAlert, ChevronRight } from "lucide-react";
 import {
   Ambulance,
   Pill,
@@ -29,7 +29,7 @@ interface ServiceItem {
 const ServicesMenu: React.FC = () => {
   const services: ServiceItem[] = [
     {
-      label: "Emergency Services",
+      label: "Layanan Gawat Darurat",
       icon: Ambulance,
       href: "/services/emergency",
     },
@@ -37,18 +37,13 @@ const ServicesMenu: React.FC = () => {
     { label: "Fisioterapi", icon: Activity, href: "/services/fisioterapi" },
     {
       label: "Kamar Perawatan",
-      icon: Hotel,
+      icon: BedDouble,
       href: "/services/kamar-perawatan",
     },
     {
-      label: "Laboratory Testing",
-      icon: Microscope,
-      href: "/services/laboratory-testing",
-    },
-    {
-      label: "Layanan Gawat Darurat",
-      icon: Siren,
-      href: "/services/layanan-gawat-darurat",
+      label: "Asuransi & Rekanan",
+      icon: Book,
+      href: "/asuransi-rekanan",
     },
     {
       label: "Medical Checkup",
@@ -58,16 +53,6 @@ const ServicesMenu: React.FC = () => {
     { label: "Poli Klinik", icon: Stethoscope, href: "/services/poli-klinik" },
     { label: "Radiologi", icon: Radio, href: "/services/radiologi" },
     { label: "Tarif Kamar", icon: Bed, href: "/tarif-kamar" },
-    {
-      label: "Rehabilitasi Medik",
-      icon: Dumbbell,
-      href: "/services/rehabilitasi-medik",
-    },
-    {
-      label: "Vaksinasi & Imunisasi",
-      icon: Syringe,
-      href: "/services/vaccination-services",
-    },
   ];
 
   const containerVariants: Variants = {

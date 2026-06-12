@@ -169,8 +169,6 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
       "Poli Klinik",
       "Radiologi",
       "Rawat Inap",
-      "Rehabilitasi Medik",
-      "Vaccination Services",
     ],
 
     "Portal Pasien": [
@@ -279,10 +277,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               itemHref = "/services/poli-klinik";
             else if (title === "Radiologi") itemHref = "/services/radiologi";
             else if (title === "Rawat Inap") itemHref = "/services/rawat-inap";
-            else if (title === "Rehabilitasi Medik")
-              itemHref = "/services/rehabilitasi-medik";
-            else if (title === "Vaccination Services")
-              itemHref = "/services/vaccination-services";
+
             else if (title === "Tarif Kamar") itemHref = "/tarif-kamar";
             else if (title === "Ketersediaan Kamar")
               itemHref = "/ketersediaan-kamar";
@@ -837,10 +832,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                                 itemHref = "/services/radiologi";
                               else if (subitem === "Rawat Inap")
                                 itemHref = "/services/rawat-inap";
-                              else if (subitem === "Rehabilitasi Medik")
-                                itemHref = "/services/rehabilitasi-medik";
-                              else if (subitem === "Vaccination Services")
-                                itemHref = "/services/vaccination-services";
+                      
                               else if (subitem === "Tarif Kamar")
                                 itemHref = "/tarif-kamar";
                               else if (subitem === "Ketersediaan Kamar")

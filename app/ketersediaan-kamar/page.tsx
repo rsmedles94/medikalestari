@@ -55,7 +55,7 @@ export default function KetersediaanKamarPage() {
     <main className="min-h-screen bg-white pb-28 md:pb-12">
       <div className="max-w-[1139px] w-full mx-auto px-4">
         {/* Breadcrumb */}
-        <div className="pt-8 md:pt-16 pb-2 md:pb-4">
+        <div className="pt-8 md:pt-17 pb-2 md:pb-4">
           <nav
             className="flex items-center gap-1 text-[14px] font-normal mb-8"
             aria-label="Breadcrumb"
@@ -71,7 +71,7 @@ export default function KetersediaanKamarPage() {
               className="text-black/60"
               aria-hidden="true"
             />
-            <span className="font-normal text-gray-400">
+            <span className="font-normal text-gray-300">
               Ketersediaan Kamar
             </span>
           </nav>
