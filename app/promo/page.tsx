@@ -166,10 +166,10 @@ export default function PromoPage() {
         {/* Content */}
         <div className="relative z-10 max-w-[1180px] mx-auto px-4 sm:px-6 lg:px-8 md:px-8">
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-1 text-[14px] font-normal text-gray-300 mb-6">
+          <nav className="flex items-center gap-1 text-[14px] font-normal text-gray-300 mb-6 -mt-4">
             <Link
               href="/"
-              className="text-white/70 hover:text-white transition-colors"
+              className="text-white/70 hover:text-white transition-colors "
             >
               Beranda
             </Link>
