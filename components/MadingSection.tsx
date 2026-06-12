@@ -277,7 +277,7 @@ const MadingSection = memo(() => {
                                   href={item.link || "#"}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-[11px] md:text-[13px] font-semibold text-[#003f88] group-hover:text-[#e67e22] group-hover:underline transition-colors duration-200 block"
+                                  className="text-[11px] md:text-[13px] font-semibold text-[#003f88] group-hover:text-[#e67e22] group-hover:underline transition-colors duration-500 block"
                                 >
                                   → Selengkapnya
                                 </a>

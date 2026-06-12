@@ -58,7 +58,7 @@ const menuItems = [
 
 const FooterContent = () => (
   <div className="bg-[#003f88] text-white">
-    {/* --- MAIN SECTION --- */}
+    {/*  Kontainer Utama  */}
     <div className="max-w-[1200px] mx-auto px-8 md:px-16 py-16 md:py-24">
       <div className="flex flex-col lg:flex-row justify-between items-start gap-12 mb-20">
         {/* Logo */}
@@ -71,7 +71,7 @@ const FooterContent = () => (
             className="brightness-0 invert object-contain"
           />
         </div>
-        {/* Deskripsi Atas */}
+        {/* Deskripsi */}
         <div className="max-w-2xl text-lg md:text-xl leading-relaxed font-light opacity-90 text-justify">
           <p className="mb-4">
             RS Medika Lestari bermula dari sebuah klinik pada tahun 1994, kini telah
@@ -85,7 +85,7 @@ const FooterContent = () => (
         </div>
       </div>
 
-      {/* --- Menu Grid  --- */}
+      {/* Menu Menu */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-8 gap-x-12">
         {menuItems.map((item) => (
           <Link
@@ -99,15 +99,15 @@ const FooterContent = () => (
       </div>
     </div>
 
-    {/* --- Bar Bawah  --- */}
+    {/* Konten Bawah */}
     <div className="bg-white text-[#003f88] py-6 border-t">
       <div className="max-w-[1200px] mx-auto px-8 md:px-16 flex flex-col md:flex-row justify-between items-center gap-8">
         {/* Copyright */}
         <div className="text-sm font-normal opacity-80 text-black">
-          © {new Date().getFullYear()} RS Medika Lestari. All rights reserved.
+          ©1994-{new Date().getFullYear()} RS Medika Lestari. All rights reserved.
         </div>
 
-        {/* Links Kecil di Tengah */}
+        {/* Link Privacy dan Term */}
         <div className="flex gap-6 text-sm font-normal opacity-80 text-black">
           <Link href="/privacy" className="hover:underline">
             Privacy Policy
@@ -117,7 +117,7 @@ const FooterContent = () => (
           </Link>
         </div>
 
-        {/* Social Icons */}
+        {/* Social Media */}
         <div className="flex items-center gap-8 mb-20 md:mb-0">
           {socialMedia.map((item) => (
             <Link

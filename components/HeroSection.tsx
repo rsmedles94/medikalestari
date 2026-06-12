@@ -336,21 +336,21 @@ const HeroSection = () => {
 
         {/* Empty state untuk mobile */}
         <div className="md:hidden relative w-full aspect-2208/2760 bg-gray-200" />
-        {/* SEARCH BAR  */}
+        {/* SEARCH BAR MOBILE */}
         <div className="relative w-full px-4 py-8 md:py-0 md:-mt-4 md:z-50 bg-transparent">
           <div className="max-w-5xl mx-auto">
             <div
               className="
                 max-w-5xl mx-auto 
                 bg-white
-                md:rounded-full rounded-3xl 
+                mrounded-full rounded-3xl 
                 flex flex-col md:flex-row 
                 overflow-hidden 
                 
               "
             >
               {/* NAMA DOKTER */}
-              <div className="flex-1 px-5 py-4 border-b md:px-8 md:border-b-0 md:border-r border-gray-100">
+              <div className="flex-1 px-5 py-4 border-b md:px-8 md:border-b-0 md:border-r border-gray-100 ">
                 <p className="text-xs text-[#003f88] font-semibold mb-1">
                   Nama Dokter
                 </p>
@@ -687,7 +687,7 @@ const HeroSection = () => {
             className="
               bg-white 
               flex flex-col 
-              overflow-hidden 
+              overflow-hidden rounded-xl
               border border-gray-300
             "
           >

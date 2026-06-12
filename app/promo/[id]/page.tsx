@@ -522,7 +522,7 @@ export default function PromoDetailPage() {
                               <Link href={`/promo/${relatedPromo.id}`} passHref>
                                 <button
                                   type="button"
-                                  className={`w-full py-2.5 border text-white text-xs font-semibold transition-all duration-300 cursor-pointer ${
+                                  className={`w-full py-2.5 border text-white text-xs font-semibold transition-all duration-500 cursor-pointer ${
                                     hoveredRelatedPromoId === relatedPromo.id
                                       ? "bg-[#e67e22]"
                                       : "bg-[#003f88] hover:bg-[#e67e22]"
