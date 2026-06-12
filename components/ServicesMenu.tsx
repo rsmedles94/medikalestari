@@ -33,6 +33,11 @@ const ServicesMenu: React.FC = () => {
       icon: Ambulance,
       href: "/services/emergency",
     },
+    {
+      label: "Medical Checkup",
+      icon: Heart,
+      href: "/services/medical-checkup",
+    },
     { label: "Farmasi & Obat", icon: Pill, href: "/services/farmasi" },
     { label: "Fisioterapi", icon: Activity, href: "/services/fisioterapi" },
     {
@@ -40,19 +45,14 @@ const ServicesMenu: React.FC = () => {
       icon: BedDouble,
       href: "/services/kamar-perawatan",
     },
+    { label: "Tarif Kamar", icon: Bed, href: "/tarif-kamar" },
     {
       label: "Asuransi & Rekanan",
       icon: Book,
       href: "/asuransi-rekanan",
     },
-    {
-      label: "Medical Checkup",
-      icon: Heart,
-      href: "/services/medical-checkup",
-    },
     { label: "Poli Klinik", icon: Stethoscope, href: "/services/poli-klinik" },
     { label: "Radiologi", icon: Radio, href: "/services/radiologi" },
-    { label: "Tarif Kamar", icon: Bed, href: "/tarif-kamar" },
   ];
 
   const containerVariants: Variants = {
