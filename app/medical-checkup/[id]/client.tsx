@@ -75,7 +75,7 @@ Usia: ${formData.usia}
 Keluhan/Catatan: ${formData.keluhan}`;
 
     const whatsappUrl =
-      "https://wa.me/6281234567890?text=" + encodeURIComponent(message);
+      "https://wa.me/6285717028133?text=" + encodeURIComponent(message);
     window.open(whatsappUrl, "_blank");
     setShowWhatsAppForm(false);
     setFormData({ nama: "", email: "", noTelepon: "", usia: "", keluhan: "" });
@@ -166,7 +166,7 @@ Keluhan/Catatan: ${formData.keluhan}`;
                 Pesan via WhatsApp
               </button>
               <a
-                href="tel:+6281234567890"
+                href="tel:+6285717028133"
                 className="px-8 py-3 bg-[#003f88] hover:bg-blue-800 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
               >
                 <Phone size={20} />

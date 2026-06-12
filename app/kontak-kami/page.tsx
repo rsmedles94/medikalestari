@@ -9,7 +9,7 @@ const FEATURES_DATA = [
   {
     icon: "/images/icons/whatsapp.svg",
     title: "Make an Appointment Online",
-    link: "https://wa.me/628XXXXXXXXXX",
+    link: "https://wa.me/6285717028133",
   },
   {
     icon: "/images/icons/instagram.svg",
