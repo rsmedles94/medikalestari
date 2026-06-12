@@ -306,7 +306,7 @@ const DoctorSection = ({
               {/* Detail Dokter */}
               <div className="flex-1 text-left">
                 <div className="mb-2 md:mb-4">
-                  <h3 className="text-lg md:text-2xl font-bold text-slate-800">
+                  <h3 className="text-lg md:text-2xl font-bold text-slate-800 mt-0 md:mt-8">
                     {doctor.name}
                   </h3>
                   <p className="text-gray-400 font-semibold text-[10px] md:text-xs mb-1">
@@ -314,11 +314,6 @@ const DoctorSection = ({
                   </p>
                 </div>
 
-                {doctor.bio && (
-                  <p className="text-slate-500 text-xs md:text-sm leading-relaxed mb-4 md:mb-6 line-clamp-2 max-w-xl">
-                    {doctor.bio}
-                  </p>
-                )}
 
                 <div className="flex flex-wrap justify-start gap-2 md:gap-3">
                   <button
