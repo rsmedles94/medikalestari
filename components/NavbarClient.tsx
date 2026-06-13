@@ -160,15 +160,9 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
   const menuData: Record<string, string[]> = {
     "Fasilitas & Layanan": [
       "Emergency",
-      "Farmasi",
-      "Fisioterapi",
       "Kamar Perawatan",
-      "Laboratory Testing",
-      "Layanan gawat darurat",
       "Medical Checkup",
       "Poli Klinik",
-      "Radiologi",
-      "Rawat Inap",
     ],
 
     "Portal Pasien": [
@@ -188,17 +182,9 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
   const serviceIcons: Record<string, React.ReactNode> = {
     Emergency: <Ambulance size={20} strokeWidth={1.5} />,
-    Farmasi: <Pill size={20} strokeWidth={1.5} />,
-    Fisioterapi: <Activity size={20} strokeWidth={1.5} />,
     "Kamar Perawatan": <Hotel size={20} strokeWidth={1.5} />,
-    "Laboratory Testing": <Microscope size={20} strokeWidth={1.5} />,
-    "Layanan gawat darurat": <Siren size={20} strokeWidth={1.5} />,
     "Medical Checkup": <Heart size={20} strokeWidth={1.5} />,
     "Poli Klinik": <Stethoscope size={20} strokeWidth={1.5} />,
-    Radiologi: <Radio size={20} strokeWidth={1.5} />,
-    "Rawat Inap": <Bed size={20} strokeWidth={1.5} />,
-    "Rehabilitasi Medik": <Dumbbell size={20} strokeWidth={1.5} />,
-    "Vaccination Services": <Syringe size={20} strokeWidth={1.5} />,
   };
 
   const handleHomeClick = (e: React.MouseEvent) => {
@@ -262,21 +248,12 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
             )
               itemHref = "/tentang-kami";
             else if (title === "Emergency") itemHref = "/services/emergency";
-            else if (title === "Farmasi") itemHref = "/services/farmasi";
-            else if (title === "Fisioterapi")
-              itemHref = "/services/fisioterapi";
             else if (title === "Kamar Perawatan")
               itemHref = "/services/kamar-perawatan";
-            else if (title === "Laboratory Testing")
-              itemHref = "/services/laboratory-testing";
-            else if (title === "Layanan gawat darurat")
-              itemHref = "/services/layanan-gawat-darurat";
             else if (title === "Medical Checkup")
               itemHref = "/services/medical-checkup";
             else if (title === "Poli Klinik")
               itemHref = "/services/poli-klinik";
-            else if (title === "Radiologi") itemHref = "/services/radiologi";
-            else if (title === "Rawat Inap") itemHref = "/services/rawat-inap";
 
             else if (title === "Tarif Kamar") itemHref = "/tarif-kamar";
             else if (title === "Ketersediaan Kamar")
@@ -814,16 +791,10 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                                 itemHref = "/tentang-kami";
                               else if (subitem === "Emergency")
                                 itemHref = "/services/emergency";
-                              else if (subitem === "Farmasi")
-                                itemHref = "/services/farmasi";
                               else if (subitem === "Fisioterapi")
                                 itemHref = "/services/fisioterapi";
                               else if (subitem === "Kamar Perawatan")
                                 itemHref = "/services/kamar-perawatan";
-                              else if (subitem === "Laboratory Testing")
-                                itemHref = "/services/laboratory-testing";
-                              else if (subitem === "Layanan gawat darurat")
-                                itemHref = "/services/layanan-gawat-darurat";
                               else if (subitem === "Medical Checkup")
                                 itemHref = "/services/medical-checkup";
                               else if (subitem === "Poli Klinik")

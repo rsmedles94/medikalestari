@@ -29,30 +29,27 @@ interface ServiceItem {
 const ServicesMenu: React.FC = () => {
   const services: ServiceItem[] = [
     {
-      label: "Layanan Gawat Darurat",
-      icon: Ambulance,
-      href: "/services/emergency",
-    },
-    {
       label: "Medical Checkup",
       icon: Heart,
       href: "/services/medical-checkup",
     },
-    { label: "Farmasi & Obat", icon: Pill, href: "/services/farmasi" },
-    { label: "Fisioterapi", icon: Activity, href: "/services/fisioterapi" },
     {
       label: "Kamar Perawatan",
       icon: BedDouble,
       href: "/services/kamar-perawatan",
     },
-    { label: "Tarif Kamar", icon: Bed, href: "/tarif-kamar" },
+    {
+      label: "Layanan Gawat Darurat",
+      icon: Ambulance,
+      href: "/services/emergency",
+    },
     {
       label: "Asuransi & Rekanan",
       icon: Book,
       href: "/asuransi-rekanan",
     },
+    { label: "Tarif Kamar", icon: Bed, href: "/tarif-kamar" },
     { label: "Poli Klinik", icon: Stethoscope, href: "/services/poli-klinik" },
-    { label: "Radiologi", icon: Radio, href: "/services/radiologi" },
   ];
 
   const containerVariants: Variants = {
