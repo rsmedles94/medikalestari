@@ -159,29 +159,25 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
   const menuData: Record<string, string[]> = {
     "Fasilitas & Layanan": [
-      "Emergency",
       "Kamar Perawatan",
       "Medical Checkup",
+      "Paket Kesehatan",
       "Poli Klinik",
     ],
 
     "Portal Pasien": [
+      "Emergency",
       "Alur Pendaftaran",
       "Asuransi & Rekanan",
       "Tarif Kamar",
       "Ketersediaan Kamar",
     ],
 
-    Profil: [
-      "Karir",
-      "Kontak",
-      "Syarat & Ketentuan",
-      "Tentang Kami",
-    ],
+    Profil: ["Karir", "Kontak", "Syarat & Ketentuan", "Tentang Kami"],
   };
 
   const serviceIcons: Record<string, React.ReactNode> = {
-    Emergency: <Ambulance size={20} strokeWidth={1.5} />,
+
     "Kamar Perawatan": <Hotel size={20} strokeWidth={1.5} />,
     "Medical Checkup": <Heart size={20} strokeWidth={1.5} />,
     "Poli Klinik": <Stethoscope size={20} strokeWidth={1.5} />,
@@ -252,6 +248,8 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               itemHref = "/services/kamar-perawatan";
             else if (title === "Medical Checkup")
               itemHref = "/services/medical-checkup";
+            else if (title === "Paket Kesehatan")
+              itemHref = "/promo";
             else if (title === "Poli Klinik")
               itemHref = "/services/poli-klinik";
 
@@ -799,6 +797,8 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                                 itemHref = "/services/medical-checkup";
                               else if (subitem === "Poli Klinik")
                                 itemHref = "/services/poli-klinik";
+                              else if (subitem === "Paket Kesehatan")
+                                itemHref = "/promo";
                               else if (subitem === "Radiologi")
                                 itemHref = "/services/radiologi";
                               else if (subitem === "Rawat Inap")
