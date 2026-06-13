@@ -66,10 +66,10 @@ const PopupDisplay = memo(() => {
     openTimeRef.current = now;
   }, [getBehavior]);
 
-  // Preload popup images dengan priority queue
+  // Preload popup gambar
   useEffect(() => {
     if (popups && popups.length > 0) {
-      // Preload images dengan low priority untuk tidak block
+      // pramuat gambar
       void Promise.all(
         popups.map((item) =>
           imageLoader.loadImage({
@@ -83,7 +83,7 @@ const PopupDisplay = memo(() => {
         })
         .catch((err) => {
           console.warn("Error preloading popup images:", err);
-          // Show anyway even if preload fails
+          // Tetap tampilkan meskipun ketika dimuat gagall
           checkLogicAndShow();
         });
     }

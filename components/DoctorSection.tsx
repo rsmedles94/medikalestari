@@ -179,7 +179,7 @@ const DoctorSection = ({
         activeFilter.name === "" ||
         doc.name.toLowerCase().includes(activeFilter.name.toLowerCase());
 
-      // Filter by day 
+      // Filter berdasarkan hari
       let matchDay = true;
       if (activeFilter.day !== "Semua Hari") {
         matchDay =
