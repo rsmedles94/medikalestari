@@ -17,7 +17,6 @@ export default async function Home() {
 
         <ServiceSection />
         <MadingSection />
-        {/* Floating action buttons - desktop only on landing page */}
         <FlottingButton />
       </main>
     </div>

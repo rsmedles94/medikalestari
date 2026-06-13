@@ -1,4 +1,4 @@
-// LayoutContentClient.tsx
+
 "use client";
 
 import React from "react";
@@ -23,7 +23,6 @@ export default function LayoutContent({ children }: LayoutContentProps) {
   const isAdminPage = pathname?.startsWith(`/admin`);
   const isLoginPage = pathname === `/admin/login`;
 
-  // Logika background bawaan Anda
   const shouldUseLightBackground =
     isLoginPage || authLoading || !isAuthenticated;
 

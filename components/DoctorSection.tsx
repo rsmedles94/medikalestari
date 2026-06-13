@@ -179,7 +179,7 @@ const DoctorSection = ({
         activeFilter.name === "" ||
         doc.name.toLowerCase().includes(activeFilter.name.toLowerCase());
 
-      // Filter by day - check if doctor has schedule on selected day
+      // Filter by day 
       let matchDay = true;
       if (activeFilter.day !== "Semua Hari") {
         matchDay =
@@ -222,14 +222,14 @@ const DoctorSection = ({
   const handleOpenSpecialtyModal = () => {
     setShowMobileSpecialtyModal(!showMobileSpecialtyModal);
     if (!showMobileSpecialtyModal) {
-      setShowMobileDayModal(false); // Close day modal when opening specialty
+      setShowMobileDayModal(false); 
     }
   };
 
   const handleOpenDayModal = () => {
     setShowMobileDayModal(!showMobileDayModal);
     if (!showMobileDayModal) {
-      setShowMobileSpecialtyModal(false); // Close specialty modal when opening day
+      setShowMobileSpecialtyModal(false); 
     }
   };
 

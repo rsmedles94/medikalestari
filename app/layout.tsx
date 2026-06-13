@@ -1,9 +1,8 @@
-// layout.tsx
+
 import "./globals.css";
 import Providers from "./providers";
 import { AuthProvider } from "@/context/AuthProvider";
 import { SearchModalProvider } from "@/context/SearchModalContext";
-// Import komponen client yang sudah kita perbaiki tadi:
 import LayoutContent from "./LayoutContentClient";
 
 export default function RootLayout({

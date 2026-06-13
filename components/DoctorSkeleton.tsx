@@ -3,10 +3,6 @@
 import React from "react";
 import { motion } from "framer-motion";
 
-/**
- * ShimmerOverlay dengan efek shimmer yang lebih smooth dan prominent
- * Menggunakan gradient yang lebih dramatic dari transparent -> white -> transparent
- */
 const ShimmerOverlay = () => (
   <div className="absolute inset-0 overflow-hidden">
     <motion.div
@@ -14,7 +10,7 @@ const ShimmerOverlay = () => (
       animate={{ x: "100%" }}
       transition={{
         repeat: Infinity,
-        duration: 2, // Durasi smooth untuk efek yang elegan
+        duration: 2,
         ease: "easeInOut",
       }}
       className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent"

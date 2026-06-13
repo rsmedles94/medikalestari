@@ -205,7 +205,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
     widthClass: string = "w-72",
     category?: string,
   ) => {
-    // --- LOGIKA BARU: Cek jika item banyak, kita buat 2 kolom ---
+
 
     const isLargeMenu = items.length > 6;
     const isFasilitasLayanan = category === "Fasilitas & Layanan";

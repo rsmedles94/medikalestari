@@ -3,7 +3,7 @@
 import React from "react";
 
 const PromoCardSkeleton = ({ count = 4 }) => {
-  // Generate stable keys for each skeleton card
+
   const skeletonKeys = Array.from({ length: count }).map(
     (_, idx) => `skeleton-card-${idx}`,
   );

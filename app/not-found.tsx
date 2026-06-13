@@ -11,13 +11,13 @@ export default function NotFound() {
   const [highScore, setHighScore] = useState(0);
   const [gameStarted, setGameStarted] = useState(false);
 
-  // Game Variables Ref untuk performa anti-lag di canvas loop
+  // Game Variables Ref
   const gameStateRef = useRef({
     currentScore: 0,
     isJumping: false,
     jumpVelocity: 0,
     gravity: 0.6,
-    // Mengubah Dino jadi BOLA (radius, rotasi, dll)
+    //  BOLA (radius, rotasi, dll)
     ball: { x: 70, y: 240, radius: 18, color: "#003f88", rotation: 0 },
     obstacles: [] as Array<{
       x: number;
@@ -175,7 +175,7 @@ export default function NotFound() {
       }
 
       // 4. Update & Deteksi Tabrakan Rintangan
-      ctx.fillStyle = "#EF4444"; // Warna merah tanda bahaya / buntu
+      ctx.fillStyle = "#EF4444"; 
 
       for (let i = gs.obstacles.length - 1; i >= 0; i--) {
         const obs = gs.obstacles[i];
@@ -195,7 +195,7 @@ export default function NotFound() {
         const distanceY = ball.y - closestY;
         const distanceSquared = distanceX * distanceX + distanceY * distanceY;
 
-        // Toleransi hitbox (dikurangi sedikit agar game terasa lebih adil)
+        // Toleransi hitbox 
         const hitRadius = ball.radius - 2;
 
         if (distanceSquared < hitRadius * hitRadius) {
@@ -221,7 +221,6 @@ export default function NotFound() {
     };
   }, [gameOver, gameStarted, resetGameData]);
 
-  // --- CONTROLLER EVENT (DESKTOP KEYBOARD + MOBILE SCREEN TOUCH) ---
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;

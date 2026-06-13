@@ -401,9 +401,7 @@ const PromoKesehatan = () => {
 
       <div className="absolute bottom-0 left-0 right-0 h-48 bg-white z-0" />
 
-      {/* ========================================================================= */}
       {/* 1. SECTION ATAS: KONTEN DI AREA BIRU */}
-      {/* ========================================================================= */}
       <section className="relative z-10 w-full pt-20 pb-16 px-4 sm:px-6 lg:px-8 text-white">
         <div className="max-w-[1180px] mx-auto md:px-8">
           {/* UTUH BAGIAN A: HEADER */}
@@ -597,9 +595,7 @@ const PromoKesehatan = () => {
         </div>
       </section>
 
-      {/* ========================================================================= */}
       {/* 2. SECTION BAWAH: SLIDER CARD PROMO */}
-      {/* ========================================================================= */}
       <section className="relative z-10 w-full pb-20 px-4 sm:px-6 lg:px-8">
         <div className="absolute inset-x-0 bottom-0 top-1/3 bg-white z-0" />
 
