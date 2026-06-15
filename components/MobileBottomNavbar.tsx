@@ -12,6 +12,7 @@ import {
   Bed,
   CalendarCheck2,
   CalendarDays,
+  BedDouble,
 } from "lucide-react";
 
 import BookingModalFloating from "./BookingModalFloating";
@@ -32,19 +33,21 @@ export default function MobileBottomNavbar() {
   const [activeIndex, setActiveIndex] = useState<number | null>(0);
 
   const actionMenuRef = useRef<HTMLDivElement>(null);
+  // Tambahkan ref untuk tombol plus agar bisa dikecualikan saat klik luar
+  const plusButtonRef = useRef<HTMLButtonElement>(null);
 
   const navItems = useMemo<NavItem[]>(
     () => [
       { label: "Beranda", href: "/", icon: Home },
       { label: "Dokter", href: "/dokter", icon: UserRoundPlus },
       {
-        label: "Tambah",
+        label: "",
         href: "#action-menu",
         icon: Plus,
         isButton: true,
       },
-      { label: "Promo", href: "/promo", icon: TicketPercent },
-      { label: "Kamar", href: "/services/kamar-perawatan", icon: Bed },
+      { label: "Jadwal", href: "/jadwal-dokter", icon: CalendarDays },
+      { label: "Paket Kesehatan", href: "/promo", icon: TicketPercent },
     ],
     [],
   );
@@ -57,8 +60,6 @@ export default function MobileBottomNavbar() {
     }
 
     if (pathname === "/jadwal-dokter") {
-      // Tombol "Tambah" (index 2) bersifat isButton, tidak di-highlight
-      // Cukup kosongkan active agar tidak ada yang aktif, atau sesuaikan kebutuhan
       setActiveIndex(null);
       return;
     }
@@ -73,6 +74,14 @@ export default function MobileBottomNavbar() {
   // Tutup action menu jika klik di luar
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      // Jika yang diklik adalah tombol plus itu sendiri, biarkan logika onClick tombol yang bekerja
+      if (
+        plusButtonRef.current &&
+        plusButtonRef.current.contains(event.target as Node)
+      ) {
+        return;
+      }
+
       if (
         actionMenuRef.current &&
         !actionMenuRef.current.contains(event.target as Node)
@@ -99,7 +108,6 @@ export default function MobileBottomNavbar() {
 
       {/* WRAPPER NAVBAR + POPUP */}
       <div className="fixed bottom-0 left-0 right-0 z-40 w-full lg:hidden flex flex-col items-center">
-
         {/* POP UP SUB-MENU */}
         <AnimatePresence>
           {isActionMenuOpen && (
@@ -122,7 +130,7 @@ export default function MobileBottomNavbar() {
                 style={{ WebkitTapHighlightColor: "transparent" }}
               >
                 <CalendarCheck2 size={18} className="text-gray-500" />
-                <span>Janji Temu</span>
+                <span>Buat Janji Temu</span>
               </button>
 
               {/* Garis Pembatas */}
@@ -133,19 +141,36 @@ export default function MobileBottomNavbar() {
                 type="button"
                 onClick={() => {
                   setIsActionMenuOpen(false);
-                  router.push("/jadwal-dokter");
+                  router.push("/services/kamar-perawatan");
                 }}
                 className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 text-sm font-medium text-left outline-none hover:bg-gray-50 active:bg-gray-100 transition-colors rounded-lg"
                 style={{ WebkitTapHighlightColor: "transparent" }}
               >
-                <CalendarDays size={18} className="text-gray-500" />
-                <span>Jadwal Dokter</span>
+                <BedDouble size={18} className="text-gray-500" />
+                <span>Kamar Perawatan</span>
+              </button>
+
+              {/* Garis Pembatas */}
+              <div className="h-[1px] w-full bg-gray-100 my-0.5" />
+
+              {/* Pilihan 3: Jadwal Dokter */}
+              <button
+                type="button"
+                onClick={() => {
+                  setIsActionMenuOpen(false);
+                  router.push("/services/kamar-perawatan");
+                }}
+                className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 text-sm font-medium text-left outline-none hover:bg-gray-50 active:bg-gray-100 transition-colors rounded-lg"
+                style={{ WebkitTapHighlightColor: "transparent" }}
+              >
+                <Bed size={18} className="text-gray-500" />
+                <span>Ketersediaan Kamar</span>
               </button>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* BAR NAVBAR UTAMA — selalu terlihat, tidak hide saat scroll */}
+        {/* BAR NAVBAR UTAMA */}
         <div className="w-full h-18 bg-white border-t border-gray-200 shadow-[0_-2px_10px_rgba(0,0,0,0.04)]">
           <ul className="flex items-center justify-between h-full px-2">
             {navItems.map((item, i) => {
@@ -159,10 +184,11 @@ export default function MobileBottomNavbar() {
                       <motion.div
                         animate={{ rotate: isActionMenuOpen ? 45 : 0 }}
                         transition={{ duration: 0.2, ease: "easeInOut" }}
+                        className="flex items-center justify-center h-full"
                       >
                         <Icon
-                          size={24}
-                          strokeWidth={2.5}
+                          size={32}
+                          strokeWidth={3}
                           className={
                             isActionMenuOpen ? "text-black" : "text-gray-400"
                           }
@@ -184,17 +210,16 @@ export default function MobileBottomNavbar() {
                       />
                     )}
                   </div>
-                  <span
-                    className={`text-[11px] font-medium transition-colors duration-200 ${
-                      item.isButton && isActionMenuOpen
-                        ? "text-black"
-                        : isActive
-                          ? "text-black"
-                          : "text-gray-400"
-                    }`}
-                  >
-                    {item.label}
-                  </span>
+
+                  {!item.isButton && (
+                    <span
+                      className={`text-[11px] font-medium transition-colors duration-200 ${
+                        isActive ? "text-black" : "text-gray-400"
+                      }`}
+                    >
+                      {item.label}
+                    </span>
+                  )}
                 </div>
               );
 
@@ -212,11 +237,12 @@ export default function MobileBottomNavbar() {
 
               return (
                 <li
-                  key={item.label}
+                  key={item.label || i}
                   className="flex flex-1 justify-center h-full items-center"
                 >
                   {item.isButton ? (
                     <button
+                      ref={plusButtonRef} // Pasang ref di sini
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
