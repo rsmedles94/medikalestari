@@ -160,11 +160,11 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
     ],
 
     "Portal Pasien": [
-      "Emergency",
       "Alur Pendaftaran",
       "Asuransi & Rekanan",
+       "Emergency",
+       "Ketersediaan Kamar",
       "Tarif Kamar",
-      "Ketersediaan Kamar",
     ],
 
     Profil: ["Karir", "Kontak", "Syarat & Ketentuan", "Tentang Kami"],
