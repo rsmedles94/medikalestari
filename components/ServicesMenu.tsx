@@ -70,7 +70,7 @@ const ServicesMenu: React.FC = () => {
   };
 
   return (
-    <section className="py-12 px-4 bg-white">
+    <section className="py-0 md:py-12 px-4 bg-white">
       <div className="max-w-[1106px] mx-auto my-6">
         <nav aria-label="Layanan Utama">
           <motion.ul

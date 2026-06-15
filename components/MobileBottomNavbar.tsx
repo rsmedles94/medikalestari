@@ -31,9 +31,6 @@ export default function MobileBottomNavbar() {
   const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(0);
 
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-
   const actionMenuRef = useRef<HTMLDivElement>(null);
 
   const navItems = useMemo<NavItem[]>(
@@ -52,6 +49,7 @@ export default function MobileBottomNavbar() {
     [],
   );
 
+  // Sinkronisasi activeIndex berdasarkan pathname
   useEffect(() => {
     if (pathname === "/") {
       setActiveIndex(0);
@@ -59,7 +57,9 @@ export default function MobileBottomNavbar() {
     }
 
     if (pathname === "/jadwal-dokter") {
-      setActiveIndex(2);
+      // Tombol "Tambah" (index 2) bersifat isButton, tidak di-highlight
+      // Cukup kosongkan active agar tidak ada yang aktif, atau sesuaikan kebutuhan
+      setActiveIndex(null);
       return;
     }
 
@@ -67,14 +67,10 @@ export default function MobileBottomNavbar() {
       (item) => !item.isButton && item.href === pathname,
     );
 
-    if (idx !== -1) {
-      setActiveIndex(idx);
-    } else {
-      setActiveIndex(null);
-    }
+    setActiveIndex(idx !== -1 ? idx : null);
   }, [pathname, navItems]);
 
-  // Tutup sub-menu jika klik di luar area
+  // Tutup action menu jika klik di luar
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -84,36 +80,15 @@ export default function MobileBottomNavbar() {
         setIsActionMenuOpen(false);
       }
     };
+
     if (isActionMenuOpen) {
       document.addEventListener("mousedown", handleClickOutside);
     }
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isActionMenuOpen]);
 
-  // Handler Scroll
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-
-      if (currentScrollY < 10) {
-        setIsVisible(true);
-        setLastScrollY(currentScrollY);
-        return;
-      }
-
-      if (currentScrollY > lastScrollY) {
-        setIsVisible(false);
-        setIsActionMenuOpen(false);
-      } else if (currentScrollY < lastScrollY) {
-        setIsVisible(true);
-      }
-
-      setLastScrollY(currentScrollY);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
     };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
+  }, [isActionMenuOpen]);
 
   return (
     <>
@@ -122,11 +97,12 @@ export default function MobileBottomNavbar() {
         onClose={() => setIsBookingOpen(false)}
       />
 
-      {/* DOCK UTAMA & POPUP WRAPPER */}
+      {/* WRAPPER NAVBAR + POPUP */}
       <div className="fixed bottom-0 left-0 right-0 z-40 w-full lg:hidden flex flex-col items-center">
+
         {/* POP UP SUB-MENU */}
         <AnimatePresence>
-          {isActionMenuOpen && isVisible && (
+          {isActionMenuOpen && (
             <motion.div
               ref={actionMenuRef}
               initial={{ opacity: 0, y: 15, scale: 0.95 }}
@@ -169,18 +145,8 @@ export default function MobileBottomNavbar() {
           )}
         </AnimatePresence>
 
-        {/* BAR NAVBAR UTAMA */}
-        <motion.div
-          className="w-full h-18 bg-white border-t border-gray-200 shadow-[0_-2px_10px_rgba(0,0,0,0.04)] overflow-hidden"
-          animate={{
-            y: isVisible ? 0 : 72,
-            opacity: isVisible ? 1 : 0,
-          }}
-          transition={{
-            duration: 0.2,
-            ease: "easeInOut",
-          }}
-        >
+        {/* BAR NAVBAR UTAMA — selalu terlihat, tidak hide saat scroll */}
+        <div className="w-full h-18 bg-white border-t border-gray-200 shadow-[0_-2px_10px_rgba(0,0,0,0.04)]">
           <ul className="flex items-center justify-between h-full px-2">
             {navItems.map((item, i) => {
               const isActive = i === activeIndex;
@@ -190,7 +156,6 @@ export default function MobileBottomNavbar() {
                 <div className="flex flex-col items-center justify-center w-full h-full gap-1">
                   <div className="flex items-center justify-center">
                     {item.isButton ? (
-                      /* Diperbaiki: Hanya rotasi 45 derajat (membentuk x) atau ke 0 dengan transisi eased */
                       <motion.div
                         animate={{ rotate: isActionMenuOpen ? 45 : 0 }}
                         transition={{ duration: 0.2, ease: "easeInOut" }}
@@ -254,7 +219,7 @@ export default function MobileBottomNavbar() {
                     <button
                       type="button"
                       onClick={(e) => {
-                        e.stopPropagation(); // Mencegah event bubbling yang memicu klik ganda
+                        e.stopPropagation();
                         setIsActionMenuOpen((prev) => !prev);
                       }}
                       style={sharedLinkStyle}
@@ -282,7 +247,7 @@ export default function MobileBottomNavbar() {
               );
             })}
           </ul>
-        </motion.div>
+        </div>
       </div>
     </>
   );
