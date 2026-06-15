@@ -921,16 +921,16 @@ function AuthDropdown({ activeMenu, setActiveMenu }: AuthDropdownProps) {
             animate={{ opacity: 1, y: 0, height: "auto" }}
             exit={{ opacity: 0, y: -10, height: 0 }}
             transition={{ duration: 0.3, ease: "circOut" }}
-            className="absolute top-full right-0 bg-[#003f88]  text-white shadow-xl overflow-visible z-50 border-t border-[#003f88] w-48 mt-2"
+              className="absolute top-full right-0 bg-white text-white shadow-xl overflow-visible z-50 border-t border-white w-48 mt-2 active:scale-98"
           >
             {/* Arrow/Triangle */}
-            <div className="absolute -top-2 right-6 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-[#003f88]"></div>
+            <div className=" text-white absolute -top-2 right-6 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-white"></div>
             <div className="py-2 px-2 grid grid-cols-1">
               {isAuthenticated ? (
                 <Link
                   href="/admin/dashboard"
                   onClick={() => setActiveMenu(null)}
-                  className="px-4 py-4 text-white font-mediumtransition-colors flex items-center gap-2 m-1"
+                  className="px-2 py-2 text-gray-700  font-mediumtransition-colors flex items-center gap-2 m-1"
                 >
                   Dashboard Admin
                 </Link>
@@ -938,7 +938,7 @@ function AuthDropdown({ activeMenu, setActiveMenu }: AuthDropdownProps) {
                 <Link
                   href="/admin/login"
                   onClick={() => setActiveMenu(null)}
-                  className="px-4 py-4 text-white font-medium transition-colors flex items-center gap-2 m-1"
+                  className="px-2 py-2 text-gray-700 font-medium transition-colors flex items-center gap-2 m-1"
                 >
                   <UserCircle size={18} />
                   Login

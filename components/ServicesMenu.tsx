@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { BedDouble, Book, BookAlert, ChevronRight } from "lucide-react";
+import { BedDouble, BedSingle, BellDot, Book, BookAIcon, BookAlert, ChevronRight, CrossIcon, TicketCheck } from "lucide-react";
 import {
   Ambulance,
   Pill,
@@ -40,16 +40,23 @@ const ServicesMenu: React.FC = () => {
     },
     {
       label: "Layanan Gawat Darurat",
-      icon: Ambulance,
+      icon: CrossIcon,
       href: "/services/emergency",
     },
+    { label: "Poli Klinik", icon: Stethoscope, href: "/services/poli-klinik" },
+    { label: "Tarif Kamar", icon: Bed, href: "/tarif-kamar" },
     {
       label: "Asuransi & Rekanan",
       icon: Book,
       href: "/asuransi-rekanan",
     },
-    { label: "Tarif Kamar", icon: Bed, href: "/tarif-kamar" },
-    { label: "Poli Klinik", icon: Stethoscope, href: "/services/poli-klinik" },
+    { label: "Paket Kesehatan", icon: TicketCheck, href: "/promo" },
+    {
+      label: "Ketersediaan Kamar",
+      icon: BedSingle,
+      href: "/ketersediaan-kamar",
+    },
+    { label: "Alur Pendaftaran", icon: BookAIcon, href: "/alur-pendaftaran" },
   ];
 
   const containerVariants: Variants = {
