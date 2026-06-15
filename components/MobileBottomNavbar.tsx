@@ -46,7 +46,7 @@ export default function MobileBottomNavbar() {
         isButton: true,
       },
       { label: "Jadwal", href: "/jadwal-dokter", icon: CalendarDays },
-      { label: "Paket Kesehatan", href: "/promo", icon: TicketPercent },
+      { label: "Kesehatan", href: "/promo", icon: TicketPercent },
     ],
     [],
   );
