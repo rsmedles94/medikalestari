@@ -217,7 +217,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
         {/* Arrow/Triangle */}
         <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-white"></div>
         <div
-          className={`py-4 px-2 grid ${isLargeMenu ? "grid-cols-2" : "grid-cols-1"}`}
+          className={`py-1 px-1 grid ${isLargeMenu ? "grid-cols-2" : "grid-cols-1"}`}
         >
           {items.map((item) => {
             const title = typeof item === "string" ? item : item.label;

@@ -84,7 +84,8 @@ export default function KetersediaanKamarPage() {
               Ketersediaan Kamar
             </h1>
             <p className="text-sm text-gray-500">
-              Data diambil dari website resmi SIRANAP Kemenkes RI, silahkan refresh untuk melihat data ketersediaan kamar terbaru.
+              Data diambil dari website resmi SIRANAP Kemenkes RI, silahkan
+              refresh untuk melihat data ketersediaan kamar terbaru.
             </p>
           </div>
 
@@ -95,7 +96,7 @@ export default function KetersediaanKamarPage() {
               className="inline-flex items-center gap-2 px-4 py-2 border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50 transition-colors cursor-pointer"
             >
               <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
-              Refresh Data
+              Refresh
             </button>
             <a
               href={siranapUrl}
