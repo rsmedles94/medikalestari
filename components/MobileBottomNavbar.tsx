@@ -55,12 +55,15 @@ export default function MobileBottomNavbar() {
   // Sinkronisasi activeIndex berdasarkan pathname
   useEffect(() => {
     if (pathname === "/") {
-      setActiveIndex(0);
+      setActiveIndex(null);
       return;
     }
 
-    if (pathname === "/jadwal-dokter") {
-      setActiveIndex(null);
+    if (pathname === "/services/kamar-perawatan") {
+      setActiveIndex(0);
+      return;
+    } else if (pathname === "/services/ketersediaan-kamar") {
+      setActiveIndex(1);
       return;
     }
 
@@ -158,7 +161,7 @@ export default function MobileBottomNavbar() {
                 type="button"
                 onClick={() => {
                   setIsActionMenuOpen(false);
-                  router.push("/services/kamar-perawatan");
+                  router.push("/ketersediaan-kamar");
                 }}
                 className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 text-sm font-medium text-left outline-none hover:bg-gray-50 active:bg-gray-100 transition-colors rounded-lg"
                 style={{ WebkitTapHighlightColor: "transparent" }}
