@@ -477,7 +477,7 @@ const PromoKesehatan = () => {
               <Link href="/tentang-kami" passHref>
                 <button
                   type="button"
-                  className="px-5 py-2.5 bg-[#e67e22] text-white text-xs font-semibold transition-colors inline-flex items-center gap-2 cursor-pointer"
+                  className="px-5 py-2.5 bg-[#e67e22] hover:bg-[#3D8ECB] text-white text-xs font-semibold transition-colors inline-flex items-center gap-2 cursor-pointer"
                 >
                   Selengkapnya Tentang Kami
                 </button>
