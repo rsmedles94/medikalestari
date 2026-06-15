@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { BedDouble, BedSingle, BellDot, Book, BookAIcon, BookAlert, ChevronRight, CrossIcon, TicketCheck } from "lucide-react";
+import { BedDouble, BedSingle, BellDot, Book, BookAIcon, BookAlert, ChevronRight, CrossIcon, HospitalIcon, StethoscopeIcon, TicketCheck } from "lucide-react";
 import {
   Ambulance,
   Pill,
@@ -30,7 +30,7 @@ const ServicesMenu: React.FC = () => {
   const services: ServiceItem[] = [
     {
       label: "Medical Checkup",
-      icon: Heart,
+      icon: StethoscopeIcon,
       href: "/services/medical-checkup",
     },
     {
@@ -43,7 +43,7 @@ const ServicesMenu: React.FC = () => {
       icon: CrossIcon,
       href: "/services/emergency",
     },
-    { label: "Poli Klinik", icon: Stethoscope, href: "/services/poli-klinik" },
+    { label: "PoliKlinik", icon: HospitalIcon, href: "/services/poli-klinik" },
     { label: "Tarif Kamar", icon: Bed, href: "/tarif-kamar" },
     {
       label: "Asuransi & Rekanan",
