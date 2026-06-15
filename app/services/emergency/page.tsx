@@ -64,7 +64,7 @@ export default function Emergency() {
 
             <button
               onClick={handleWhatsAppEmergency}
-              className="flex items-center justify-center gap-3 bg-green-500 text-white py-4 px-6 font-bold text-md active:bg-green-700 transition-colors cursor-pointe rounded-md"
+              className="flex items-center justify-center gap-3 bg-green-500 text-white py-4 px-6 font-bold text-md active:bg-green-700 transition-colors cursor-pointe rounded-md cursor-pointer"
             >
               <Image
                 src="/images/icons/whatsapp-fill.svg"

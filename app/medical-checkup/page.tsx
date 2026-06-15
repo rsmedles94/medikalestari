@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronRight, Phone } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { MCU_DATA } from "./data";
 
 export default function MedicalCheckup() {
@@ -44,46 +44,59 @@ export default function MedicalCheckup() {
 
         {/* Packages Grid */}
         <section className="mb-12">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
             {MCU_DATA.map((item) => (
-              <Link
-                key={item.id}
-                href={`/medical-checkup/${item.id}`}
-                className="group"
-              >
-                <article className="bg-white border border-gray-200 overflow-hidden  transition-all duration-300 flex flex-col h-full">
+              <div key={item.id} className="p-0">
+                <article className="bg-white border border-gray-300 flex flex-col h-full overflow-hidden transition-all duration-300 group">
                   {/* Image Area */}
-                  <figure className="w-full relative bg-gray-50 aspect-auto overflow-hidden">
-                    <Image
-                      src={item.image}
-                      alt={item.title}
-                      width={340}
-                      height={380}
-                      className="w-full h-auto object-contain group-hover:scale-105 transition-transform duration-700"
-                    />
-                  </figure>
+                  <div className="w-full relative bg-gray-50 cursor-pointer overflow-hidden flex items-center justify-center">
+                    <div className="w-full h-auto transform group-hover:scale-105 transition-transform duration-700 ease-in-out">
+                      <Image
+                        src={item.image}
+                        alt={item.title}
+                        width={500}
+                        height={500}
+                        sizes="(max-width: 768px) 50vw, 25vw"
+                        className="w-full h-auto object-contain"
+                        priority
+                      />
+                    </div>
+                  </div>
 
-                  {/* Content Area */}
-                  <div className="p-4 flex flex-col grow">
-                    <h2 className="text-sm md:text-base font-bold text-gray-800 mb-2 leading-tight group-hover:text-[#003f88] transition-colors line-clamp-2">
-                      {item.title}
-                    </h2>
-                    <p className="text-xs md:text-sm text-gray-600 mb-4 leading-snug line-clamp-2">
+                  {/* Card Area */}
+                  <div className="p-4 md:p-10 flex flex-col grow text-center bg-white">
+                    <Link href={`/medical-checkup/${item.id}`} passHref>
+                      <h3 className="text-sm md:text-xl font-bold text-[#003f88] mb-2 min-h-12 flex items-center justify-center leading-normal cursor-pointer hover:text-[#e67e22] transition-colors duration-300 line-clamp-2">
+                        {item.title}
+                      </h3>
+                    </Link>
+
+                    <p className="text-[10px] md:text-xs text-gray-500 leading-normal mb-2 line-clamp-3 md:line-clamp-4 cursor-default mt-4">
                       {item.shortDescription}
                     </p>
+
+                    {/* Harga*/}
+                    <p className="text-[#e67e22] font-bold text-xs md:text-base mb-5 mt-auto">
+                      {item.price}
+                    </p>
+
+                    {/* Tombol Selengkapnya */}
                     <div className="mt-auto">
-                      <p className="text-[#003f88] font-bold text-sm md:text-base">
-                        {item.price}
-                      </p>
+                      <Link href={`/medical-checkup/${item.id}`} passHref>
+                        <button
+                          type="button"
+                          className="w-full py-2 text-white text-[10px] md:text-xs font-semibold transition-all duration-500 cursor-pointer bg-[#003f88] group-hover:bg-[#e67e22] hover:bg-[#e67e22]"
+                        >
+                          ⭢ Selengkapnya
+                        </button>
+                      </Link>
                     </div>
                   </div>
                 </article>
-              </Link>
+              </div>
             ))}
           </div>
         </section>
-
-        
 
         {/* FAQ Section */}
         <section className="mb-12">

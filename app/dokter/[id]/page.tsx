@@ -124,21 +124,21 @@ const DoctorDetailPage = () => {
               <div className="flex gap-4">
                 <a
                   href="#"
-                  className="w-11 h-11 flex items-center justify-center rounded-full bg-[#25D366] text-white transition-all border border-slate-100 shadow-sm hover:shadow-md "
+                  className="w-9 h-9 flex items-center justify-center rounded-full bg-[#25D366] text-white transition-all border border-slate-100 shadow-sm hover:shadow-md "
                 >
-                  <i className="fa-brands fa-whatsapp text-3xl"></i>
+                  <i className="fa-brands fa-whatsapp text-2xl"></i>
                 </a>
                 <a
                   href="#"
-                  className="w-11 h-11 flex items-center justify-center rounded-full bg-linear-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] text-white transition-all"
+                  className="w-9 h-9 flex items-center justify-center rounded-full bg-linear-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] text-white transition-all"
                 >
-                  <i className="fa-brands fa-instagram text-3xl"></i>
+                  <i className="fa-brands fa-instagram text-2xl"></i>
                 </a>
                 <a
                   href="#"
-                  className="w-11 h-11 flex items-center justify-center rounded-full bg-[#0088cc] text-white transition-all border border-slate-100 shadow-sm hover:shadow-md"
+                  className="w-9 h-9 flex items-center justify-center rounded-full bg-[#0088cc] text-white transition-all border border-slate-100 shadow-sm hover:shadow-md"
                 >
-                  <i className="fa-brands fa-linkedin text-2xl"></i>
+                  <i className="fa-brands fa-linkedin text-xl"></i>
                 </a>
               </div>
             </div>

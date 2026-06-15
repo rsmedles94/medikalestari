@@ -4,6 +4,9 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight, Phone, MapPin, Check } from "lucide-react";
+import { useKeenSlider } from "keen-slider/react";
+import { motion } from "framer-motion";
+import "keen-slider/keen-slider.min.css";
 import { MCU_DATA } from "../data";
 
 export default function MCUDetailClient({
@@ -24,6 +27,49 @@ export default function MCUDetailClient({
     usia: "",
     keluhan: "",
   });
+
+  // State untuk melacak dot active slider
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [loaded, setLoaded] = useState(false);
+
+  // Filter paket lainnya untuk slider
+  const relatedPromos = MCU_DATA.filter((item) => item.id !== mcu?.id);
+
+  // Inisialisasi Keen Slider responsif (Mobile swipe, Desktop slider/grid)
+  const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
+    initial: 0,
+    slideChanged(slider) {
+      setCurrentSlide(slider.track.details.rel);
+    },
+    created() {
+      setLoaded(true);
+    },
+    breakpoints: {
+      "(min-width: 768px)": {
+        slides: { perView: 3, spacing: 16 },
+      },
+      "(min-width: 1024px)": {
+        slides: { perView: 4, spacing: 24 },
+      },
+    },
+    slides: { perView: 2, spacing: 12 }, // Default mobile view (slide ke kanan)
+  });
+
+  // Mengambil nilai perView secara aman dari opsi slider saat ini
+  const currentOptions = instanceRef.current?.options;
+  const currentPerView =
+    currentOptions &&
+    typeof currentOptions.slides === "object" &&
+    currentOptions.slides !== null
+      ? ((currentOptions.slides as { perView?: number }).perView ?? 2)
+      : 2;
+
+  // Hitung jumlah dot berdasarkan sisa slide yang bisa digeser
+  const totalDots = instanceRef.current
+    ? instanceRef.current.track.details.slides.length - currentPerView + 1
+    : 0;
+
+  const safeTotalDots = totalDots > 0 ? totalDots : relatedPromos.length;
 
   React.useEffect(() => {
     if (showWhatsAppForm) {
@@ -151,26 +197,26 @@ Keluhan/Catatan: ${formData.keluhan}`;
             </div>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-row gap-2 w-full sm:w-auto">
               <button
                 onClick={() => setShowWhatsAppForm(true)}
-                className="px-8 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                className="flex-1 sm:flex-none px-4 py-2.5 bg-green-500 hover:bg-green-600 text-white text-sm font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Image
                   src="/images/icons/whatsapp-fill.svg"
                   alt="WhatsApp"
-                  width={30}
-                  height={30}
+                  width={22}
+                  height={22}
                   className="invert"
                 />
-                Pesan via WhatsApp
+                <span className="text-center">Pesan via WhatsApp</span>
               </button>
               <a
                 href="tel:+6285717028133"
-                className="px-8 py-3 bg-[#003f88] hover:bg-blue-800 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+                className="flex-1 sm:flex-none px-4 py-2.5 bg-[#003f88] hover:bg-blue-800 text-white text-sm font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
               >
-                <Phone size={20} />
-                Hubungi Kami
+                <Phone size={16} />
+                <span className="text-center">Hubungi Kami</span>
               </a>
             </div>
           </div>
@@ -259,41 +305,119 @@ Keluhan/Catatan: ${formData.keluhan}`;
         </section>
 
         {/* Other Packages */}
-        <section>
-          <h2 className="text-3xl font-bold text-gray-900 mb-8">
-            Paket MCU Lainnya
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-20 md:mb-0">
-            {MCU_DATA.filter((item) => item.id !== mcu.id)
-              .slice(0, 4)
-              .map((item) => (
-                <Link
-                  key={item.id}
-                  href={`/medical-checkup/${item.id}`}
-                  className="group"
+        <section className="pt-16 pb-16 mt-12 border-t border-slate-100">
+          <div className="w-full">
+            <header className="mb-4">
+              <h2 className="text-2xl md:text-3xl font-bold text-black">
+                Paket MCU Lainnya
+              </h2>
+            </header>
+
+            <div className="w-full overflow-hidden py-1 relative">
+              <div className="w-full overflow-hidden">
+                <div
+                  ref={sliderRef}
+                  className="keen-slider flex"
+                  style={{ width: "100%" }}
                 >
-                  <div className="bg-white border border-gray-200 overflow-hidden">
-                    <figure className="flex items-center justify-center bg-gray-50 overflow-hidden">
-                      <Image
-                        src={item.image}
-                        alt={item.title}
-                        width={500}
-                        height={500}
-                        className="w-full h-auto object-contain group-hover:scale-105 transition-transform duration-700"
-                        priority
-                      />
-                    </figure>
-                    <div className="p-4">
-                      <h3 className="font-bold text-gray-800 mb-2 group-hover:text-[#003f88] transition-colors line-clamp-2">
-                        {item.title}
-                      </h3>
-                      <p className="text-[#003f88] font-bold text-base">
-                        {item.price}
-                      </p>
+                  {relatedPromos.map((item) => (
+                    <div
+                      key={`mcu-related-${item.id}`}
+                      className="keen-slider__slide shrink-0 grow-0 space-y-0 box-border"
+                    >
+                      <article className="bg-white border border-gray-300 flex flex-col h-full overflow-hidden transition-all duration-300 group">
+                        {/* Image Area - Menyesuaikan tinggi gambar otomatis (Auto Height) tanpa terpotong */}
+                        <div className="w-full relative bg-gray-50 cursor-pointer overflow-hidden flex items-center justify-center">
+                          <div className="w-full h-auto transform group-hover:scale-105 transition-transform duration-700 ease-in-out">
+                            <Image
+                              src={item.image}
+                              alt={item.title}
+                              width={500}
+                              height={500}
+                              sizes="(max-width: 768px) 50vw, 25vw"
+                              className="w-full h-auto object-contain"
+                              priority
+                            />
+                          </div>
+                        </div>
+
+                        {/* Content Area - Rata Tengah & Style Meniru Card Promo */}
+                        <div className="p-4 md:p-10 flex flex-col grow text-center bg-white">
+                          <Link href={`/medical-checkup/${item.id}`} passHref>
+                            <h3 className="text-sm md:text-xl font-bold text-[#003f88] mb-2 min-h-12 flex items-center justify-center leading-normal cursor-pointer hover:text-[#e67e22] transition-colors duration-300 line-clamp-2">
+                              {item.title}
+                            </h3>
+                          </Link>
+
+                          <p className="text-[10px] md:text-xs text-gray-500 leading-normal mb-2 line-clamp-3 md:line-clamp-4 cursor-default mt-4">
+                            {item.shortDescription ||
+                              "Pilih paket pemeriksaan kesehatan sesuai kebutuhan Anda."}
+                          </p>
+
+                          {/* Menampilkan Price dengan warna oranye promo */}
+                          <p className="text-[#e67e22] font-bold text-xs md:text-base mb-5 mt-auto">
+                            {item.price}
+                          </p>
+
+                          {/* Tombol Aksi Selengkapnya */}
+                          <div className="mt-auto">
+                            <Link href={`/medical-checkup/${item.id}`} passHref>
+                              <button
+                                type="button"
+                                className="w-full py-2 text-white text-[10px] md:text-xs font-semibold transition-all duration-500 cursor-pointer bg-[#003f88] group-hover:bg-[#e67e22] hover:bg-[#e67e22]"
+                              >
+                                ⭢ Selengkapnya
+                              </button>
+                            </Link>
+                          </div>
+                        </div>
+                      </article>
                     </div>
-                  </div>
-                </Link>
-              ))}
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* DOTS INDICATOR - Menggunakan Motion Animate Persis Modul Promo */}
+            {loaded && instanceRef.current && (
+              <div className="mt-8 flex items-center justify-center gap-4 mb-12 md:mb-0">
+                {Array.from({ length: safeTotalDots }).map((_, index) => {
+                  const isActive = index === currentSlide;
+                  return (
+                    <button
+                      key={`mcu-carousel-dot-${index}`}
+                      type="button"
+                      onClick={() => instanceRef.current?.moveToIdx(index)}
+                      className="focus:outline-none flex items-center justify-center h-8 w-8 relative"
+                      aria-label={`Go to slide ${index + 1}`}
+                    >
+                      {/* Titik Tengah Bulat */}
+                      <motion.div
+                        animate={{
+                          backgroundColor: isActive ? "#ffffff" : "#003f88",
+                        }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute w-5 h-5 rounded-full z-10 pointer-events-none"
+                      />
+
+                      <motion.div
+                        initial={{ scale: 0.4, opacity: 0 }}
+                        animate={{
+                          scale: isActive ? 1 : 0.4,
+                          opacity: isActive ? 1 : 0,
+                        }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 280,
+                          damping: 22,
+                        }}
+                        className="absolute w-9 h-9 rounded-full border-4 border-[#003f88] bg-[#003f88] z-0 origin-center pointer-events-none"
+                      />
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </section>
       </div>

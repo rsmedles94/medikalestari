@@ -53,8 +53,8 @@ export default function DoctorRecommendation({
               <article className="relative group flex items-center p-3 bg-white border border-slate-100 rounded-xl transition-all duration-200 -mt-2 opacity-60 pointer-events-none">
                 {/* overlay CUTI */}
                 <div className="absolute inset-0 z-10 flex items-center justify-center">
-                  <span className="text-5xl text-red-400 italic font-extrabold opacity-90">
-                    Sedang Cuti
+                  <span className="text-2xl text-red-400 font-semibold">
+                    C
                   </span>
                 </div>
                 <div className="relative z-0 w-full flex items-center">

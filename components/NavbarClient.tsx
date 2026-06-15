@@ -65,18 +65,12 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
   const toggleLanguage = () => {
     setLanguage(language === "ID" ? "EN" : "ID");
   };
-
-  /* ===============================
-
-     SCROLL CONTROL UNTUK TOP NAVBAR
-
-  =============================== */
-
+     /* SCROLL CONTROL UNTUK TOP NAVBAR*/
   useEffect(() => {
     const controlNavbar = () => {
       // Deteksi PromoKesehatan, ServiceSection, dan MadingSection
       const allSections = document.querySelectorAll("section");
-      let isInHideZone = false; // Sedang di dalam PromoKesehatan, ServiceSection, atau MadingSection
+      let isInHideZone = false; // Sedang di dalam section PromoKesehatan, ServiceSection, atau MadingSection
       let hasStartedHideZone = false; // Sudah melewati hide zone sepenuhnya
 
       for (const section of allSections) {
@@ -92,12 +86,12 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
           section.innerHTML.includes("Mading"); // Rough detection untuk MadingSection
 
         if (isPromoSection || isServiceSection || isMadingSection) {
-          // Cek apakah sedang DI dalam section ini (top section sudah masuk ke atas viewport)
+          // top section sudah masuk ke atas viewport
           // rect.top <= 0 berarti section sudah masuk dari atas
           // rect.bottom > 0 berarti masih ada bagian yang terlihat
           isInHideZone = isInHideZone || (rect.top <= 0 && rect.bottom > 0);
 
-          // Cek apakah sudah sepenuhnya melewati section (bottom section keluar dari bawah viewport)
+          // bottom section keluar dari bawah viewport
           // rect.bottom <= 0 berarti section sudah keluar sepenuhnya ke atas
           hasStartedHideZone = hasStartedHideZone || rect.bottom <= 0;
         }
@@ -927,7 +921,7 @@ function AuthDropdown({ activeMenu, setActiveMenu }: AuthDropdownProps) {
             animate={{ opacity: 1, y: 0, height: "auto" }}
             exit={{ opacity: 0, y: -10, height: 0 }}
             transition={{ duration: 0.3, ease: "circOut" }}
-            className="absolute top-full right-0 bg-[#003f88] text-white shadow-xl overflow-visible z-50 border-t border-[#003f88] w-48 mt-2"
+            className="absolute top-full right-0 bg-[#003f88]  text-white shadow-xl overflow-visible z-50 border-t border-[#003f88] w-48 mt-2"
           >
             {/* Arrow/Triangle */}
             <div className="absolute -top-2 right-6 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-[#003f88]"></div>
@@ -936,7 +930,7 @@ function AuthDropdown({ activeMenu, setActiveMenu }: AuthDropdownProps) {
                 <Link
                   href="/admin/dashboard"
                   onClick={() => setActiveMenu(null)}
-                  className="px-4 py-4 text-white font-medium hover:bg-white hover:text-[#003f88] transition-colors flex items-center gap-2 m-1"
+                  className="px-4 py-4 text-white font-mediumtransition-colors flex items-center gap-2 m-1"
                 >
                   Dashboard Admin
                 </Link>
