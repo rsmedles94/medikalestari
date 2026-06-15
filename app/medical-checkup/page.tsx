@@ -71,9 +71,6 @@ export default function MedicalCheckup() {
                       </h3>
                     </Link>
 
-                    <p className="text-[10px] md:text-xs text-gray-500 leading-normal mb-2 line-clamp-3 md:line-clamp-4 cursor-default mt-4">
-                      {item.shortDescription}
-                    </p>
 
                     {/* Harga*/}
                     <p className="text-[#e67e22] font-bold text-xs md:text-base mb-5 mt-auto">

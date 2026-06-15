@@ -163,11 +163,11 @@ Keluhan/Catatan: ${formData.keluhan}`;
         </ol>
       </nav>
 
-      <div className="w-full max-w-[1139px] mx-auto px-4 py-8 md:py-12">
+      <div className="w-full max-w-[1139px] mx-auto px-4 py-4 md:py-4">
         {/* Hero Section */}
         <section className="grid md:grid-cols-2 gap-8 mb-12">
           {/* Image */}
-          <figure className="flex items-center justify-center bg-gray-50 rounded-lg overflow-hidden">
+          <figure className="flex items-center justify-center bg-gray-50 overflow-hidden">
             <Image
               src={mcu.image}
               alt={mcu.title}
@@ -326,7 +326,7 @@ Keluhan/Catatan: ${formData.keluhan}`;
                       className="keen-slider__slide shrink-0 grow-0 space-y-0 box-border"
                     >
                       <article className="bg-white border border-gray-300 flex flex-col h-full overflow-hidden transition-all duration-300 group">
-                        {/* Image Area - Menyesuaikan tinggi gambar otomatis (Auto Height) tanpa terpotong */}
+                        {/* Image Area */}
                         <div className="w-full relative bg-gray-50 cursor-pointer overflow-hidden flex items-center justify-center">
                           <div className="w-full h-auto transform group-hover:scale-105 transition-transform duration-700 ease-in-out">
                             <Image
@@ -348,11 +348,6 @@ Keluhan/Catatan: ${formData.keluhan}`;
                               {item.title}
                             </h3>
                           </Link>
-
-                          <p className="text-[10px] md:text-xs text-gray-500 leading-normal mb-2 line-clamp-3 md:line-clamp-4 cursor-default mt-4">
-                            {item.shortDescription ||
-                              "Pilih paket pemeriksaan kesehatan sesuai kebutuhan Anda."}
-                          </p>
 
                           {/* Menampilkan Price dengan warna oranye promo */}
                           <p className="text-[#e67e22] font-bold text-xs md:text-base mb-5 mt-auto">
