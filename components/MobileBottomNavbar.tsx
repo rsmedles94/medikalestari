@@ -30,7 +30,6 @@ export default function MobileBottomNavbar() {
 
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
-  const [activeIndex, setActiveIndex] = useState<number | null>(0);
 
   const actionMenuRef = useRef<HTMLDivElement>(null);
   // Tambahkan ref untuk tombol plus agar bisa dikecualikan saat klik luar
@@ -52,26 +51,23 @@ export default function MobileBottomNavbar() {
     [],
   );
 
-  // Sinkronisasi activeIndex berdasarkan pathname
-  useEffect(() => {
+  // Perbaikan Error: Hitung activeIndex secara langsung saat render (State Derivatif)
+  const activeIndex = useMemo(() => {
     if (pathname === "/") {
-      setActiveIndex(null);
-      return;
+      return null;
     }
 
     if (pathname === "/services/kamar-perawatan") {
-      setActiveIndex(0);
-      return;
+      return 0;
     } else if (pathname === "/services/ketersediaan-kamar") {
-      setActiveIndex(1);
-      return;
+      return 1;
     }
 
     const idx = navItems.findIndex(
       (item) => !item.isButton && item.href === pathname,
     );
 
-    setActiveIndex(idx !== -1 ? idx : null);
+    return idx !== -1 ? idx : null;
   }, [pathname, navItems]);
 
   // Tutup action menu jika klik di luar
