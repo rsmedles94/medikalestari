@@ -55,8 +55,8 @@ export default function MCUDetailClient({
     slides: { perView: 2, spacing: 12 }, // Default mobile view (slide ke kanan)
   });
 
-  // Mengambil nilai perView secara aman dari opsi slider saat ini
-  const currentOptions = instanceRef.current?.options;
+  // Mengambil nilai perView secara aman hanya jika sudah loaded
+  const currentOptions = loaded ? instanceRef.current?.options : undefined;
   const currentPerView =
     currentOptions &&
     typeof currentOptions.slides === "object" &&
@@ -64,8 +64,8 @@ export default function MCUDetailClient({
       ? ((currentOptions.slides as { perView?: number }).perView ?? 2)
       : 2;
 
-  // Hitung jumlah dot berdasarkan sisa slide yang bisa digeser
-  const totalDots = instanceRef.current
+  // Hitung jumlah dot berdasarkan sisa slide yang bisa digeser secara aman
+  const totalDots = loaded && instanceRef.current
     ? instanceRef.current.track.details.slides.length - currentPerView + 1
     : 0;
 
@@ -341,7 +341,7 @@ Keluhan/Catatan: ${formData.keluhan}`;
                           </div>
                         </div>
 
-                        {/* Content Area - Rata Tengah & Style Meniru Card Promo */}
+                        {/* Content Area */}
                         <div className="p-4 md:p-10 flex flex-col grow text-center bg-white">
                           <Link href={`/medical-checkup/${item.id}`} passHref>
                             <h3 className="text-sm md:text-xl font-bold text-[#003f88] mb-2 min-h-12 flex items-center justify-center leading-normal cursor-pointer hover:text-[#e67e22] transition-colors duration-300 line-clamp-2">
@@ -349,7 +349,6 @@ Keluhan/Catatan: ${formData.keluhan}`;
                             </h3>
                           </Link>
 
-                          {/* Menampilkan Price dengan warna oranye promo */}
                           <p className="text-[#e67e22] font-bold text-xs md:text-base mb-5 mt-auto">
                             {item.price}
                           </p>
@@ -373,8 +372,8 @@ Keluhan/Catatan: ${formData.keluhan}`;
               </div>
             </div>
 
-            {/* DOTS INDICATOR - Menggunakan Motion Animate Persis Modul Promo */}
-            {loaded && instanceRef.current && (
+            {/* DOTS INDICATOR - Menggunakan pengecekan 'loaded' murni untuk menghindari error ESLint */}
+            {loaded && (
               <div className="mt-8 flex items-center justify-center gap-4 mb-12 md:mb-0">
                 {Array.from({ length: safeTotalDots }).map((_, index) => {
                   const isActive = index === currentSlide;
@@ -382,7 +381,11 @@ Keluhan/Catatan: ${formData.keluhan}`;
                     <button
                       key={`mcu-carousel-dot-${index}`}
                       type="button"
-                      onClick={() => instanceRef.current?.moveToIdx(index)}
+                      onClick={() => {
+                        if (loaded) {
+                          instanceRef.current?.moveToIdx(index);
+                        }
+                      }}
                       className="focus:outline-none flex items-center justify-center h-8 w-8 relative"
                       aria-label={`Go to slide ${index + 1}`}
                     >
