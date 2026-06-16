@@ -101,7 +101,7 @@ const ServicesMenu: React.FC = () => {
           {/* Desktop: tampilkan semua services, Mobile: sembunyikan Medical Checkup */}
           <div className="block md:hidden">
             <motion.ul
-              className="grid grid-cols-2 gap-3 bg-slate-50 p-4 rounded-lg list-none"
+              className="grid grid-cols-2 gap-3 bg-slate-50 p-4 list-none"
               variants={containerVariants}
               initial="hidden"
               whileInView="visible"
@@ -113,11 +113,11 @@ const ServicesMenu: React.FC = () => {
                   <motion.li
                     key={service.label}
                     variants={itemVariants}
-                    className="bg-white border border-slate-200 overflow-hidden rounded-lg"
+                    className="bg-white border border-slate-200 overflow-hidden"
                   >
                     <Link
                       href={service.href}
-                      className="group flex items-center justify-between p-4 h-full min-h-[82px] transition-all duration-200 text-[#003f88] hover:bg-[#003f88] hover:text-white rounded-lg"
+                      className="group flex items-center justify-between p-4 h-full min-h-[82px] transition-all duration-200 text-[#003f88] hover:bg-[#003f88] hover:text-white"
                     >
                       <div className="flex items-center gap-3 pr-2">
                         <div className="flex-shrink-0 relative group-hover:scale-105 transition-transform duration-200">
