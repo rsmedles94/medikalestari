@@ -452,15 +452,15 @@ const DoctorSection = ({
             <ChevronRight size={12} className="text-black/60" />
             <span className="font-normal">Dokter Kami</span>
           </nav>
-          <h1 className="text-3xl md:text-4xl font-bold text-black border-b border-slate-100 pb-4">
+          <h1 className="text-3xl md:text-4xl font-bold text-black border-b border-slate-100 pb-6">
             Dokter Kami
           </h1>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8 items-start">
           {/* MOBILE FILTER BAR */}
-          <div className="lg:hidden w-full flex flex-col gap-4">
-            <div className="flex items-center gap-2">
+          <div className="lg:hidden w-full flex flex-col gap-4 ">
+            <div className="flex items-center gap-2 bg-slate-50 p-3 rounded-lg border border-slate-100 -mt-4">
               {/* Search Input */}
               <div className="flex-1 relative">
                 <Search
@@ -489,14 +489,13 @@ const DoctorSection = ({
                   className="w-full border border-slate-200 h-11 pl-10 pr-4 outline-none focus:border-[#003f88] text-sm bg-white"
                 />
               </div>
-
               {/* Specialty Icon Button */}
               <button
                 onClick={handleOpenSpecialtyModal}
-                className={`w-11 h-11 flex items-center justify-center border transition-all ${
+                className={`w-11 h-11 flex items-center justify-center border transition-all bg-white ${
                   showMobileSpecialtyModal
-                    ? "border-[#003f88] bg-slate-50"
-                    : "border-slate-200 hover:bg-slate-50"
+                    ? "border-[#003f88] bg-white"
+                    : "border-slate-200"
                 }`}
                 title="Filter Spesialis"
               >
@@ -506,10 +505,10 @@ const DoctorSection = ({
               {/* Day Icon Button */}
               <button
                 onClick={handleOpenDayModal}
-                className={`w-11 h-11 flex items-center justify-center border transition-all ${
+                className={`w-11 h-11 flex items-center justify-center border transition-all bg-white ${
                   showMobileDayModal
-                    ? "border-[#003f88] bg-slate-50"
-                    : "border-slate-200 hover:bg-slate-50"
+                    ? "border-[#003f88] bg-white"
+                    : "border-slate-200 "
                 }`}
                 title="Filter Hari"
               >
@@ -521,7 +520,7 @@ const DoctorSection = ({
                 onClick={() => {
                   handleApplyFilter();
                 }}
-                className="px-4 h-11 bg-[#003f88] text-white font-semibold hover:bg-[#003f88]/90 transition-all border border-[#003f88] text-sm flex items-center justify-center rounded-lg" 
+                className="px-4 h-11 bg-[#003f88] text-white font-semibold hover:bg-[#003f88]/90 transition-all border border-[#003f88] text-sm flex items-center justify-center rounded-lg"
               >
                 Cari
               </button>
@@ -547,7 +546,7 @@ const DoctorSection = ({
                         onClick={() => handleSpecialtySelect(s)}
                         className={`w-full text-left px-4 py-2 text-sm transition-all ${
                           tempFilter.specialty === s
-                            ? "bg-[#003f88]/10 text-[#003f88] font-semibold"
+                            ? "bg-[#003f88] text-white font-semibold"
                             : "text-slate-700 hover:bg-slate-50"
                         }`}
                       >
@@ -579,7 +578,7 @@ const DoctorSection = ({
                         onClick={() => handleDaySelect(d)}
                         className={`w-full text-left px-4 py-2 text-sm transition-all whitespace-nowrap ${
                           tempFilter.day === d
-                            ? "bg-[#003f88]/10 text-[#003f88] font-semibold"
+                            ? "bg-[#003f88] text-white font-semibold"
                             : "text-slate-700 hover:bg-slate-50"
                         }`}
                       >

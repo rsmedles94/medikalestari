@@ -162,7 +162,7 @@ export default function DoctorScheduleGrid({
       <search className="block space-y-4">
         {/* MOBILE FILTER BAR */}
         <div className="lg:hidden w-full flex flex-col gap-4">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 bg-slate-50 p-3 rounded-lg border border-slate-100">
             <div className="flex-1 relative">
               <Search
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-[#003f88]"
@@ -182,7 +182,7 @@ export default function DoctorScheduleGrid({
 
             <button
               onClick={handleOpenMobileSpecialtyModal}
-              className={`w-11 h-11 flex items-center justify-center border transition-all ${
+              className={`w-11 h-11 flex items-center justify-center border transition-all bg-white ${
                 showMobileSpecialtyModal
                   ? "border-[#003f88] bg-slate-50"
                   : "border-slate-200 hover:bg-slate-50"
@@ -194,7 +194,7 @@ export default function DoctorScheduleGrid({
 
             <button
               onClick={handleOpenMobileDayModal}
-              className={`w-11 h-11 flex items-center justify-center border transition-all ${
+              className={`w-11 h-11 flex items-center justify-center border transition-all bg-white ${
                 showMobileDayModal
                   ? "border-[#003f88] bg-slate-50"
                   : "border-slate-200 hover:bg-slate-50"
@@ -279,7 +279,7 @@ export default function DoctorScheduleGrid({
                       setSearchDoctor("");
                       setSearchDoctorInput("");
                     }}
-                    className={`w-full text-left px-4 py-2 text-base  transition-all whitespace-nowrap ${
+                    className={`w-full text-left px-4 py-2 text-base transition-all whitespace-nowrap ${
                       selectedDayInput === null
                         ? "bg-[#003f88] text-white font-semibold"
                         : "text-slate-700 hover:bg-slate-50"
@@ -294,7 +294,7 @@ export default function DoctorScheduleGrid({
                         setSelectedDayInput(d);
                         setShowMobileDayModal(false);
                       }}
-                      className={`w-full text-left px-4 py-2 text-base  transition-all whitespace-nowrap ${
+                      className={`w-full text-left px-4 py-2 text-base transition-all whitespace-nowrap ${
                         selectedDayInput === d
                           ? "bg-[#003f88] text-white font-semibold"
                           : "text-slate-700 hover:bg-slate-50"
@@ -310,7 +310,7 @@ export default function DoctorScheduleGrid({
         </div>
 
         {/* DESKTOP SEARCH BAR WITH WRAPPER */}
-        <div className="hidden lg:block p-4 bg-slate-50 border border-slate-100 ">
+        <div className="hidden lg:block p-4 bg-slate-50 border border-slate-100 rounded-lg">
           <div className="grid grid-cols-2 gap-4">
             {/* Kolom Kiri: Spesialis */}
             <div className="relative">
@@ -321,7 +321,7 @@ export default function DoctorScheduleGrid({
                 onClick={() =>
                   setShowMobileSpecialtyModal(!showMobileSpecialtyModal)
                 }
-                className="w-full h-11 px-4 border border-slate-200 text-left bg-white hover:bg-slate-50 transition-all focus:border-[#003f88] focus:outline-none text-base flex items-center justify-between"
+                className="w-full h-11 px-4 border border-slate-200 text-left bg-white transition-all focus:border-[#003f88] focus:outline-none text-base flex items-center justify-between"
               >
                 <span>{selectedSpecialtyInput || "Pilih Spesialis"}</span>
                 <Stethoscope size={18} className="text-[#003f88] shrink-0" />
@@ -332,7 +332,7 @@ export default function DoctorScheduleGrid({
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="absolute top-full left-0 right-0 bg-white border border-slate-200 shadow-lg z-50 mt-1 max-h-96 overflow-y-auto"
+                    className="absolute top-full left-0 right-0 bg-white border border-slate-200 shadow-lg z-50 mt-1 max-h-96 overflow-y-auto rounded-lg"
                   >
                     <div className="p-2">
                       <button
@@ -358,7 +358,7 @@ export default function DoctorScheduleGrid({
                             setSelectedSpecialtyInput(s);
                             setShowMobileSpecialtyModal(false);
                           }}
-                          className={`w-full text-left px-4 py-2 text-sm  transition-all ${
+                          className={`w-full text-left px-4 py-2 text-sm transition-all ${
                             selectedSpecialtyInput === s
                               ? "bg-[#003f88] text-white font-semibold"
                               : "text-slate-700 hover:bg-slate-50"
@@ -423,7 +423,7 @@ export default function DoctorScheduleGrid({
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="absolute top-full right-0 bg-white border border-slate-200 shadow-lg z-50 mt-1 max-h-96 overflow-y-auto "
+                    className="absolute top-full right-0 bg-white border border-slate-200 shadow-lg z-50 mt-1 max-h-96 overflow-y-auto"
                   >
                     <div className="p-2">
                       <button
@@ -449,7 +449,7 @@ export default function DoctorScheduleGrid({
                             setSelectedDayInput(d);
                             setShowDesktopDayModal(false);
                           }}
-                          className={`w-full text-left px-4 py-2 text-sm transition-all whitespace-nowrap  ${
+                          className={`w-full text-left px-4 py-2 text-sm transition-all whitespace-nowrap ${
                             selectedDayInput === d
                               ? "bg-[#003f88] text-white font-semibold"
                               : "text-slate-700 hover:bg-slate-50"
