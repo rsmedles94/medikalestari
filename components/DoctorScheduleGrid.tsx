@@ -469,7 +469,7 @@ export default function DoctorScheduleGrid({
                   setSearchDoctor(searchDoctorInput);
                   setSelectedDay(selectedDayInput);
                 }}
-                className="px-6 h-11 bg-[#003f88] text-white font-semibold transition-all flex items-center justify-center text-base cursor-pointer rounded-lg active:scale-95"
+                className="px-4 h-11 bg-[#003f88] text-white font-semibold transition-all flex items-center justify-center text-base cursor-pointer rounded-lg active:scale-95"
               >
                 Cari
               </button>
