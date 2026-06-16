@@ -464,7 +464,7 @@ const DoctorSection = ({
               {/* Search Input */}
               <div className="flex-1 relative">
                 <Search
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[#003f88]"
                   size={16}
                 />
                 <input
