@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -131,19 +131,69 @@ const PROMO_DATA = [
   },
 ];
 
+// Cache key for sessionStorage
+const CACHE_KEY = "promo_page_cache";
+
+// Type definition for promo data
+interface PromoItem {
+  id: number;
+  title: string;
+  description: string;
+  image: string;
+}
+
 export default function PromoPage() {
   // State untuk track card promo mana yang di-hover
   const [hoveredPromoId, setHoveredPromoId] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [cachedData, setCachedData] = useState<PromoItem[] | null>(null);
 
-  // Simulasi loading untuk skeleton shimmer
+  // Load data from cache or fetch
   useEffect(() => {
+    let isMounted = true;
+
+    // Check if data exists in sessionStorage
+    const cachedDataString = sessionStorage.getItem(CACHE_KEY);
+
+    if (cachedDataString) {
+      try {
+        const parsedData = JSON.parse(cachedDataString) as PromoItem[];
+        // Use queueMicrotask to avoid synchronous setState warning
+        queueMicrotask(() => {
+          if (isMounted) {
+            setCachedData(parsedData);
+            setIsLoading(false);
+            console.log("Data loaded from cache");
+          }
+        });
+        return;
+      } catch (error) {
+        console.error("Error parsing cached data:", error);
+        // If cache parse fails, fetch fresh data
+      }
+    }
+
+    // Fetch data with setTimeout to simulate API call
     const timer = setTimeout(() => {
-      setIsLoading(false);
+      if (isMounted) {
+        // Store in cache
+        sessionStorage.setItem(CACHE_KEY, JSON.stringify(PROMO_DATA));
+        setCachedData(PROMO_DATA);
+        setIsLoading(false);
+        console.log("Data fetched and cached");
+      }
     }, 1000);
 
-    return () => clearTimeout(timer);
-  }, []);
+    // Cleanup function
+    return () => {
+      isMounted = false;
+      clearTimeout(timer);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array - only run once on mount
+
+  // Determine what to render: skeleton or data
+  const renderData = cachedData || PROMO_DATA;
 
   return (
     <div className="w-full min-h-screen bg-white">
@@ -200,7 +250,7 @@ export default function PromoPage() {
                     <SkeletonCard />
                   </div>
                 ))
-              : PROMO_DATA.map((item) => (
+              : renderData.map((item) => (
                   <motion.article
                     key={item.id}
                     initial={{ opacity: 1, y: 0 }}

@@ -1,9 +1,15 @@
 "use client";
 
-import React, { useMemo, useState, useEffect, useRef } from "react";
+import React, {
+  useMemo,
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+} from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import {
   Home,
   UserRoundPlus,
@@ -32,7 +38,6 @@ export default function MobileBottomNavbar() {
   const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
 
   const actionMenuRef = useRef<HTMLDivElement>(null);
-  // Tambahkan ref untuk tombol plus agar bisa dikecualikan saat klik luar
   const plusButtonRef = useRef<HTMLButtonElement>(null);
 
   const navItems = useMemo<NavItem[]>(
@@ -51,16 +56,10 @@ export default function MobileBottomNavbar() {
     [],
   );
 
-  // Perbaikan Error: Hitung activeIndex secara langsung saat render (State Derivatif)
+  // Hitung active index
   const activeIndex = useMemo(() => {
     if (pathname === "/") {
-      return null;
-    }
-
-    if (pathname === "/services/kamar-perawatan") {
       return 0;
-    } else if (pathname === "/services/ketersediaan-kamar") {
-      return 1;
     }
 
     const idx = navItems.findIndex(
@@ -70,33 +69,83 @@ export default function MobileBottomNavbar() {
     return idx !== -1 ? idx : null;
   }, [pathname, navItems]);
 
-  // Tutup action menu jika klik di luar
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      // Jika yang diklik adalah tombol plus itu sendiri, biarkan logika onClick tombol yang bekerja
-      if (
-        plusButtonRef.current &&
-        plusButtonRef.current.contains(event.target as Node)
-      ) {
-        return;
-      }
+  // Handler dengan useCallback
+  const handlePlusClick = useCallback(() => {
+    setIsActionMenuOpen((prev) => !prev);
+  }, []);
 
-      if (
-        actionMenuRef.current &&
-        !actionMenuRef.current.contains(event.target as Node)
-      ) {
-        setIsActionMenuOpen(false);
-      }
-    };
-
-    if (isActionMenuOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
+  const handleOutsideClick = useCallback((event: MouseEvent) => {
+    if (
+      plusButtonRef.current &&
+      plusButtonRef.current.contains(event.target as Node)
+    ) {
+      return;
     }
 
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isActionMenuOpen]);
+    if (
+      actionMenuRef.current &&
+      !actionMenuRef.current.contains(event.target as Node)
+    ) {
+      setIsActionMenuOpen(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isActionMenuOpen) {
+      document.addEventListener("mousedown", handleOutsideClick);
+      return () => {
+        document.removeEventListener("mousedown", handleOutsideClick);
+      };
+    }
+  }, [isActionMenuOpen, handleOutsideClick]);
+
+  const handleActionClick = useCallback((action: () => void) => {
+    setIsActionMenuOpen(false);
+    action();
+  }, []);
+
+  // Fungsi untuk menentukan warna ikon
+  const getIconColor = (item: NavItem, index: number) => {
+    const isActive = index === activeIndex;
+    const isHome = item.label === "Beranda";
+    const isHomeActive = isHome && pathname === "/";
+
+    // Khusus untuk Beranda: selalu hitam gelap (dull) jika aktif
+    if (isHomeActive) {
+      return "#000000";
+    }
+
+    // Untuk menu lainnya: hitam jika aktif, abu-abu jika tidak
+    return isActive ? "#000000" : "#9CA3AF";
+  };
+
+  // Fungsi untuk menentukan fill ikon
+  const getIconFill = (item: NavItem, index: number) => {
+    const isActive = index === activeIndex;
+    const isHome = item.label === "Beranda";
+    const isHomeActive = isHome && pathname === "/";
+
+    // Khusus untuk Beranda: fill hitam jika aktif
+    if (isHomeActive) {
+      return "#000000";
+    }
+
+    // Untuk menu lainnya: fill hitam hanya jika aktif
+    return isActive ? "#000000" : "none";
+  };
+
+  // Fungsi untuk menentukan warna teks
+  const getTextColor = (item: NavItem, index: number) => {
+    const isActive = index === activeIndex;
+    const isHome = item.label === "Beranda";
+    const isHomeActive = isHome && pathname === "/";
+
+    if (isHomeActive) {
+      return "#000000";
+    }
+
+    return isActive ? "#000000" : "#9CA3AF";
+  };
 
   return (
     <>
@@ -105,26 +154,35 @@ export default function MobileBottomNavbar() {
         onClose={() => setIsBookingOpen(false)}
       />
 
-      {/* WRAPPER NAVBAR + POPUP */}
       <div className="fixed bottom-0 left-0 right-0 z-40 w-full lg:hidden flex flex-col items-center">
         {/* POP UP SUB-MENU */}
-        <AnimatePresence>
+        <AnimatePresence mode="wait">
           {isActionMenuOpen && (
-            <motion.div
+            <div
               ref={actionMenuRef}
-              initial={{ opacity: 0, y: 15, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 15, scale: 0.95 }}
-              transition={{ duration: 0.2, ease: "easeInOut" }}
               className="mb-2 w-[220px] bg-white border border-gray-200 shadow-xl rounded-xl p-1 flex flex-col z-50"
+              style={{
+                opacity: 1,
+                transform: "scale(1)",
+                animation: "menuFadeIn 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+              }}
             >
-              {/* Pilihan 1: Janji Temu */}
+              <style jsx>{`
+                @keyframes menuFadeIn {
+                  from {
+                    opacity: 0;
+                    transform: scale(0.95) translateY(15px);
+                  }
+                  to {
+                    opacity: 1;
+                    transform: scale(1) translateY(0);
+                  }
+                }
+              `}</style>
+
               <button
                 type="button"
-                onClick={() => {
-                  setIsActionMenuOpen(false);
-                  setIsBookingOpen(true);
-                }}
+                onClick={() => handleActionClick(() => setIsBookingOpen(true))}
                 className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 text-sm font-medium text-left outline-none hover:bg-gray-50 active:bg-gray-100 transition-colors rounded-lg"
                 style={{ WebkitTapHighlightColor: "transparent" }}
               >
@@ -132,16 +190,15 @@ export default function MobileBottomNavbar() {
                 <span>Buat Janji Temu</span>
               </button>
 
-              {/* Garis Pembatas */}
               <div className="h-[1px] w-full bg-gray-100 my-0.5" />
 
-              {/* Pilihan 2: Jadwal Dokter */}
               <button
                 type="button"
-                onClick={() => {
-                  setIsActionMenuOpen(false);
-                  router.push("/services/kamar-perawatan");
-                }}
+                onClick={() =>
+                  handleActionClick(() =>
+                    router.push("/services/kamar-perawatan"),
+                  )
+                }
                 className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 text-sm font-medium text-left outline-none hover:bg-gray-50 active:bg-gray-100 transition-colors rounded-lg"
                 style={{ WebkitTapHighlightColor: "transparent" }}
               >
@@ -149,23 +206,20 @@ export default function MobileBottomNavbar() {
                 <span>Kamar Perawatan</span>
               </button>
 
-              {/* Garis Pembatas */}
               <div className="h-[1px] w-full bg-gray-100 my-0.5" />
 
-              {/* Pilihan 3: Jadwal Dokter */}
               <button
                 type="button"
-                onClick={() => {
-                  setIsActionMenuOpen(false);
-                  router.push("/ketersediaan-kamar");
-                }}
+                onClick={() =>
+                  handleActionClick(() => router.push("/ketersediaan-kamar"))
+                }
                 className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 text-sm font-medium text-left outline-none hover:bg-gray-50 active:bg-gray-100 transition-colors rounded-lg"
                 style={{ WebkitTapHighlightColor: "transparent" }}
               >
                 <Bed size={18} className="text-gray-500" />
                 <span>Ketersediaan Kamar</span>
               </button>
-            </motion.div>
+            </div>
           )}
         </AnimatePresence>
 
@@ -173,66 +227,7 @@ export default function MobileBottomNavbar() {
         <div className="w-full h-18 bg-white border-t border-gray-200 shadow-[0_-2px_10px_rgba(0,0,0,0.04)]">
           <ul className="flex items-center justify-between h-full px-2">
             {navItems.map((item, i) => {
-              const isActive = i === activeIndex;
               const Icon = item.icon;
-
-              const buttonContent = (
-                <div className="flex flex-col items-center justify-center w-full h-full gap-1">
-                  <div className="flex items-center justify-center">
-                    {item.isButton ? (
-                      <motion.div
-                        animate={{ rotate: isActionMenuOpen ? 45 : 0 }}
-                        transition={{ duration: 0.2, ease: "easeInOut" }}
-                        className="flex items-center justify-center h-full"
-                      >
-                        <Icon
-                          size={32}
-                          strokeWidth={3}
-                          className={
-                            isActionMenuOpen ? "text-black" : "text-gray-400"
-                          }
-                        />
-                      </motion.div>
-                    ) : (
-                      <Icon
-                        size={24}
-                        strokeWidth={isActive ? 2.5 : 2}
-                        fill={
-                          isActive &&
-                          (item.label === "Beranda" || item.label === "Kamar")
-                            ? "#000000"
-                            : "none"
-                        }
-                        className={`transition-colors duration-200 ${
-                          isActive ? "text-black" : "text-gray-400"
-                        }`}
-                      />
-                    )}
-                  </div>
-
-                  {!item.isButton && (
-                    <span
-                      className={`text-[11px] font-medium transition-colors duration-200 ${
-                        isActive ? "text-black" : "text-gray-400"
-                      }`}
-                    >
-                      {item.label}
-                    </span>
-                  )}
-                </div>
-              );
-
-              const sharedLinkStyle: React.CSSProperties = {
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                height: "100%",
-                width: "100%",
-                outline: "none",
-                WebkitTapHighlightColor: "transparent",
-                cursor: "pointer",
-              };
 
               return (
                 <li
@@ -241,16 +236,36 @@ export default function MobileBottomNavbar() {
                 >
                   {item.isButton ? (
                     <button
-                      ref={plusButtonRef} // Pasang ref di sini
+                      ref={plusButtonRef}
                       type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setIsActionMenuOpen((prev) => !prev);
+                      onClick={handlePlusClick}
+                      className="flex flex-col items-center justify-center w-full h-full select-none focus:outline-none"
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        height: "100%",
+                        width: "100%",
+                        outline: "none",
+                        WebkitTapHighlightColor: "transparent",
+                        cursor: "pointer",
                       }}
-                      style={sharedLinkStyle}
-                      className="select-none focus:outline-none"
                     >
-                      {buttonContent}
+                      <div className="flex items-center justify-center">
+                        <Plus
+                          size={32}
+                          strokeWidth={3}
+                          style={{
+                            transform: isActionMenuOpen
+                              ? "rotate(45deg)"
+                              : "rotate(0deg)",
+                            transition:
+                              "transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                            color: isActionMenuOpen ? "#000000" : "#9CA3AF",
+                          }}
+                        />
+                      </div>
                     </button>
                   ) : (
                     <Link
@@ -260,12 +275,48 @@ export default function MobileBottomNavbar() {
                           e.preventDefault();
                           window.scrollTo({ top: 0, behavior: "smooth" });
                         }
-                        setIsActionMenuOpen(false);
                       }}
-                      style={sharedLinkStyle}
-                      className="select-none focus:outline-none"
+                      className="flex flex-col items-center justify-center w-full h-full select-none focus:outline-none"
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        height: "100%",
+                        width: "100%",
+                        outline: "none",
+                        WebkitTapHighlightColor: "transparent",
+                        cursor: "pointer",
+                      }}
                     >
-                      {buttonContent}
+                      <div className="flex flex-col items-center justify-center w-full h-full gap-1">
+                        <div className="flex items-center justify-center">
+                          <Icon
+                            size={24}
+                            strokeWidth={
+                              i === activeIndex ||
+                              (item.label === "Beranda" && pathname === "/")
+                                ? 2.5
+                                : 2
+                            }
+                            fill={getIconFill(item, i)}
+                            style={{
+                              color: getIconColor(item, i),
+                              transition: "color 0.15s ease",
+                            }}
+                          />
+                        </div>
+                        <span
+                          style={{
+                            fontSize: "11px",
+                            fontWeight: 500,
+                            color: getTextColor(item, i),
+                            transition: "color 0.15s ease",
+                          }}
+                        >
+                          {item.label}
+                        </span>
+                      </div>
                     </Link>
                   )}
                 </li>
