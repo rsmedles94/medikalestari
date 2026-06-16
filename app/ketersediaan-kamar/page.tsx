@@ -48,7 +48,21 @@ export default function KetersediaanKamarPage() {
   }, []);
 
   useEffect(() => {
-    fetchData();
+    let active = true;
+
+    // Memanggil fetchData secara asinkron dan aman dari efek cascading render
+    const doFetch = async () => {
+      if (active) {
+        await fetchData();
+      }
+    };
+
+    doFetch();
+
+    // Cleanup function untuk mencegah memory leak / race condition
+    return () => {
+      active = false;
+    };
   }, [fetchData]);
 
   return (
@@ -102,9 +116,9 @@ export default function KetersediaanKamarPage() {
               href={siranapUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-[#003f88] hover:bg-[#e67e22] text-white font-medium text-sm transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 text-[#003f88] hover:text-[#e67e22] font-medium text-sm transition-colors duration-700"
             >
-              Lihat Situs Resmi
+              Siranap
               <ExternalLink size={14} />
             </a>
           </div>
@@ -115,9 +129,7 @@ export default function KetersediaanKamarPage() {
           {loading ? (
             <div className="flex flex-col items-center justify-center gap-3 text-gray-500">
               <Loader2 size={32} className="animate-spin text-[#003f88]" />
-              <p className="text-sm font-medium">
-                Sedang mengambil data real-time...
-              </p>
+              <p className="text-sm font-medium">Sedang mengambil data ...</p>
             </div>
           ) : error ? (
             <div className="text-center p-6">
@@ -137,7 +149,7 @@ export default function KetersediaanKamarPage() {
                          [&_table]:w-full [&_table]:border-collapse [&_table]:my-2
                          [&_th]:bg-slate-50 [&_th]:text-[#001e3d] [&_th]:p-4 [&_th]:text-sm [&_th]:font-semibold [&_th]:border-b-2 [&_th]:border-slate-200 [&_th]:text-left
                          [&_td]:p-4 [&_td]:text-sm [&_td]:text-slate-600 [&_td]:border-b [&_td]:border-slate-100 [&_td]:vertical-middle
-                         [&_tr:hover]:bg-slate-50/80
+                         [&_tr:hover]:bg-slate-50/80 
                          [&_.siranap-card-wrapper]:bg-white [&_.siranap-card-wrapper]:border [&_.siranap-card-wrapper]:border-slate-100 [&_.siranap-card-wrapper]:p-5"
               dangerouslySetInnerHTML={{ __html: tableHtml }}
             />

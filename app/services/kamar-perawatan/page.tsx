@@ -270,7 +270,7 @@ export default function KamarPerawatan() {
               }}
               className={`pb-4 text-sm md:text-base font-medium transition-all relative ${
                 activeTab === room.name
-                  ? "text-[#001e3d]"
+                  ? "text-[#003f88]"
                   : "text-gray-400 hover:text-gray-600"
               }`}
             >
@@ -278,7 +278,7 @@ export default function KamarPerawatan() {
               {activeTab === room.name && (
                 <motion.div
                   layoutId="activeTabUnderline"
-                  className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#001e3d]"
+                  className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#003f88]"
                 />
               )}
             </button>
@@ -404,7 +404,7 @@ export default function KamarPerawatan() {
                 >
                   <button
                     type="button"
-                    className="w-full bg-[#003f88] hover:bg-[#e67e22] text-white font-semibold py-3 px-4 text-sm text-center transition-all duration-500 cursor-pointer"
+                    className="flex-1  text-[#003f88] hover:text-[#e67e22] font-semibold py-3 text-sm text-center transition-all duration-700 cursor-pointer rounded-[25px]"
                   >
                     Lihat Ketersediaan Kamar
                   </button>
