@@ -158,22 +158,22 @@ export default function BookingForm({
         className="fixed inset-0 z-70 flex items-center justify-center p-4 pointer-events-none"
       >
         {/* Container Booking Form */}
-        <section className="bg-white rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] w-full max-w-sm overflow-hidden pointer-events-auto border border-slate-100">
+        <section className="bg-white rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.1)] w-full max-w-sm overflow-hidden pointer-events-auto border border-slate-100">
           {/* Header */}
           <header className="p-7 pb-2 flex items-start justify-between">
             <div className="pr-4">
-              <h2 className="text-xl font-bold text-slate-900 leading-tight">
+              <h2 className="text-xl font-semibold text-slate-900 leading-tight">
                 Buat Janji Temu
               </h2>
-              <p className="text-slate-400 text-xs mt-1 font-medium">
+              <p className="text-slate-400 text-xs mt-1 font-normal">
                 {doctorName} • {specialty}
               </p>
             </div>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-slate-50 rounded-full transition-colors text-slate-400"
+              className="p-2 rounded-full transition-colors text-gray-500 hover:text-gray-700 cursor-pointer"
             >
-              <X size={20} />
+              <X size={24} />
             </button>
           </header>
 
@@ -210,7 +210,7 @@ export default function BookingForm({
                       value={formData.patientName}
                       onChange={handleChange}
                       placeholder="Nama Lengkap Pasien"
-                      className="w-full px-5 py-3.5 bg-slate-50 border border-slate-100  focus:bg-white focus:ring-2 focus:ring-blue-500/10 transition-all text-sm outline-none  rounded-xl"
+                      className="w-full px-5 py-3.5 bg-white border border-slate-100 focus:ring-2 focus:ring-[#003f88] transition-all text-sm outline-none  rounded-xl"
                     />
 
                     <div className="grid grid-cols-2 gap-3">
@@ -220,7 +220,7 @@ export default function BookingForm({
                         value={formData.patientPhone}
                         onChange={handleChange}
                         placeholder="Masukan No Tlp"
-                        className="w-full px-5 py-3.5 bg-slate-50 border border-slate-100  focus:bg-white focus:ring-2 focus:ring-blue-500/10 transition-all text-sm outline-none  rounded-xl"
+                        className="w-full px-5 py-3.5  border border-slate-100  focus:ring-2 focus:ring-[#003f88] transition-all text-sm outline-none  rounded-xl"
                       />
 
                       {schedules && schedules.length > 0 ? (
@@ -231,7 +231,7 @@ export default function BookingForm({
                               setSelectedDay(e.target.value);
                               setSelectedTime("");
                             }}
-                            className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-sm outline-none"
+                            className="w-full px-4 py-3  border border-slate-100 rounded-xl text-sm outline-none"
                           >
                             <option value="">Pilih Hari</option>
                             {availableDays(schedules).map((d) => (
@@ -243,7 +243,7 @@ export default function BookingForm({
                           <select
                             value={selectedTime}
                             onChange={(e) => setSelectedTime(e.target.value)}
-                            className="w-full mt-2 px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-sm outline-none"
+                            className="w-full mt-2 px-4 py-3  border border-slate-100 rounded-xl text-sm outline-none"
                             disabled={!selectedDay}
                           >
                             <option value="">Pilih Jam</option>
@@ -273,32 +273,30 @@ export default function BookingForm({
                       onChange={handleChange}
                       placeholder="Keluhan atau Alasan Kunjungan"
                       rows={2}
-                      className="w-full px-5 py-3.5 bg-slate-50 border border-slate-100  focus:bg-white focus:ring-2 focus:ring-blue-500/10 transition-all text-sm outline-none resize-none  rounded-xl"
+                      className="w-full px-5 py-3.5 border border-slate-100  focus:bg-white focus:ring-2 focus:ring-[#003f88] transition-all text-sm outline-none resize-none  rounded-xl"
                     />
                   </div>
 
                   {/* Button Kirim Pendaftaran */}
-                  <div className="pt-6">
+                  <div className="flex gap-3 pt-4">
+                     <button
+                      type="button"
+                      onClick={onClose}
+                      className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+                    >
+                      Batal
+                    </button>
+
                     <button
                       type="submit"
                       disabled={loading}
-                      className="w-full py-4 bg-[#003f88] text-white font-bold rounded-full transition-all duration-300
-                      active:scale-95 flex items-center justify-center gap-3 text-sm cursor-pointer"
+                      className="flex-1 px-4 py-2 bg-[#003f88] hover:bg-[#003f88] text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 cursor-pointer"
                     >
                       {loading ? (
                         <div className="w-5 h-5 border-3 border-white/30 border-t-white rounded-full animate-spin " />
                       ) : (
                         <>Kirim</>
                       )}
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={onClose}
-                      className="w-full py-3 bg-transparent text-slate-400 font-medium rounded-full transition-all duration-200
-                      hover:text-slate-600 active:scale-95 text-xs mt-2"
-                    >
-                      Batal
                     </button>
                   </div>
                 </form>

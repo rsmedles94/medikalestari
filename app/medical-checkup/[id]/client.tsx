@@ -526,7 +526,7 @@ Keluhan/Catatan: ${formData.keluhan}`;
               </h2>
               <button
                 onClick={() => setShowWhatsAppForm(false)}
-                className="text-gray-500 hover:text-gray-700 transition-colors"
+                className="text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
               >
                 <svg
                   className="w-6 h-6"
