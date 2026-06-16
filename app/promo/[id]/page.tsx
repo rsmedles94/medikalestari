@@ -515,7 +515,7 @@ export default function PromoDetailPage() {
                   height={22}
                   className="invert"
                 />
-                <span>Pesan via WhatsApp</span>
+                <span>Booking Online</span>
               </button>
 
               <a

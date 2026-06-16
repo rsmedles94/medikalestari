@@ -210,7 +210,7 @@ Keluhan/Catatan: ${formData.keluhan}`;
                   height={22}
                   className="invert"
                 />
-                <span className="text-center">Pesan via WhatsApp</span>
+                <span className="text-center">Booking Online</span>
               </button>
               <a
                 href="tel:+6285717028133"
