@@ -499,7 +499,7 @@ const DoctorSection = ({
                 }`}
                 title="Filter Spesialis"
               >
-                <Stethoscope size={18} className="text-[#003f88]" />
+                <Stethoscope size={20} className="text-[#003f88]" />
               </button>
 
               {/* Day Icon Button */}
@@ -512,7 +512,7 @@ const DoctorSection = ({
                 }`}
                 title="Filter Hari"
               >
-                <CalendarDays size={18} className="text-[#003f88]" />
+                <CalendarDays size={20} className="text-[#003f88]" />
               </button>
 
               {/* Search Button */}

@@ -27,10 +27,10 @@ export default function DoctorScheduleSkeleton() {
       {/* SEARCH & FILTER SKELETON */}
       <div className="space-y-4">
         <div className="lg:hidden flex items-center gap-2">
-          <div className="flex-1 h-12 bg-slate-200 rounded animate-pulse" />
-          <div className="h-10 w-12 rounded bg-slate-200 animate-pulse" />
-          <div className="h-10 w-12 rounded bg-slate-200 animate-pulse" />
-          <div className="h-10 w-20 rounded bg-slate-200 animate-pulse" />
+          <div className="flex-1 h-10 bg-slate-200  animate-pulse" />
+          <div className="h-10 w-12  bg-slate-200 animate-pulse" />
+          <div className="h-10 w-12  bg-slate-200 animate-pulse" />
+          <div className="h-10 w-16 rounded-lg bg-slate-200 animate-pulse" />
         </div>
 
         <div className="hidden lg:grid grid-cols-2 gap-4">
@@ -107,7 +107,7 @@ export default function DoctorScheduleSkeleton() {
         </table>
       </div>
 
-      {/* MOBILE LIST SKELETON (compact cards matching new mobile UI) */}
+      {/* MOBILE LIST SKELETON  */}
       <div className="lg:hidden flex flex-col gap-6">
         {mobileListIds.map((id) => (
           <div
