@@ -201,7 +201,7 @@ Keluhan/Catatan: ${formData.keluhan}`;
             <div className="flex flex-row gap-2 w-full sm:w-auto">
               <button
                 onClick={() => setShowWhatsAppForm(true)}
-                className="flex-1 sm:flex-none px-4 py-2.5 bg-green-500 hover:bg-green-600 active:bg-green-700 transition-colors duration-700 text-white text-sm font-semibold rounded-lg  flex items-center justify-center gap-2 cursor-pointer"
+                className="flex-1  px-5 py-3 bg-green-500 hover:bg-green-600 active:bg-green-700 transition-colors duration-700 text-white text-sm font-semibold rounded-lg  flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Image
                   src="/images/icons/whatsapp-fill.svg"
@@ -214,7 +214,7 @@ Keluhan/Catatan: ${formData.keluhan}`;
               </button>
               <a
                 href="tel:+6285717028133"
-                className="flex-1 sm:flex-none px-4 py-2.5 bg-[#003f88] hover:bg-blue-800 active:bg-blue-900 transition-colors duration-700 text-white text-sm font-semibold rounded-lg  flex items-center justify-center gap-2"
+                className="flex-1  px-5 py-3 bg-[#003f88] hover:bg-blue-800 active:bg-blue-900 transition-colors duration-700 text-white text-sm font-semibold rounded-lg  flex items-center justify-center gap-2"
               >
                 <Phone size={16} />
                 <span className="text-center">Hubungi Kami</span>
