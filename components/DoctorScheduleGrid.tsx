@@ -210,7 +210,7 @@ export default function DoctorScheduleGrid({
                 setSearchDoctor(searchDoctorInput);
                 setSelectedDay(selectedDayInput);
               }}
-              className="px-4 h-11 bg-[#003f88] text-white font-semibold hover:bg-[#003f88]/90 transition-all border border-[#003f88] text-base flex items-center justify-center"
+              className="px-4 h-11 bg-[#003f88] text-white font-semibold hover:bg-[#003f88]/90 transition-all border border-[#003f88] text-base flex items-center justify-center rounded-lg"
             >
               Cari
             </button>
@@ -423,7 +423,7 @@ export default function DoctorScheduleGrid({
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="absolute top-full right-0 bg-white border border-slate-200 shadow-lg z-50 mt-1 max-h-96 overflow-y-auto"
+                    className="absolute top-full right-0 bg-white border border-slate-200 shadow-lg z-50 mt-1 max-h-96 overflow-y-auto "
                   >
                     <div className="p-2">
                       <button
@@ -449,7 +449,7 @@ export default function DoctorScheduleGrid({
                             setSelectedDayInput(d);
                             setShowDesktopDayModal(false);
                           }}
-                          className={`w-full text-left px-4 py-2 text-sm transition-all whitespace-nowrap ${
+                          className={`w-full text-left px-4 py-2 text-sm transition-all whitespace-nowrap  ${
                             selectedDayInput === d
                               ? "bg-[#003f88] text-white font-semibold"
                               : "text-slate-700 hover:bg-slate-50"
@@ -469,7 +469,7 @@ export default function DoctorScheduleGrid({
                   setSearchDoctor(searchDoctorInput);
                   setSelectedDay(selectedDayInput);
                 }}
-                className="px-6 h-11 bg-[#003f88] text-white font-semibold hover:bg-[#e67e22] transition-all flex items-center justify-center text-base cursor-pointer"
+                className="px-6 h-11 bg-[#003f88] text-white font-semibold transition-all flex items-center justify-center text-base cursor-pointer rounded-lg active:scale-95"
               >
                 Cari
               </button>

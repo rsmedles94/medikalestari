@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight, Phone, MapPin, Check } from "lucide-react";
@@ -8,6 +8,21 @@ import { useKeenSlider } from "keen-slider/react";
 import { motion } from "framer-motion";
 import "keen-slider/keen-slider.min.css";
 import { MCU_DATA } from "../data";
+import type { KeenSliderOptions } from "keen-slider";
+
+// Type untuk slides configuration
+type SlidesConfig = {
+  perView?: number;
+  spacing?: number;
+  origin?: "auto" | "center" | number;
+};
+
+// Type untuk breakpoints
+type Breakpoints = {
+  [key: string]: {
+    slides: SlidesConfig;
+  };
+};
 
 export default function MCUDetailClient({
   params,
@@ -31,48 +46,153 @@ export default function MCUDetailClient({
   // State untuk melacak dot active slider
   const [currentSlide, setCurrentSlide] = useState(0);
   const [loaded, setLoaded] = useState(false);
+  const [totalSlides, setTotalSlides] = useState(0);
+  const [currentPerView, setCurrentPerView] = useState(2);
+  const [isMobile, setIsMobile] = useState(false);
 
   // Filter paket lainnya untuk slider
-  const relatedPromos = MCU_DATA.filter((item) => item.id !== mcu?.id);
+  const relatedPromos = useMemo(() => {
+    return MCU_DATA.filter((item) => item.id !== mcu?.id);
+  }, [mcu]);
 
-  // Inisialisasi Keen Slider responsif (Mobile swipe, Desktop slider/grid)
-  const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
-    initial: 0,
-    slideChanged(slider) {
-      setCurrentSlide(slider.track.details.rel);
+  // Deteksi mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    return () => {
+      window.removeEventListener("resize", checkMobile);
+    };
+  }, []);
+
+  // Helper function untuk mendapatkan nilai perView dari options dengan tipe yang proper
+  const getPerViewValue = useCallback(
+    (options: KeenSliderOptions | undefined): number => {
+      if (!options) return 2;
+
+      const slidesConfig = options.slides;
+      if (
+        slidesConfig &&
+        typeof slidesConfig === "object" &&
+        "perView" in slidesConfig
+      ) {
+        const perView = (slidesConfig as SlidesConfig).perView;
+        return perView ?? 2;
+      }
+      return 2;
     },
-    created() {
-      setLoaded(true);
-    },
-    breakpoints: {
-      "(min-width: 768px)": {
-        slides: { perView: 3, spacing: 16 },
+    [],
+  );
+
+  // Inisialisasi Keen Slider responsif
+  const sliderOptions: KeenSliderOptions = useMemo(
+    () => ({
+      initial: 0,
+      slideChanged(slider) {
+        setCurrentSlide(slider.track.details.rel);
       },
-      "(min-width: 1024px)": {
-        slides: { perView: 4, spacing: 24 },
+      created(slider) {
+        setLoaded(true);
+        const slidesLength = slider.track.details.slides.length;
+        const perView = getPerViewValue(slider.options);
+        setTotalSlides(slidesLength);
+        setCurrentPerView(perView);
       },
+      breakpoints: {
+        "(min-width: 768px)": {
+          slides: { perView: 3, spacing: 16 } as SlidesConfig,
+        },
+        "(min-width: 1024px)": {
+          slides: { perView: 4, spacing: 24 } as SlidesConfig,
+        },
+      },
+      slides: { perView: 2, spacing: 12 } as SlidesConfig,
+    }),
+    [getPerViewValue],
+  );
+
+  const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>(sliderOptions);
+
+  // FIX: Gunakan useEffect untuk update nilai tanpa akses ref selama render
+  useEffect(() => {
+    if (loaded && instanceRef.current) {
+      const slidesLength = instanceRef.current.track.details.slides.length;
+      const perView = getPerViewValue(instanceRef.current.options);
+      setTotalSlides(slidesLength);
+      setCurrentPerView(perView);
+    }
+  }, [loaded, instanceRef, getPerViewValue]);
+
+  // Hitung jumlah dot berdasarkan device
+  const totalDots = useMemo(() => {
+    if (!loaded || totalSlides === 0) {
+      return relatedPromos.length;
+    }
+
+    // Untuk mobile, selalu tampilkan 4 dot
+    if (isMobile) {
+      return Math.min(4, totalSlides);
+    }
+
+    // Untuk desktop, hitung berdasarkan perView
+    const dots = Math.max(0, totalSlides - currentPerView + 1);
+    return dots > 0 ? dots : relatedPromos.length;
+  }, [loaded, totalSlides, currentPerView, isMobile, relatedPromos.length]);
+
+  // Handler untuk navigasi dot yang aman
+  const handleDotClick = useCallback(
+    (index: number) => {
+      if (loaded && instanceRef.current) {
+        instanceRef.current.moveToIdx(index);
+      }
     },
-    slides: { perView: 2, spacing: 12 }, // Default mobile view (slide ke kanan)
-  });
+    [loaded, instanceRef],
+  );
 
-  // Mengambil nilai perView secara aman hanya jika sudah loaded
-  const currentOptions = loaded ? instanceRef.current?.options : undefined;
-  const currentPerView =
-    currentOptions &&
-    typeof currentOptions.slides === "object" &&
-    currentOptions.slides !== null
-      ? ((currentOptions.slides as { perView?: number }).perView ?? 2)
-      : 2;
+  // Handler untuk form
+  const handleFormChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const { name, value } = e.target;
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    },
+    [],
+  );
 
-  // Hitung jumlah dot berdasarkan sisa slide yang bisa digeser secara aman
-  const totalDots =
-    loaded && instanceRef.current
-      ? instanceRef.current.track.details.slides.length - currentPerView + 1
-      : 0;
+  const handleWhatsAppSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!mcu) return;
 
-  const safeTotalDots = totalDots > 0 ? totalDots : relatedPromos.length;
+      const message = `Halo, saya ingin mendaftar paket MCU ${mcu.title}
+      
+Nama: ${formData.nama}
+No. Telepon: ${formData.noTelepon}
+Usia: ${formData.usia}
+Keluhan/Catatan: ${formData.keluhan}`;
 
-  React.useEffect(() => {
+      const whatsappUrl =
+        "https://wa.me/6285717028133?text=" + encodeURIComponent(message);
+      window.open(whatsappUrl, "_blank");
+      setShowWhatsAppForm(false);
+      setFormData({
+        nama: "",
+        email: "",
+        noTelepon: "",
+        usia: "",
+        keluhan: "",
+      });
+    },
+    [mcu, formData],
+  );
+
+  useEffect(() => {
     if (showWhatsAppForm) {
       document.body.style.overflow = "hidden";
     } else {
@@ -84,6 +204,7 @@ export default function MCUDetailClient({
     };
   }, [showWhatsAppForm]);
 
+  // Jika mcu tidak ditemukan, render komponen error
   if (!mcu) {
     return (
       <article className="min-h-screen bg-white w-full">
@@ -101,32 +222,6 @@ export default function MCUDetailClient({
       </article>
     );
   }
-
-  const handleFormChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleWhatsAppSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const message = `Halo, saya ingin mendaftar paket MCU ${mcu.title}
-    
-Nama: ${formData.nama}
-No. Telepon: ${formData.noTelepon}
-Usia: ${formData.usia}
-Keluhan/Catatan: ${formData.keluhan}`;
-
-    const whatsappUrl =
-      "https://wa.me/6285717028133?text=" + encodeURIComponent(message);
-    window.open(whatsappUrl, "_blank");
-    setShowWhatsAppForm(false);
-    setFormData({ nama: "", email: "", noTelepon: "", usia: "", keluhan: "" });
-  };
 
   return (
     <article className="min-h-screen bg-white mb-20 w-full">
@@ -373,20 +468,16 @@ Keluhan/Catatan: ${formData.keluhan}`;
               </div>
             </div>
 
-            {/* DOTS INDICATOR - Menggunakan pengecekan 'loaded' murni untuk menghindari error ESLint */}
+            {/* DOTS INDICATOR - Mobile: 4 dots, Desktop: berdasarkan perView */}
             {loaded && (
               <div className="mt-8 flex items-center justify-center gap-4 mb-12 md:mb-0">
-                {Array.from({ length: safeTotalDots }).map((_, index) => {
+                {Array.from({ length: totalDots }).map((_, index) => {
                   const isActive = index === currentSlide;
                   return (
                     <button
                       key={`mcu-carousel-dot-${index}`}
                       type="button"
-                      onClick={() => {
-                        if (loaded) {
-                          instanceRef.current?.moveToIdx(index);
-                        }
-                      }}
+                      onClick={() => handleDotClick(index)}
                       className="focus:outline-none flex items-center justify-center h-8 w-8 relative"
                       aria-label={`Go to slide ${index + 1}`}
                     >
