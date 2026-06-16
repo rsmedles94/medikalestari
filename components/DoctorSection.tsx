@@ -56,6 +56,10 @@ const DAYS = [
 ];
 const ITEMS_PER_PAGE = 10;
 
+// Cache untuk menyimpan data dokter yang sudah di-load
+let cachedDoctors: DoctorWithSchedules[] | null = null;
+let isDataLoading = false;
+
 const DoctorSection = ({
   initialSearch = "",
   initialSpecialty = "",
@@ -66,8 +70,11 @@ const DoctorSection = ({
   initialDay?: string;
 }) => {
   // --- STATES ---
-  const [doctors, setDoctors] = useState<DoctorWithSchedules[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [doctors, setDoctors] = useState<DoctorWithSchedules[]>(() => {
+    // Gunakan cached data jika tersedia
+    return cachedDoctors || [];
+  });
+  const [loading, setLoading] = useState(!cachedDoctors);
   const [isPaging, setIsPaging] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedDoctor, setSelectedDoctor] =
@@ -97,6 +104,7 @@ const DoctorSection = ({
   });
 
   const sectionRef = useRef<HTMLDivElement>(null);
+  const isInitialMount = useRef(true);
 
   // --- HELPER FUNCTIONS ---
   const jumpToTop = useCallback(() => {
@@ -116,6 +124,16 @@ const DoctorSection = ({
       seen.add(v.id);
       return true;
     });
+  }, []);
+
+  // Fungsi untuk shuffle array (Fisher-Yates)
+  const shuffleArray = useCallback((array: DoctorWithSchedules[]) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
   }, []);
 
   // --- HYDRATION & INITIAL SCROLL ---
@@ -142,15 +160,30 @@ const DoctorSection = ({
   // --- DATA LOADING ---
   useEffect(() => {
     const load = async () => {
+      // Jika data sudah di-cache dan tidak sedang loading, skip
+      if (cachedDoctors) {
+        setDoctors(cachedDoctors);
+        setLoading(false);
+        return;
+      }
+
+      // Jika sedang loading, skip
+      if (isDataLoading) return;
+
       try {
+        isDataLoading = true;
         const data = await fetchAllDoctorsWithSchedules();
         if (data) {
           const uniqueData = getUniqueDoctors(data as DoctorWithSchedules[]);
-          setDoctors(uniqueData);
+          // Shuffle data untuk mendapatkan urutan random
+          const shuffledData = shuffleArray(uniqueData);
+          cachedDoctors = shuffledData;
+          setDoctors(shuffledData);
         }
       } catch (error) {
         console.error("Error loading doctors:", error);
       } finally {
+        isDataLoading = false;
         // logic requestAnimationFrame agar state update tidak bentrok dengan paint browser
         requestAnimationFrame(() => {
           setLoading(false);
@@ -158,7 +191,7 @@ const DoctorSection = ({
       }
     };
     load();
-  }, [getUniqueDoctors]);
+  }, [getUniqueDoctors, shuffleArray]);
 
   // --- FILTER SYNC ---
   useEffect(() => {
@@ -222,14 +255,14 @@ const DoctorSection = ({
   const handleOpenSpecialtyModal = () => {
     setShowMobileSpecialtyModal(!showMobileSpecialtyModal);
     if (!showMobileSpecialtyModal) {
-      setShowMobileDayModal(false); 
+      setShowMobileDayModal(false);
     }
   };
 
   const handleOpenDayModal = () => {
     setShowMobileDayModal(!showMobileDayModal);
     if (!showMobileDayModal) {
-      setShowMobileSpecialtyModal(false); 
+      setShowMobileSpecialtyModal(false);
     }
   };
 
@@ -313,7 +346,6 @@ const DoctorSection = ({
                     {doctor.specialty}
                   </p>
                 </div>
-
 
                 <div className="flex flex-wrap justify-start gap-2 md:gap-3">
                   <button
