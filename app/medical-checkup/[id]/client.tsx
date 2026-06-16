@@ -430,7 +430,7 @@ Keluhan/Catatan: ${formData.keluhan}`;
             {/* Modal Header */}
             <div className="sticky top-0 bg-white flex items-center justify-between p-6 border-b border-gray-200">
               <h2 className="text-xl font-bold text-gray-900">
-                Daftar Paket MCU
+                Formulir Pemesanan
               </h2>
               <button
                 onClick={() => setShowWhatsAppForm(false)}
@@ -514,7 +514,7 @@ Keluhan/Catatan: ${formData.keluhan}`;
               </div>
 
               {/* Paket Info */}
-              <div className="bg-blue-50 p-3 rounded-lg">
+              <div className="bg-blue-50 p-3">
                 <p className="text-sm text-gray-700">
                   <span className="font-semibold">Paket:</span> {mcu.title}
                 </p>

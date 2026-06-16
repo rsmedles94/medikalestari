@@ -4,8 +4,8 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { motion, useAnimationControls } from "framer-motion";
-import { ChevronRight } from "lucide-react";
+import { motion } from "framer-motion";
+import { ChevronRight, Phone } from "lucide-react";
 import PromoCardSkeleton from "@/components/PromoCardSkeleton";
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
@@ -302,6 +302,16 @@ export default function PromoDetailPage() {
   // State untuk melacak jumlah langkah indeks maksimal yang bisa digeser
   const [totalRelatedDots, setTotalRelatedDots] = useState(0);
 
+  // State Form WhatsApp & Data Input
+  const [showWhatsAppForm, setShowWhatsAppForm] = useState(false);
+  const [formData, setFormData] = useState({
+    nama: "",
+    email: "",
+    noTelepon: "",
+    usia: "",
+    keluhan: "",
+  });
+
   // --- INTEGRASI KEEN SLIDER ---
   const [sliderRef, instanceRef] = useKeenSlider({
     initial: 0,
@@ -309,7 +319,6 @@ export default function PromoDetailPage() {
       perView: relatedItemsPerGroup === 4 ? 4 : 2,
       spacing: 0,
     },
-    // Menggunakan maxIdx + 1 untuk menghitung jumlah dot navigasi yang sebenarnya bisa diklik
     created(slider) {
       if (slider.track.details) {
         setTotalRelatedDots(slider.track.details.maxIdx + 1);
@@ -321,7 +330,6 @@ export default function PromoDetailPage() {
       }
     },
     slideChanged(slider) {
-      // Menggunakan rel untuk mengunci indeks dot yang aktif secara aktual
       setRelatedIndex(slider.track.details.rel);
     },
   });
@@ -372,6 +380,46 @@ export default function PromoDetailPage() {
     }
   };
 
+  // Mengunci scroll latar belakang saat modal form WhatsApp terbuka
+  useEffect(() => {
+    if (showWhatsAppForm) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    // Cleanup function untuk mengembalikan scroll jika komponen di-unmount secara tiba-tiba
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [showWhatsAppForm]);
+
+  // Handler Perubahan Form Input
+  const handleFormChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Handler Submit Form WhatsApp
+  const handleWhatsAppSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const message =
+      `Halo, saya ingin mendaftar paket kesehatan.\n\n` +
+      `• Nama: ${formData.nama}\n` +
+      `• No. Telepon: ${formData.noTelepon}\n` +
+      `• Usia: ${formData.usia} tahun\n` +
+      `• Paket: ${promo?.title || ""}\n` +
+      `• Catatan/Keluhan: ${formData.keluhan || "-"}`;
+
+    const whatsappUrl =
+      "https://wa.me/6285717028133?text=" + encodeURIComponent(message);
+    window.open(whatsappUrl, "_blank");
+    setShowWhatsAppForm(false);
+    setFormData({ nama: "", email: "", noTelepon: "", usia: "", keluhan: "" });
+  };
+
   if (!promo) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center px-4">
@@ -390,6 +438,7 @@ export default function PromoDetailPage() {
   return (
     <div className="w-full min-h-screen bg-white">
       <main className="max-w-[1175px] mx-auto px-4 md:px-8">
+        {/* Breadcrumb & Header */}
         <header className="mb-8 md:mb-12 border-b border-slate-100 pb-6 pt-8 md:pt-17">
           <nav
             className="flex items-center gap-1 text-[14px] text-gray-300 mb-4"
@@ -427,6 +476,7 @@ export default function PromoDetailPage() {
           <p className="text-slate-600">{promo.shortDescription}</p>
         </header>
 
+        {/* Content Detail */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           <section className="flex flex-col">
             <div className="relative w-full aspect-square overflow-hidden shadow-lg bg-gray-100">
@@ -450,9 +500,36 @@ export default function PromoDetailPage() {
                 __html: promo.fullDescription,
               }}
             />
+
+            {/* CTA Buttons - Sekarang posisinya persis di bawah deskripsi */}
+            <div className="flex flex-row gap-2 sm:flex-row gap-3 w-full mt-6 pt-6 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => setShowWhatsAppForm(true)}
+                className="flex-1 px-5 py-3 bg-green-500 hover:bg-green-600 text-white text-sm font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+              >
+                <Image
+                  src="/images/icons/whatsapp-fill.svg"
+                  alt="WhatsApp"
+                  width={22}
+                  height={22}
+                  className="invert"
+                />
+                <span>Pesan via WhatsApp</span>
+              </button>
+
+              <a
+                href="tel:+6285717028133"
+                className="flex-1 px-5 py-3 bg-[#003f88] hover:bg-blue-800 text-white text-sm font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 shadow-sm"
+              >
+                <Phone size={16} />
+                <span>Hubungi Kami</span>
+              </a>
+            </div>
           </section>
         </div>
 
+        {/* Carousel Promo Lainnya */}
         <section className="pt-16 pb-16 mt-12 border-t border-slate-100">
           <div className="w-full">
             <header className="mb-4">
@@ -541,6 +618,7 @@ export default function PromoDetailPage() {
               )}
             </div>
 
+            {/* Dots Carousel */}
             <div className="mt-8 flex items-center justify-center gap-4 mb-12 md:mb-0">
               {Array.from({ length: totalRelatedDots }).map((_, index) => {
                 const isActive = index === relatedIndex;
@@ -560,7 +638,6 @@ export default function PromoDetailPage() {
                       transition={{ duration: 0.2 }}
                       className="absolute w-5 h-5 rounded-full z-10 pointer-events-none"
                     />
-
                     <motion.div
                       initial={{ scale: 0.4, opacity: 0 }}
                       animate={{
@@ -581,6 +658,129 @@ export default function PromoDetailPage() {
           </div>
         </section>
       </main>
+
+      {/* WhatsApp Form Modal */}
+      {showWhatsAppForm && (
+        <div
+          suppressHydrationWarning
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-fade-in"
+        >
+          <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto shadow-xl">
+            {/* Modal Header */}
+            <div className="sticky top-0 bg-white flex items-center justify-between p-6 border-b border-gray-200 z-10">
+              <h2 className="text-xl font-bold text-gray-900">
+                Formulir Pemesanan
+              </h2>
+              <button
+                type="button"
+                onClick={() => setShowWhatsAppForm(false)}
+                className="text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            {/* Modal Content / Form */}
+            <form onSubmit={handleWhatsAppSubmit} className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Nama Lengkap <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="nama"
+                  value={formData.nama}
+                  onChange={handleFormChange}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003f88]"
+                  placeholder="Masukkan nama lengkap"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  No. Telepon <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="tel"
+                  name="noTelepon"
+                  value={formData.noTelepon}
+                  onChange={handleFormChange}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003f88]"
+                  placeholder="Masukkan nomor telepon"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Usia <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  name="usia"
+                  value={formData.usia}
+                  onChange={handleFormChange}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003f88]"
+                  placeholder="Masukkan usia"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Keluhan / Catatan
+                </label>
+                <textarea
+                  name="keluhan"
+                  value={formData.keluhan}
+                  onChange={handleFormChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003f88] resize-none"
+                  placeholder="Masukkan keluhan atau catatan (opsional)"
+                  rows={3}
+                />
+              </div>
+
+              {/* Paket Info */}
+              <div className="bg-blue-50 p-3 border border-blue-100">
+                <p className="text-sm text-gray-700">
+                  <span className="font-semibold text-[#003f88]">Paket:</span>{" "}
+                  {promo.title}
+                </p>
+              </div>
+
+              {/* Buttons Action */}
+              <div className="flex gap-3 pt-4 border-t border-gray-100">
+                <button
+                  type="button"
+                  onClick={() => setShowWhatsAppForm(false)}
+                  className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors cursor-pointer text-sm"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 px-4 py-2.5 bg-[#003f88] hover:bg-blue-800 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 cursor-pointer text-sm"
+                >
+                  Kirim
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

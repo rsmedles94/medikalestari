@@ -4,7 +4,7 @@ import { Doctor, Schedule, MadingContent, HeroBanner } from "./types";
 import { deduplicateRequest } from "./enhanced-request-cache";
 import { cacheManager } from "./cache-manager";
 
-// UTILITY: Retry mechanism untuk handle connection pooling issues
+// UTILITAS: Mekanisme coba ulang untuk menangani masalah kumpulan koneksi
 async function withRetry<T>(
   fn: () => Promise<T>,
   maxRetries: number = 3,
@@ -22,7 +22,7 @@ async function withRetry<T>(
       const isLockError = errorMessage.includes("Lock broken");
 
       if (isLockError && i < maxRetries - 1) {
-        // Exponential backoff for lock errors
+        // Penundaan eksponensial untuk kesalahan penguncian
         const waitTime = delayMs * Math.pow(2, i);
         await new Promise((resolve) => setTimeout(resolve, waitTime));
         continue;
@@ -35,15 +35,15 @@ async function withRetry<T>(
   throw lastError;
 }
 
-// DOCTOR OPERATIONS
+// DOKTER
 export async function fetchDoctors(
   specialty?: string,
   searchName?: string,
 ): Promise<Doctor[]> {
-  // Generate cache key based on parameters to handle different filter combinations
+// Menghasilkan kunci cache berdasarkan parameter untuk menangani berbagai kombinasi filter
   const cacheKey = `doctors:${specialty || "all"}:${searchName || "all"}`;
 
-  // Check CacheManager first
+ // Periksa CacheManager terlebih dahulu
   const cachedData = cacheManager.get(cacheKey);
   if (cachedData) {
     console.debug(`[fetchDoctors] Cache hit for ${cacheKey}`);
@@ -70,7 +70,7 @@ export async function fetchDoctors(
       }
 
       const result = data || [];
-      // Store in CacheManager with configured TTL
+      // Simpan di CacheManager dengan TTL yang telah dikonfigurasi
       cacheManager.set(cacheKey, result);
       return result;
     });
@@ -149,7 +149,7 @@ export async function deleteDoctor(id: string) {
   }
 }
 
-// SCHEDULE OPERATIONS
+// JADWAL DOKTER
 export async function fetchSchedulesByDoctor(
   doctorId: string,
 ): Promise<Schedule[]> {
@@ -168,7 +168,7 @@ export async function fetchSchedulesByDoctor(
 
 export async function fetchAllDoctorsWithSchedules() {
   try {
-    // Fetch all doctors
+    // Fetch semua dokter
     const { data: doctors, error: doctorsError } = await supabase
       .from("doctors")
       .select("*");
@@ -182,7 +182,7 @@ export async function fetchAllDoctorsWithSchedules() {
       return [];
     }
 
-    // Fetch all schedules
+    // Fetch semua jadwal
     const { data: schedules, error: schedulesError } = await supabase
       .from("schedules")
       .select("*");
@@ -195,7 +195,7 @@ export async function fetchAllDoctorsWithSchedules() {
       }));
     }
 
-    // Combine doctors with their schedules
+   // Gabungkan dokter dengan jadwalnya
     const doctorsWithSchedules = doctors.map((doctor) => ({
       ...doctor,
       schedules: (schedules || []).filter(
@@ -302,7 +302,7 @@ export async function uploadDoctorImage(file: File): Promise<string> {
   }
 }
 
-// MADING OPERATIONS
+// MADING 
 export async function fetchMadingContent(
   type?: "edukasi" | "event",
 ): Promise<MadingContent[]> {
@@ -374,7 +374,7 @@ export async function deleteMadingContent(id: string) {
 export async function fetchHeroBanners(
   deviceType?: "desktop" | "mobile",
 ): Promise<HeroBanner[]> {
-  // Use deduplication to prevent multiple concurrent requests for same device type
+  // Gunakan deduplikasi untuk mencegah beberapa permintaan bersamaan untuk tipe perangkat yang sama
   const cacheKey = `hero_banners:${deviceType || "all"}`;
 
   return deduplicateRequest(cacheKey, () =>
@@ -392,7 +392,7 @@ export async function fetchHeroBanners(
 
         console.log("[fetchHeroBanners] Starting fetch with config:", debug);
 
-        // Gunakan supabase client langsung untuk query (bukan fetch API)
+        // Menggunakan supabase client langsung untuk query (bukan fetch API)
         let query = supabase
           .from("hero_banners")
           .select("*")
@@ -435,7 +435,7 @@ export async function fetchHeroBanners(
               }
             }
 
-            // Debug log untuk URL construction
+            // Debug log untuk konstruksi URL
             if (process.env.NODE_ENV === "development" && url) {
               debugSupabaseImageUrl(url);
             }
@@ -489,10 +489,11 @@ export async function fetchHeroBannersForMobile(): Promise<HeroBanner[]> {
 }
 
 /**
- * Fetch all hero banners for admin panel
- * Shows both active and inactive banners
- * Uses admin endpoint which bypasses RLS in production
- */
+
+* Mengambil semua banner hero untuk panel admin
+* Menampilkan banner aktif dan tidak aktif
+* Menggunakan endpoint admin yang melewati RLS di lingkungan produksi
+*/
 export async function fetchAllHeroBannersForAdmin(): Promise<HeroBanner[]> {
   try {
     console.log(
@@ -635,7 +636,7 @@ export async function deleteHeroBanner(id: string) {
   }
 }
 
-// UPLOAD IMAGE (generic for mading/hero)
+// upload gambar (generic untuk mading/hero)
 export async function uploadContentImage(
   file: File,
   folder: string = "content",
@@ -686,7 +687,7 @@ export async function uploadContentImage(
   }
 }
 
-// ROOM TYPE OPERATIONS
+// Jenis atau tipe ruangan
 export async function fetchRoomTypes() {
   const { data: rooms, error } = await supabase
     .from("room_types")
@@ -698,7 +699,7 @@ export async function fetchRoomTypes() {
     return [];
   }
 
-  // Fetch facilities and images for each room
+  // Mengambil fasilitas dan gambar untuk setiap ruangan
   const roomsWithData = await Promise.all(
     (rooms || []).map(async (room) => {
       const [{ data: facilities }, { data: images }] = await Promise.all([
@@ -747,7 +748,7 @@ export async function createRoomType(room: {
     throw error;
   }
 
-  // Add facilities
+  // Tambahkan Fasilitas
   if (facilities.length > 0) {
     const facilitiesData = facilities.map(
       (facility: string, index: number) => ({
@@ -766,7 +767,7 @@ export async function createRoomType(room: {
     }
   }
 
-  // Add images
+  // Tambahkan gambar
   if (room_images && room_images.length > 0) {
     const imagesData = room_images.map((img) => ({
       room_id: data.id,
@@ -820,12 +821,12 @@ export async function updateRoomType(
     throw error;
   }
 
-  // Update facilities if provided
+  // Perbarui fasilitas jika tersedia
   if (facilities !== undefined) {
-    // Delete old facilities
+    // Hapus fasilitas lama
     await supabase.from("room_facilities").delete().eq("room_id", id);
 
-    // Add new facilities
+    // Tambahkan fasilitas baru
     if (facilities.length > 0) {
       const facilitiesData = facilities.map(
         (facility: string, index: number) => ({
@@ -845,12 +846,12 @@ export async function updateRoomType(
     }
   }
 
-  // Update images if provided
+  // Perbarui gambar jika tersedia
   if (room_images !== undefined) {
-    // Delete old images
+    // Hapus gambar lama
     await supabase.from("room_images").delete().eq("room_id", id);
 
-    // Add new images
+    // Tambahkan gambar baru
     if (room_images.length > 0) {
       const imagesData = room_images.map((img) => ({
         room_id: id,
@@ -876,13 +877,13 @@ export async function updateRoomType(
 }
 
 export async function deleteRoomType(id: string) {
-  // Delete facilities first
+  // Hapus fasilitas terlebih dahulu
   await supabase.from("room_facilities").delete().eq("room_id", id);
 
-  // Delete images
+  // Hapus gambar
   await supabase.from("room_images").delete().eq("room_id", id);
 
-  // Delete room
+  // Hapus ruangan
   const { error } = await supabase.from("room_types").delete().eq("id", id);
 
   if (error) {
