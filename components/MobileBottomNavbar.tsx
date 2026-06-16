@@ -42,16 +42,16 @@ export default function MobileBottomNavbar() {
 
   const navItems = useMemo<NavItem[]>(
     () => [
-      { label: "Beranda", href: "/", icon: Home },
-      { label: "Dokter", href: "/dokter", icon: UserRoundPlus },
+      { label: "", href: "/", icon: Home },
+      { label: "", href: "/dokter", icon: UserRoundPlus },
       {
         label: "",
         href: "#action-menu",
         icon: Plus,
         isButton: true,
       },
-      { label: "Jadwal", href: "/jadwal-dokter", icon: CalendarDays },
-      { label: "Kesehatan", href: "/promo", icon: TicketPercent },
+      { label: "", href: "/jadwal-dokter", icon: CalendarDays },
+      { label: "", href: "/promo", icon: TicketPercent },
     ],
     [],
   );
@@ -292,7 +292,7 @@ export default function MobileBottomNavbar() {
                       <div className="flex flex-col items-center justify-center w-full h-full gap-1">
                         <div className="flex items-center justify-center">
                           <Icon
-                            size={24}
+                            size={32}
                             strokeWidth={
                               i === activeIndex ||
                               (item.label === "Beranda" && pathname === "/")
