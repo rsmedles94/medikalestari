@@ -537,9 +537,7 @@ const DoctorSection = ({
                   className="w-full bg-white border border-slate-200 shadow-lg z-50 max-h-64 overflow-y-auto"
                 >
                   <div className="p-2">
-                    <div className="px-4 py-2 text-xs font-bold text-[#003f88] sticky top-0 bg-white">
-                      Pilih Spesialis
-                    </div>
+
                     {SPECIALTY_CATEGORIES.map((s) => (
                       <button
                         key={s}
