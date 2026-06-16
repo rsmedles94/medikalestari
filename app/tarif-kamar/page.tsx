@@ -282,7 +282,7 @@ export default function TarifKamar() {
                   <div className="px-6 pb-6">
                     <Link
                       href={`/services/kamar-perawatan?room=${room.name}`}
-                      className={`inline-block w-full py-2 px-4 text-white text-center text-sm font-medium transition-colors duration-500 cursor-pointer ${
+                      className={`inline-block w-full py-2 px-4 text-white text-center text-sm font-medium transition-colors duration-700 cursor-pointer ${
                         hoveredRoomId === room.id
                           ? "bg-[#e67e22]"
                           : "bg-[#003f88] hover:bg-[#e67e22]"

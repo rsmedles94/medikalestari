@@ -506,7 +506,7 @@ export default function PromoDetailPage() {
               <button
                 type="button"
                 onClick={() => setShowWhatsAppForm(true)}
-                className="flex-1 px-5 py-3 bg-green-500 hover:bg-green-600 text-white text-sm font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+                className="flex-1 px-5 py-3 bg-green-500 hover:bg-green-600 active:bg-green-700 transition-colors duration-700 text-white text-sm font-semibold rounded-lg  flex items-center justify-center gap-2 cursor-pointer shadow-sm"
               >
                 <Image
                   src="/images/icons/whatsapp-fill.svg"
@@ -599,7 +599,7 @@ export default function PromoDetailPage() {
                               <Link href={`/promo/${relatedPromo.id}`} passHref>
                                 <button
                                   type="button"
-                                  className={`w-full py-2.5 border text-white text-xs font-semibold transition-all duration-500 cursor-pointer ${
+                                  className={`w-full py-2.5 border text-white text-xs font-semibold transition-all duration-700 cursor-pointer ${
                                     hoveredRelatedPromoId === relatedPromo.id
                                       ? "bg-[#e67e22]"
                                       : "bg-[#003f88] hover:bg-[#e67e22]"

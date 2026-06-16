@@ -176,7 +176,7 @@ const ServiceSection = () => {
                     </div>
 
                     <div className="font-semibold text-xs flex items-center gap-1 mt-2">
-                      <span className="text-[#3D8ECB] hover:text-[#e67e22] hover:underline transition-colors">
+                      <span className="text-[#3D8ECB] hover:text-[#e67e22] hover:underline transition-colors duration-700">
                         → Selengkapnya
                       </span>
                     </div>

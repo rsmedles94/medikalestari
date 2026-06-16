@@ -56,7 +56,7 @@ export default function Emergency() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl mx-auto">
             <button
               onClick={() => handleCallEmergency("+6281210601963")}
-              className="flex items-center justify-center gap-3 bg-red-600 text-white py-4 px-6 font-bold text-md active:bg-red-700 transition-colors cursor-pointer rounded-md"
+              className="flex items-center justify-center gap-3 bg-red-500 hover:bg-red-600 text-white py-4 px-6 font-bold text-md active:bg-red-700 transition-colors duration-700 cursor-pointer rounded-md"
             >
               <PhoneCall size={22} />
               Instalasi Gawat Darurat
@@ -64,7 +64,7 @@ export default function Emergency() {
 
             <button
               onClick={handleWhatsAppEmergency}
-              className="flex items-center justify-center gap-3 bg-green-500 text-white py-4 px-6 font-bold text-md active:bg-green-700 transition-colors cursor-pointe rounded-md cursor-pointer"
+              className="flex items-center justify-center gap-3 bg-green-500 hover:bg-green-600 text-white py-4 px-6 font-bold text-md active:bg-green-700 transition-colors duration-700 cursor-pointe rounded-md  cursor-pointer"
             >
               <Image
                 src="/images/icons/whatsapp-fill.svg"

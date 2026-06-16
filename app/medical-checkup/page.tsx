@@ -82,7 +82,7 @@ export default function MedicalCheckup() {
                       <Link href={`/medical-checkup/${item.id}`} passHref>
                         <button
                           type="button"
-                          className="w-full py-2 text-white text-[10px] md:text-xs font-semibold transition-all duration-500 cursor-pointer bg-[#003f88] group-hover:bg-[#e67e22] hover:bg-[#e67e22]"
+                          className="w-full py-2 text-white text-[10px] md:text-xs font-semibold transition-all duration-700 cursor-pointer bg-[#003f88] group-hover:bg-[#e67e22] hover:bg-[#e67e22]"
                         >
                           ⭢ Selengkapnya
                         </button>

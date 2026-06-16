@@ -65,9 +65,10 @@ export default function MCUDetailClient({
       : 2;
 
   // Hitung jumlah dot berdasarkan sisa slide yang bisa digeser secara aman
-  const totalDots = loaded && instanceRef.current
-    ? instanceRef.current.track.details.slides.length - currentPerView + 1
-    : 0;
+  const totalDots =
+    loaded && instanceRef.current
+      ? instanceRef.current.track.details.slides.length - currentPerView + 1
+      : 0;
 
   const safeTotalDots = totalDots > 0 ? totalDots : relatedPromos.length;
 
@@ -200,7 +201,7 @@ Keluhan/Catatan: ${formData.keluhan}`;
             <div className="flex flex-row gap-2 w-full sm:w-auto">
               <button
                 onClick={() => setShowWhatsAppForm(true)}
-                className="flex-1 sm:flex-none px-4 py-2.5 bg-green-500 hover:bg-green-600 text-white text-sm font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                className="flex-1 sm:flex-none px-4 py-2.5 bg-green-500 hover:bg-green-600 active:bg-green-700 transition-colors duration-700 text-white text-sm font-semibold rounded-lg  flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Image
                   src="/images/icons/whatsapp-fill.svg"
@@ -213,7 +214,7 @@ Keluhan/Catatan: ${formData.keluhan}`;
               </button>
               <a
                 href="tel:+6285717028133"
-                className="flex-1 sm:flex-none px-4 py-2.5 bg-[#003f88] hover:bg-blue-800 text-white text-sm font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+                className="flex-1 sm:flex-none px-4 py-2.5 bg-[#003f88] hover:bg-blue-800 active:bg-blue-900 transition-colors duration-700 text-white text-sm font-semibold rounded-lg  flex items-center justify-center gap-2"
               >
                 <Phone size={16} />
                 <span className="text-center">Hubungi Kami</span>
@@ -358,7 +359,7 @@ Keluhan/Catatan: ${formData.keluhan}`;
                             <Link href={`/medical-checkup/${item.id}`} passHref>
                               <button
                                 type="button"
-                                className="w-full py-2 text-white text-[10px] md:text-xs font-semibold transition-all duration-500 cursor-pointer bg-[#003f88] group-hover:bg-[#e67e22] hover:bg-[#e67e22]"
+                                className="w-full py-2 text-white text-[10px] md:text-xs font-semibold transition-all duration-700 cursor-pointer bg-[#003f88] group-hover:bg-[#e67e22] hover:bg-[#e67e22]"
                               >
                                 ⭢ Selengkapnya
                               </button>

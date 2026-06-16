@@ -477,7 +477,7 @@ const PromoKesehatan = () => {
               <Link href="/tentang-kami" passHref>
                 <button
                   type="button"
-                  className="px-5 py-2.5 bg-[#e67e22] hover:bg-[#3D8ECB] text-white text-xs font-semibold transition-colors inline-flex items-center gap-2 cursor-pointer"
+                  className="px-5 py-2.5 bg-[#e67e22] hover:bg-[#3D8ECB] text-white text-xs font-semibold transition-colors duration-700 inline-flex items-center gap-2 cursor-pointer"
                 >
                   Selengkapnya Tentang Kami
                 </button>
@@ -663,7 +663,7 @@ const PromoKesehatan = () => {
                           <Link href={`/promo/${item.id}`} passHref>
                             <button
                               type="button"
-                              className={`w-full py-2  text-white text-[10px] md:text-xs font-semibold transition-all duration-500 cursor-pointer ${
+                              className={`w-full py-2  text-white text-[10px] md:text-xs font-semibold transition-all duration-700 cursor-pointer ${
                                 hoveredPromoId === item.id
                                   ? "bg-[#e67e22]"
                                   : "bg-[#003f88] hover:bg-[#e67e22]"
@@ -720,7 +720,7 @@ const PromoKesehatan = () => {
           {/* Lihat Semua Promo Link */}
           <div className="mt-12 text-center">
             <Link href="/promo" passHref>
-              <span className="text-sm md:text-base font-semibold text-[#3D8ECB] hover:text-[#e67e22] hover:underline transition-all duration-300 cursor-pointer inline-block">
+              <span className="text-sm md:text-base font-semibold text-[#3D8ECB] hover:text-[#e67e22] hover:underline transition-all duration-700 cursor-pointer inline-block">
                 Lihat Semua Promo →
               </span>
             </Link>

@@ -251,7 +251,7 @@ export default function PromoPage() {
                         <Link href={`/promo/${item.id}`} passHref>
                           <button
                             type="button"
-                            className={`w-full py-2 border text-white text-[10px] md:text-xs font-semibold transition-all duration-500 cursor-pointer ${
+                            className={`w-full py-2 border text-white text-[10px] md:text-xs font-semibold transition-all duration-700 cursor-pointer ${
                               hoveredPromoId === item.id
                                 ? "bg-[#e67e22]"
                                 : "bg-[#003f88] hover:bg-[#e67e22]"
