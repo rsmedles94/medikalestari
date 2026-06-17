@@ -111,7 +111,7 @@ export default function DoctorScheduleGrid({
   const queryClient = useQueryClient();
   const isMounted = useRef(true);
   const isFirstRender = useRef(true);
-  const filterTimeoutRef = useRef<NodeJS.Timeout>();
+  const filterTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Load filter state dari cache
   const initialFilterState = useMemo(() => loadFilterState(), []);
