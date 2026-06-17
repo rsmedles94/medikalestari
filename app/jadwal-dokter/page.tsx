@@ -56,7 +56,7 @@ export default function DoctorSchedulePage() {
         <div className="flex flex-row items-center justify-between py-10 border-t border-slate-100 gap-4">
           <div className="flex flex-col gap-1 flex-1">
             <span className="text-sm font-bold text-slate-900 leading-tight">
-              Butuh Bantuan Pendaftaran?
+              Hubungi kami untuk informasi selengkapnya.
             </span>
             <p className="text-[10px] sm:text-xs text-slate-500 leading-relaxed max-w-[250px] sm:max-w-none">
               Silahkan hubungi bagian pendaftaran atau kunjungi meja informasi
@@ -68,8 +68,8 @@ export default function DoctorSchedulePage() {
             target="_blank"
             className="inline-flex items-center gap-2 px-4 py-3 bg-[#003f88] text-white text-[11px] sm:text-sm font-semibold active:scale-95 transition-all rounded-lg"
           >
-            <span className="hidden lg:inline">Hubungi Customer Care</span>
-            <span className="md:hidden">Hubungi Customer Care</span>
+            <span className="hidden lg:inline">Customer Care</span>
+            <span className="md:hidden">Customer Care</span>
             <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4" />
           </a>
         </div>
