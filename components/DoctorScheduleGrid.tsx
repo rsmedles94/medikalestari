@@ -11,8 +11,11 @@ import { Doctor, Schedule } from "@/lib/types";
 import { Search, Loader2, Stethoscope, CalendarDays } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-import DoctorScheduleSkeleton from "./DoctorScheduleSkeleton";
+import {
+  useQuery,
+  useQueryClient,
+  keepPreviousData,
+} from "@tanstack/react-query";
 
 interface DoctorWithSchedule extends Doctor {
   schedules: Schedule[];
@@ -24,10 +27,14 @@ interface DoctorScheduleGridProps {
 }
 
 const DAYS = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-const CACHE_KEY = "doctor-schedule-state";
-const CACHE_EXPIRY = 3600000; // 1 jam
 
-interface CacheState {
+// Constants untuk caching
+const CACHE_KEY = "doctor-schedule";
+const FILTER_CACHE_KEY = "doctor-schedule-filters";
+const STALE_TIME = 30 * 1000; // 30 detik
+const GC_TIME = 10 * 60 * 1000; // 10 menit
+
+interface FilterState {
   selectedSpecialty: string | null;
   selectedSpecialtyInput: string | null;
   searchDoctor: string;
@@ -37,8 +44,26 @@ interface CacheState {
   showMobileSpecialtyModal: boolean;
   showMobileDayModal: boolean;
   showDesktopDayModal: boolean;
-  timestamp: number;
 }
+
+// Helper functions untuk filter cache
+const loadFilterState = (): FilterState | null => {
+  try {
+    const cached = localStorage.getItem(FILTER_CACHE_KEY);
+    if (!cached) return null;
+    return JSON.parse(cached);
+  } catch {
+    return null;
+  }
+};
+
+const saveFilterState = (state: FilterState) => {
+  try {
+    localStorage.setItem(FILTER_CACHE_KEY, JSON.stringify(state));
+  } catch {
+    // Silent fail
+  }
+};
 
 const getTodayDayName = (): string => {
   const dayIndex = new Date().getDay();
@@ -54,35 +79,27 @@ const getTodayDayName = (): string => {
   return dayMap[dayIndex];
 };
 
-// Cache utilities
-const loadCache = (): CacheState | null => {
-  try {
-    const cached = localStorage.getItem(CACHE_KEY);
-    if (!cached) return null;
+// Logika cuti yang benar
+const isDoctorCutiOnDay = (
+  doctor: DoctorWithSchedule,
+  day: string,
+): boolean => {
+  if (doctor.status !== "cuti") return false;
+  if (!doctor.schedules || doctor.schedules.length === 0) return false;
 
-    const parsed = JSON.parse(cached) as CacheState;
-
-    if (Date.now() - parsed.timestamp < CACHE_EXPIRY) {
-      return parsed;
-    }
-
-    localStorage.removeItem(CACHE_KEY);
-    return null;
-  } catch {
-    return null;
-  }
+  return doctor.schedules.some(
+    (s) =>
+      s.day_of_week === day || (day === "Minggu" && s.day_of_week === "Minggu"),
+  );
 };
 
-const saveCache = (state: Omit<CacheState, "timestamp">) => {
-  try {
-    const cacheData: CacheState = {
-      ...state,
-      timestamp: Date.now(),
-    };
-    localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
-  } catch {
-    // Silent fail
-  }
+const isDoctorFullyCuti = (doctor: DoctorWithSchedule): boolean => {
+  if (doctor.status !== "cuti") return false;
+  if (!doctor.schedules || doctor.schedules.length === 0) return false;
+
+  const daysWithSchedule = new Set(doctor.schedules.map((s) => s.day_of_week));
+
+  return DAYS.every((day) => daysWithSchedule.has(day));
 };
 
 export default function DoctorScheduleGrid({
@@ -91,86 +108,97 @@ export default function DoctorScheduleGrid({
 }: Readonly<DoctorScheduleGridProps>) {
   const router = useRouter();
   const sectionRef = useRef<HTMLElement>(null);
+  const queryClient = useQueryClient();
+  const isMounted = useRef(true);
+  const isFirstRender = useRef(true);
+  const filterTimeoutRef = useRef<NodeJS.Timeout>();
 
-  // React Query untuk caching data
-  const { data: cachedDoctors, isFetching } = useQuery({
-    queryKey: ["doctors-schedule"],
-    queryFn: () => Promise.resolve(doctorsWithSchedules),
-    initialData: doctorsWithSchedules,
-    staleTime: CACHE_EXPIRY,
-    gcTime: CACHE_EXPIRY * 2,
-    enabled: true,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-  });
+  // Load filter state dari cache
+  const initialFilterState = useMemo(() => loadFilterState(), []);
 
-  // Load cache sekali saat render
-  const initialCache = useMemo(() => loadCache(), []);
-
-  // State dengan lazy initialization
+  // State untuk filter
   const [selectedSpecialty, setSelectedSpecialty] = useState<string | null>(
-    () => initialCache?.selectedSpecialty ?? null,
+    initialFilterState?.selectedSpecialty ?? null,
   );
-
   const [selectedSpecialtyInput, setSelectedSpecialtyInput] = useState<
     string | null
-  >(() => initialCache?.selectedSpecialtyInput ?? null);
-
+  >(initialFilterState?.selectedSpecialtyInput ?? null);
   const [searchDoctor, setSearchDoctor] = useState(
-    () => initialCache?.searchDoctor ?? "",
+    initialFilterState?.searchDoctor ?? "",
   );
-
   const [searchDoctorInput, setSearchDoctorInput] = useState(
-    () => initialCache?.searchDoctorInput ?? "",
+    initialFilterState?.searchDoctorInput ?? "",
   );
-
   const [showMobileSpecialtyModal, setShowMobileSpecialtyModal] = useState(
-    () => initialCache?.showMobileSpecialtyModal ?? false,
+    initialFilterState?.showMobileSpecialtyModal ?? false,
   );
-
   const [showMobileDayModal, setShowMobileDayModal] = useState(
-    () => initialCache?.showMobileDayModal ?? false,
+    initialFilterState?.showMobileDayModal ?? false,
   );
-
   const [showDesktopDayModal, setShowDesktopDayModal] = useState(
-    () => initialCache?.showDesktopDayModal ?? false,
+    initialFilterState?.showDesktopDayModal ?? false,
   );
-
   const [selectedDay, setSelectedDay] = useState<string | null>(
-    () => initialCache?.selectedDay ?? null,
+    initialFilterState?.selectedDay ?? null,
   );
-
   const [selectedDayInput, setSelectedDayInput] = useState<string | null>(
-    () => initialCache?.selectedDayInput ?? null,
+    initialFilterState?.selectedDayInput ?? null,
   );
 
-  // Ref untuk tracking
-  const isFirstRender = useRef(true);
-  const prevStateRef = useRef<string>("");
+  // React Query untuk caching data dokter
+  const {
+    data: doctors,
+    isLoading,
+    isFetching,
+    refetch,
+    isStale,
+    isSuccess,
+  } = useQuery({
+    queryKey: [CACHE_KEY],
+    queryFn: async () => {
+      // Jika ada data dari props, gunakan itu
+      if (doctorsWithSchedules.length > 0) {
+        return doctorsWithSchedules;
+      }
 
-  // Effect untuk save cache - hanya side effect
+      // Coba ambil dari cache query client
+      const cached = queryClient.getQueryData<DoctorWithSchedule[]>([
+        CACHE_KEY,
+      ]);
+      if (cached && cached.length > 0) {
+        return cached;
+      }
+
+      return [];
+    },
+    initialData: doctorsWithSchedules,
+    staleTime: STALE_TIME,
+    gcTime: GC_TIME,
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+    retry: 3,
+    retryDelay: 1000,
+  });
+
+  // Effect untuk menyimpan filter state ke cache
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
       return;
     }
 
-    const currentState = JSON.stringify({
-      selectedSpecialty,
-      selectedSpecialtyInput,
-      searchDoctor,
-      searchDoctorInput,
-      selectedDay,
-      selectedDayInput,
-      showMobileSpecialtyModal,
-      showMobileDayModal,
-      showDesktopDayModal,
-    });
+    // Clear timeout sebelumnya
+    if (filterTimeoutRef.current) {
+      clearTimeout(filterTimeoutRef.current);
+    }
 
-    if (prevStateRef.current !== currentState) {
-      prevStateRef.current = currentState;
+    // Debounce save filter
+    filterTimeoutRef.current = setTimeout(() => {
+      if (!isMounted.current) return;
 
-      saveCache({
+      const filterState: FilterState = {
         selectedSpecialty,
         selectedSpecialtyInput,
         searchDoctor,
@@ -180,8 +208,16 @@ export default function DoctorScheduleGrid({
         showMobileSpecialtyModal,
         showMobileDayModal,
         showDesktopDayModal,
-      });
-    }
+      };
+
+      saveFilterState(filterState);
+    }, 300);
+
+    return () => {
+      if (filterTimeoutRef.current) {
+        clearTimeout(filterTimeoutRef.current);
+      }
+    };
   }, [
     selectedSpecialty,
     selectedSpecialtyInput,
@@ -194,19 +230,43 @@ export default function DoctorScheduleGrid({
     showDesktopDayModal,
   ]);
 
+  // Effect untuk update data ketika props berubah
+  useEffect(() => {
+    if (doctorsWithSchedules.length > 0) {
+      const currentData = queryClient.getQueryData<DoctorWithSchedule[]>([
+        CACHE_KEY,
+      ]);
+
+      // Cek apakah data berbeda
+      if (
+        JSON.stringify(currentData) !== JSON.stringify(doctorsWithSchedules)
+      ) {
+        queryClient.setQueryData([CACHE_KEY], doctorsWithSchedules);
+      }
+    }
+  }, [doctorsWithSchedules, queryClient]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+      if (filterTimeoutRef.current) {
+        clearTimeout(filterTimeoutRef.current);
+      }
+    };
+  }, []);
+
   // Memoized computed values
   const specialties = useMemo(() => {
-    const data = cachedDoctors || doctorsWithSchedules;
-    if (!data || data.length === 0) return [];
-    const specs = new Set(data.map((doc) => doc.specialty));
+    if (!doctors || doctors.length === 0) return [];
+    const specs = new Set(doctors.map((doc) => doc.specialty));
     return Array.from(specs).sort((a, b) => a.localeCompare(b));
-  }, [cachedDoctors, doctorsWithSchedules]);
+  }, [doctors]);
 
   const filteredDoctors = useMemo(() => {
-    const data = cachedDoctors || doctorsWithSchedules;
-    if (!data || data.length === 0) return [];
+    if (!doctors || doctors.length === 0) return [];
 
-    return data
+    return doctors
       .filter((doc) => {
         const matchesSpecialty =
           !selectedSpecialty || doc.specialty === selectedSpecialty;
@@ -229,13 +289,7 @@ export default function DoctorScheduleGrid({
         return matchesSpecialty && matchesSearch && matchesDay;
       })
       .sort((a, b) => a.name.localeCompare(b.name));
-  }, [
-    cachedDoctors,
-    doctorsWithSchedules,
-    selectedSpecialty,
-    searchDoctor,
-    selectedDay,
-  ]);
+  }, [doctors, selectedSpecialty, searchDoctor, selectedDay]);
 
   const groupedDoctors = useMemo(() => {
     const groups: { [key: string]: DoctorWithSchedule[] } = {};
@@ -264,45 +318,6 @@ export default function DoctorScheduleGrid({
             `${s.start_time.substring(0, 5)} - ${s.end_time.substring(0, 5)}`,
         )
         .join("\n");
-    },
-    [],
-  );
-
-  // Fungsi untuk mengecek apakah dokter cuti pada hari tertentu
-  const isDoctorCutiOnDay = useCallback(
-    (doctor: DoctorWithSchedule, day: string): boolean => {
-      // Jika status dokter bukan cuti, return false
-      if (doctor.status !== "cuti") return false;
-
-      // Jika tidak ada schedules, return false
-      if (!doctor.schedules || doctor.schedules.length === 0) return false;
-
-      // Cek apakah ada jadwal pada hari tersebut
-      const hasScheduleOnDay = doctor.schedules.some(
-        (s) =>
-          s.day_of_week === day ||
-          (day === "Minggu" && s.day_of_week === "Minggu"),
-      );
-
-      // Jika ada jadwal pada hari tersebut, berarti cuti pada hari itu
-      return hasScheduleOnDay;
-    },
-    [],
-  );
-
-  // Fungsi untuk mengecek apakah dokter sedang cuti total (semua hari)
-  const isDoctorFullyCuti = useCallback(
-    (doctor: DoctorWithSchedule): boolean => {
-      if (doctor.status !== "cuti") return false;
-      if (!doctor.schedules || doctor.schedules.length === 0) return true;
-
-      // Cek apakah semua hari dalam seminggu memiliki jadwal
-      const daysWithSchedule = new Set(
-        doctor.schedules.map((s) => s.day_of_week),
-      );
-
-      // Jika semua hari memiliki jadwal, berarti cuti di semua hari
-      return DAYS.every((day) => daysWithSchedule.has(day));
     },
     [],
   );
@@ -354,6 +369,7 @@ export default function DoctorScheduleGrid({
   }, []);
 
   const handleReset = useCallback(() => {
+    // Reset semua filter
     setSelectedSpecialtyInput(null);
     setSelectedSpecialty(null);
     setShowMobileSpecialtyModal(false);
@@ -363,7 +379,17 @@ export default function DoctorScheduleGrid({
     setSelectedDay(null);
     setShowMobileDayModal(false);
     setShowDesktopDayModal(false);
-  }, []);
+
+    // Clear cache filter
+    try {
+      localStorage.removeItem(FILTER_CACHE_KEY);
+    } catch {
+      // Silent fail
+    }
+
+    // Refetch data
+    refetch();
+  }, [refetch]);
 
   const handleDoctorClick = useCallback(
     (doctorId: string, isCuti: boolean) => {
@@ -374,34 +400,27 @@ export default function DoctorScheduleGrid({
     [router],
   );
 
-  // Tentukan kapan harus menampilkan skeleton
-  const shouldShowSkeleton = useMemo(() => {
+  // Determine loading state
+  const showLoading = useMemo(() => {
     if (propsLoading) return true;
 
-    const hasData =
-      (cachedDoctors && cachedDoctors.length > 0) ||
-      (doctorsWithSchedules && doctorsWithSchedules.length > 0);
-
-    if (!hasData && isFetching) return true;
-    if (!hasData && !initialCache) return true;
+    // Jika data kosong dan sedang fetching
+    if (!doctors || doctors.length === 0) {
+      return isLoading || isFetching;
+    }
 
     return false;
-  }, [
-    propsLoading,
-    cachedDoctors,
-    doctorsWithSchedules,
-    isFetching,
-    initialCache,
-  ]);
+  }, [propsLoading, doctors, isLoading, isFetching]);
 
-  if (shouldShowSkeleton) {
-    return <DoctorScheduleSkeleton />;
+  // Show loading
+  if (showLoading) {
+    return (
+      <div className="w-full min-h-96 flex flex-col items-center justify-center">
+        <Loader2 className="h-12 w-12 animate-spin text-[#003f88] mb-4" />
+        <p className="text-slate-600 text-base">Memuat jadwal dokter...</p>
+      </div>
+    );
   }
-
-  const displayData =
-    cachedDoctors && cachedDoctors.length > 0
-      ? cachedDoctors
-      : doctorsWithSchedules;
 
   return (
     <section
@@ -433,7 +452,7 @@ export default function DoctorScheduleGrid({
               className={`w-11 h-11 flex items-center justify-center border transition-all bg-white ${
                 showMobileSpecialtyModal
                   ? "border-[#003f88] bg-white"
-                  : "border-slate-200 "
+                  : "border-slate-200 hover:bg-slate-50"
               }`}
               title="Filter Spesialis"
             >
@@ -445,7 +464,7 @@ export default function DoctorScheduleGrid({
               className={`w-11 h-11 flex items-center justify-center border transition-all bg-white ${
                 showMobileDayModal
                   ? "border-[#003f88] bg-white"
-                  : "border-slate-200 "
+                  : "border-slate-200 hover:bg-slate-50"
               }`}
               title="Filter Hari"
             >
@@ -764,7 +783,7 @@ export default function DoctorScheduleGrid({
                             day,
                           );
 
-                          // Jika dokter cuti total, semua hari ditampilkan merah dengan tulisan Cuti
+                          // Jika cuti total
                           if (isFullyCuti) {
                             return (
                               <td
@@ -783,7 +802,7 @@ export default function DoctorScheduleGrid({
                             );
                           }
 
-                          // Jika dokter cuti pada hari tertentu
+                          // Jika cuti pada hari tertentu
                           if (isCutiOnThisDay) {
                             return (
                               <td
@@ -848,7 +867,9 @@ export default function DoctorScheduleGrid({
                   >
                     <div className="flex items-center gap-1.5">
                       <div
-                        className={`font-bold text-base ${isDoctorCuti ? "text-red-600" : "text-[#003f88]"}`}
+                        className={`font-bold text-base ${
+                          isDoctorCuti ? "text-red-600" : "text-[#003f88]"
+                        }`}
                       >
                         {doctor.name}
                       </div>
@@ -868,7 +889,6 @@ export default function DoctorScheduleGrid({
 
                         const isCutiOnThisDay = isDoctorCutiOnDay(doctor, day);
 
-                        // Jika cuti total atau cuti pada hari ini
                         if (isFullyCuti || isCutiOnThisDay) {
                           return (
                             <div
