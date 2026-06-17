@@ -95,7 +95,6 @@ const ServicesMenu: React.FC = () => {
 
   return (
     <section className="py-0 md:py-12 px-4">
-      {/* Desktop: tanpa bg-slate-50, Mobile: dengan bg-slate-50 + py-4 px-2 */}
       <div className="max-w-[1106px] mx-auto my-6">
         <nav aria-label="Layanan Utama">
           {/* Desktop: tampilkan semua services, Mobile: sembunyikan Medical Checkup */}
@@ -142,7 +141,7 @@ const ServicesMenu: React.FC = () => {
             </motion.ul>
           </div>
 
-          {/* Desktop: tampilan original tanpa perubahan */}
+          {/* Desktop */}
           <div className="hidden md:block">
             <motion.ul
               className="grid grid-cols-3 gap-3 bg-white list-none p-0"

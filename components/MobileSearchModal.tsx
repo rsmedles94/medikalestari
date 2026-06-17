@@ -105,15 +105,20 @@ const MobileSearchModal: React.FC<MobileSearchModalProps> = memo(
     }, []);
 
     useEffect(() => {
-      if (isOpen) {
+      if (typeof window === "undefined") return;
+
+      const isMobile = window.matchMedia("(max-width: 767px)").matches;
+
+      // Hanya kunci scroll untuk mobile.
+      // Di desktop, Search modal ini tidak boleh mengunci body overflow.
+      if (isOpen && isMobile) {
         document.body.style.overflow = "hidden";
-      } else {
-        document.body.style.overflow = "unset";
+        return () => {
+          document.body.style.overflow = "unset";
+        };
       }
 
-      return () => {
-        document.body.style.overflow = "unset";
-      };
+      return;
     }, [isOpen]);
 
     const searchResults = useMemo(() => {

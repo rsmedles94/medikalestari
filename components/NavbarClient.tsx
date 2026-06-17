@@ -125,31 +125,24 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
     return () => window.removeEventListener("scroll", controlNavbar);
   }, [lastScrollY]);
 
-  useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = "hidden";
-      document.body.style.touchAction = "none";
-      document.documentElement.style.overflow = "hidden";
-      document.documentElement.style.touchAction = "none";
-    } else {
-      document.body.style.overflow = "";
-      document.body.style.touchAction = "";
-      document.documentElement.style.overflow = "";
-      document.documentElement.style.touchAction = "";
-    }
-
-    return () => {
-      document.body.style.overflow = "";
-      document.body.style.touchAction = "";
-      document.documentElement.style.overflow = "";
-      document.documentElement.style.touchAction = "";
-    };
-  }, [isMobileMenuOpen]);
-
   // Tutup menu dropdown pencarian saat nama jalur berubah
   useEffect(() => {
     closeSearch();
   }, [pathname, closeSearch]);
+
+  // Pastikan scrollbar halaman tidak ikut hilang saat mobile hamburger dibuka
+  // (MobileSearchModal bisa mengunci body overflow saat search modal mobile aktif).
+  useEffect(() => {
+    const shouldRestoreScrollbar = isMobileMenuOpen || !isSearchOpen;
+
+    if (shouldRestoreScrollbar && typeof document !== "undefined") {
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
+    }
+
+    // jangan override saat isSearchOpen & mobile menu belum dibuka,
+    // karena MobileSearchModal / desktop search bisa jadi sedang mengatur overflow.
+  }, [isMobileMenuOpen, isSearchOpen]);
 
   const menuData: Record<string, string[]> = {
     "Fasilitas & Layanan": [

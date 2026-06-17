@@ -384,7 +384,7 @@ const PromoKesehatan = () => {
   };
 
   return (
-    <div className="w-full font-sans antialiased bg-white relative overflow-hidden">
+    <div className="w-full antialiased bg-white relative overflow-hidden">
       {/* BACKGROUND GAMBAR UNTUK SELURUH HALAMAN */}
       <div className="absolute inset-x-0 top-0 bottom-48 z-0">
         <Image

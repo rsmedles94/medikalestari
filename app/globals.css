@@ -13,17 +13,6 @@
   --font-family-sans: "Google Sans", Avenir, Arial, Helvetica, sans-serif;
 }
 
-/* Menyembunyikan scrollbar 
-   Chrome, Safari, Edge, Firefox, dan IE 
-*/
-* {
-  -ms-overflow-style: none; /* Internet Explorer 10+ */
-  scrollbar-width: none; /* Firefox */
-}
-
-*::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, dan Opera */
-}
 
 body {
   background: var(--background);
