@@ -11,11 +11,6 @@ import { Doctor, Schedule } from "@/lib/types";
 import { Search, Loader2, Stethoscope, CalendarDays } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
-import {
-  useQuery,
-  useQueryClient,
-  keepPreviousData,
-} from "@tanstack/react-query";
 
 interface DoctorWithSchedule extends Doctor {
   schedules: Schedule[];
@@ -29,10 +24,7 @@ interface DoctorScheduleGridProps {
 const DAYS = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
 
 // Constants untuk caching
-const CACHE_KEY = "doctor-schedule";
 const FILTER_CACHE_KEY = "doctor-schedule-filters";
-const STALE_TIME = 30 * 1000; // 30 detik
-const GC_TIME = 10 * 60 * 1000; // 10 menit
 
 interface FilterState {
   selectedSpecialty: string | null;
@@ -46,9 +38,10 @@ interface FilterState {
   showDesktopDayModal: boolean;
 }
 
-// Helper functions untuk filter cache
+// Helper functions untuk filter cache dengan error handling
 const loadFilterState = (): FilterState | null => {
   try {
+    if (typeof window === 'undefined') return null;
     const cached = localStorage.getItem(FILTER_CACHE_KEY);
     if (!cached) return null;
     return JSON.parse(cached);
@@ -59,6 +52,7 @@ const loadFilterState = (): FilterState | null => {
 
 const saveFilterState = (state: FilterState) => {
   try {
+    if (typeof window === 'undefined') return;
     localStorage.setItem(FILTER_CACHE_KEY, JSON.stringify(state));
   } catch {
     // Silent fail
@@ -80,16 +74,12 @@ const getTodayDayName = (): string => {
 };
 
 // Logika cuti yang benar
-const isDoctorCutiOnDay = (
-  doctor: DoctorWithSchedule,
-  day: string,
-): boolean => {
+const isDoctorCutiOnDay = (doctor: DoctorWithSchedule, day: string): boolean => {
   if (doctor.status !== "cuti") return false;
   if (!doctor.schedules || doctor.schedules.length === 0) return false;
 
   return doctor.schedules.some(
-    (s) =>
-      s.day_of_week === day || (day === "Minggu" && s.day_of_week === "Minggu"),
+    (s) => s.day_of_week === day || (day === "Minggu" && s.day_of_week === "Minggu")
   );
 };
 
@@ -97,7 +87,9 @@ const isDoctorFullyCuti = (doctor: DoctorWithSchedule): boolean => {
   if (doctor.status !== "cuti") return false;
   if (!doctor.schedules || doctor.schedules.length === 0) return false;
 
-  const daysWithSchedule = new Set(doctor.schedules.map((s) => s.day_of_week));
+  const daysWithSchedule = new Set(
+    doctor.schedules.map((s) => s.day_of_week)
+  );
 
   return DAYS.every((day) => daysWithSchedule.has(day));
 };
@@ -108,81 +100,66 @@ export default function DoctorScheduleGrid({
 }: Readonly<DoctorScheduleGridProps>) {
   const router = useRouter();
   const sectionRef = useRef<HTMLElement>(null);
-  const queryClient = useQueryClient();
   const isMounted = useRef(true);
   const isFirstRender = useRef(true);
-  const filterTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const filterTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+
+  // State untuk data dengan initial dari props
+  const [doctors, setDoctors] = useState<DoctorWithSchedule[]>(() => {
+    // Jika ada props, gunakan itu
+    if (doctorsWithSchedules.length > 0) {
+      return doctorsWithSchedules;
+    }
+    return [];
+  });
 
   // Load filter state dari cache
   const initialFilterState = useMemo(() => loadFilterState(), []);
 
   // State untuk filter
   const [selectedSpecialty, setSelectedSpecialty] = useState<string | null>(
-    initialFilterState?.selectedSpecialty ?? null,
+    initialFilterState?.selectedSpecialty ?? null
   );
-  const [selectedSpecialtyInput, setSelectedSpecialtyInput] = useState<
-    string | null
-  >(initialFilterState?.selectedSpecialtyInput ?? null);
+  const [selectedSpecialtyInput, setSelectedSpecialtyInput] = useState<string | null>(
+    initialFilterState?.selectedSpecialtyInput ?? null
+  );
   const [searchDoctor, setSearchDoctor] = useState(
-    initialFilterState?.searchDoctor ?? "",
+    initialFilterState?.searchDoctor ?? ""
   );
   const [searchDoctorInput, setSearchDoctorInput] = useState(
-    initialFilterState?.searchDoctorInput ?? "",
+    initialFilterState?.searchDoctorInput ?? ""
   );
   const [showMobileSpecialtyModal, setShowMobileSpecialtyModal] = useState(
-    initialFilterState?.showMobileSpecialtyModal ?? false,
+    initialFilterState?.showMobileSpecialtyModal ?? false
   );
   const [showMobileDayModal, setShowMobileDayModal] = useState(
-    initialFilterState?.showMobileDayModal ?? false,
+    initialFilterState?.showMobileDayModal ?? false
   );
   const [showDesktopDayModal, setShowDesktopDayModal] = useState(
-    initialFilterState?.showDesktopDayModal ?? false,
+    initialFilterState?.showDesktopDayModal ?? false
   );
   const [selectedDay, setSelectedDay] = useState<string | null>(
-    initialFilterState?.selectedDay ?? null,
+    initialFilterState?.selectedDay ?? null
   );
   const [selectedDayInput, setSelectedDayInput] = useState<string | null>(
-    initialFilterState?.selectedDayInput ?? null,
+    initialFilterState?.selectedDayInput ?? null
   );
+  const [isLoading, setIsLoading] = useState(true);
 
-  // React Query untuk caching data dokter
-  const {
-    data: doctors,
-    isLoading,
-    isFetching,
-    refetch,
-    isStale,
-    isSuccess,
-  } = useQuery({
-    queryKey: [CACHE_KEY],
-    queryFn: async () => {
-      // Jika ada data dari props, gunakan itu
-      if (doctorsWithSchedules.length > 0) {
-        return doctorsWithSchedules;
-      }
+  // Update doctors ketika props berubah
+  useEffect(() => {
+    if (doctorsWithSchedules.length > 0) {
+      setDoctors(doctorsWithSchedules);
+      setIsLoading(false);
+    } else if (doctors.length > 0) {
+      // Jika sudah ada data dan props kosong, tetap gunakan data yang ada
+      setIsLoading(false);
+    } else {
+      setIsLoading(true);
+    }
+  }, [doctorsWithSchedules, doctors.length]);
 
-      // Coba ambil dari cache query client
-      const cached = queryClient.getQueryData<DoctorWithSchedule[]>([
-        CACHE_KEY,
-      ]);
-      if (cached && cached.length > 0) {
-        return cached;
-      }
-
-      return [];
-    },
-    initialData: doctorsWithSchedules,
-    staleTime: STALE_TIME,
-    gcTime: GC_TIME,
-    placeholderData: keepPreviousData,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
-    refetchOnReconnect: true,
-    retry: 3,
-    retryDelay: 1000,
-  });
-
-  // Effect untuk menyimpan filter state ke cache
+  // Effect untuk menyimpan filter state ke cache dengan debounce
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
@@ -230,22 +207,6 @@ export default function DoctorScheduleGrid({
     showDesktopDayModal,
   ]);
 
-  // Effect untuk update data ketika props berubah
-  useEffect(() => {
-    if (doctorsWithSchedules.length > 0) {
-      const currentData = queryClient.getQueryData<DoctorWithSchedule[]>([
-        CACHE_KEY,
-      ]);
-
-      // Cek apakah data berbeda
-      if (
-        JSON.stringify(currentData) !== JSON.stringify(doctorsWithSchedules)
-      ) {
-        queryClient.setQueryData([CACHE_KEY], doctorsWithSchedules);
-      }
-    }
-  }, [doctorsWithSchedules, queryClient]);
-
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -281,7 +242,7 @@ export default function DoctorScheduleGrid({
               ? doc.schedules.some(
                   (s) =>
                     s.day_of_week === selectedDay ||
-                    (selectedDay === "Minggu" && s.day_of_week === "Minggu"),
+                    (selectedDay === "Minggu" && s.day_of_week === "Minggu")
                 )
               : false;
         }
@@ -308,18 +269,18 @@ export default function DoctorScheduleGrid({
       const daySchedules = schedules.filter(
         (s) =>
           s.day_of_week === day ||
-          (day === "Minggu" && s.day_of_week === "Minggu"),
+          (day === "Minggu" && s.day_of_week === "Minggu")
       );
       if (daySchedules.length === 0) return "-";
 
       return daySchedules
         .map(
           (s) =>
-            `${s.start_time.substring(0, 5)} - ${s.end_time.substring(0, 5)}`,
+            `${s.start_time.substring(0, 5)} - ${s.end_time.substring(0, 5)}`
         )
         .join("\n");
     },
-    [],
+    []
   );
 
   const toggleSpecialtyModal = useCallback(() => {
@@ -348,7 +309,7 @@ export default function DoctorScheduleGrid({
         setSearchDoctor("");
       }
     },
-    [],
+    []
   );
 
   const handleSearchSubmit = useCallback(() => {
@@ -382,14 +343,13 @@ export default function DoctorScheduleGrid({
 
     // Clear cache filter
     try {
-      localStorage.removeItem(FILTER_CACHE_KEY);
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem(FILTER_CACHE_KEY);
+      }
     } catch {
       // Silent fail
     }
-
-    // Refetch data
-    refetch();
-  }, [refetch]);
+  }, []);
 
   const handleDoctorClick = useCallback(
     (doctorId: string, isCuti: boolean) => {
@@ -397,27 +357,26 @@ export default function DoctorScheduleGrid({
         router.push(`/dokter/${doctorId}`);
       }
     },
-    [router],
+    [router]
   );
 
-  // Determine loading state
-  const showLoading = useMemo(() => {
-    if (propsLoading) return true;
-
-    // Jika data kosong dan sedang fetching
-    if (!doctors || doctors.length === 0) {
-      return isLoading || isFetching;
-    }
-
-    return false;
-  }, [propsLoading, doctors, isLoading, isFetching]);
-
   // Show loading
-  if (showLoading) {
+  if (propsLoading || isLoading) {
     return (
       <div className="w-full min-h-96 flex flex-col items-center justify-center">
-        <Loader2 className="h-12 w-12 animate-spin text-[#003f88] mb-4" />
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-[#003f88] border-t-transparent mb-4" />
         <p className="text-slate-600 text-base">Memuat jadwal dokter...</p>
+      </div>
+    );
+  }
+
+  // Jika tidak ada data
+  if (!doctors || doctors.length === 0) {
+    return (
+      <div className="w-full text-center py-12 border border-dashed border-slate-200 bg-white">
+        <p className="text-slate-500 text-base">
+          Belum ada data jadwal dokter.
+        </p>
       </div>
     );
   }
@@ -443,13 +402,13 @@ export default function DoctorScheduleGrid({
                 placeholder="Masukkan Nama Dokter"
                 value={searchDoctorInput}
                 onChange={handleSearchChange}
-                className="w-full border border-slate-200 h-11 pl-10 pr-4 outline-none focus:border-[#003f88] text-sm bg-white"
+                className="w-full border border-slate-200 h-11 pl-10 pr-4 outline-none focus:border-[#003f88] text-sm bg-white rounded"
               />
             </div>
 
             <button
               onClick={toggleSpecialtyModal}
-              className={`w-11 h-11 flex items-center justify-center border transition-all bg-white ${
+              className={`w-11 h-11 flex items-center justify-center border transition-all bg-white rounded ${
                 showMobileSpecialtyModal
                   ? "border-[#003f88] bg-white"
                   : "border-slate-200 hover:bg-slate-50"
@@ -461,7 +420,7 @@ export default function DoctorScheduleGrid({
 
             <button
               onClick={toggleDayModal}
-              className={`w-11 h-11 flex items-center justify-center border transition-all bg-white ${
+              className={`w-11 h-11 flex items-center justify-center border transition-all bg-white rounded ${
                 showMobileDayModal
                   ? "border-[#003f88] bg-white"
                   : "border-slate-200 hover:bg-slate-50"
@@ -490,7 +449,7 @@ export default function DoctorScheduleGrid({
                 <div className="p-2">
                   <button
                     onClick={handleReset}
-                    className={`w-full text-left px-4 py-2 text-base transition-all ${
+                    className={`w-full text-left px-4 py-2 text-base transition-all rounded ${
                       selectedSpecialtyInput === null
                         ? "bg-[#003f88] text-white font-semibold"
                         : "text-slate-700 hover:bg-slate-50"
@@ -502,7 +461,7 @@ export default function DoctorScheduleGrid({
                     <button
                       key={s}
                       onClick={() => handleSpecialtySelect(s)}
-                      className={`w-full text-left px-4 py-2 text-base transition-all ${
+                      className={`w-full text-left px-4 py-2 text-base transition-all rounded ${
                         selectedSpecialtyInput === s
                           ? "bg-[#003f88] text-white font-semibold"
                           : "text-slate-700 hover:bg-slate-50"
@@ -527,7 +486,7 @@ export default function DoctorScheduleGrid({
                 <div className="p-2">
                   <button
                     onClick={handleReset}
-                    className={`w-full text-left px-4 py-2 text-base transition-all whitespace-nowrap ${
+                    className={`w-full text-left px-4 py-2 text-base transition-all whitespace-nowrap rounded ${
                       selectedDayInput === null
                         ? "bg-[#003f88] text-white font-semibold"
                         : "text-slate-700 hover:bg-slate-50"
@@ -539,7 +498,7 @@ export default function DoctorScheduleGrid({
                     <button
                       key={d}
                       onClick={() => handleDaySelect(d)}
-                      className={`w-full text-left px-4 py-2 text-base transition-all whitespace-nowrap ${
+                      className={`w-full text-left px-4 py-2 text-base transition-all whitespace-nowrap rounded ${
                         selectedDayInput === d
                           ? "bg-[#003f88] text-white font-semibold"
                           : "text-slate-700 hover:bg-slate-50"
@@ -563,7 +522,7 @@ export default function DoctorScheduleGrid({
               </label>
               <button
                 onClick={toggleSpecialtyModal}
-                className="w-full h-11 px-4 border border-slate-200 text-left bg-white transition-all focus:border-[#003f88] focus:outline-none text-base flex items-center justify-between"
+                className="w-full h-11 px-4 border border-slate-200 text-left bg-white transition-all focus:border-[#003f88] focus:outline-none text-base flex items-center justify-between rounded"
               >
                 <span>{selectedSpecialtyInput || "Pilih Spesialis"}</span>
                 <Stethoscope size={18} className="text-[#003f88] shrink-0" />
@@ -579,7 +538,7 @@ export default function DoctorScheduleGrid({
                     <div className="p-2">
                       <button
                         onClick={handleReset}
-                        className={`w-full text-left px-4 py-2 text-sm transition-all ${
+                        className={`w-full text-left px-4 py-2 text-sm transition-all rounded ${
                           selectedSpecialtyInput === null
                             ? "bg-[#003f88] text-white font-semibold"
                             : "text-slate-700 hover:bg-slate-50"
@@ -591,7 +550,7 @@ export default function DoctorScheduleGrid({
                         <button
                           key={s}
                           onClick={() => handleSpecialtySelect(s)}
-                          className={`w-full text-left px-4 py-2 text-sm transition-all ${
+                          className={`w-full text-left px-4 py-2 text-sm transition-all rounded ${
                             selectedSpecialtyInput === s
                               ? "bg-[#003f88] text-white font-semibold"
                               : "text-slate-700 hover:bg-slate-50"
@@ -621,14 +580,14 @@ export default function DoctorScheduleGrid({
                     placeholder="Masukkan Nama Dokter"
                     value={searchDoctorInput}
                     onChange={handleSearchChange}
-                    className="w-full border border-slate-200 h-11 pl-10 pr-4 outline-none focus:border-[#003f88] text-base bg-white"
+                    className="w-full border border-slate-200 h-11 pl-10 pr-4 outline-none focus:border-[#003f88] text-base bg-white rounded"
                   />
                 </div>
               </div>
 
               <button
                 onClick={() => setShowDesktopDayModal((prev) => !prev)}
-                className={`w-11 h-11 flex items-center justify-center border transition-all bg-white ${
+                className={`w-11 h-11 flex items-center justify-center border transition-all bg-white rounded ${
                   showDesktopDayModal
                     ? "border-[#003f88] bg-white"
                     : "border-slate-200"
@@ -652,12 +611,12 @@ export default function DoctorScheduleGrid({
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="absolute top-full right-0 bg-white border border-slate-200 shadow-lg z-50 mt-1 max-h-96 overflow-y-auto"
+                    className="absolute top-full right-0 bg-white border border-slate-200 shadow-lg z-50 mt-1 max-h-96 overflow-y-auto rounded-lg"
                   >
                     <div className="p-2">
                       <button
                         onClick={handleReset}
-                        className={`w-full text-left px-4 py-2 text-sm transition-all whitespace-nowrap ${
+                        className={`w-full text-left px-4 py-2 text-sm transition-all whitespace-nowrap rounded ${
                           selectedDayInput === null
                             ? "bg-[#003f88] text-white font-semibold"
                             : "text-slate-700 hover:bg-slate-50"
@@ -669,7 +628,7 @@ export default function DoctorScheduleGrid({
                         <button
                           key={d}
                           onClick={() => handleDaySelect(d)}
-                          className={`w-full text-left px-4 py-2 text-sm transition-all whitespace-nowrap ${
+                          className={`w-full text-left px-4 py-2 text-sm transition-all whitespace-nowrap rounded ${
                             selectedDayInput === d
                               ? "bg-[#003f88] text-white font-semibold"
                               : "text-slate-700 hover:bg-slate-50"
@@ -707,11 +666,11 @@ export default function DoctorScheduleGrid({
 
       {/* DESKTOP TABLE VIEW */}
       {filteredDoctors.length > 0 && (
-        <div className="hidden lg:block w-full overflow-x-auto border border-slate-200 bg-white shadow-sm">
+        <div className="hidden lg:block w-full overflow-x-auto border border-slate-200 bg-white shadow-sm rounded-lg">
           <table className="w-full text-left border-collapse min-w-[800px]">
             <thead>
               <tr className="bg-[#003f88] text-white text-sm font-semibold">
-                <th className="p-3 border-r border-slate-300 w-1/4">
+                <th className="p-3 border-r border-slate-300 w-1/4 rounded-tl-lg">
                   Nama Dokter
                 </th>
                 {DAYS.map((day) => (
@@ -776,14 +735,13 @@ export default function DoctorScheduleGrid({
                         {DAYS.map((day) => {
                           const scheduleText = getScheduleText(
                             day,
-                            doctor.schedules,
+                            doctor.schedules
                           );
                           const isCutiOnThisDay = isDoctorCutiOnDay(
                             doctor,
-                            day,
+                            day
                           );
 
-                          // Jika cuti total
                           if (isFullyCuti) {
                             return (
                               <td
@@ -802,7 +760,6 @@ export default function DoctorScheduleGrid({
                             );
                           }
 
-                          // Jika cuti pada hari tertentu
                           if (isCutiOnThisDay) {
                             return (
                               <td
@@ -821,7 +778,6 @@ export default function DoctorScheduleGrid({
                             );
                           }
 
-                          // Normal schedule
                           return (
                             <td
                               key={day}
@@ -852,7 +808,7 @@ export default function DoctorScheduleGrid({
         <div className="lg:hidden flex flex-col gap-4">
           {Object.keys(groupedDoctors).map((specialtyName) => (
             <div key={`mobile-${specialtyName}`} className="space-y-3">
-              <div className="text-base font-bold text-white bg-[#003f88] p-2">
+              <div className="text-base font-bold text-white bg-[#003f88] p-2 rounded">
                 {specialtyName}
               </div>
 
@@ -863,7 +819,7 @@ export default function DoctorScheduleGrid({
                 return (
                   <div
                     key={`mobile-doc-${doctor.id}`}
-                    className="bg-white border border-slate-200 p-3 space-y-2 text-sm"
+                    className="bg-white border border-slate-200 p-3 space-y-2 text-sm rounded-lg"
                   >
                     <div className="flex items-center gap-1.5">
                       <div
@@ -883,11 +839,14 @@ export default function DoctorScheduleGrid({
                       {DAYS.map((day) => {
                         const scheduleText = getScheduleText(
                           day,
-                          doctor.schedules,
+                          doctor.schedules
                         );
                         if (scheduleText === "-") return null;
 
-                        const isCutiOnThisDay = isDoctorCutiOnDay(doctor, day);
+                        const isCutiOnThisDay = isDoctorCutiOnDay(
+                          doctor,
+                          day
+                        );
 
                         if (isFullyCuti || isCutiOnThisDay) {
                           return (
@@ -931,7 +890,7 @@ export default function DoctorScheduleGrid({
 
       {/* EMPTY STATE */}
       {filteredDoctors.length === 0 && (
-        <div className="w-full text-center py-12 border border-dashed border-slate-200 bg-white">
+        <div className="w-full text-center py-12 border border-dashed border-slate-200 bg-white rounded-lg">
           <p className="text-slate-500 text-base">
             Tidak ada jadwal dokter yang cocok dengan pencarian Anda.
           </p>
