@@ -358,7 +358,7 @@ const DoctorSection = ({
                     href={`/dokter/${doctor.id}`}
                     className="px-4 py-2 md:px-8 md:py-3 bg-white text-slate-600 text-[10px] md:text-[12px] font-bold rounded-full border border-slate-200 transition-all hover:bg-[#e67e22] hover:text-white active:scale-95"
                   >
-                    Lihat Profil Dokter
+                    Profil Dokter
                   </Link>
                 </div>
               </div>

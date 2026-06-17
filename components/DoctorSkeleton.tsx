@@ -51,7 +51,7 @@ const DoctorSkeleton = () => {
           <div className="relative h-9 md:h-11 w-28 md:w-36 bg-linear-to-r from-slate-200 to-slate-300 rounded-full overflow-hidden shadow-sm">
             <ShimmerOverlay />
           </div>
-          <div className="relative h-9 md:h-11 w-28 md:w-41 bg-linear-to-r from-slate-200 to-slate-300 rounded-full overflow-hidden shadow-sm">
+          <div className="relative h-9 md:h-11 w-28 md:w-36 bg-linear-to-r from-slate-200 to-slate-300 rounded-full overflow-hidden shadow-sm">
             <ShimmerOverlay />
           </div>
         </div>
