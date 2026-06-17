@@ -1,12 +1,6 @@
 "use client";
 
-import React, {
-  useState,
-  useMemo,
-  useRef,
-  useCallback,
-  useEffect,
-} from "react";
+import React, { useState, useMemo, useRef, useCallback } from "react";
 import { Doctor, Schedule } from "@/lib/types";
 import { Search, Loader2, Stethoscope, CalendarDays } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -22,42 +16,7 @@ interface DoctorScheduleGridProps {
 }
 
 const DAYS = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-
-// Constants untuk caching
-const FILTER_CACHE_KEY = "doctor-schedule-filters";
-
-interface FilterState {
-  selectedSpecialty: string | null;
-  selectedSpecialtyInput: string | null;
-  searchDoctor: string;
-  searchDoctorInput: string;
-  selectedDay: string | null;
-  selectedDayInput: string | null;
-  showMobileSpecialtyModal: boolean;
-  showMobileDayModal: boolean;
-  showDesktopDayModal: boolean;
-}
-
-// Helper functions untuk filter cache
-const loadFilterState = (): FilterState | null => {
-  try {
-    if (typeof window === "undefined") return null;
-    const cached = localStorage.getItem(FILTER_CACHE_KEY);
-    if (!cached) return null;
-    return JSON.parse(cached);
-  } catch {
-    return null;
-  }
-};
-
-const saveFilterState = (state: FilterState) => {
-  try {
-    if (typeof window === "undefined") return;
-    localStorage.setItem(FILTER_CACHE_KEY, JSON.stringify(state));
-  } catch {
-    // Silent fail
-  }
-};
+const ITEMS_PER_PAGE = 10;
 
 const getTodayDayName = (): string => {
   const dayIndex = new Date().getDay();
@@ -73,137 +32,66 @@ const getTodayDayName = (): string => {
   return dayMap[dayIndex];
 };
 
-// Logika cuti yang benar
-const isDoctorCutiOnDay = (
-  doctor: DoctorWithSchedule,
-  day: string,
-): boolean => {
-  if (doctor.status !== "cuti") return false;
-  if (!doctor.schedules || doctor.schedules.length === 0) return false;
-
-  return doctor.schedules.some(
+const getCutiDay = (doctor: DoctorWithSchedule): string | null => {
+  if (
+    doctor.status !== "cuti" ||
+    !doctor.schedules ||
+    doctor.schedules.length === 0
+  ) {
+    return null;
+  }
+  const todayDay = getTodayDayName();
+  const hasScheduleToday = doctor.schedules.some(
     (s) =>
-      s.day_of_week === day || (day === "Minggu" && s.day_of_week === "Minggu"),
+      s.day_of_week === todayDay ||
+      (todayDay === "Minggu" && s.day_of_week === "Minggu"),
   );
-};
-
-const isDoctorFullyCuti = (doctor: DoctorWithSchedule): boolean => {
-  if (doctor.status !== "cuti") return false;
-  if (!doctor.schedules || doctor.schedules.length === 0) return false;
-
-  const daysWithSchedule = new Set(doctor.schedules.map((s) => s.day_of_week));
-
-  return DAYS.every((day) => daysWithSchedule.has(day));
+  if (hasScheduleToday) {
+    return todayDay;
+  }
+  return null;
 };
 
 export default function DoctorScheduleGrid({
   doctorsWithSchedules = [],
-  loading: propsLoading = false,
+  loading = false,
 }: Readonly<DoctorScheduleGridProps>) {
   const router = useRouter();
   const sectionRef = useRef<HTMLElement>(null);
-  const isMounted = useRef(true);
-  const filterTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Load filter state dari cache (hanya sekali)
-  const initialFilterState = useMemo(() => loadFilterState(), []);
-
-  // State untuk filter
   const [selectedSpecialty, setSelectedSpecialty] = useState<string | null>(
-    initialFilterState?.selectedSpecialty ?? null,
+    null,
   );
   const [selectedSpecialtyInput, setSelectedSpecialtyInput] = useState<
     string | null
-  >(initialFilterState?.selectedSpecialtyInput ?? null);
-  const [searchDoctor, setSearchDoctor] = useState(
-    initialFilterState?.searchDoctor ?? "",
-  );
-  const [searchDoctorInput, setSearchDoctorInput] = useState(
-    initialFilterState?.searchDoctorInput ?? "",
-  );
-  const [showMobileSpecialtyModal, setShowMobileSpecialtyModal] = useState(
-    initialFilterState?.showMobileSpecialtyModal ?? false,
-  );
-  const [showMobileDayModal, setShowMobileDayModal] = useState(
-    initialFilterState?.showMobileDayModal ?? false,
-  );
-  const [showDesktopDayModal, setShowDesktopDayModal] = useState(
-    initialFilterState?.showDesktopDayModal ?? false,
-  );
-  const [selectedDay, setSelectedDay] = useState<string | null>(
-    initialFilterState?.selectedDay ?? null,
-  );
-  const [selectedDayInput, setSelectedDayInput] = useState<string | null>(
-    initialFilterState?.selectedDayInput ?? null,
-  );
+  >(null);
+  const [searchDoctor, setSearchDoctor] = useState("");
+  const [searchDoctorInput, setSearchDoctorInput] = useState("");
+  const [showMobileSpecialtyModal, setShowMobileSpecialtyModal] =
+    useState(false);
+  const [showMobileDayModal, setShowMobileDayModal] = useState(false);
+  const [showDesktopDayModal, setShowDesktopDayModal] = useState(false);
+  const [selectedDay, setSelectedDay] = useState<string | null>(null);
+  const [selectedDayInput, setSelectedDayInput] = useState<string | null>(null);
 
-  // Hanya menggunakan props langsung, tidak ada setState di effect
-  const doctors = doctorsWithSchedules;
+  const handleOpenMobileSpecialtyModal = () => {
+    setShowMobileSpecialtyModal(!showMobileSpecialtyModal);
+    if (!showMobileSpecialtyModal) setShowMobileDayModal(false);
+  };
 
-  // Effect untuk menyimpan filter state ke cache (hanya side effect)
-  useEffect(() => {
-    // Clear timeout sebelumnya
-    if (filterTimeoutRef.current) {
-      clearTimeout(filterTimeoutRef.current);
-    }
+  const handleOpenMobileDayModal = () => {
+    setShowMobileDayModal(!showMobileDayModal);
+    if (!showMobileDayModal) setShowMobileSpecialtyModal(false);
+  };
 
-    // Debounce save filter
-    filterTimeoutRef.current = setTimeout(() => {
-      if (!isMounted.current) return;
-
-      const filterState: FilterState = {
-        selectedSpecialty,
-        selectedSpecialtyInput,
-        searchDoctor,
-        searchDoctorInput,
-        selectedDay,
-        selectedDayInput,
-        showMobileSpecialtyModal,
-        showMobileDayModal,
-        showDesktopDayModal,
-      };
-
-      saveFilterState(filterState);
-    }, 300);
-
-    return () => {
-      if (filterTimeoutRef.current) {
-        clearTimeout(filterTimeoutRef.current);
-      }
-    };
-  }, [
-    selectedSpecialty,
-    selectedSpecialtyInput,
-    searchDoctor,
-    searchDoctorInput,
-    selectedDay,
-    selectedDayInput,
-    showMobileSpecialtyModal,
-    showMobileDayModal,
-    showDesktopDayModal,
-  ]);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      isMounted.current = false;
-      if (filterTimeoutRef.current) {
-        clearTimeout(filterTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  // Semua perhitungan dilakukan saat render (bukan di effect)
   const specialties = useMemo(() => {
-    if (!doctors || doctors.length === 0) return [];
-    const specs = new Set(doctors.map((doc) => doc.specialty));
+    if (!doctorsWithSchedules) return [];
+    const specs = new Set(doctorsWithSchedules.map((doc) => doc.specialty));
     return Array.from(specs).sort((a, b) => a.localeCompare(b));
-  }, [doctors]);
+  }, [doctorsWithSchedules]);
 
   const filteredDoctors = useMemo(() => {
-    if (!doctors || doctors.length === 0) return [];
-
-    return doctors
+    if (!doctorsWithSchedules) return [];
+    return doctorsWithSchedules
       .filter((doc) => {
         const matchesSpecialty =
           !selectedSpecialty || doc.specialty === selectedSpecialty;
@@ -226,7 +114,7 @@ export default function DoctorScheduleGrid({
         return matchesSpecialty && matchesSearch && matchesDay;
       })
       .sort((a, b) => a.name.localeCompare(b.name));
-  }, [doctors, selectedSpecialty, searchDoctor, selectedDay]);
+  }, [doctorsWithSchedules, selectedSpecialty, searchDoctor, selectedDay]);
 
   const groupedDoctors = useMemo(() => {
     const groups: { [key: string]: DoctorWithSchedule[] } = {};
@@ -239,120 +127,27 @@ export default function DoctorScheduleGrid({
     return groups;
   }, [filteredDoctors]);
 
-  // Memoized handlers
-  const getScheduleText = useCallback(
-    (day: string, schedules: Schedule[] = []) => {
-      const daySchedules = schedules.filter(
+  const getScheduleText = (day: string, schedules: Schedule[] = []) => {
+    const daySchedules = schedules.filter(
+      (s) =>
+        s.day_of_week === day ||
+        (day === "Minggu" && s.day_of_week === "Minggu"),
+    );
+    if (daySchedules.length === 0) return "-";
+
+    return daySchedules
+      .map(
         (s) =>
-          s.day_of_week === day ||
-          (day === "Minggu" && s.day_of_week === "Minggu"),
-      );
-      if (daySchedules.length === 0) return "-";
+          `${s.start_time.substring(0, 5)} - ${s.end_time.substring(0, 5)}`,
+      )
+      .join("\n");
+  };
 
-      return daySchedules
-        .map(
-          (s) =>
-            `${s.start_time.substring(0, 5)} - ${s.end_time.substring(0, 5)}`,
-        )
-        .join("\n");
-    },
-    [],
-  );
-
-  const toggleSpecialtyModal = useCallback(() => {
-    setShowMobileSpecialtyModal((prev) => {
-      if (!prev) {
-        setShowMobileDayModal(false);
-      }
-      return !prev;
-    });
-  }, []);
-
-  const toggleDayModal = useCallback(() => {
-    setShowMobileDayModal((prev) => {
-      if (!prev) {
-        setShowMobileSpecialtyModal(false);
-      }
-      return !prev;
-    });
-  }, []);
-
-  const handleSearchChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      setSearchDoctorInput(value);
-      if (value === "") {
-        setSearchDoctor("");
-      }
-    },
-    [],
-  );
-
-  const handleSearchSubmit = useCallback(() => {
-    setSelectedSpecialty(selectedSpecialtyInput);
-    setSearchDoctor(searchDoctorInput);
-    setSelectedDay(selectedDayInput);
-  }, [selectedSpecialtyInput, searchDoctorInput, selectedDayInput]);
-
-  const handleSpecialtySelect = useCallback((specialty: string | null) => {
-    setSelectedSpecialtyInput(specialty);
-    setShowMobileSpecialtyModal(false);
-  }, []);
-
-  const handleDaySelect = useCallback((day: string | null) => {
-    setSelectedDayInput(day);
-    setShowMobileDayModal(false);
-    setShowDesktopDayModal(false);
-  }, []);
-
-  const handleReset = useCallback(() => {
-    // Reset semua filter
-    setSelectedSpecialtyInput(null);
-    setSelectedSpecialty(null);
-    setShowMobileSpecialtyModal(false);
-    setSearchDoctor("");
-    setSearchDoctorInput("");
-    setSelectedDayInput(null);
-    setSelectedDay(null);
-    setShowMobileDayModal(false);
-    setShowDesktopDayModal(false);
-
-    // Clear cache filter
-    try {
-      if (typeof window !== "undefined") {
-        localStorage.removeItem(FILTER_CACHE_KEY);
-      }
-    } catch {
-      // Silent fail
-    }
-  }, []);
-
-  const handleDoctorClick = useCallback(
-    (doctorId: string, isCuti: boolean) => {
-      if (!isCuti) {
-        router.push(`/dokter/${doctorId}`);
-      }
-    },
-    [router],
-  );
-
-  // Show loading
-  if (propsLoading) {
+  if (loading) {
     return (
       <div className="w-full min-h-96 flex flex-col items-center justify-center">
-        <div className="h-12 w-12 animate-spin rounded-full border-4 border-[#003f88] border-t-transparent mb-4" />
+        <Loader2 className="h-12 w-12 animate-spin text-[#003f88] mb-4" />
         <p className="text-slate-600 text-base">Memuat jadwal dokter...</p>
-      </div>
-    );
-  }
-
-  // Jika tidak ada data
-  if (!doctors || doctors.length === 0) {
-    return (
-      <div className="w-full text-center py-12 border border-dashed border-slate-200 bg-white rounded-lg">
-        <p className="text-slate-500 text-base">
-          Belum ada data jadwal dokter.
-        </p>
       </div>
     );
   }
@@ -363,7 +158,7 @@ export default function DoctorScheduleGrid({
       ref={sectionRef}
       aria-label="Jadwal Dokter"
     >
-      {/* SEARCH & FILTER SECTION */}
+      {/* SEARCH & FILTER SECTION (SEMANTIC HTML5 <search>) */}
       <search className="block space-y-4">
         {/* MOBILE FILTER BAR */}
         <div className="lg:hidden w-full flex flex-col gap-4">
@@ -377,16 +172,19 @@ export default function DoctorScheduleGrid({
                 type="text"
                 placeholder="Masukkan Nama Dokter"
                 value={searchDoctorInput}
-                onChange={handleSearchChange}
-                className="w-full border border-slate-200 h-11 pl-10 pr-4 outline-none focus:border-[#003f88] text-sm bg-white rounded"
+                onChange={(e) => {
+                  setSearchDoctorInput(e.target.value);
+                  if (e.target.value === "") setSearchDoctor("");
+                }}
+                className="w-full border border-slate-200 h-11 pl-10 pr-4 outline-none focus:border-[#003f88] text-sm bg-white"
               />
             </div>
 
             <button
-              onClick={toggleSpecialtyModal}
-              className={`w-11 h-11 flex items-center justify-center border transition-all bg-white rounded ${
+              onClick={handleOpenMobileSpecialtyModal}
+              className={`w-11 h-11 flex items-center justify-center border transition-all bg-white ${
                 showMobileSpecialtyModal
-                  ? "border-[#003f88] bg-white"
+                  ? "border-[#003f88] bg-slate-50"
                   : "border-slate-200 hover:bg-slate-50"
               }`}
               title="Filter Spesialis"
@@ -395,10 +193,10 @@ export default function DoctorScheduleGrid({
             </button>
 
             <button
-              onClick={toggleDayModal}
-              className={`w-11 h-11 flex items-center justify-center border transition-all bg-white rounded ${
+              onClick={handleOpenMobileDayModal}
+              className={`w-11 h-11 flex items-center justify-center border transition-all bg-white ${
                 showMobileDayModal
-                  ? "border-[#003f88] bg-white"
+                  ? "border-[#003f88] bg-slate-50"
                   : "border-slate-200 hover:bg-slate-50"
               }`}
               title="Filter Hari"
@@ -407,7 +205,11 @@ export default function DoctorScheduleGrid({
             </button>
 
             <button
-              onClick={handleSearchSubmit}
+              onClick={() => {
+                setSelectedSpecialty(selectedSpecialtyInput);
+                setSearchDoctor(searchDoctorInput);
+                setSelectedDay(selectedDayInput);
+              }}
               className="px-4 h-11 bg-[#003f88] text-white font-semibold hover:bg-[#003f88]/90 transition-all border border-[#003f88] text-base flex items-center justify-center rounded-lg"
             >
               Cari
@@ -424,8 +226,14 @@ export default function DoctorScheduleGrid({
               >
                 <div className="p-2">
                   <button
-                    onClick={handleReset}
-                    className={`w-full text-left px-4 py-2 text-base transition-all rounded ${
+                    onClick={() => {
+                      setSelectedSpecialtyInput(null);
+                      setSelectedSpecialty(null);
+                      setShowMobileSpecialtyModal(false);
+                      setSearchDoctor("");
+                      setSearchDoctorInput("");
+                    }}
+                    className={`w-full text-left px-4 py-2 text-base transition-all ${
                       selectedSpecialtyInput === null
                         ? "bg-[#003f88] text-white font-semibold"
                         : "text-slate-700 hover:bg-slate-50"
@@ -436,8 +244,11 @@ export default function DoctorScheduleGrid({
                   {specialties.map((s) => (
                     <button
                       key={s}
-                      onClick={() => handleSpecialtySelect(s)}
-                      className={`w-full text-left px-4 py-2 text-base transition-all rounded ${
+                      onClick={() => {
+                        setSelectedSpecialtyInput(s);
+                        setShowMobileSpecialtyModal(false);
+                      }}
+                      className={`w-full text-left px-4 py-2 text-base transition-all ${
                         selectedSpecialtyInput === s
                           ? "bg-[#003f88] text-white font-semibold"
                           : "text-slate-700 hover:bg-slate-50"
@@ -461,8 +272,14 @@ export default function DoctorScheduleGrid({
               >
                 <div className="p-2">
                   <button
-                    onClick={handleReset}
-                    className={`w-full text-left px-4 py-2 text-base transition-all whitespace-nowrap rounded ${
+                    onClick={() => {
+                      setSelectedDayInput(null);
+                      setSelectedDay(null);
+                      setShowMobileDayModal(false);
+                      setSearchDoctor("");
+                      setSearchDoctorInput("");
+                    }}
+                    className={`w-full text-left px-4 py-2 text-base transition-all whitespace-nowrap ${
                       selectedDayInput === null
                         ? "bg-[#003f88] text-white font-semibold"
                         : "text-slate-700 hover:bg-slate-50"
@@ -473,8 +290,11 @@ export default function DoctorScheduleGrid({
                   {DAYS.map((d) => (
                     <button
                       key={d}
-                      onClick={() => handleDaySelect(d)}
-                      className={`w-full text-left px-4 py-2 text-base transition-all whitespace-nowrap rounded ${
+                      onClick={() => {
+                        setSelectedDayInput(d);
+                        setShowMobileDayModal(false);
+                      }}
+                      className={`w-full text-left px-4 py-2 text-base transition-all whitespace-nowrap ${
                         selectedDayInput === d
                           ? "bg-[#003f88] text-white font-semibold"
                           : "text-slate-700 hover:bg-slate-50"
@@ -489,16 +309,19 @@ export default function DoctorScheduleGrid({
           </AnimatePresence>
         </div>
 
-        {/* DESKTOP SEARCH BAR */}
+        {/* DESKTOP SEARCH BAR WITH WRAPPER */}
         <div className="hidden lg:block p-4 bg-slate-50 border border-slate-100 rounded-lg">
           <div className="grid grid-cols-2 gap-4">
+            {/* Kolom Kiri: Spesialis */}
             <div className="relative">
               <label className="block text-sm font-semibold text-slate-700 mb-2">
                 Spesialis
               </label>
               <button
-                onClick={toggleSpecialtyModal}
-                className="w-full h-11 px-4 border border-slate-200 text-left bg-white transition-all focus:border-[#003f88] focus:outline-none text-base flex items-center justify-between rounded"
+                onClick={() =>
+                  setShowMobileSpecialtyModal(!showMobileSpecialtyModal)
+                }
+                className="w-full h-11 px-4 border border-slate-200 text-left bg-white transition-all focus:border-[#003f88] focus:outline-none text-base flex items-center justify-between"
               >
                 <span>{selectedSpecialtyInput || "Pilih Spesialis"}</span>
                 <Stethoscope size={18} className="text-[#003f88] shrink-0" />
@@ -513,8 +336,14 @@ export default function DoctorScheduleGrid({
                   >
                     <div className="p-2">
                       <button
-                        onClick={handleReset}
-                        className={`w-full text-left px-4 py-2 text-sm transition-all rounded ${
+                        onClick={() => {
+                          setSelectedSpecialtyInput(null);
+                          setSelectedSpecialty(null);
+                          setShowMobileSpecialtyModal(false);
+                          setSearchDoctor("");
+                          setSearchDoctorInput("");
+                        }}
+                        className={`w-full text-left px-4 py-2 text-sm transition-all ${
                           selectedSpecialtyInput === null
                             ? "bg-[#003f88] text-white font-semibold"
                             : "text-slate-700 hover:bg-slate-50"
@@ -525,8 +354,11 @@ export default function DoctorScheduleGrid({
                       {specialties.map((s) => (
                         <button
                           key={s}
-                          onClick={() => handleSpecialtySelect(s)}
-                          className={`w-full text-left px-4 py-2 text-sm transition-all rounded ${
+                          onClick={() => {
+                            setSelectedSpecialtyInput(s);
+                            setShowMobileSpecialtyModal(false);
+                          }}
+                          className={`w-full text-left px-4 py-2 text-sm transition-all ${
                             selectedSpecialtyInput === s
                               ? "bg-[#003f88] text-white font-semibold"
                               : "text-slate-700 hover:bg-slate-50"
@@ -541,6 +373,7 @@ export default function DoctorScheduleGrid({
               </AnimatePresence>
             </div>
 
+            {/* Kolom Kanan: Nama Dokter & Filter & Tombol Cari */}
             <div className="flex gap-2 items-end relative">
               <div className="flex-1 relative">
                 <label className="block text-sm font-semibold text-slate-700 mb-2">
@@ -555,15 +388,18 @@ export default function DoctorScheduleGrid({
                     type="text"
                     placeholder="Masukkan Nama Dokter"
                     value={searchDoctorInput}
-                    onChange={handleSearchChange}
-                    className="w-full border border-slate-200 h-11 pl-10 pr-4 outline-none focus:border-[#003f88] text-base bg-white rounded"
+                    onChange={(e) => {
+                      setSearchDoctorInput(e.target.value);
+                      if (e.target.value === "") setSearchDoctor("");
+                    }}
+                    className="w-full border border-slate-200 h-11 pl-10 pr-4 outline-none focus:border-[#003f88] text-base bg-white"
                   />
                 </div>
               </div>
 
               <button
-                onClick={() => setShowDesktopDayModal((prev) => !prev)}
-                className={`w-11 h-11 flex items-center justify-center border transition-all bg-white rounded ${
+                onClick={() => setShowDesktopDayModal(!showDesktopDayModal)}
+                className={`w-11 h-11 flex items-center justify-center border transition-all bg-white ${
                   showDesktopDayModal
                     ? "border-[#003f88] bg-white"
                     : "border-slate-200"
@@ -587,12 +423,18 @@ export default function DoctorScheduleGrid({
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="absolute top-full right-0 bg-white border border-slate-200 shadow-lg z-50 mt-1 max-h-96 overflow-y-auto rounded-lg"
+                    className="absolute top-full right-0 bg-white border border-slate-200 shadow-lg z-50 mt-1 max-h-96 overflow-y-auto"
                   >
                     <div className="p-2">
                       <button
-                        onClick={handleReset}
-                        className={`w-full text-left px-4 py-2 text-sm transition-all whitespace-nowrap rounded ${
+                        onClick={() => {
+                          setSelectedDayInput(null);
+                          setSelectedDay(null);
+                          setShowDesktopDayModal(false);
+                          setSearchDoctor("");
+                          setSearchDoctorInput("");
+                        }}
+                        className={`w-full text-left px-4 py-2 text-sm transition-all whitespace-nowrap ${
                           selectedDayInput === null
                             ? "bg-[#003f88] text-white font-semibold"
                             : "text-slate-700 hover:bg-slate-50"
@@ -603,8 +445,11 @@ export default function DoctorScheduleGrid({
                       {DAYS.map((d) => (
                         <button
                           key={d}
-                          onClick={() => handleDaySelect(d)}
-                          className={`w-full text-left px-4 py-2 text-sm transition-all whitespace-nowrap rounded ${
+                          onClick={() => {
+                            setSelectedDayInput(d);
+                            setShowDesktopDayModal(false);
+                          }}
+                          className={`w-full text-left px-4 py-2 text-sm transition-all whitespace-nowrap ${
                             selectedDayInput === d
                               ? "bg-[#003f88] text-white font-semibold"
                               : "text-slate-700 hover:bg-slate-50"
@@ -619,7 +464,11 @@ export default function DoctorScheduleGrid({
               </AnimatePresence>
 
               <button
-                onClick={handleSearchSubmit}
+                onClick={() => {
+                  setSelectedSpecialty(selectedSpecialtyInput);
+                  setSearchDoctor(searchDoctorInput);
+                  setSelectedDay(selectedDayInput);
+                }}
                 className="px-6 h-11 bg-[#003f88] text-white font-semibold transition-all flex items-center justify-center text-base cursor-pointer rounded-lg active:scale-95"
               >
                 Cari
@@ -629,7 +478,7 @@ export default function DoctorScheduleGrid({
         </div>
       </search>
 
-      {/* LEGEND */}
+      {/* LEGEND/LABEL (SEMANTIC SEMANTIC UL/LI) */}
       <ul className="flex flex-wrap gap-4 text-sm font-bold items-center -mt-2 list-none p-0">
         <li className="text-[#003f88] flex items-center gap-1">
           (*) Poliklinik Eksekutif
@@ -642,11 +491,11 @@ export default function DoctorScheduleGrid({
 
       {/* DESKTOP TABLE VIEW */}
       {filteredDoctors.length > 0 && (
-        <div className="hidden lg:block w-full overflow-x-auto border border-slate-200 bg-white shadow-sm rounded-lg">
+        <div className="hidden lg:block w-full overflow-x-auto border border-slate-200 bg-white shadow-sm">
           <table className="w-full text-left border-collapse min-w-[800px]">
             <thead>
               <tr className="bg-[#003f88] text-white text-sm font-semibold">
-                <th className="p-3 border-r border-slate-300 w-1/4 rounded-tl-lg">
+                <th className="p-3 border-r border-slate-300 w-1/4">
                   Nama Dokter
                 </th>
                 {DAYS.map((day) => (
@@ -662,6 +511,7 @@ export default function DoctorScheduleGrid({
             <tbody>
               {Object.keys(groupedDoctors).map((specialtyName) => (
                 <React.Fragment key={specialtyName}>
+                  {/* Sub Header Kategori Spesialis */}
                   <tr className="bg-slate-50">
                     <td
                       colSpan={DAYS.length + 1}
@@ -671,9 +521,10 @@ export default function DoctorScheduleGrid({
                     </td>
                   </tr>
 
+                  {/* Baris Data Dokter */}
                   {groupedDoctors[specialtyName].map((doctor) => {
+                    const cutiDay = getCutiDay(doctor);
                     const isDoctorCuti = doctor.status === "cuti";
-                    const isFullyCuti = isDoctorFullyCuti(doctor);
 
                     return (
                       <tr
@@ -682,11 +533,13 @@ export default function DoctorScheduleGrid({
                           isDoctorCuti ? "bg-red-50/20" : ""
                         }`}
                       >
+                        {/* Kolom Nama Dokter */}
                         <td className="p-3 border-r border-slate-200">
                           <div className="flex items-center gap-1.5">
                             <button
                               onClick={() =>
-                                handleDoctorClick(doctor.id, isDoctorCuti)
+                                !isDoctorCuti &&
+                                router.push(`/dokter/${doctor.id}`)
                               }
                               disabled={isDoctorCuti}
                               className={`text-left font-bold outline-none focus:underline ${
@@ -708,40 +561,26 @@ export default function DoctorScheduleGrid({
                           </div>
                         </td>
 
+                        {/* Kolom Jadwal Hari (Senin - Minggu) */}
                         {DAYS.map((day) => {
                           const scheduleText = getScheduleText(
                             day,
                             doctor.schedules,
                           );
-                          const isCutiOnThisDay = isDoctorCutiOnDay(
-                            doctor,
-                            day,
-                          );
+                          const isCutiToday = cutiDay === day;
 
-                          if (isFullyCuti) {
-                            return (
-                              <td
-                                key={day}
-                                className="p-3 text-center border-r border-slate-200 last:border-r-0 font-medium text-red-600 bg-red-50/50"
-                              >
-                                <div className="flex flex-col items-center justify-center gap-0.5">
-                                  <span className="text-red-600 font-medium">
-                                    Cuti
-                                  </span>
-                                  <span className="text-xs bg-red-100 text-red-700 px-1.5 py-0.5 rounded font-bold">
-                                    (C)
-                                  </span>
-                                </div>
-                              </td>
-                            );
-                          }
-
-                          if (isCutiOnThisDay) {
-                            return (
-                              <td
-                                key={day}
-                                className="p-3 text-center border-r border-slate-200 last:border-r-0 font-medium bg-red-50 text-red-600 font-bold"
-                              >
+                          // If the doctor is on leave, show schedule times in red.
+                          // For the specific cuti day we keep the line-through + badge.
+                          return (
+                            <td
+                              key={day}
+                              className={`p-3 text-center border-r border-slate-200 last:border-r-0 font-medium ${
+                                scheduleText !== "-"
+                                  ? "text-slate-800"
+                                  : "text-slate-400"
+                              } ${isCutiToday ? "bg-red-50 text-red-600 font-bold" : isDoctorCuti ? "text-red-600" : ""}`}
+                            >
+                              {isCutiToday ? (
                                 <div className="flex flex-col items-center justify-center gap-0.5">
                                   <span className="text-red-600 font-medium line-through">
                                     {scheduleText}
@@ -750,22 +589,13 @@ export default function DoctorScheduleGrid({
                                     (C) Cuti
                                   </span>
                                 </div>
-                              </td>
-                            );
-                          }
-
-                          return (
-                            <td
-                              key={day}
-                              className={`p-3 text-center border-r border-slate-200 last:border-r-0 font-medium ${
-                                scheduleText !== "-"
-                                  ? "text-slate-800"
-                                  : "text-slate-400"
-                              }`}
-                            >
-                              <span className="whitespace-pre-line">
-                                {scheduleText}
-                              </span>
+                              ) : (
+                                <span
+                                  className={`${isDoctorCuti ? "text-red-600" : ""} whitespace-pre-line`}
+                                >
+                                  {scheduleText}
+                                </span>
+                              )}
                             </td>
                           );
                         })}
@@ -784,24 +614,22 @@ export default function DoctorScheduleGrid({
         <div className="lg:hidden flex flex-col gap-4">
           {Object.keys(groupedDoctors).map((specialtyName) => (
             <div key={`mobile-${specialtyName}`} className="space-y-3">
-              <div className="text-base font-bold text-white bg-[#003f88] p-2 rounded">
+              <div className="text-base font-bold text-white bg-[#003f88] p-2 ">
                 {specialtyName}
               </div>
 
               {groupedDoctors[specialtyName].map((doctor) => {
+                const cutiDay = getCutiDay(doctor);
                 const isDoctorCuti = doctor.status === "cuti";
-                const isFullyCuti = isDoctorFullyCuti(doctor);
 
                 return (
                   <div
                     key={`mobile-doc-${doctor.id}`}
-                    className="bg-white border border-slate-200 p-3 space-y-2 text-sm rounded-lg"
+                    className="bg-white border border-slate-200 p-3  space-y-2 text-sm"
                   >
                     <div className="flex items-center gap-1.5">
                       <div
-                        className={`font-bold text-base ${
-                          isDoctorCuti ? "text-red-600" : "text-[#003f88]"
-                        }`}
+                        className={`font-bold text-base ${isDoctorCuti ? "text-red-600" : "text-[#003f88]"}`}
                       >
                         {doctor.name}
                       </div>
@@ -818,37 +646,28 @@ export default function DoctorScheduleGrid({
                           doctor.schedules,
                         );
                         if (scheduleText === "-") return null;
-
-                        const isCutiOnThisDay = isDoctorCutiOnDay(doctor, day);
-
-                        if (isFullyCuti || isCutiOnThisDay) {
-                          return (
-                            <div
-                              key={`mobile-day-${day}`}
-                              className="p-2 rounded bg-red-50 text-red-700"
-                            >
-                              <span className="font-semibold block text-red-700">
-                                {day}
-                              </span>
-                              <span className="line-through text-red-600">
-                                {scheduleText}
-                              </span>
-                              <span className="block text-xs font-bold text-red-600">
-                                (Cuti)
-                              </span>
-                            </div>
-                          );
-                        }
+                        const isCutiToday = cutiDay === day;
 
                         return (
                           <div
                             key={`mobile-day-${day}`}
-                            className="p-2 rounded bg-slate-50"
+                            className={`p-2 rounded ${isCutiToday ? "bg-red-50 text-red-700" : "bg-slate-50"}`}
                           >
-                            <span className="font-semibold block text-slate-600">
+                            <span
+                              className={`font-semibold block ${isCutiToday ? "text-red-700" : "text-slate-600"}`}
+                            >
                               {day}
                             </span>
-                            <span>{scheduleText}</span>
+                            <span
+                              className={`${isCutiToday ? "line-through text-red-600" : isDoctorCuti ? "text-red-600" : ""}`}
+                            >
+                              {scheduleText}
+                            </span>
+                            {isCutiToday && (
+                              <span className="block text-xs font-bold text-red-600">
+                                (Cuti)
+                              </span>
+                            )}
                           </div>
                         );
                       })}
@@ -861,9 +680,9 @@ export default function DoctorScheduleGrid({
         </div>
       )}
 
-      {/* EMPTY STATE */}
+      {/* TAMPILAN JIKA TIDAK ADA DATA */}
       {filteredDoctors.length === 0 && (
-        <div className="w-full text-center py-12 border border-dashed border-slate-200 bg-white rounded-lg">
+        <div className="w-full text-center py-12 border border-dashed border-slate-200 bg-white">
           <p className="text-slate-500 text-base">
             Tidak ada jadwal dokter yang cocok dengan pencarian Anda.
           </p>
