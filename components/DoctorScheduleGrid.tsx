@@ -59,20 +59,6 @@ const saveFilterState = (state: FilterState) => {
   }
 };
 
-const getTodayDayName = (): string => {
-  const dayIndex = new Date().getDay();
-  const dayMap = [
-    "Minggu",
-    "Senin",
-    "Selasa",
-    "Rabu",
-    "Kamis",
-    "Jumat",
-    "Sabtu",
-  ];
-  return dayMap[dayIndex];
-};
-
 // LOGIKA CUTI - LANGSUNG DARI DATA
 const isDoctorCutiOnDay = (
   doctor: DoctorWithSchedule,
@@ -104,7 +90,8 @@ export default function DoctorScheduleGrid({
   const sectionRef = useRef<HTMLElement>(null);
   const queryClient = useQueryClient();
   const isMounted = useRef(true);
-  const filterTimeoutRef = useRef<number>();
+  // PERBAIKAN: Gunakan useRef dengan nilai awal undefined
+  const filterTimeoutRef = useRef<number | undefined>(undefined);
 
   // React Query untuk caching data dokter
   const {
@@ -112,17 +99,13 @@ export default function DoctorScheduleGrid({
     isLoading,
     isFetching,
     refetch,
-    isStale,
-    isSuccess,
   } = useQuery({
     queryKey: [QUERY_KEY],
     queryFn: async () => {
-      // Jika ada data dari props, gunakan itu
       if (doctorsWithSchedules.length > 0) {
         return doctorsWithSchedules;
       }
 
-      // Coba ambil dari cache query client
       const cached = queryClient.getQueryData<DoctorWithSchedule[]>([
         QUERY_KEY,
       ]);
@@ -133,8 +116,8 @@ export default function DoctorScheduleGrid({
       return [];
     },
     initialData: doctorsWithSchedules,
-    staleTime: 5 * 60 * 1000, // 5 menit
-    gcTime: 10 * 60 * 1000, // 10 menit
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     refetchOnReconnect: true,
@@ -182,7 +165,6 @@ export default function DoctorScheduleGrid({
         QUERY_KEY,
       ]);
 
-      // Cek apakah data berbeda
       if (
         JSON.stringify(currentData) !== JSON.stringify(doctorsWithSchedules)
       ) {
@@ -348,7 +330,6 @@ export default function DoctorScheduleGrid({
       // Silent fail
     }
 
-    // Refetch data untuk mendapatkan data terbaru
     refetch();
   }, [refetch]);
 
@@ -382,7 +363,6 @@ export default function DoctorScheduleGrid({
   const showLoading = useMemo(() => {
     if (propsLoading) return true;
 
-    // Jika data kosong dan sedang fetching
     const hasData = doctors && doctors.length > 0;
     if (!hasData && (isLoading || isFetching)) return true;
 
