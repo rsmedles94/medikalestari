@@ -59,27 +59,39 @@ const saveFilterState = (state: FilterState) => {
   }
 };
 
-// LOGIKA cuti - LANGSUNG DARI DATA
-const isDoctorcutiOnDay = (
-  doctor: DoctorWithSchedule,
-  day: string,
-): boolean => {
-  if (doctor.status !== "cuti") return false;
-  if (!doctor.schedules || doctor.schedules.length === 0) return false;
+// Mapping index hari JS Date.getDay() (0 = Minggu) ke nama hari Indonesia
+const DAY_NAME_BY_INDEX = [
+  "Minggu",
+  "Senin",
+  "Selasa",
+  "Rabu",
+  "Kamis",
+  "Jumat",
+  "Sabtu",
+];
 
-  return doctor.schedules.some(
-    (s) =>
-      s.day_of_week === day || (day === "Minggu" && s.day_of_week === "Minggu"),
-  );
+// Ambil nama hari saat ini (real-time), dipakai untuk menentukan
+// hari mana yang ditandai cuti
+const getTodayDayName = (): string => {
+  return DAY_NAME_BY_INDEX[new Date().getDay()];
 };
 
-const isDoctorFullycuti = (doctor: DoctorWithSchedule): boolean => {
+// LOGIKA cuti - HANYA berlaku pada hari realtime (hari ini)
+// Contoh: dokter punya jadwal Senin-Rabu, status diset "cuti" pada hari Senin,
+// maka hanya kolom Senin yang ditandai merah/cuti. Jika besok (Selasa) status
+// dokter masih "cuti" dan belum dikembalikan ke "hadir", maka tanda cuti
+// otomatis berpindah ke kolom Selasa karena perhitungan selalu berdasarkan
+// hari yang sedang berjalan, bukan daftar hari jadwal secara keseluruhan.
+const isDoctorCutiOnDay = (
+  doctor: DoctorWithSchedule,
+  day: string,
+  todayDayName: string,
+): boolean => {
   if (doctor.status !== "cuti") return false;
+  if (day !== todayDayName) return false;
   if (!doctor.schedules || doctor.schedules.length === 0) return false;
 
-  const daysWithSchedule = new Set(doctor.schedules.map((s) => s.day_of_week));
-
-  return DAYS.every((day) => daysWithSchedule.has(day));
+  return doctor.schedules.some((s) => s.day_of_week === day);
 };
 
 export default function DoctorScheduleGrid({
@@ -90,7 +102,6 @@ export default function DoctorScheduleGrid({
   const sectionRef = useRef<HTMLElement>(null);
   const queryClient = useQueryClient();
   const isMounted = useRef(true);
-  // PERBAIKAN: Gunakan useRef dengan nilai awal undefined
   const filterTimeoutRef = useRef<number | undefined>(undefined);
 
   // React Query untuk caching data dokter
@@ -157,6 +168,10 @@ export default function DoctorScheduleGrid({
   const [selectedDayInput, setSelectedDayInput] = useState<string | null>(
     initialFilterState?.selectedDayInput ?? null,
   );
+
+  // Nama hari saat ini (realtime), dihitung ulang setiap render supaya
+  // selalu akurat jika halaman dibuka melewati tengah malam
+  const todayDayName = getTodayDayName();
 
   // Effect untuk update data ketika props berubah
   useEffect(() => {
@@ -351,8 +366,8 @@ export default function DoctorScheduleGrid({
   }, []);
 
   const handleDoctorClick = useCallback(
-    (doctorId: string, iscuti: boolean) => {
-      if (!iscuti) {
+    (doctorId: string, isCuti: boolean) => {
+      if (!isCuti) {
         router.push(`/dokter/${doctorId}`);
       }
     },
@@ -666,7 +681,7 @@ export default function DoctorScheduleGrid({
         <li className="text-green-600 flex items-center gap-1">
           (R) Jadwal Ramadhan
         </li>
-        <li className="text-red-600 flex items-center gap-1">(C) cuti</li>
+        <li className="text-red-600 flex items-center gap-1">(C) Cuti</li>
       </ul>
 
       {/* DESKTOP TABLE VIEW */}
@@ -701,32 +716,31 @@ export default function DoctorScheduleGrid({
                   </tr>
 
                   {groupedDoctors[specialtyName].map((doctor) => {
-                    const isDoctorcuti = doctor.status === "cuti";
-                    const isFullycuti = isDoctorFullycuti(doctor);
+                    const isDoctorCuti = doctor.status === "cuti";
 
                     return (
                       <tr
                         key={doctor.id}
                         className={`border-b border-slate-200 text-sm transition-colors hover:bg-slate-50/80 ${
-                          isDoctorcuti ? "bg-red-50/20" : ""
+                          isDoctorCuti ? "bg-red-50/20" : ""
                         }`}
                       >
                         <td className="p-3 border-r border-slate-200">
                           <div className="flex items-center gap-1.5">
                             <button
                               onClick={() =>
-                                handleDoctorClick(doctor.id, isDoctorcuti)
+                                handleDoctorClick(doctor.id, isDoctorCuti)
                               }
-                              disabled={isDoctorcuti}
+                              disabled={isDoctorCuti}
                               className={`text-left font-bold outline-none focus:underline ${
-                                isDoctorcuti
+                                isDoctorCuti
                                   ? "text-red-600 cursor-not-allowed"
                                   : "text-[#003f88] hover:text-[#e67e22] hover:underline"
                               } text-base`}
                             >
                               {doctor.name}
                             </button>
-                            {isDoctorcuti && (
+                            {isDoctorCuti && (
                               <span
                                 className="text-red-600 font-bold text-base"
                                 title="Sedang cuti"
@@ -742,47 +756,32 @@ export default function DoctorScheduleGrid({
                             day,
                             doctor.schedules,
                           );
-                          const iscutiOnThisDay = isDoctorcutiOnDay(
+                          const isCutiOnThisDay = isDoctorCutiOnDay(
                             doctor,
                             day,
+                            todayDayName,
                           );
 
-                          if (isFullycuti) {
+                          // Hanya hari realtime (hari ini) yang ditandai cuti
+                          if (isCutiOnThisDay) {
                             return (
                               <td
                                 key={day}
-                                className="p-3 text-center border-r border-slate-200 last:border-r-0 font-medium text-red-600 bg-red-50/50"
+                                className="p-3 text-center border-r border-slate-200 last:border-r-0 font-medium bg-red-50"
                               >
                                 <div className="flex flex-col items-center justify-center gap-0.5">
-                                  <span className="text-red-600 font-medium">
-                                    cuti
+                                  <span className="text-red-600 font-bold line-through">
+                                    {scheduleText !== "-" ? scheduleText : "-"}
                                   </span>
                                   <span className="text-xs bg-red-100 text-red-700 px-1.5 py-0.5 rounded font-bold">
-                                    (C)
+                                    (C) Cuti
                                   </span>
                                 </div>
                               </td>
                             );
                           }
 
-                          if (iscutiOnThisDay) {
-                            return (
-                              <td
-                                key={day}
-                                className="p-3 text-center border-r border-slate-200 last:border-r-0 font-medium bg-red-50 text-red-600 font-bold"
-                              >
-                                <div className="flex flex-col items-center justify-center gap-0.5">
-                                  <span className="text-red-600 font-medium line-through">
-                                    {scheduleText}
-                                  </span>
-                                  <span className="text-xs bg-red-100 text-red-700 px-1.5 py-0.5 rounded font-bold">
-                                    (C) cuti
-                                  </span>
-                                </div>
-                              </td>
-                            );
-                          }
-
+                          // Normal schedule display
                           return (
                             <td
                               key={day}
@@ -818,8 +817,7 @@ export default function DoctorScheduleGrid({
               </div>
 
               {groupedDoctors[specialtyName].map((doctor) => {
-                const isDoctorcuti = doctor.status === "cuti";
-                const isFullycuti = isDoctorFullycuti(doctor);
+                const isDoctorCuti = doctor.status === "cuti";
 
                 return (
                   <div
@@ -828,11 +826,11 @@ export default function DoctorScheduleGrid({
                   >
                     <div className="flex items-center gap-1.5">
                       <div
-                        className={`font-bold text-base ${isDoctorcuti ? "text-red-600" : "text-[#003f88]"}`}
+                        className={`font-bold text-base ${isDoctorCuti ? "text-red-600" : "text-[#003f88]"}`}
                       >
                         {doctor.name}
                       </div>
-                      {isDoctorcuti && (
+                      {isDoctorCuti && (
                         <span className="text-red-600 font-extrabold text-base">
                           (C)
                         </span>
@@ -844,10 +842,19 @@ export default function DoctorScheduleGrid({
                           day,
                           doctor.schedules,
                         );
-                        if (scheduleText === "-") return null;
-                        const iscutiOnThisDay = isDoctorcutiOnDay(doctor, day);
+                        const isCutiOnThisDay = isDoctorCutiOnDay(
+                          doctor,
+                          day,
+                          todayDayName,
+                        );
 
-                        if (isFullycuti || iscutiOnThisDay) {
+                        // Tampilkan hanya hari yang memiliki jadwal atau cuti
+                        if (scheduleText === "-" && !isCutiOnThisDay) {
+                          return null;
+                        }
+
+                        // Hanya hari realtime (hari ini) yang ditandai cuti
+                        if (isCutiOnThisDay) {
                           return (
                             <div
                               key={`mobile-day-${day}`}
@@ -857,10 +864,10 @@ export default function DoctorScheduleGrid({
                                 {day}
                               </span>
                               <span className="line-through text-red-600">
-                                {scheduleText}
+                                {scheduleText !== "-" ? scheduleText : "-"}
                               </span>
                               <span className="block text-xs font-bold text-red-600">
-                                (cuti)
+                                (Cuti)
                               </span>
                             </div>
                           );
