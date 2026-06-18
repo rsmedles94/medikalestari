@@ -51,11 +51,9 @@ export default function DoctorRecommendation({
           <motion.div key={doctor.id} variants={itemVariants}>
             {doctor.status === "cuti" ? (
               <article className="relative group flex items-center p-3 bg-white border border-slate-100 rounded-xl transition-all duration-200 -mt-2 opacity-60 pointer-events-none">
-                {/* overlay CUTI */}
+                {/* overlay cuti */}
                 <div className="absolute inset-0 z-10 flex items-center justify-center">
-                  <span className="text-2xl text-red-400 font-semibold">
-                    C
-                  </span>
+                  <span className="text-2xl text-red-400 font-semibold">C</span>
                 </div>
                 <div className="relative z-0 w-full flex items-center">
                   <div className="relative flex-shrink-0 w-16 h-16 rounded-full overflow-hidden bg-slate-50 border border-slate-50">

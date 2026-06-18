@@ -27,7 +27,7 @@ export default function DoctorScheduleDisplay({
       <h3 className="text-xl font-bold text-gray-700 mb-4">Jadwal Praktek</h3>
 
       <div className="relative overflow-x-auto border border-slate-200 shadow-[0_1px_3px_rgba(0,0,0,0.05)] bg-white">
-        {/* Status Cuti Badge - Huruf C Kecil Merah */}
+        {/* Status cuti Badge - Huruf C Kecil Merah */}
         {doctorStatus === "cuti" && (
           <div className="absolute -top-2 -right-4 z-10">
             <span className="text-red-500 font-bold text-5xl">c</span>

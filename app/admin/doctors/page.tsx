@@ -222,7 +222,7 @@ const AdminDoctorsPage = () => {
                             : "bg-green-100 text-green-700"
                         }`}
                       >
-                        {doctor.status === "cuti" ? "Cuti" : "Hadir"}
+                        {doctor.status === "cuti" ? "cuti" : "Hadir"}
                       </span>
                     </td>
                     <td className="px-6 py-4 flex gap-2">
@@ -392,7 +392,7 @@ const AdminDoctorsPage = () => {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003f88] outline-none"
                 >
                   <option value="hadir">Hadir</option>
-                  <option value="cuti">Cuti</option>
+                  <option value="cuti">cuti</option>
                 </select>
               </div>
 

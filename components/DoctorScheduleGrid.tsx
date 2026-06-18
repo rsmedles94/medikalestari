@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState, useMemo, useRef, useCallback, useEffect } from "react";
+import React, {
+  useState,
+  useMemo,
+  useRef,
+  useCallback,
+  useEffect,
+} from "react";
 import { Doctor, Schedule } from "@/lib/types";
 import { Search, Loader2, Stethoscope, CalendarDays } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -35,7 +41,7 @@ interface FilterState {
 // Helper functions untuk filter cache
 const loadFilterState = (): FilterState | null => {
   try {
-    if (typeof window === 'undefined') return null;
+    if (typeof window === "undefined") return null;
     const cached = localStorage.getItem(FILTER_CACHE_KEY);
     if (!cached) return null;
     return JSON.parse(cached);
@@ -46,30 +52,32 @@ const loadFilterState = (): FilterState | null => {
 
 const saveFilterState = (state: FilterState) => {
   try {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
     localStorage.setItem(FILTER_CACHE_KEY, JSON.stringify(state));
   } catch {
     // Silent fail
   }
 };
 
-// LOGIKA CUTI - LANGSUNG DARI DATA
-const isDoctorCutiOnDay = (doctor: DoctorWithSchedule, day: string): boolean => {
+// LOGIKA cuti - LANGSUNG DARI DATA
+const isDoctorcutiOnDay = (
+  doctor: DoctorWithSchedule,
+  day: string,
+): boolean => {
   if (doctor.status !== "cuti") return false;
   if (!doctor.schedules || doctor.schedules.length === 0) return false;
-  
+
   return doctor.schedules.some(
-    (s) => s.day_of_week === day || (day === "Minggu" && s.day_of_week === "Minggu")
+    (s) =>
+      s.day_of_week === day || (day === "Minggu" && s.day_of_week === "Minggu"),
   );
 };
 
-const isDoctorFullyCuti = (doctor: DoctorWithSchedule): boolean => {
+const isDoctorFullycuti = (doctor: DoctorWithSchedule): boolean => {
   if (doctor.status !== "cuti") return false;
   if (!doctor.schedules || doctor.schedules.length === 0) return false;
 
-  const daysWithSchedule = new Set(
-    doctor.schedules.map((s) => s.day_of_week)
-  );
+  const daysWithSchedule = new Set(doctor.schedules.map((s) => s.day_of_week));
 
   return DAYS.every((day) => daysWithSchedule.has(day));
 };
@@ -98,7 +106,9 @@ export default function DoctorScheduleGrid({
         return doctorsWithSchedules;
       }
 
-      const cached = queryClient.getQueryData<DoctorWithSchedule[]>([QUERY_KEY]);
+      const cached = queryClient.getQueryData<DoctorWithSchedule[]>([
+        QUERY_KEY,
+      ]);
       if (cached && cached.length > 0) {
         return cached;
       }
@@ -127,33 +137,37 @@ export default function DoctorScheduleGrid({
     string | null
   >(initialFilterState?.selectedSpecialtyInput ?? null);
   const [searchDoctor, setSearchDoctor] = useState(
-    initialFilterState?.searchDoctor ?? ""
+    initialFilterState?.searchDoctor ?? "",
   );
   const [searchDoctorInput, setSearchDoctorInput] = useState(
-    initialFilterState?.searchDoctorInput ?? ""
+    initialFilterState?.searchDoctorInput ?? "",
   );
   const [showMobileSpecialtyModal, setShowMobileSpecialtyModal] = useState(
-    initialFilterState?.showMobileSpecialtyModal ?? false
+    initialFilterState?.showMobileSpecialtyModal ?? false,
   );
   const [showMobileDayModal, setShowMobileDayModal] = useState(
-    initialFilterState?.showMobileDayModal ?? false
+    initialFilterState?.showMobileDayModal ?? false,
   );
   const [showDesktopDayModal, setShowDesktopDayModal] = useState(
-    initialFilterState?.showDesktopDayModal ?? false
+    initialFilterState?.showDesktopDayModal ?? false,
   );
   const [selectedDay, setSelectedDay] = useState<string | null>(
-    initialFilterState?.selectedDay ?? null
+    initialFilterState?.selectedDay ?? null,
   );
   const [selectedDayInput, setSelectedDayInput] = useState<string | null>(
-    initialFilterState?.selectedDayInput ?? null
+    initialFilterState?.selectedDayInput ?? null,
   );
 
   // Effect untuk update data ketika props berubah
   useEffect(() => {
     if (doctorsWithSchedules.length > 0) {
-      const currentData = queryClient.getQueryData<DoctorWithSchedule[]>([QUERY_KEY]);
-      
-      if (JSON.stringify(currentData) !== JSON.stringify(doctorsWithSchedules)) {
+      const currentData = queryClient.getQueryData<DoctorWithSchedule[]>([
+        QUERY_KEY,
+      ]);
+
+      if (
+        JSON.stringify(currentData) !== JSON.stringify(doctorsWithSchedules)
+      ) {
         queryClient.setQueryData([QUERY_KEY], doctorsWithSchedules);
       }
     }
@@ -212,14 +226,14 @@ export default function DoctorScheduleGrid({
 
   // Handler dengan useCallback
   const handleOpenMobileSpecialtyModal = useCallback(() => {
-    setShowMobileSpecialtyModal(prev => {
+    setShowMobileSpecialtyModal((prev) => {
       if (!prev) setShowMobileDayModal(false);
       return !prev;
     });
   }, []);
 
   const handleOpenMobileDayModal = useCallback(() => {
-    setShowMobileDayModal(prev => {
+    setShowMobileDayModal((prev) => {
       if (!prev) setShowMobileSpecialtyModal(false);
       return !prev;
     });
@@ -259,7 +273,13 @@ export default function DoctorScheduleGrid({
         return matchesSpecialty && matchesSearch && matchesDay;
       })
       .sort((a, b) => a.name.localeCompare(b.name));
-  }, [doctors, doctorsWithSchedules, selectedSpecialty, searchDoctor, selectedDay]);
+  }, [
+    doctors,
+    doctorsWithSchedules,
+    selectedSpecialty,
+    searchDoctor,
+    selectedDay,
+  ]);
 
   const groupedDoctors = useMemo(() => {
     const groups: { [key: string]: DoctorWithSchedule[] } = {};
@@ -272,21 +292,24 @@ export default function DoctorScheduleGrid({
     return groups;
   }, [filteredDoctors]);
 
-  const getScheduleText = useCallback((day: string, schedules: Schedule[] = []) => {
-    const daySchedules = schedules.filter(
-      (s) =>
-        s.day_of_week === day ||
-        (day === "Minggu" && s.day_of_week === "Minggu"),
-    );
-    if (daySchedules.length === 0) return "-";
-
-    return daySchedules
-      .map(
+  const getScheduleText = useCallback(
+    (day: string, schedules: Schedule[] = []) => {
+      const daySchedules = schedules.filter(
         (s) =>
-          `${s.start_time.substring(0, 5)} - ${s.end_time.substring(0, 5)}`,
-      )
-      .join("\n");
-  }, []);
+          s.day_of_week === day ||
+          (day === "Minggu" && s.day_of_week === "Minggu"),
+      );
+      if (daySchedules.length === 0) return "-";
+
+      return daySchedules
+        .map(
+          (s) =>
+            `${s.start_time.substring(0, 5)} - ${s.end_time.substring(0, 5)}`,
+        )
+        .join("\n");
+    },
+    [],
+  );
 
   const handleReset = useCallback(() => {
     setSelectedSpecialtyInput(null);
@@ -298,15 +321,15 @@ export default function DoctorScheduleGrid({
     setSelectedDay(null);
     setShowMobileDayModal(false);
     setShowDesktopDayModal(false);
-    
+
     try {
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         localStorage.removeItem(FILTER_CACHE_KEY);
       }
     } catch {
       // Silent fail
     }
-    
+
     refetch();
   }, [refetch]);
 
@@ -328,21 +351,21 @@ export default function DoctorScheduleGrid({
   }, []);
 
   const handleDoctorClick = useCallback(
-    (doctorId: string, isCuti: boolean) => {
-      if (!isCuti) {
+    (doctorId: string, iscuti: boolean) => {
+      if (!iscuti) {
         router.push(`/dokter/${doctorId}`);
       }
     },
-    [router]
+    [router],
   );
 
   // Determine loading state
   const showLoading = useMemo(() => {
     if (propsLoading) return true;
-    
+
     const hasData = doctors && doctors.length > 0;
     if (!hasData && (isLoading || isFetching)) return true;
-    
+
     return false;
   }, [propsLoading, doctors, isLoading, isFetching]);
 
@@ -643,7 +666,7 @@ export default function DoctorScheduleGrid({
         <li className="text-green-600 flex items-center gap-1">
           (R) Jadwal Ramadhan
         </li>
-        <li className="text-red-600 flex items-center gap-1">(C) Cuti</li>
+        <li className="text-red-600 flex items-center gap-1">(C) cuti</li>
       </ul>
 
       {/* DESKTOP TABLE VIEW */}
@@ -678,35 +701,35 @@ export default function DoctorScheduleGrid({
                   </tr>
 
                   {groupedDoctors[specialtyName].map((doctor) => {
-                    const isDoctorCuti = doctor.status === "cuti";
-                    const isFullyCuti = isDoctorFullyCuti(doctor);
+                    const isDoctorcuti = doctor.status === "cuti";
+                    const isFullycuti = isDoctorFullycuti(doctor);
 
                     return (
                       <tr
                         key={doctor.id}
                         className={`border-b border-slate-200 text-sm transition-colors hover:bg-slate-50/80 ${
-                          isDoctorCuti ? "bg-red-50/20" : ""
+                          isDoctorcuti ? "bg-red-50/20" : ""
                         }`}
                       >
                         <td className="p-3 border-r border-slate-200">
                           <div className="flex items-center gap-1.5">
                             <button
                               onClick={() =>
-                                handleDoctorClick(doctor.id, isDoctorCuti)
+                                handleDoctorClick(doctor.id, isDoctorcuti)
                               }
-                              disabled={isDoctorCuti}
+                              disabled={isDoctorcuti}
                               className={`text-left font-bold outline-none focus:underline ${
-                                isDoctorCuti
+                                isDoctorcuti
                                   ? "text-red-600 cursor-not-allowed"
                                   : "text-[#003f88] hover:text-[#e67e22] hover:underline"
                               } text-base`}
                             >
                               {doctor.name}
                             </button>
-                            {isDoctorCuti && (
+                            {isDoctorcuti && (
                               <span
                                 className="text-red-600 font-bold text-base"
-                                title="Sedang Cuti"
+                                title="Sedang cuti"
                               >
                                 (C)
                               </span>
@@ -719,9 +742,12 @@ export default function DoctorScheduleGrid({
                             day,
                             doctor.schedules,
                           );
-                          const isCutiOnThisDay = isDoctorCutiOnDay(doctor, day);
+                          const iscutiOnThisDay = isDoctorcutiOnDay(
+                            doctor,
+                            day,
+                          );
 
-                          if (isFullyCuti) {
+                          if (isFullycuti) {
                             return (
                               <td
                                 key={day}
@@ -729,7 +755,7 @@ export default function DoctorScheduleGrid({
                               >
                                 <div className="flex flex-col items-center justify-center gap-0.5">
                                   <span className="text-red-600 font-medium">
-                                    Cuti
+                                    cuti
                                   </span>
                                   <span className="text-xs bg-red-100 text-red-700 px-1.5 py-0.5 rounded font-bold">
                                     (C)
@@ -739,7 +765,7 @@ export default function DoctorScheduleGrid({
                             );
                           }
 
-                          if (isCutiOnThisDay) {
+                          if (iscutiOnThisDay) {
                             return (
                               <td
                                 key={day}
@@ -750,7 +776,7 @@ export default function DoctorScheduleGrid({
                                     {scheduleText}
                                   </span>
                                   <span className="text-xs bg-red-100 text-red-700 px-1.5 py-0.5 rounded font-bold">
-                                    (C) Cuti
+                                    (C) cuti
                                   </span>
                                 </div>
                               </td>
@@ -792,8 +818,8 @@ export default function DoctorScheduleGrid({
               </div>
 
               {groupedDoctors[specialtyName].map((doctor) => {
-                const isDoctorCuti = doctor.status === "cuti";
-                const isFullyCuti = isDoctorFullyCuti(doctor);
+                const isDoctorcuti = doctor.status === "cuti";
+                const isFullycuti = isDoctorFullycuti(doctor);
 
                 return (
                   <div
@@ -802,11 +828,11 @@ export default function DoctorScheduleGrid({
                   >
                     <div className="flex items-center gap-1.5">
                       <div
-                        className={`font-bold text-base ${isDoctorCuti ? "text-red-600" : "text-[#003f88]"}`}
+                        className={`font-bold text-base ${isDoctorcuti ? "text-red-600" : "text-[#003f88]"}`}
                       >
                         {doctor.name}
                       </div>
-                      {isDoctorCuti && (
+                      {isDoctorcuti && (
                         <span className="text-red-600 font-extrabold text-base">
                           (C)
                         </span>
@@ -819,9 +845,9 @@ export default function DoctorScheduleGrid({
                           doctor.schedules,
                         );
                         if (scheduleText === "-") return null;
-                        const isCutiOnThisDay = isDoctorCutiOnDay(doctor, day);
+                        const iscutiOnThisDay = isDoctorcutiOnDay(doctor, day);
 
-                        if (isFullyCuti || isCutiOnThisDay) {
+                        if (isFullycuti || iscutiOnThisDay) {
                           return (
                             <div
                               key={`mobile-day-${day}`}
@@ -834,7 +860,7 @@ export default function DoctorScheduleGrid({
                                 {scheduleText}
                               </span>
                               <span className="block text-xs font-bold text-red-600">
-                                (Cuti)
+                                (cuti)
                               </span>
                             </div>
                           );

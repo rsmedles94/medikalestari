@@ -9,6 +9,14 @@ function normalizeSupabaseUrl(raw?: string | null): string | null {
   return normalized;
 }
 
+// Custom fetch agar Next.js TIDAK menyimpan cache hasil request Supabase.
+// Tanpa ini, fetch yang dijalankan di Server Component akan kena
+// Next.js Data Cache (default force-cache) sehingga data basi di production
+// meskipun di Supabase sudah berubah.
+const noStoreFetch: typeof fetch = (input, init) => {
+  return fetch(input, { ...init, cache: "no-store" });
+};
+
 const rawSupabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || null;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || null;
 
@@ -24,7 +32,11 @@ if (!supabaseUrl || !supabaseAnonKey) {
   );
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  global: {
+    fetch: noStoreFetch,
+  },
+});
 
 // Server-side Supabase client
 // Priority: Service Role Key (untuk production/admin) → fallback ke Anon Key (untuk development)
@@ -59,5 +71,9 @@ export function createServerSupabaseClient() {
     );
   }
 
-  return createClient(url, key);
+  return createClient(url, key, {
+    global: {
+      fetch: noStoreFetch,
+    },
+  });
 }

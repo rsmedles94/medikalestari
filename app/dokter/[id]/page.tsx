@@ -111,7 +111,7 @@ const DoctorDetailPage = () => {
             {doctor && doctor.status === "cuti" && (
               <div className="absolute inset-0 z-30 flex items-center justify-center pointer-events-none">
                 <span className="text-7xl md:text-9xl text-red-400 italic font-extrabold opacity-90">
-                  CUTI
+                  cuti
                 </span>
               </div>
             )}

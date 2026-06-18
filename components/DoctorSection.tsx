@@ -537,7 +537,6 @@ const DoctorSection = ({
                   className="w-full bg-white border border-slate-200 shadow-lg z-50 max-h-64 overflow-y-auto"
                 >
                   <div className="p-2">
-
                     {SPECIALTY_CATEGORIES.map((s) => (
                       <button
                         key={s}
