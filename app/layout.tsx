@@ -1,6 +1,6 @@
 // app/layout.tsx
 import "./globals.css";
-import { Providers } from "./providers"; // Pastikan import default/ named sesuai
+import { Providers } from "./providers";
 import { AuthProvider } from "@/context/AuthProvider";
 import { SearchModalProvider } from "@/context/SearchModalContext";
 import LayoutContent from "./LayoutContentClient";
@@ -10,7 +10,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Sitelinks Menu
   const jsonLd = [
     {
       "@context": "https://schema.org",
@@ -57,7 +56,6 @@ export default function RootLayout({
   return (
     <html lang="id" className="h-full antialiased" suppressHydrationWarning>
       <head>
-        {/* SEO Metadata */}
         <title>RS Medika Lestari</title>
         <meta
           name="description"
@@ -68,7 +66,6 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
 
-        {/* PWA & iOS Settings */}
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#ffffff" />
         <meta name="mobile-web-app-capable" content="yes" />
@@ -92,7 +89,6 @@ export default function RootLayout({
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
         />
 
-        {/* Fonts & Icons */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
