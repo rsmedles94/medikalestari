@@ -2,17 +2,14 @@ import { createClient } from "@supabase/supabase-js";
 
 function normalizeSupabaseUrl(raw?: string | null): string | null {
   if (!raw) return null;
-  // remove trailing slashes
+  // logic hapus trailing slash
   let normalized = raw.replace(/\/+$|\s+$/g, "");
-  // if someone mistakenly included /rest/v1, strip it
+  // logic hapus endpoint /rest/v1 jika tidak sengaja disertakan
   normalized = normalized.replace(/\/rest\/v1$/i, "");
   return normalized;
 }
 
-// Custom fetch agar Next.js TIDAK menyimpan cache hasil request Supabase.
-// Tanpa ini, fetch yang dijalankan di Server Component akan kena
-// Next.js Data Cache (default force-cache) sehingga data basi di production
-// meskipun di Supabase sudah berubah.
+// logic custom fetch untuk mematikan next.js data cache agar data selalu fresh di production
 const noStoreFetch: typeof fetch = (input, init) => {
   return fetch(input, { ...init, cache: "no-store" });
 };
@@ -38,8 +35,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   },
 });
 
-// Server-side Supabase client
-// Priority: Service Role Key (untuk production/admin) → fallback ke Anon Key (untuk development)
+// logic inisialisasi client sisi server dengan prioritas service role key lalu anon key
 export function createServerSupabaseClient() {
   const urlRaw = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const url = normalizeSupabaseUrl(urlRaw);
@@ -54,7 +50,7 @@ export function createServerSupabaseClient() {
     throw error;
   }
 
-  // Gunakan Service Role Key jika tersedia, jika tidak gunakan Anon Key
+  // logic pilih service role key jika ada jika kosong gunakan anon key
   const key = serviceRoleKey || anonKey;
 
   if (!key) {

@@ -70,18 +70,13 @@ const DAY_NAME_BY_INDEX = [
   "Sabtu",
 ];
 
-// Ambil nama hari saat ini (real-time), dipakai untuk menentukan
-// hari mana yang ditandai cuti
+// logic ambil nama hari saat ini (real-time), dipakai untuk menentukan mana yg ditandai cuti
+
 const getTodayDayName = (): string => {
   return DAY_NAME_BY_INDEX[new Date().getDay()];
 };
 
-// LOGIKA cuti - HANYA berlaku pada hari realtime (hari ini)
-// Contoh: dokter punya jadwal Senin-Rabu, status diset "cuti" pada hari Senin,
-// maka hanya kolom Senin yang ditandai merah/cuti. Jika besok (Selasa) status
-// dokter masih "cuti" dan belum dikembalikan ke "hadir", maka tanda cuti
-// otomatis berpindah ke kolom Selasa karena perhitungan selalu berdasarkan
-// hari yang sedang berjalan, bukan daftar hari jadwal secara keseluruhan.
+
 const isDoctorCutiOnDay = (
   doctor: DoctorWithSchedule,
   day: string,
@@ -104,7 +99,7 @@ export default function DoctorScheduleGrid({
   const isMounted = useRef(true);
   const filterTimeoutRef = useRef<number | undefined>(undefined);
 
-  // React Query untuk caching data dokter
+  // logic React Query untuk caching data dokter
   const {
     data: doctors,
     isLoading,
@@ -137,10 +132,10 @@ export default function DoctorScheduleGrid({
     placeholderData: (previousData) => previousData,
   });
 
-  // Load filter state dari cache
+  // logic Load filter state dari cache
   const initialFilterState = useMemo(() => loadFilterState(), []);
 
-  // State untuk filter
+  // logic State untuk filter
   const [selectedSpecialty, setSelectedSpecialty] = useState<string | null>(
     initialFilterState?.selectedSpecialty ?? null,
   );
@@ -169,11 +164,10 @@ export default function DoctorScheduleGrid({
     initialFilterState?.selectedDayInput ?? null,
   );
 
-  // Nama hari saat ini (realtime), dihitung ulang setiap render supaya
-  // selalu akurat jika halaman dibuka melewati tengah malam
+  // logic Nama hari saat ini (realtime), dihitung ulang setiap render supaya selalu akurat jika halaman dibuka melewati tengah malam
   const todayDayName = getTodayDayName();
 
-  // Effect untuk update data ketika props berubah
+  // logic Effect untuk update data ketika props berubah
   useEffect(() => {
     if (doctorsWithSchedules.length > 0) {
       const currentData = queryClient.getQueryData<DoctorWithSchedule[]>([
@@ -188,7 +182,7 @@ export default function DoctorScheduleGrid({
     }
   }, [doctorsWithSchedules, queryClient]);
 
-  // Effect untuk menyimpan filter state ke cache dengan debounce
+  // logic Effect untuk menyimpan filter state ke cache dengan debounce
   useEffect(() => {
     if (filterTimeoutRef.current) {
       clearTimeout(filterTimeoutRef.current);
@@ -229,7 +223,7 @@ export default function DoctorScheduleGrid({
     showDesktopDayModal,
   ]);
 
-  // Cleanup on unmount
+  // logic Cleanup on unmount atau Pembersihan saat komponen dilepas supaya ga bocorrr
   useEffect(() => {
     return () => {
       isMounted.current = false;
@@ -239,7 +233,7 @@ export default function DoctorScheduleGrid({
     };
   }, []);
 
-  // Handler dengan useCallback
+  // logic Handler dengan useCallback
   const handleOpenMobileSpecialtyModal = useCallback(() => {
     setShowMobileSpecialtyModal((prev) => {
       if (!prev) setShowMobileDayModal(false);
@@ -342,7 +336,7 @@ export default function DoctorScheduleGrid({
         localStorage.removeItem(FILTER_CACHE_KEY);
       }
     } catch {
-      // Silent fail
+      // logic silent fail atau gagal
     }
 
     refetch();
@@ -374,7 +368,7 @@ export default function DoctorScheduleGrid({
     [router],
   );
 
-  // Determine loading state
+  // Logic determine loading state atau tentukan status pemuatan
   const showLoading = useMemo(() => {
     if (propsLoading) return true;
 
@@ -399,9 +393,9 @@ export default function DoctorScheduleGrid({
       ref={sectionRef}
       aria-label="Jadwal Dokter"
     >
-      {/* SEARCH & FILTER SECTION */}
+      {/* logic search dan filter */}
       <search className="block space-y-4">
-        {/* MOBILE FILTER BAR */}
+        {/* logic mobile filterbar */}
         <div className="lg:hidden w-full flex flex-col gap-4">
           <div className="flex items-center gap-2 bg-slate-50 p-3 rounded-lg border border-slate-100">
             <div className="flex-1 relative">
@@ -528,7 +522,7 @@ export default function DoctorScheduleGrid({
           </AnimatePresence>
         </div>
 
-        {/* DESKTOP SEARCH BAR */}
+        {/* logic desktop seacrhbar */}
         <div className="hidden lg:block p-4 bg-slate-50 border border-slate-100 rounded-lg">
           <div className="grid grid-cols-2 gap-4">
             <div className="relative">
@@ -673,7 +667,7 @@ export default function DoctorScheduleGrid({
         </div>
       </search>
 
-      {/* LEGEND */}
+      {/* Logic penanda */}
       <ul className="flex flex-wrap gap-4 text-sm font-bold items-center -mt-2 list-none p-0">
         <li className="text-[#003f88] flex items-center gap-1">
           (*) Poliklinik Eksekutif
@@ -684,7 +678,7 @@ export default function DoctorScheduleGrid({
         <li className="text-red-600 flex items-center gap-1">(C) Cuti</li>
       </ul>
 
-      {/* DESKTOP TABLE VIEW */}
+      {/* Logic desktop view */}
       {filteredDoctors.length > 0 && (
         <div className="hidden lg:block w-full overflow-x-auto border border-slate-200 bg-white shadow-sm">
           <table className="w-full text-left border-collapse min-w-[800px]">
@@ -762,7 +756,7 @@ export default function DoctorScheduleGrid({
                             todayDayName,
                           );
 
-                          // Hanya hari realtime (hari ini) yang ditandai cuti
+                          // logic Hanya hari realtime yang ditandai cuti
                           if (isCutiOnThisDay) {
                             return (
                               <td
@@ -781,7 +775,7 @@ export default function DoctorScheduleGrid({
                             );
                           }
 
-                          // Normal schedule display
+                          // logic normal schedule display
                           return (
                             <td
                               key={day}
@@ -807,7 +801,7 @@ export default function DoctorScheduleGrid({
         </div>
       )}
 
-      {/* MOBILE VIEW */}
+      {/* logic Mobile View */}
       {filteredDoctors.length > 0 && (
         <div className="lg:hidden flex flex-col gap-4">
           {Object.keys(groupedDoctors).map((specialtyName) => (
@@ -848,12 +842,12 @@ export default function DoctorScheduleGrid({
                           todayDayName,
                         );
 
-                        // Tampilkan hanya hari yang memiliki jadwal atau cuti
+                        // logic Tampilkan hanya hari yang memiliki jadwal atau cuti
                         if (scheduleText === "-" && !isCutiOnThisDay) {
                           return null;
                         }
 
-                        // Hanya hari realtime (hari ini) yang ditandai cuti
+                        // logic Hanya hari realtime yang ditandai cuti
                         if (isCutiOnThisDay) {
                           return (
                             <div
@@ -894,7 +888,7 @@ export default function DoctorScheduleGrid({
         </div>
       )}
 
-      {/* EMPTY STATE */}
+      {/* logic empty state */}
       {filteredDoctors.length === 0 && (
         <div className="w-full text-center py-12 border border-dashed border-slate-200 bg-white">
           <p className="text-slate-500 text-base">
