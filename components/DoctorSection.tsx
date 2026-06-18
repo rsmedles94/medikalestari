@@ -520,7 +520,7 @@ const DoctorSection = ({
                 onClick={() => {
                   handleApplyFilter();
                 }}
-                className="px-4 h-11 bg-[#003f88] text-white font-semibold hover:bg-[#003f88]/90 transition-all border border-[#003f88] text-base flex items-center justify-center rounded-lg"
+                className="px-4 h-11 bg-[#003f88] text-white font-semibold hover:bg-[#003f88]/90 transition-all border border-[#003f88] text-base flex items-center justify-center rounded-lg cursor-pointer"
               >
                 Cari
               </button>

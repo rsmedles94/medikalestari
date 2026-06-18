@@ -419,8 +419,8 @@ export default function DoctorScheduleGrid({
               onClick={handleOpenMobileSpecialtyModal}
               className={`w-11 h-11 flex items-center justify-center border transition-all bg-white ${
                 showMobileSpecialtyModal
-                  ? "border-[#003f88] bg-slate-50"
-                  : "border-slate-200 hover:bg-slate-50"
+                  ? "border-[#003f88]"
+                  : "border-slate-200 "
               }`}
               title="Filter Spesialis"
             >
@@ -431,8 +431,8 @@ export default function DoctorScheduleGrid({
               onClick={handleOpenMobileDayModal}
               className={`w-11 h-11 flex items-center justify-center border transition-all bg-white ${
                 showMobileDayModal
-                  ? "border-[#003f88] bg-slate-50"
-                  : "border-slate-200 hover:bg-slate-50"
+                  ? "border-[#003f88] "
+                  : "border-slate-200 "
               }`}
               title="Filter Hari"
             >
@@ -441,7 +441,7 @@ export default function DoctorScheduleGrid({
 
             <button
               onClick={handleSearch}
-              className="px-4 h-11 bg-[#003f88] text-white font-semibold hover:bg-[#003f88]/90 transition-all border border-[#003f88] text-base flex items-center justify-center rounded-lg"
+              className="px-4 h-11 bg-[#003f88] text-white font-semibold hover:bg-[#003f88]/90 transition-all border border-[#003f88] text-base flex items-center justify-center rounded-lg cursor-pointer"
             >
               Cari
             </button>
