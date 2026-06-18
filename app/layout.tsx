@@ -1,6 +1,6 @@
-
+// app/layout.tsx
 import "./globals.css";
-import Providers from "./providers";
+import { Providers } from "./providers"; // Pastikan import default/ named sesuai
 import { AuthProvider } from "@/context/AuthProvider";
 import { SearchModalProvider } from "@/context/SearchModalContext";
 import LayoutContent from "./LayoutContentClient";
@@ -10,7 +10,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Sitelinks Menu 
+  // Sitelinks Menu
   const jsonLd = [
     {
       "@context": "https://schema.org",
@@ -61,9 +61,7 @@ export default function RootLayout({
         <title>RS Medika Lestari</title>
         <meta
           name="description"
-          content="RS Medika Lestari bermula dari sebuah klinik pada tahun 1994, kini telah
-            berkembang menjadi fasilitas kesehatan terakreditasi Paripurna
-            (KARS) yang menyediakan layanan medis lengkap dan modern."
+          content="RS Medika Lestari bermula dari sebuah klinik pada tahun 1994, kini telah berkembang menjadi fasilitas kesehatan terakreditasi Paripurna (KARS) yang menyediakan layanan medis lengkap dan modern."
         />
         <script
           type="application/ld+json"
@@ -117,7 +115,6 @@ export default function RootLayout({
         <Providers>
           <AuthProvider>
             <SearchModalProvider>
-              {/* Dipanggil normal tanpa eror merah */}
               <LayoutContent>{children}</LayoutContent>
             </SearchModalProvider>
           </AuthProvider>
