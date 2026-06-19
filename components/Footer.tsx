@@ -74,13 +74,13 @@ const FooterContent = () => (
         {/* Deskripsi */}
         <div className="max-w-2xl text-lg md:text-xl leading-relaxed font-light opacity-90 text-justify">
           <p className="mb-4">
-            RS Medika Lestari bermula dari sebuah klinik pada tahun 1994, kini telah
-            berkembang menjadi fasilitas kesehatan terakreditasi Paripurna
+            RS Medika Lestari bermula dari sebuah klinik pada tahun 1994, kini
+            telah berkembang menjadi fasilitas kesehatan terakreditasi Paripurna
             (KARS) yang menyediakan layanan medis lengkap dan modern.
           </p>
           <p>
-            Berlokasi di Jl. HOS Cokroaminoto No.56, RT.001/RW.012, Kec. Karang Tengah, Kota
-            Tangerang, Banten 15151
+            Berlokasi di Jl. HOS Cokroaminoto No.56, RT.001/RW.012, Kec. Karang
+            Tengah, Kota Tangerang, Banten 15151
           </p>
         </div>
       </div>
@@ -91,7 +91,7 @@ const FooterContent = () => (
           <Link
             key={item.name}
             href={item.href}
-            className="text-lg md:text-xl font-semibold hover:text-gray-300 transition-colors"
+            className="text-lg md:text-xl font-semibold hover:text-[#3D8ECB] transition-colors duration-700"
           >
             {item.name}
           </Link>
@@ -104,7 +104,8 @@ const FooterContent = () => (
       <div className="max-w-[1200px] mx-auto px-8 md:px-16 flex flex-col md:flex-row justify-between items-center gap-8">
         {/* Copyright */}
         <div className="text-sm font-normal opacity-80 text-black">
-          ©1994-{new Date().getFullYear()} RS Medika Lestari. All rights reserved.
+          ©1994-{new Date().getFullYear()} RS Medika Lestari. All rights
+          reserved.
         </div>
 
         {/* Link Privacy dan Term */}
