@@ -27,8 +27,8 @@ const AdminPopupPage = () => {
     text: string;
   } | null>(null);
   const [formData, setFormData] = useState({
-    title: "",
-    description: "",
+    title: "", // Digunakan untuk menyimpan Link Href
+    description: "", // Dikosongkan / Tetap dikirim string kosong agar logic API tidak rusak
     image_url: "",
     display_order: 1,
     is_active: true,
@@ -80,7 +80,6 @@ const AdminPopupPage = () => {
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Validasi max 3 popup
     if (!editingId && popups.length >= 3) {
       setMessage({
         type: "error",
@@ -224,7 +223,6 @@ const AdminPopupPage = () => {
           </div>
         )}
 
-        {/* INFO BOX */}
         <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <p className="text-blue-900 font-medium">ℹ️ Maksimal 3 gambar.</p>
         </div>
@@ -236,7 +234,6 @@ const AdminPopupPage = () => {
               key={popup.id}
               className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition"
             >
-              {/* IMAGE PREVIEW */}
               <div className="relative w-full h-48 bg-gray-200 overflow-hidden">
                 <Image
                   src={popup.image_url}
@@ -249,17 +246,14 @@ const AdminPopupPage = () => {
                 </div>
               </div>
 
-              {/* CONTENT */}
+              {/* CONTENT LIST */}
               <div className="p-4">
-                {popup.title && (
-                  <h3 className="font-bold text-gray-800 mb-2">
-                    {popup.title}
-                  </h3>
-                )}
-                {popup.description && (
-                  <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                    {popup.description}
+                {popup.title ? (
+                  <p className="text-sm font-medium text-blue-600 bg-blue-50 p-2 rounded truncate mb-3">
+                    🔗 {popup.title}
                   </p>
+                ) : (
+                  <p className="text-sm text-gray-400 italic mb-3">Tidak ada link navigasi</p>
                 )}
 
                 {/* STATUS */}
@@ -325,7 +319,6 @@ const AdminPopupPage = () => {
         {showModal && (
           <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
             <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-              {/* HEADER */}
               <div className="flex items-center justify-between p-6 border-b">
                 <h2 className="text-xl font-bold">
                   {editingId ? "Edit Popup" : "Tambah Popup Baru"}
@@ -353,10 +346,7 @@ const AdminPopupPage = () => {
                       className="hidden"
                       id="imageInput"
                     />
-                    <label
-                      htmlFor="imageInput"
-                      className="cursor-pointer block"
-                    >
+                    <label htmlFor="imageInput" className="cursor-pointer block">
                       {imagePreview ? (
                         <div className="space-y-2">
                           <div className="relative w-full h-32 mx-auto">
@@ -367,26 +357,22 @@ const AdminPopupPage = () => {
                               className="object-contain"
                             />
                           </div>
-                          <p className="text-sm text-blue-600">
-                            Klik untuk ubah gambar
-                          </p>
+                          <p className="text-sm text-blue-600">Klik untuk ubah gambar</p>
                         </div>
                       ) : (
                         <div className="space-y-2">
                           <Upload className="w-8 h-8 mx-auto text-gray-400" />
-                          <p className="text-sm text-gray-600">
-                            Klik untuk upload gambar
-                          </p>
+                          <p className="text-sm text-gray-600">Klik untuk upload gambar</p>
                         </div>
                       )}
                     </label>
                   </div>
                 </div>
 
-                {/* TITLE */}
+                {/* NAVIGASI  */}
                 <div>
                   <label className="block text-sm font-semibold mb-2">
-                    Judul (Opsional)
+                    Link Navigasi (Opsional)
                   </label>
                   <input
                     type="text"
@@ -395,27 +381,11 @@ const AdminPopupPage = () => {
                       setFormData({ ...formData, title: e.target.value })
                     }
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Judul popup"
+                    placeholder="Contoh: /promo atau https://google.com"
                   />
                 </div>
 
-                {/* DESCRIPTION */}
-                <div>
-                  <label className="block text-sm font-semibold mb-2">
-                    Deskripsi (Opsional)
-                  </label>
-                  <textarea
-                    value={formData.description}
-                    onChange={(e) =>
-                      setFormData({ ...formData, description: e.target.value })
-                    }
-                    rows={3}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Deskripsi popup"
-                  />
-                </div>
-
-                {/* DISPLAY ORDER */}
+                {/* URUTAN TAMPIL */}
                 <div>
                   <label className="block text-sm font-semibold mb-2">
                     Urutan Tampil *
@@ -436,17 +406,14 @@ const AdminPopupPage = () => {
                   </select>
                 </div>
 
-                {/* ACTIVE STATUS */}
+                {/* STATUS */}
                 <div>
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={formData.is_active}
                       onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          is_active: e.target.checked,
-                        })
+                        setFormData({ ...formData, is_active: e.target.checked })
                       }
                       className="w-4 h-4 rounded"
                     />
