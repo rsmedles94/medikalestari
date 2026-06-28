@@ -100,7 +100,7 @@ const ServicesMenu: React.FC = () => {
           {/* Desktop: tampilkan semua services, Mobile: sembunyikan Medical Checkup */}
           <div className="block md:hidden">
             <motion.ul
-              className="grid grid-cols-2 gap-3 bg-slate-50 p-4 list-none"
+              className="grid grid-cols-2 gap-3  list-none"
               variants={containerVariants}
               initial="hidden"
               whileInView="visible"
