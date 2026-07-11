@@ -622,11 +622,11 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
             {/* Panel: Dropdown dari Atas, Full Screen Scrollable */}
             <motion.div
-              initial={{ y: "-100%", opacity: 1 }} // Mulai dari opacity 1 agar solid sejak awal peluncuran
+              initial={{ y: "-100%", opacity: 1 }} 
               animate={{ y: 0, opacity: 1 }}
-              exit={{ y: "-100%", opacity: 1 }} // <--- Mengubah opacity tetap 1 saat exit agar beneran full scroll ke atas tanpa fade
-              transition={{ type: "tween", duration: 0.3, ease: "easeInOut" }} // Sedikit dinaikkan ke 0.3 agar animasinya lebih berasa halus
-              className="fixed top-0 inset-x-0 w-full max-h-screen bg-white z-100 md:hidden flex flex-col shadow-xl border-b border-gray-200/40 rounded-b-2xl"
+              exit={{ y: "-100%", opacity: 1 }}
+              transition={{ type: "tween", duration: 0.4, ease: "easeInOut" }} 
+              className="fixed top-0 inset-x-0 w-full max-h-screen bg-white z-100 md:hidden flex flex-col border-b border-gray-200/40 rounded-b-2xl" 
             >
               {/* Header di dalam panel untuk tombol close agar posisinya stabil */}
               <div className="flex justify-end p-6 border-b border-gray-100/50 min-h-[64px] items-center">
