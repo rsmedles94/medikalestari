@@ -367,7 +367,7 @@ const DoctorSection = ({
 
           {/* PAGINATION */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-2 mt-2 md:mt-12 pt-8 mb-20 md:mb-0">
+            <div className="flex items-center justify-center gap-2 mt-2 md:mt-12 pt-4 ">
               {currentPage > 1 && (
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
