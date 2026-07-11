@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from "react";
@@ -11,6 +10,7 @@ import MobileBottomNavbar from "@/components/MobileBottomNavbar";
 import { PageTracker } from "@/components/PageTracker";
 import { ServiceWorkerInitializer } from "@/components/ServiceWorkerInitializer";
 import PopupDisplay from "@/components/PopupDisplay";
+import SmoothScroll from "@/components/SmoothScroll";
 
 interface LayoutContentProps {
   children: React.ReactNode;
@@ -27,7 +27,7 @@ export default function LayoutContent({ children }: LayoutContentProps) {
     isLoginPage || authLoading || !isAuthenticated;
 
   return (
-    <>
+    <SmoothScroll>
       <PageTracker pagePath={pathname || "/"} />
       {isAdminPage ? (
         <div
@@ -48,6 +48,6 @@ export default function LayoutContent({ children }: LayoutContentProps) {
           <Footer />
         </>
       )}
-    </>
+    </SmoothScroll>
   );
 }
