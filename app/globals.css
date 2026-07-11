@@ -13,13 +13,27 @@
   --font-family-sans: "Google Sans", Avenir, Arial, Helvetica, sans-serif;
 }
 
-
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: "Google Sans", Avenir, Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -webkit-touch-callout: none;
+}
+
+/* ==========================================================================
+   Sembunyikan Scrollbar Halaman Utama HANYA di Mobile (Lebar < 1024px)
+   ========================================================================== */
+@media (max-width: 1023px) {
+  html, body {
+    /* Menghilangkan scrollbar di Chrome, Safari, dan Opera */
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    /* Menghilangkan scrollbar di IE, Edge, dan Firefox */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
 
 /* Prevent zoom on input focus for iOS/Android */
@@ -37,11 +51,6 @@ select {
   border-radius: 0;
 }
 
-input:focus,
-textarea:focus,
-select:focus {
-}
-
 /* Preserve rounded-full on buttons */
 button.rounded-full {
   border-radius: 9999px !important;
@@ -49,10 +58,10 @@ button.rounded-full {
 }
 
 .container-custom {
-  /*container  */
   @apply max-w-6xl mx-auto px-6;
 }
 
+/* Class utilitas jika sewaktu-waktu butuh menghilangkan scrollbar di elemen tertentu */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -62,16 +71,10 @@ button.rounded-full {
 }
 
 @keyframes shimmer {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 
 .animate-shimmer {
   animation: shimmer 2s infinite;
 }
-
-

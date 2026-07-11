@@ -42,34 +42,28 @@ export default function MobileBottomNavbar() {
 
   const navItems = useMemo<NavItem[]>(
     () => [
-      { label: "", href: "/", icon: Home },
-      { label: "", href: "/dokter", icon: UserRoundPlus },
+      { label: "Beranda", href: "/", icon: Home },
+      { label: "Dokter", href: "/dokter", icon: UserRoundPlus },
       {
-        label: "",
+        label: "Tambah",
         href: "#action-menu",
         icon: Plus,
         isButton: true,
       },
-      { label: "", href: "/jadwal-dokter", icon: CalendarDays },
-      { label: "", href: "/promo", icon: TicketPercent },
+      { label: "Jadwal", href: "/jadwal-dokter", icon: CalendarDays },
+      { label: "Promo", href: "/promo", icon: TicketPercent },
     ],
     [],
   );
 
-  // Hitung active index
+  // Menentukan index menu aktif berdasarkan pathname saat ini
   const activeIndex = useMemo(() => {
-    if (pathname === "/") {
-      return 0;
-    }
-
     const idx = navItems.findIndex(
       (item) => !item.isButton && item.href === pathname,
     );
-
     return idx !== -1 ? idx : null;
   }, [pathname, navItems]);
 
-  // Handler dengan useCallback
   const handlePlusClick = useCallback(() => {
     setIsActionMenuOpen((prev) => !prev);
   }, []);
@@ -103,49 +97,6 @@ export default function MobileBottomNavbar() {
     setIsActionMenuOpen(false);
     action();
   }, []);
-
-  // Fungsi untuk menentukan warna ikon
-  const getIconColor = (item: NavItem, index: number) => {
-    const isActive = index === activeIndex;
-    const isHome = item.label === "Beranda";
-    const isHomeActive = isHome && pathname === "/";
-
-    // Khusus untuk Beranda: selalu hitam gelap (dull) jika aktif
-    if (isHomeActive) {
-      return "#000000";
-    }
-
-    // Untuk menu lainnya: hitam jika aktif, abu-abu jika tidak
-    return isActive ? "#000000" : "#9CA3AF";
-  };
-
-  // Fungsi untuk menentukan fill ikon
-  const getIconFill = (item: NavItem, index: number) => {
-    const isActive = index === activeIndex;
-    const isHome = item.label === "Beranda";
-    const isHomeActive = isHome && pathname === "/";
-
-    // Khusus untuk Beranda: fill hitam jika aktif
-    if (isHomeActive) {
-      return "#000000";
-    }
-
-    // Untuk menu lainnya: fill hitam hanya jika aktif
-    return isActive ? "#000000" : "none";
-  };
-
-  // Fungsi untuk menentukan warna teks
-  const getTextColor = (item: NavItem, index: number) => {
-    const isActive = index === activeIndex;
-    const isHome = item.label === "Beranda";
-    const isHomeActive = isHome && pathname === "/";
-
-    if (isHomeActive) {
-      return "#000000";
-    }
-
-    return isActive ? "#000000" : "#9CA3AF";
-  };
 
   return (
     <>
@@ -224,14 +175,15 @@ export default function MobileBottomNavbar() {
         </AnimatePresence>
 
         {/* BAR NAVBAR UTAMA */}
-        <div className="w-full h-18 bg-white border-t border-gray-200 shadow-[0_-2px_10px_rgba(0,0,0,0.04)]">
-          <ul className="flex items-center justify-between h-full px-2">
+        <div className="w-full h-16 bg-white border-t border-gray-100 shadow-[0_-2px_10px_rgba(0,0,0,0.02)]">
+          <ul className="flex items-center justify-between h-full px-4">
             {navItems.map((item, i) => {
               const Icon = item.icon;
+              const isActive = i === activeIndex;
 
               return (
                 <li
-                  key={item.label || i}
+                  key={item.href || i}
                   className="flex flex-1 justify-center h-full items-center"
                 >
                   {item.isButton ? (
@@ -239,33 +191,20 @@ export default function MobileBottomNavbar() {
                       ref={plusButtonRef}
                       type="button"
                       onClick={handlePlusClick}
-                      className="flex flex-col items-center justify-center w-full h-full select-none focus:outline-none"
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        height: "100%",
-                        width: "100%",
-                        outline: "none",
-                        WebkitTapHighlightColor: "transparent",
-                        cursor: "pointer",
-                      }}
+                      className="flex items-center justify-center w-12 h-12 rounded-full hover:bg-gray-50 active:scale-95 transition-all select-none focus:outline-none"
+                      style={{ WebkitTapHighlightColor: "transparent" }}
                     >
-                      <div className="flex items-center justify-center">
-                        <Plus
-                          size={32}
-                          strokeWidth={3}
-                          style={{
-                            transform: isActionMenuOpen
-                              ? "rotate(45deg)"
-                              : "rotate(0deg)",
-                            transition:
-                              "transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-                            color: isActionMenuOpen ? "#000000" : "#9CA3AF",
-                          }}
-                        />
-                      </div>
+                      <Plus
+                        size={26}
+                        strokeWidth={2.5}
+                        className="transition-transform duration-200"
+                        style={{
+                          transform: isActionMenuOpen
+                            ? "rotate(45deg)"
+                            : "rotate(0deg)",
+                          color: isActionMenuOpen ? "#000000" : "#6B7280",
+                        }}
+                      />
                     </button>
                   ) : (
                     <Link
@@ -276,47 +215,22 @@ export default function MobileBottomNavbar() {
                           window.scrollTo({ top: 0, behavior: "smooth" });
                         }
                       }}
-                      className="flex flex-col items-center justify-center w-full h-full select-none focus:outline-none"
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        height: "100%",
-                        width: "100%",
-                        outline: "none",
-                        WebkitTapHighlightColor: "transparent",
-                        cursor: "pointer",
-                      }}
+                      className="flex items-center justify-center w-12 h-12 rounded-xl active:scale-95 transition-transform select-none focus:outline-none"
+                      style={{ WebkitTapHighlightColor: "transparent" }}
                     >
-                      <div className="flex flex-col items-center justify-center w-full h-full gap-1">
-                        <div className="flex items-center justify-center">
-                          <Icon
-                            size={32}
-                            strokeWidth={
-                              i === activeIndex ||
-                              (item.label === "Beranda" && pathname === "/")
-                                ? 2.5
-                                : 2
-                            }
-                            fill={getIconFill(item, i)}
-                            style={{
-                              color: getIconColor(item, i),
-                              transition: "color 0.15s ease",
-                            }}
-                          />
-                        </div>
-                        <span
-                          style={{
-                            fontSize: "11px",
-                            fontWeight: 500,
-                            color: getTextColor(item, i),
-                            transition: "color 0.15s ease",
-                          }}
-                        >
-                          {item.label}
-                        </span>
-                      </div>
+                      <Icon
+                        size={24}
+                        // Menggunakan ketebalan stroke tebal saat aktif ala Instagram
+                        strokeWidth={isActive ? 2.8 : 2}
+                        // Khusus Home menggunakan fill solid, sisanya mempertahankan lubang aslinya
+                        fill={
+                          isActive && item.href === "/" ? "#000000" : "none"
+                        }
+                        style={{
+                          color: isActive ? "#000000" : "#9CA3AF",
+                          transition: "all 0.15s ease",
+                        }}
+                      />
                     </Link>
                   )}
                 </li>

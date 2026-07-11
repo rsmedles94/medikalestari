@@ -622,20 +622,20 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
             {/* Panel: Dropdown dari Atas, Full Screen Scrollable */}
             <motion.div
-              initial={{ y: "-100%", opacity: 0 }}
+              initial={{ y: "-100%", opacity: 1 }} // Mulai dari opacity 1 agar solid sejak awal peluncuran
               animate={{ y: 0, opacity: 1 }}
-              exit={{ y: "-100%", opacity: 0 }}
-              transition={{ type: "tween", duration: 0.35, ease: "easeInOut" }}
+              exit={{ y: "-100%", opacity: 1 }} // <--- Mengubah opacity tetap 1 saat exit agar beneran full scroll ke atas tanpa fade
+              transition={{ type: "tween", duration: 0.3, ease: "easeInOut" }} // Sedikit dinaikkan ke 0.3 agar animasinya lebih berasa halus
               className="fixed top-0 inset-x-0 w-full max-h-screen bg-white z-100 md:hidden flex flex-col shadow-xl border-b border-gray-200/40 rounded-b-2xl"
             >
               {/* Header di dalam panel untuk tombol close agar posisinya stabil */}
-              <div className="flex justify-end p-4 border-b border-gray-100/50 min-h-[64px] items-center">
+              <div className="flex justify-end p-6 border-b border-gray-100/50 min-h-[64px] items-center">
                 <button
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="p-2 hover:bg-gray-50 rounded-lg transition-colors"
                   title="Tutup menu"
                 >
-                  <X size={22} className="text-gray-500" />
+                  <X size={22} className="text-gray-500 mt-1" />
                 </button>
               </div>
 
@@ -790,7 +790,6 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                                 itemHref = "/services/radiologi";
                               else if (subitem === "Rawat Inap")
                                 itemHref = "/services/rawat-inap";
-                      
                               else if (subitem === "Tarif Kamar")
                                 itemHref = "/tarif-kamar";
                               else if (subitem === "Ketersediaan Kamar")
