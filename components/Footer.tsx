@@ -91,7 +91,7 @@ const FooterContent = () => (
           <Link
             key={item.name}
             href={item.href}
-            className="text-lg md:text-xl font-semibold hover:text-[#e67e22] transition-colors duration-700"
+            className="text-lg md:text-xl font-semibold hover:text-[#e67e22] hover:underline transition-colors duration-700"
           >
             {item.name}
           </Link>
