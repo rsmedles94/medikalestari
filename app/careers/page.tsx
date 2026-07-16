@@ -10,7 +10,6 @@ import {
   CheckCircle,
   ChevronRight,
   X,
-  ChevronLeft,
 } from "lucide-react";
 import { CareersBannerConfig } from "@/lib/types";
 import CareersFormSkeleton from "@/components/CareersFormSkeleton";
@@ -22,9 +21,6 @@ const CareersPage = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
-  const [touchStart, setTouchStart] = useState(0);
-  const [touchEnd, setTouchEnd] = useState(0);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -79,6 +75,20 @@ const CareersPage = () => {
 
     loadConfig();
   }, []);
+
+  // Kunci scroll background saat modal formulir terbuka
+  useEffect(() => {
+    if (showModal) {
+      const originalBodyOverflow = document.body.style.overflow;
+      const originalHtmlOverflow = document.documentElement.style.overflow;
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = originalBodyOverflow;
+        document.documentElement.style.overflow = originalHtmlOverflow;
+      };
+    }
+  }, [showModal]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -229,36 +239,6 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
     return <CareersFormSkeleton />;
   }
 
-  const handlePrevPhoto = () => {
-    if (config?.position_photos && config.position_photos.length > 0) {
-      setCurrentPhotoIndex((prev) =>
-        prev === 0 ? config.position_photos.length - 1 : prev - 1,
-      );
-    }
-  };
-
-  const handleNextPhoto = () => {
-    if (config?.position_photos && config.position_photos.length > 0) {
-      setCurrentPhotoIndex((prev) =>
-        prev === config.position_photos.length - 1 ? 0 : prev + 1,
-      );
-    }
-  };
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    setTouchEnd(e.changedTouches[0].clientX);
-    if (touchStart - e.changedTouches[0].clientX > 50) {
-      handleNextPhoto();
-    }
-    if (e.changedTouches[0].clientX - touchStart > 50) {
-      handlePrevPhoto();
-    }
-  };
-
   return (
     <div className="min-h-screen bg-white">
       {/* BREADCRUMB & TITLE SECTION */}
@@ -275,42 +255,34 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
         </nav>
       </div>
 
-      {/* Position Photos Carousel */}
+      {/* Position Photos Grid */}
       {config?.position_photos && config.position_photos.length > 0 && (
-        <div className="max-w-3xl mx-auto px-4 py-1">
+        <div className="max-w-293.75 mx-auto px-4 md:px-8 py-1">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-8 text-gray-800">
             Posisi Lowongan yang Tersedia
           </h2>
 
-          <div className="space-y-4">
-            {/* Carousel Container */}
-            <div
-              className="relative bg-white overflow-hidden border border-gray-200"
-              onTouchStart={handleTouchStart}
-              onTouchEnd={handleTouchEnd}
-            >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+            {config.position_photos.map((photo, index) => (
               <div
-                className="relative w-full bg-gradient-to-b from-gray-50 to-white flex items-center justify-center"
-                style={{ aspectRatio: "4/3" }}
+                key={photo.id ?? `photo-${index}`}
+                className="border border-gray-200 rounded-lg overflow-hidden"
               >
-                {config.position_photos[currentPhotoIndex]?.image_url ? (
-                  <img
-                    src={config.position_photos[currentPhotoIndex]?.image_url}
-                    alt={
-                      config.position_photos[currentPhotoIndex]?.position_name
-                    }
-                    className="max-h-full max-w-full object-contain p-6"
-                    onError={(e) => {
-                      const imageUrl =
-                        config.position_photos[currentPhotoIndex]?.image_url;
-                      console.error("Failed to load image:", imageUrl);
-                      // Check if it's a blob URL (temporary, invalid)
-                      if (imageUrl?.startsWith("blob:")) {
-                        console.warn(
-                          "Blob URL detected - image is temporary and may have expired",
-                        );
+                <div className="relative w-full aspect-square overflow-hidden">
+                  {photo.image_url ? (
+                    <img
+                      src={photo.image_url}
+                      alt={photo.position_name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        console.error("Failed to load image:", photo.image_url);
+                        // Check if it's a blob URL (temporary, invalid)
+                        if (photo.image_url?.startsWith("blob:")) {
+                          console.warn(
+                            "Blob URL detected - image is temporary and may have expired",
+                          );
+                        }
                         e.currentTarget.style.display = "none";
-                        // Show error message
                         const parent = e.currentTarget.parentElement;
                         if (
                           parent &&
@@ -318,73 +290,27 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
                         ) {
                           const errorDiv = document.createElement("div");
                           errorDiv.setAttribute("data-error-message", "true");
-                          errorDiv.className = "text-center text-gray-500";
+                          errorDiv.className =
+                            "flex items-center justify-center h-full text-center text-gray-400 text-xs p-4";
                           errorDiv.innerHTML =
-                            '<p>Gambar tidak dapat dimuat</p><p class="text-xs mt-1">Silakan hubungi admin untuk mengunggah ulang gambar</p>';
+                            "<p>Gambar tidak dapat dimuat</p>";
                           parent.appendChild(errorDiv);
                         }
-                      } else {
-                        // For other errors, just hide the image
-                        e.currentTarget.style.display = "none";
-                      }
-                    }}
-                  />
-                ) : (
-                  <div className="text-gray-400">Gambar tidak tersedia</div>
-                )}
+                      }}
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-gray-400 text-sm">
+                      Gambar tidak tersedia
+                    </div>
+                  )}
+                </div>
+                <div className="px-3 py-3 text-center border-t border-gray-100">
+                  <p className="text-sm md:text-base font-semibold text-gray-900 truncate">
+                    {photo.position_name}
+                  </p>
+                </div>
               </div>
-
-              {/* Navigation Buttons */}
-              {config.position_photos.length > 1 && (
-                <>
-                  <button
-                    type="button"
-                    onClick={handlePrevPhoto}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-2 rounded-full transition-colors border border-gray-200 z-10 hidden md:flex items-center justify-center"
-                    aria-label="Previous photo"
-                  >
-                    <ChevronLeft size={24} />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleNextPhoto}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-2 rounded-full transition-colors border border-gray-200 z-10 hidden md:flex items-center justify-center"
-                    aria-label="Next photo"
-                  >
-                    <ChevronRight size={24} />
-                  </button>
-                </>
-              )}
-            </div>
-
-            {/* Position Name Card */}
-            <div className="bg-white border border-gray-200 p-4">
-              <p className="text-xl font-bold text-gray-900">
-                {config.position_photos[currentPhotoIndex]?.position_name}
-              </p>
-              <p className="text-sm text-gray-500 mt-2">
-                {currentPhotoIndex + 1} dari {config.position_photos.length}
-              </p>
-            </div>
-
-            {/* Indicator Dots */}
-            {config.position_photos.length > 1 && (
-              <div className="flex justify-center gap-2">
-                {config.position_photos.map((_, index) => (
-                  <button
-                    key={`dot-${index}`}
-                    type="button"
-                    onClick={() => setCurrentPhotoIndex(index)}
-                    className={`rounded-full transition-all ${
-                      index === currentPhotoIndex
-                        ? "bg-gray-800 w-2.5 h-2.5"
-                        : "bg-gray-300 w-2 h-2 hover:bg-gray-400"
-                    }`}
-                    aria-label={`Go to position ${index + 1}`}
-                  />
-                ))}
-              </div>
-            )}
+            ))}
           </div>
         </div>
       )}
