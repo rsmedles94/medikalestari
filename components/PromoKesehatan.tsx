@@ -455,31 +455,31 @@ const PromoKesehatan = () => {
 
           <hr className="border-white/10 my-16" />
 
-          {/* UTUH BAGIAN C: EXPERT CARE & SLIDER 18 LOGO REKANAN */}
+          {/* SLIDER 18 LOGO REKANAN */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mb-12">
             {/* Sisi Kiri: Deskripsi Wilayah */}
             <div className="lg:col-span-6 text-left">
               <h3 className="text-3xl md:text-4xl font-bold mb-6 leading-tight -mt-5">
-                Layanan Kesehatan Tepercaya, Didukung Jaringan Mitra Luas
+                Solusi Kesehatan Tepercaya dengan Jaringan Mitra Terluas
               </h3>
               <p className="text-sm md:text-base text-white/90 font-semibold mb-4 leading-normal text-justify">
-                RS Medika Lestari berkomitmen untuk selalu hadir memberikan rasa
-                aman dan kemudahan akses medis di setiap langkah penanganan
-                kesehatan Anda.
+                Di RS Medika Lestari, kenyamanan Anda adalah prioritas utama.
+                Kami hadir memberikan akses medis yang cepat, tepat, dan dapat
+                diandalkan kapan pun Anda membutuhkan penanganan.
               </p>
-              <p className="text-xs md:text-sm text-white/80 leading-normal mb-8 text-justify">
-                Melalui sinergi erat bersama penyedia jaminan kesehatan,
-                asuransi terkemuka, dan mitra korporasi, kami mengintegrasikan
-                layanan medis prima dengan sistem klaim yang praktis. Kami
-                memastikan seluruh lapisan masyarakat dapat menikmati perawatan
-                berkualitas tinggi secara nyaman dan tanpa kendala birokrasi.
+              <p className="text-xs md:text-base text-white/90 font-semibold leading-normal mb-8 text-justify">
+                Kini Anda tidak perlu mengkhawatirkan rumitnya birokrasi. Berkat
+                kolaborasi erat dengan berbagai asuransi terkemuka dan mitra
+                korporasi, proses klaim serta administrasi kini menjadi jauh
+                lebih praktis. Saatnya menikmati layanan medis premium tanpa
+                kendala.
               </p>
               <Link href="/tentang-kami" passHref>
                 <button
                   type="button"
                   className="px-5 py-2.5 bg-[#e67e22] hover:bg-[#3D8ECB] text-white text-xs font-semibold transition-colors duration-700 inline-flex items-center gap-2 cursor-pointer"
                 >
-                  Selengkapnya Tentang Kami
+                  Kenali Kami Lebih Dekat
                 </button>
               </Link>
             </div>
