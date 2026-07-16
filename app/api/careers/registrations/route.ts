@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
+import { createServerSupabaseClient } from "@/lib/supabase";
 
 export async function POST(request: NextRequest) {
   try {
+    const supabase = createServerSupabaseClient();
     const body = await request.json();
 
-    // Validate required fields
+    // Validasi field wajib
     const requiredFields = [
       "full_name",
       "email",
@@ -23,7 +24,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Prepare data for insertion
     const registrationData = {
       full_name: body.full_name,
       email: body.email,
@@ -70,12 +70,15 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   try {
+    const supabase = createServerSupabaseClient();
+
     const { data, error } = await supabase
       .from("career_registrations")
       .select("*")
       .order("created_at", { ascending: false });
 
     if (error) {
+      console.error("Supabase error:", error.message);
       return NextResponse.json(
         { error: "Failed to fetch registrations" },
         { status: 500 },
@@ -94,6 +97,7 @@ export async function GET() {
 
 export async function DELETE(request: NextRequest) {
   try {
+    const supabase = createServerSupabaseClient();
     const body = await request.json();
     const { id } = body;
 
@@ -126,7 +130,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    if (count === 0) {
+    if (!data || data.length === 0) {
       console.warn("No record found with ID:", id);
       return NextResponse.json(
         {

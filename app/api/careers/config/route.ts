@@ -1,39 +1,34 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
+import { createServerSupabaseClient } from "@/lib/supabase";
+import { randomUUID } from "crypto";
 
 export async function GET() {
   try {
+    const supabase = createServerSupabaseClient();
+
     const { data, error } = await supabase
       .from("careers_config")
       .select("*")
       .limit(1);
 
+    const defaultConfig = {
+      id: randomUUID(),
+      form_title: "Bergabunglah dengan Tim Kami",
+      form_description: "Kami mencari profesional berbakat",
+      criteria: [],
+      position_photos: [],
+      phone_number: "082246232527",
+      is_form_active: true,
+      banner_image_url: null,
+    };
+
     if (error) {
       console.error("Error fetching config:", error.message);
-      return NextResponse.json({
-        id: "default-config",
-        form_title: "Bergabunglah dengan Tim Kami",
-        form_description: "Kami mencari profesional berbakat",
-        criteria: [],
-        position_photos: [],
-        phone_number: "082246232527",
-        is_form_active: true,
-        banner_image_url: null,
-      });
+      return NextResponse.json(defaultConfig);
     }
 
-    // If no data exists, return default config
     if (!data || data.length === 0) {
-      return NextResponse.json({
-        id: "default-config",
-        form_title: "Bergabunglah dengan Tim Kami",
-        form_description: "Kami mencari profesional berbakat",
-        criteria: [],
-        position_photos: [],
-        phone_number: "082246232527",
-        is_form_active: true,
-        banner_image_url: null,
-      });
+      return NextResponse.json(defaultConfig);
     }
 
     return NextResponse.json(data[0]);
@@ -48,12 +43,13 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
+    const supabase = createServerSupabaseClient();
     const body = await request.json();
 
     console.log("=== PUT /api/careers/config ===");
     console.log("Request body:", JSON.stringify(body, null, 2));
 
-    // Validate that id is provided
+    // Validasi id harus ada
     if (!body.id) {
       console.error("ERROR: No ID provided");
       return NextResponse.json(
@@ -62,13 +58,12 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Remove id from update body to avoid updating the primary key
+    // Pisahkan id dari data update agar primary key tidak ikut ter-update
     const { id, ...updateData } = body;
 
     console.log("Update ID:", id);
     console.log("Update Data:", JSON.stringify(updateData, null, 2));
 
-    // Try direct update (simpler approach - let Supabase handle create or update)
     const { data, error } = await supabase
       .from("careers_config")
       .upsert([{ id, ...updateData }], { onConflict: "id" })

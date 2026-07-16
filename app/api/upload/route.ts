@@ -28,51 +28,23 @@ export async function POST(request: NextRequest) {
     const bucketName = "uploads";
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-    if (!supabaseUrl || !supabaseAnonKey) {
-      console.error("Missing Supabase environment variables");
+    if (!supabaseUrl || !supabaseServiceKey) {
+      console.error("Missing Supabase service role configuration for upload");
       return NextResponse.json(
-        { error: "Supabase configuration error" },
+        {
+          error:
+            "Supabase configuration error: SUPABASE_SERVICE_ROLE_KEY wajib di-set untuk upload",
+        },
         { status: 500 },
       );
     }
 
-    // Gunakan service role key jika tersedia untuk membuat bucket
-    let adminClient: ReturnType<typeof createClient> | null = null;
-    if (supabaseServiceKey) {
-      adminClient = createClient(supabaseUrl, supabaseServiceKey);
-    }
+    // Selalu pakai service role key untuk upload (bypass RLS).
+    // Bucket 'uploads' harus sudah dibuat manual sekali di Supabase Dashboard
+    // (Storage → New bucket → nama "uploads" → set Public).
+    const uploadClient = createClient(supabaseUrl, supabaseServiceKey);
 
-    const anonClient = createClient(supabaseUrl, supabaseAnonKey);
-
-    // Jika punya service key, coba buat bucket jika tidak ada
-    if (adminClient) {
-      const { data: buckets } = await adminClient.storage.listBuckets();
-      const bucketExists = buckets?.some((b) => b.name === bucketName);
-
-      if (!bucketExists) {
-        console.log(
-          `Bucket "${bucketName}" tidak ditemukan, mencoba membuat...`,
-        );
-        const { error: createError } = await adminClient.storage.createBucket(
-          bucketName,
-          {
-            public: true,
-          },
-        );
-
-        if (createError) {
-          console.error("Error creating bucket:", createError);
-          // Lanjutkan dengan anon client, mungkin bucket sudah ada
-        } else {
-          console.log(`Bucket "${bucketName}" berhasil dibuat`);
-        }
-      }
-    }
-
-    // Gunakan admin client untuk upload jika tersedia (bypass RLS)
-    const uploadClient = adminClient || anonClient;
     const { data, error } = await uploadClient.storage
       .from(bucketName)
       .upload(path, uint8Array, {
@@ -86,12 +58,22 @@ export async function POST(request: NextRequest) {
         name: error.name,
       });
 
-      // Jika error RLS, berikan instruksi
+      if (error.message.includes("Bucket not found")) {
+        return NextResponse.json(
+          {
+            error:
+              "Bucket 'uploads' belum dibuat. Buat manual di Supabase Dashboard → Storage → New bucket (public).",
+            details: error.message,
+          },
+          { status: 500 },
+        );
+      }
+
       if (error.message.includes("row-level security")) {
         return NextResponse.json(
           {
             error:
-              "RLS Policy error. Silakan nonaktifkan RLS di bucket 'uploads':\n1. Buka Supabase Dashboard\n2. Pergi ke Storage → Buckets → uploads\n3. Klik tab 'Policies'\n4. Disable semua RLS policies",
+              "RLS Policy error saat upload. Pastikan service role key digunakan (bukan anon key).",
             details: error.message,
           },
           { status: 500 },
@@ -101,7 +83,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: `Upload failed: ${error.message}`,
-          hint: "Pastikan bucket 'uploads' bersifat public dan tidak memiliki RLS yang terlalu ketat",
         },
         { status: 500 },
       );
@@ -118,7 +99,7 @@ export async function POST(request: NextRequest) {
     // Get public URL
     const {
       data: { publicUrl },
-    } = anonClient.storage.from(bucketName).getPublicUrl(data.path);
+    } = uploadClient.storage.from(bucketName).getPublicUrl(data.path);
 
     console.log("Upload success:", { path: data.path, url: publicUrl });
     return NextResponse.json({ url: publicUrl, path: data.path });
