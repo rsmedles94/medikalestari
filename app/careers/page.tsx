@@ -79,13 +79,32 @@ const CareersPage = () => {
   // Kunci scroll background saat modal formulir terbuka
   useEffect(() => {
     if (showModal) {
+      const scrollY = window.scrollY;
+      const originalBodyPosition = document.body.style.position;
+      const originalBodyTop = document.body.style.top;
+      const originalBodyLeft = document.body.style.left;
+      const originalBodyRight = document.body.style.right;
+      const originalBodyWidth = document.body.style.width;
       const originalBodyOverflow = document.body.style.overflow;
       const originalHtmlOverflow = document.documentElement.style.overflow;
+
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.left = "0";
+      document.body.style.right = "0";
+      document.body.style.width = "100%";
       document.body.style.overflow = "hidden";
       document.documentElement.style.overflow = "hidden";
+
       return () => {
+        document.body.style.position = originalBodyPosition;
+        document.body.style.top = originalBodyTop;
+        document.body.style.left = originalBodyLeft;
+        document.body.style.right = originalBodyRight;
+        document.body.style.width = originalBodyWidth;
         document.body.style.overflow = originalBodyOverflow;
         document.documentElement.style.overflow = originalHtmlOverflow;
+        window.scrollTo(0, scrollY);
       };
     }
   }, [showModal]);
@@ -258,15 +277,21 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
       {/* Position Photos Grid */}
       {config?.position_photos && config.position_photos.length > 0 && (
         <div className="max-w-293.75 mx-auto px-4 md:px-8 py-1">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-8 text-gray-800">
-            Posisi Lowongan yang Tersedia
-          </h2>
+          <div className="text-center mb-8">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">
+              Posisi lowongan yang tersedia
+            </h2>
+            <p className="text-sm md:text-base text-gray-500 italic">
+              *Proses rekrutmen tetap aktif selama informasi lowongan masih
+              tersedia.
+            </p>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             {config.position_photos.map((photo, index) => (
               <div
                 key={photo.id ?? `photo-${index}`}
-                className="border border-gray-200 rounded-lg overflow-hidden"
+                className="border border-gray-200  overflow-hidden"
               >
                 <div className="relative w-full aspect-square overflow-hidden">
                   {photo.image_url ? (
@@ -329,7 +354,7 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
           <div className="max-w-2xl mx-auto px-4 py-12 flex justify-center ">
             <button
               onClick={() => setShowModal(true)}
-              className="px-8 py-4 bg-[#003f88] text-white font-semibold hover:bg-[#003f88]/90 transition-colors cursor-pointer active:scale-95 mb-20"
+              className="px-8 py-4 bg-[#003f88] text-white font-semibold hover:bg-[#003f88]/90 transition-colors cursor-pointer active:scale-95 mb-20 rounded-md"
             >
               Daftar Lowongan
             </button>
