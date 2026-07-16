@@ -371,7 +371,7 @@ const DoctorSection = ({
               {currentPage > 1 && (
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
-                  className="w-16 h-11 flex items-center justify-center text-slate-600 border border-slate-200 rounded-none hover:bg-slate-50 transition-all font-bold text-xs"
+                  className="w-16 h-11 flex items-center justify-center text-slate-600 border border-slate-200 rounded-md hover:bg-slate-50 transition-all font-bold text-xs "
                 >
                   ← PREV
                 </button>
@@ -382,7 +382,7 @@ const DoctorSection = ({
                   <button
                     key={`page-${i + 1}`}
                     onClick={() => handlePageChange(i + 1)}
-                    className={`w-11 h-11 flex items-center justify-center rounded-none font-bold text-xs transition-all ${
+                    className={`w-11 h-11 flex items-center justify-center rounded-md font-bold text-xs transition-all ${
                       currentPage === i + 1
                         ? "bg-[#003f88] text-white border border-[#003f88]"
                         : "text-slate-500 border border-slate-200 hover:bg-slate-50"
@@ -396,7 +396,7 @@ const DoctorSection = ({
               {currentPage < totalPages && (
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
-                  className="w-16 h-11 flex items-center justify-center text-slate-600 border border-slate-200 rounded-none hover:bg-slate-50 transition-all font-bold text-xs"
+                  className="w-16 h-11 flex items-center justify-center text-slate-600 border border-slate-200 rounded-md hover:bg-slate-50 transition-all font-bold text-xs"
                 >
                   NEXT →
                 </button>

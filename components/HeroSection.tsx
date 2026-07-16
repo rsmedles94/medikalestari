@@ -568,7 +568,7 @@ const HeroSection = () => {
 
       {/* Searchbar Desktop */}
       <div className="hidden md:absolute md:inset-0 md:flex md:flex-col md:items-end md:justify-end md:z-20 md:pr-9 md:pb-15 md:pointer-events-none">
-        <div className="md:pointer-events-auto bg-[#003f88]  shadow-lg p-5">
+        <div className="md:pointer-events-auto bg-[#003f88] p-5 rounded-md">
           {/* titlr */}
           <h2 className="text-lg font-bold text-white mb-4">
             Cari Dokter Spesialis atau Jadwal Praktek
