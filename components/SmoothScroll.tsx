@@ -1,4 +1,4 @@
-"use client"; // Wajib menggunakan Client Component
+"use client"; 
 
 import { ReactNode } from "react";
 import { ReactLenis } from "lenis/react";
@@ -9,7 +9,7 @@ export default function SmoothScroll({ children }: { children: ReactNode }) {
     <ReactLenis
       root
       options={{
-        lerp: 0.15, 
+        lerp: 0.20, 
         duration: 0.8, 
         smoothWheel: true,
       }}

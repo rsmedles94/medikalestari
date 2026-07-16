@@ -261,7 +261,7 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
   return (
     <div className="min-h-screen bg-white">
       {/* BREADCRUMB & TITLE SECTION */}
-      <div className="max-w-293.75 mx-auto px-4 md:px-8 pt-4 md:pt-16 pb-12 md:-mt-1">
+      <div className="max-w-293.75 mx-auto px-4 md:px-8 pt-10 md:pt-18 pb-12 md:-mt-1">
         <nav className="flex items-center gap-1 text-[14px] font-normal text-gray-300 mb-4">
           <Link
             href="/"
