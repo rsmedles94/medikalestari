@@ -8,7 +8,7 @@ import { ChevronRight, Send, ArrowRight, AlertCircle } from "lucide-react";
 const FEATURES_DATA = [
   {
     icon: "/images/icons/whatsapp.svg",
-    title: "Make an Appointment Online",
+    title: "Ask Us",
     link: "https://wa.me/6285717028133",
   },
   {
