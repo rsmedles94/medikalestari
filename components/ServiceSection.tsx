@@ -239,7 +239,7 @@ const ServiceSection = () => {
                 "noopener,noreferrer",
               )
             }
-            className="text-white font-semibold text-sm flex items-center gap-1 transition-all duration-300 hover:text-[#e67e22] hover:underline cursor-pointer"
+            className="text-white font-semibold text-sm flex items-center gap-1 transition-all duration-700 hover:text-[#e67e22] hover:underline cursor-pointer"
           >
             Lihat ulasan lainnya <span className="text-base">→</span>
           </button>
