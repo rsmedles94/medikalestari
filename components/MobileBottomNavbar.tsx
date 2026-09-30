@@ -115,7 +115,7 @@ export default function MobileBottomNavbar() {
           {isActionMenuOpen && (
             <div
               ref={actionMenuRef}
-              className="mb-2 w-[220px] bg-white border border-gray-200 shadow-xl rounded-xl p-1 flex flex-col z-50"
+              className="mb-2 w-[220px] bg-white border border-gray-200 shadow-xl rounded-xl p-1 flex flex-col z-100"
               style={{
                 opacity: 1,
                 transform: "scale(1)",
