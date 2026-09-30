@@ -327,7 +327,7 @@ const MobileSearchModal: React.FC<MobileSearchModalProps> = memo(
                                 `/dokter?specialty=${encodeURIComponent(cat)}`,
                               )
                             }
-                            className="px-3 py-2 bg-gray-100 rounded-full text-xs font-bold text-gray-600 transition-none"
+                            className="px-3 py-2 bg-neutral-100 rounded-full text-xs font-bold text-neutral-700 transition-none"
                           >
                             {cat}
                           </button>
