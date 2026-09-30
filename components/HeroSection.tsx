@@ -509,9 +509,6 @@ const HeroSection = () => {
                 />
               ))}
             </div>
-
-            
-    
           </>
         ) : (
           <div className="absolute inset-0 bg-gray-300 flex items-center justify-center">
@@ -548,25 +545,23 @@ const HeroSection = () => {
             </div>
           );
         })}
-
-        {/* IMAGE INDICATORS - Mobile */}
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-40 flex items-center gap-1">
-          {mobileSlides.map((slide) => (
-            <button
-              key={`mobile-indicator-${slide.id}`}
-              onClick={() => {
-                const index = mobileSlides.findIndex((s) => s.id === slide.id);
-                setPage(index);
-              }}
-              className={`h-1 transition-all duration-300 ${
-                mobileSlides.findIndex((s) => s.id === slide.id) ===
-                currentSlide
-                  ? "bg-white w-6"
-                  : "bg-white bg-opacity-50 w-2"
-              }`}
-            />
-          ))}
-        </div>
+        {/* IMAGE INDICATORS - Mobile (Hanya muncul jika minimal ada 2 gambar) */}
+        {mobileSlides.length >= 2 && (
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-40 flex items-center gap-1">
+            {mobileSlides.map((slide) => {
+              const index = mobileSlides.findIndex((s) => s.id === slide.id);
+              return (
+                <button
+                  key={`mobile-indicator-${slide.id}`}
+                  onClick={() => setPage(index)}
+                  className={`h-1 transition-all duration-300 ${
+                    index === currentSlide ? "bg-white w-6" : "bg-white/50 w-2"
+                  }`}
+                />
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Searchbar Desktop */}
