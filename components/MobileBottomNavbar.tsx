@@ -6,16 +6,19 @@ import React, {
   useEffect,
   useCallback,
   useRef,
+  useSyncExternalStore,
 } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence } from "framer-motion";
 
-// Font Awesome Imports & Types
+// Lucide Icon untuk Home saja
+import { Home } from "lucide-react";
+
+// Font Awesome Imports & Types untuk ikon lainnya
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import {
-  faHouse,
   faUserDoctor,
   faPlus,
   faCalendarDays,
@@ -30,13 +33,25 @@ import BookingModalFloating from "./BookingModalFloating";
 interface NavItem {
   label: string;
   href: string;
-  icon: IconDefinition;
+  icon?: IconDefinition;
+  isHome?: boolean;
   isButton?: boolean;
+}
+
+// Fungsi pendeteksi client tanpa setState di effect
+const emptySubscribe = () => () => {};
+function useIsMounted() {
+  return useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
 }
 
 export default function MobileBottomNavbar() {
   const pathname = usePathname();
   const router = useRouter();
+  const isMounted = useIsMounted();
 
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
@@ -46,27 +61,23 @@ export default function MobileBottomNavbar() {
 
   const navItems = useMemo<NavItem[]>(
     () => [
-      { label: "Beranda", href: "/", icon: faHouse },
+      { label: "Beranda", href: "/", isHome: true },
       { label: "Dokter", href: "/dokter", icon: faUserDoctor },
-      {
-        label: "Tambah",
-        href: "#action-menu",
-        icon: faPlus,
-        isButton: true,
-      },
+      { label: "Tambah", href: "#action-menu", icon: faPlus, isButton: true },
       { label: "Jadwal", href: "/jadwal-dokter", icon: faCalendarDays },
       { label: "Promo", href: "/promo", icon: faTicket },
     ],
-    [],
+    []
   );
 
-  // Menentukan index menu aktif berdasarkan pathname saat ini
+  // Index menu aktif
   const activeIndex = useMemo(() => {
+    if (!isMounted) return null;
     const idx = navItems.findIndex(
-      (item) => !item.isButton && item.href === pathname,
+      (item) => !item.isButton && item.href === pathname
     );
     return idx !== -1 ? idx : null;
-  }, [pathname, navItems]);
+  }, [pathname, navItems, isMounted]);
 
   const handlePlusClick = useCallback(() => {
     setIsActionMenuOpen((prev) => !prev);
@@ -102,20 +113,24 @@ export default function MobileBottomNavbar() {
     action();
   }, []);
 
+  if (!isMounted) return null;
+
   return (
     <>
+      {/* Modal Floating */}
       <BookingModalFloating
         isOpen={isBookingOpen}
         onClose={() => setIsBookingOpen(false)}
       />
 
-      <div className="fixed bottom-0 left-0 right-0 z-40 w-full lg:hidden flex flex-col items-center">
-        {/* POP UP SUB-MENU */}
+      {/* Nav Bawah Utama */}
+      <nav aria-label="Navigasi Bawah Seluler" className="fixed bottom-0 left-0 right-0 z-[99] w-full lg:hidden flex flex-col items-center">
+        {/* Menu Pop-up */}
         <AnimatePresence mode="wait">
           {isActionMenuOpen && (
-            <div
+            <aside
               ref={actionMenuRef}
-              className="mb-2 w-[220px] bg-white border border-gray-200 shadow-xl rounded-xl p-1 flex flex-col z-100"
+              className="mb-2 w-[220px] bg-white border border-gray-200 shadow-xl rounded-xl p-1 flex flex-col z-[100]"
               style={{
                 opacity: 1,
                 transform: "scale(1)",
@@ -135,6 +150,7 @@ export default function MobileBottomNavbar() {
                 }
               `}</style>
 
+              {/* Tombol Buat Janji */}
               <button
                 type="button"
                 onClick={() => handleActionClick(() => setIsBookingOpen(true))}
@@ -150,11 +166,12 @@ export default function MobileBottomNavbar() {
 
               <div className="h-[1px] w-full bg-gray-100 my-0.5" />
 
+              {/* Tombol Kamar Perawatan */}
               <button
                 type="button"
                 onClick={() =>
                   handleActionClick(() =>
-                    router.push("/services/kamar-perawatan"),
+                    router.push("/services/kamar-perawatan")
                   )
                 }
                 className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 text-sm font-medium text-left outline-none hover:bg-gray-50 active:bg-gray-100 transition-colors rounded-lg"
@@ -169,6 +186,7 @@ export default function MobileBottomNavbar() {
 
               <div className="h-[1px] w-full bg-gray-100 my-0.5" />
 
+              {/* Tombol Ketersediaan Kamar */}
               <button
                 type="button"
                 onClick={() =>
@@ -183,15 +201,14 @@ export default function MobileBottomNavbar() {
                 />
                 <span>Ketersediaan Kamar</span>
               </button>
-            </div>
+            </aside>
           )}
         </AnimatePresence>
 
-        {/* BAR NAVBAR UTAMA */}
+        {/* Bar Navigasi */}
         <div className="w-full h-16 bg-white border-t border-gray-100 shadow-[0_-2px_10px_rgba(0,0,0,0.02)]">
-          <ul className="flex items-center justify-between h-full px-4">
+          <menu className="flex items-center justify-between h-full px-4 m-0 p-0 list-none">
             {navItems.map((item, i) => {
-              const iconDef = item.icon;
               const isActive = i === activeIndex;
 
               return (
@@ -200,9 +217,11 @@ export default function MobileBottomNavbar() {
                   className="flex flex-1 justify-center h-full items-center"
                 >
                   {item.isButton ? (
+                    /* Tombol Plus */
                     <button
                       ref={plusButtonRef}
                       type="button"
+                      aria-label="Menu Aksi Tambahan"
                       onClick={handlePlusClick}
                       className="flex items-center justify-center w-12 h-12 rounded-full hover:bg-gray-50 active:scale-95 transition-all select-none focus:outline-none"
                       style={{ WebkitTapHighlightColor: "transparent" }}
@@ -219,8 +238,10 @@ export default function MobileBottomNavbar() {
                       />
                     </button>
                   ) : (
+                    /* Link Navigasi */
                     <Link
                       href={item.href}
+                      aria-label={item.label}
                       onClick={(e) => {
                         if (pathname === item.href) {
                           e.preventDefault();
@@ -230,22 +251,38 @@ export default function MobileBottomNavbar() {
                       className="flex items-center justify-center w-12 h-12 rounded-xl active:scale-95 transition-transform select-none focus:outline-none"
                       style={{ WebkitTapHighlightColor: "transparent" }}
                     >
-                      <FontAwesomeIcon
-                        icon={iconDef}
-                        className="text-[24px]"
-                        style={{
-                          color: isActive ? "#003f88" : "#9CA3AF",
-                          transition: "all 0.15s ease",
-                        }}
-                      />
+                      {item.isHome ? (
+                        /* Ikon Home Lucide (Solid jika Aktif) */
+                        <Home
+                          className="w-[24px] h-[24px]"
+                          style={{
+                            color: isActive ? "#003f88" : "#9CA3AF",
+                            transition: "all 0.15s ease",
+                          }}
+                          fill={isActive ? "currentColor" : "none"}
+                          strokeWidth={isActive ? 2.2 : 1.8}
+                        />
+                      ) : (
+                        /* Ikon FontAwesome Lainnya */
+                        item.icon && (
+                          <FontAwesomeIcon
+                            icon={item.icon}
+                            className="text-[24px]"
+                            style={{
+                              color: isActive ? "#003f88" : "#9CA3AF",
+                              transition: "all 0.15s ease",
+                            }}
+                          />
+                        )
+                      )}
                     </Link>
                   )}
                 </li>
               );
             })}
-          </ul>
+          </menu>
         </div>
-      </div>
+      </nav>
     </>
   );
 }
