@@ -11,46 +11,65 @@ interface ServiceWorkerInitializerProps {
   debug?: boolean;
 }
 
+// Daftar variasi pesan untuk testing
+const TEST_MESSAGES = [
+  {
+    title: "Jika kamu sedang Sakit!",
+    body: "Ayo segera periksa ke Rumah Sakit Medika Lestari",
+  },
+  {
+    title: "Jaga Kesehatanmu! 🩺",
+    body: "Jangan tunda konsultasi kesehatan bersama dokter spesialis RS Medika Lestari.",
+  },
+  {
+    title: "Sudah Cek Kesehatan? 🏥",
+    body: "Kunjungi RS Medika Lestari untuk layanan perawatan terbaik keluarga Anda.",
+  },
+  {
+    title: "Butuh Layanan Medis? 🚑",
+    body: "Jadwalkan janji temu dokter dengan cepat dan mudah di RS Medika Lestari.",
+  },
+];
+
 export function ServiceWorkerInitializer({
   debug = false,
 }: ServiceWorkerInitializerProps) {
   useEffect(() => {
-    // Fungsi untuk memicu notifikasi dengan jeda 1 menit & batasan 1 hari sekali
-    const triggerDailyNotification = (reg: ServiceWorkerRegistration) => {
-      const NOTIF_KEY = "last_notification_sent_time";
-      const ONE_DAY_MS = 24 * 60 * 60 * 1000; // 24 jam dalam milidetik
-      const ONE_MINUTE_MS = 60 * 1000; // 1 menit delay
+    let intervalId: NodeJS.Timeout | null = null;
+    let messageIndex = 0;
 
-      const lastSent = localStorage.getItem(NOTIF_KEY);
-      const now = Date.now();
+    const startTestingNotifications = (reg: ServiceWorkerRegistration) => {
+      const ONE_MINUTE_MS = 60 * 1000; // 1 menit
 
-      // Cek apakah belum pernah dikirim ATAU sudah lewat 24 jam
-      if (!lastSent || now - parseInt(lastSent, 10) > ONE_DAY_MS) {
+      if (debug) {
+        console.log(
+          "[SW Init Test] Memulai pengujian notifikasi setiap 1 menit...",
+        );
+      }
+
+      // Fungsi untuk mengikis & mengirim pesan berurutan
+      const sendNextNotification = () => {
+        const currentMsg = TEST_MESSAGES[messageIndex];
+
+        reg.showNotification(currentMsg.title, {
+          body: currentMsg.body,
+          icon: "/medikalestari.png", // Path gambar dari folder /public
+          badge: "/medikalestari.png",
+        });
+
         if (debug) {
           console.log(
-            "[SW Init] Notifikasi dijadwalkan muncul dalam 1 menit...",
+            `[SW Init Test] Notifikasi dikirim (${messageIndex + 1}/${TEST_MESSAGES.length}):`,
+            currentMsg.title,
           );
         }
 
-        setTimeout(() => {
-          // Kirim notifikasi via Service Worker
-          reg.showNotification("Jika kamu sedang Sakit!", {
-            body: "Ayo segera periksa ke Rumah Sakit Medika Lestari",
-            icon: "/public/medikalestari.png", 
-          });
+        // Pindah ke pesan berikutnya (berputar kembali ke awal jika sudah habis)
+        messageIndex = (messageIndex + 1) % TEST_MESSAGES.length;
+      };
 
-          // Catat timestamp pengiriman terakhir ke localStorage
-          localStorage.setItem(NOTIF_KEY, Date.now().toString());
-
-          if (debug) {
-            console.log("[SW Init] Notifikasi berhasil dikirim!");
-          }
-        }, ONE_MINUTE_MS);
-      } else if (debug) {
-        console.log(
-          "[SW Init] Notifikasi sudah dikirim hari ini. Melewati pemicu.",
-        );
-      }
+      // Jalankan pertama kali setelah 1 menit
+      intervalId = setInterval(sendNextNotification, ONE_MINUTE_MS);
     };
 
     // Register service worker
@@ -62,14 +81,13 @@ export function ServiceWorkerInitializer({
           console.log("[SW Init] Service Worker berhasil didaftarkan");
         }
 
-        // Cek jika permission sudah dizinkan dari awal
         if (
           typeof window !== "undefined" &&
           "Notification" in window &&
           Notification.permission === "granted" &&
           reg
         ) {
-          triggerDailyNotification(reg);
+          startTestingNotifications(reg);
         }
       } catch (error) {
         console.error("[SW Init] Gagal register Service Worker:", error);
@@ -78,38 +96,29 @@ export function ServiceWorkerInitializer({
 
     registerSW();
 
-    // Listen untuk update notifications
-    const handleUpdate = () => {
-      if (debug) {
-        console.log("[SW Init] Update tersedia");
-      }
-    };
-
+    // Listen untuk request permission
     if (typeof globalThis !== "undefined" && globalThis.window) {
-      globalThis.window.addEventListener("sw-update-available", handleUpdate);
-
-      // Request notification permission jika belum ditentukan
       if ("Notification" in globalThis.window) {
         if (globalThis.window.Notification?.permission === "default") {
           globalThis.window.Notification.requestPermission().then(
             (permission) => {
               if (permission === "granted") {
                 navigator.serviceWorker.ready.then((reg) => {
-                  triggerDailyNotification(reg);
+                  startTestingNotifications(reg);
                 });
               }
             },
           );
         }
       }
-
-      return () => {
-        globalThis.window?.removeEventListener(
-          "sw-update-available",
-          handleUpdate,
-        );
-      };
     }
+
+    // Cleanup interval saat komponen unmount agar tidak terjadi kebocoran memori
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
   }, [debug]);
 
   return null;
