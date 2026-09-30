@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, useMotionValue, animate } from "framer-motion";
 
 interface KisahItem {
   id: number;
@@ -16,7 +16,8 @@ interface KisahItem {
 }
 
 const ServiceSection = () => {
-  const [activeIndex, setActiveIndex] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
 
   const ulasanData: KisahItem[] = [
     {
@@ -81,8 +82,111 @@ const ServiceSection = () => {
     },
   ];
 
-  // Penentu langkah slide agar pas saat 3 card tampil penuh
-  const totalDots = ulasanData.length - 2 > 0 ? ulasanData.length - 2 : 1;
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  // Inisialisasi awal tanpa memicu cascading render
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window !== "undefined") {
+      return window.innerWidth < 768;
+    }
+    return false;
+  });
+
+  const [totalDots, setTotalDots] = useState(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      return ulasanData.length - 1; // 5 dot di mobile
+    }
+    return ulasanData.length - 2; // 4 dot di desktop
+  });
+
+  const [dragConstraints, setDragConstraints] = useState({ left: 0, right: 0 });
+  const x = useMotionValue(0);
+  const isDragging = useRef(false);
+
+  // Fungsi pengukur batas slider yang aman
+  const calculateConstraints = useCallback(() => {
+    if (containerRef.current && trackRef.current) {
+      const containerWidth = containerRef.current.offsetWidth;
+      const trackWidth = trackRef.current.scrollWidth;
+      setDragConstraints({
+        left: -(trackWidth - containerWidth),
+        right: 0,
+      });
+    }
+  }, []);
+
+  // Update layout khusus saat terjadi perubahan ukuran layar (resize)
+  const handleResize = useCallback(() => {
+    if (typeof window === "undefined") return;
+
+    const mobileState = window.innerWidth < 768;
+    setIsMobile(mobileState);
+
+    const dotsCount = mobileState
+      ? ulasanData.length - 1
+      : ulasanData.length - 2;
+    setTotalDots(dotsCount);
+
+    calculateConstraints();
+  }, [ulasanData.length, calculateConstraints]);
+
+  useEffect(() => {
+    calculateConstraints();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [calculateConstraints, handleResize]);
+
+  const getItemWidth = () => {
+    return isMobile ? 280 + 24 : 360 + 24;
+  };
+
+  const handleDotClick = (index: number) => {
+    setActiveIndex(index);
+    const itemWidth = getItemWidth();
+    const targetX = -(index * itemWidth);
+
+    animate(x, Math.max(targetX, dragConstraints.left), {
+      type: "spring",
+      stiffness: 200,
+      damping: 25,
+    });
+  };
+
+  const handleDragStart = () => {
+    isDragging.current = true;
+  };
+
+  const handleDragEnd = () => {
+    setTimeout(() => {
+      isDragging.current = false;
+    }, 100);
+
+    const currentX = x.get();
+    const itemWidth = getItemWidth();
+    let calculatedIndex = Math.round(Math.abs(currentX) / itemWidth);
+
+    if (calculatedIndex >= totalDots) {
+      calculatedIndex = totalDots - 1;
+    }
+    if (calculatedIndex < 0) {
+      calculatedIndex = 0;
+    }
+
+    setActiveIndex(calculatedIndex);
+
+    const snapX = -(calculatedIndex * itemWidth);
+    animate(x, Math.max(snapX, dragConstraints.left), {
+      type: "spring",
+      stiffness: 250,
+      damping: 25,
+    });
+  };
+
+  const handleCardClick = (href: string) => {
+    if (!isDragging.current) {
+      window.open(href, "_blank", "noopener,noreferrer");
+    }
+  };
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }).map((_, index) => (
@@ -101,8 +205,8 @@ const ServiceSection = () => {
   return (
     <section className="w-full bg-[#3D8ECB] py-16 md:py-20 font-sans overflow-hidden">
       <div className="max-w-[1180px] mx-auto">
-        {/* 1. CONTAINER HEADER */}
-        <div className="px-4 md:px-8 mb-12 flex items-end justify-center w-full gap-4">
+        {/* Header Seksi */}
+        <header className="px-4 md:px-8 mb-12 flex items-end justify-center w-full gap-4">
           <div className="text-center min-w-0">
             <h2 className="text-3xl md:text-4xl font-bold text-white tracking-wide mb-3">
               Ulasan Pasien
@@ -112,95 +216,97 @@ const ServiceSection = () => {
               fasilitas medis di Rumah Sakit Medika Lestari?
             </p>
           </div>
-        </div>
+        </header>
 
-        {/* 2. AREA WRAPPER SLIDER (Mengintip presisi) */}
-        <div className="w-full">
-          <div className="px-4 md:px-8">
-            <div className="overflow-visible relative">
-              <motion.div
-                className="flex gap-6"
-                style={{ width: "max-content" }}
-                animate={{
-                  x:
-                    typeof window !== "undefined" && window.innerWidth < 768
-                      ? -(activeIndex * 304)
-                      : -(activeIndex * 384),
-                }}
-                transition={{ type: "spring", stiffness: 150, damping: 20 }}
+        {/* Kontainer Slider Fluid */}
+        <div
+          ref={containerRef}
+          className="w-full px-4 md:px-8 overflow-visible"
+        >
+          <motion.div
+            ref={trackRef}
+            className="flex gap-6 cursor-grab active:cursor-grabbing w-max"
+            style={{ x }}
+            drag="x"
+            dragConstraints={dragConstraints}
+            dragElastic={0.08}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+          >
+            {ulasanData.map((item) => (
+              <article
+                key={item.id}
+                onClick={() => handleCardClick(item.href)}
+                className="w-[280px] md:w-[360px] h-[380px] flex-shrink-0 flex flex-col justify-between bg-white rounded-[12px] p-6 shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer text-left select-none"
               >
-                {ulasanData.map((item) => (
-                  <article
-                    key={item.id}
-                    onClick={() =>
-                      window.open(item.href, "_blank", "noopener,noreferrer")
-                    }
-                    className="w-[280px] md:w-[360px] h-[380px] flex-shrink-0 flex flex-col justify-between bg-white p-6 shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer text-left select-none"
-                  >
-                    <div>
-                      {/* Profil Reviewer */}
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className="relative w-11 h-11 rounded-full overflow-hidden bg-slate-100 flex-shrink-0">
-                          <Image
-                            src={item.avatar}
-                            alt={item.author}
-                            fill
-                            sizes="44px"
-                            className="object-cover"
-                          />
-                        </div>
-                        <div className="flex flex-col min-w-0">
-                          <span className="text-sm font-bold text-slate-800 truncate">
-                            {item.author}
-                          </span>
-                          <div className="flex items-center gap-1 mt-0.5">
-                            {item.isLocalGuide && (
-                              <span className="text-[10px] bg-orange-50 text-orange-600 px-1 rounded font-medium">
-                                LG
-                              </span>
-                            )}
-                            <span className="text-xs text-slate-400">
-                              {item.date}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-0.5 mb-3">
-                        {renderStars(item.rating)}
-                      </div>
-
-                      <p className="text-sm text-slate-600 leading-relaxed font-normal line-clamp-6 break-words">
-                        &quot;{item.reviewText}&quot;
-                      </p>
+                <div>
+                  {/* Profil Penulis Ulasan */}
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="relative w-11 h-11 rounded-full overflow-hidden bg-slate-100 flex-shrink-0">
+                      <Image
+                        src={item.avatar}
+                        alt={item.author}
+                        fill
+                        sizes="44px"
+                        className="object-cover"
+                      />
                     </div>
-
-                    <div className="font-semibold text-xs flex items-center gap-1 mt-2">
-                      <span className="text-[#3D8ECB] hover:text-[#e67e22] hover:underline transition-colors duration-700">
-                        → Selengkapnya
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-sm font-bold text-slate-800 truncate">
+                        {item.author}
                       </span>
+                      <div className="flex items-center gap-1 mt-0.5">
+                        {item.isLocalGuide && (
+                          <span className="text-[10px] bg-orange-50 text-orange-600 px-1 rounded font-medium">
+                            LG
+                          </span>
+                        )}
+                        <span className="text-xs text-slate-400">
+                          {item.date}
+                        </span>
+                      </div>
                     </div>
-                  </article>
-                ))}
-              </motion.div>
-            </div>
-          </div>
+                  </div>
+
+                  {/* Rating Bintang */}
+                  <div className="flex items-center gap-0.5 mb-3">
+                    {renderStars(item.rating)}
+                  </div>
+
+                  {/* Isi Ulasan */}
+                  <p className="text-sm text-slate-600 leading-relaxed font-normal line-clamp-6 break-words">
+                    &quot;{item.reviewText}&quot;
+                  </p>
+                </div>
+
+                {/* Tautan Selengkapnya */}
+                <div className="font-semibold text-xs flex items-center gap-1 mt-2">
+                  <span className="text-[#3D8ECB] hover:text-[#e67e22] hover:underline transition-colors duration-700">
+                    → Selengkapnya
+                  </span>
+                </div>
+              </article>
+            ))}
+          </motion.div>
         </div>
 
-        {/* 3. INDIKATOR DOT NAVIGASI & BUTTON (Sejajar tingginya) */}
-        <div className="px-4 md:px-8 mt-12 flex items-center justify-between md:justify-start md:gap-8">
-          <div className="flex items-center justify-start gap-4">
+        {/* Navigasi / Kontrol */}
+        <footer className="px-4 md:px-8 mt-12 flex items-center justify-between md:justify-start md:gap-8">
+          {/* Indikator Dot Navigasi */}
+          <nav
+            aria-label="Navigasi Ulasan"
+            className="flex items-center justify-start gap-4"
+          >
             {Array.from({ length: totalDots }).map((_, index) => {
               const isActive = index === activeIndex;
               return (
                 <button
                   key={`dot-${index}`}
                   type="button"
-                  onClick={() => setActiveIndex(index)}
+                  onClick={() => handleDotClick(index)}
                   className="focus:outline-none flex items-center justify-center h-8 w-8 relative"
                   aria-label={`Go to page ${index + 1}`}
                 >
-                  {/* dot ulasan */}
                   <motion.div
                     animate={{
                       backgroundColor: isActive
@@ -211,7 +317,6 @@ const ServiceSection = () => {
                     className="absolute w-5 h-5 rounded-full z-10 pointer-events-none"
                   />
 
-                  {/* Ring Outer Lingkaran Luar saat Aktif */}
                   <motion.div
                     initial={{ scale: 0.4, opacity: 0 }}
                     animate={{
@@ -228,10 +333,11 @@ const ServiceSection = () => {
                 </button>
               );
             })}
-          </div>
+          </nav>
 
-          {/* BUTTON LIHAT ULASAN LAINNYA */}
+          {/* Tombol Tautan Ulasan Eksternal */}
           <button
+            type="button"
             onClick={() =>
               window.open(
                 "https://www.google.com/maps/place/RS+Medika+Lestari/@-6.2248952,106.708865,866m/data=!3m2!1e3!5s0x2e69fb20f9710f11:0xb1df070900c513d2!4m16!1m9!3m8!1s0x2e69fa1cb5b440a1:0xe21244587f98ac8f!2sRS+Medika+Lestari!8m2!3d-6.2248952!4d106.7114399!9m1!1b1!16s%2Fg%2F11h0hgmvp!3m5!1s0x2e69fa1cb5b440a1:0xe21244587f98ac8f!8m2!3d-6.2248952!4d106.7114399!16s%2Fg%2F11h0hgmvp?hl=id-ID&entry=ttu&g_ep=EgoyMDI2MDUyNi4wIKXMDSoASAFQAw%3D%3D",
@@ -243,7 +349,7 @@ const ServiceSection = () => {
           >
             Lihat ulasan lainnya <span className="text-base">→</span>
           </button>
-        </div>
+        </footer>
       </div>
     </section>
   );
