@@ -248,14 +248,14 @@ const MobileSearchModal: React.FC<MobileSearchModalProps> = memo(
                     {doctorHistory.length > 0 && (
                       <section>
                         <div className="flex items-center justify-between mb-3">
-                          <h3 className="text-[13px] font-bold text-gray-black flex items-center gap-2">
-                            <History size={16} className="text-gray-400" />
+                          <h3 className="text-[13px] font-bold text-neutral-700 flex items-center gap-2">
+                            <History size={16} className="text-neutral-400" />
                             Terakhir Dilihat
                           </h3>
 
                           <button
                             onClick={clearHistory}
-                            className="text-[12px] text-gray-700 font-bold cursor-pointer"
+                            className="text-[12px] text-neutral-700 font-bold cursor-pointer"
                           >
                             Hapus Semua
                           </button>
