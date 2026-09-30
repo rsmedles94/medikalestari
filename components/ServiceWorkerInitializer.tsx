@@ -34,7 +34,7 @@ export function ServiceWorkerInitializer({
 
         setTimeout(() => {
           // Kirim notifikasi via Service Worker
-          reg.showNotification("Sakit?", {
+          reg.showNotification("Jika kamu sedang Sakit!", {
             body: "Ayo segera periksa ke Rumah Sakit Medika Lestari",
             icon: "/public/medikalestari.png", 
           });
