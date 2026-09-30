@@ -984,7 +984,7 @@ function AuthArea({
         onClick={onClick}
         className={`flex items-center gap-2 font-semibold ${
           isMobile
-            ? "p-4 text-gray-700 text-lg border-b"
+            ? "p-4 text-gray-700 text-lg"
             : "text-gray-700 text-sm"
         }`}
         title="Panel Admin"
@@ -1002,14 +1002,14 @@ function AuthArea({
       onClick={onClick}
       className={`flex items-center gap-2 font-semibold ${
         isMobile
-          ? "p-4 text-gray-700 text-base border-b"
+          ? "p-4 text-gray-700 text-base"
           : "text-gray-700 text-sm"
       }`}
       title="Login"
     >
       <UserCircle size={20} className="text-gray-700" />
 
-      {isMobile && <span>Login</span>}
+      {isMobile && <span>Log In</span>}
     </Link>
   );
 }
