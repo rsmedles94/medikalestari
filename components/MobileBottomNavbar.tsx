@@ -12,10 +12,10 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence } from "framer-motion";
 
-// Lucide Icon untuk Home saja
+// Lucide Icon untuk Home saat aktif
 import { Home } from "lucide-react";
 
-// Font Awesome Imports & Types untuk ikon lainnya
+// Font Awesome Imports untuk ikon lainnya
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import {
@@ -38,13 +38,38 @@ interface NavItem {
   isButton?: boolean;
 }
 
-// Fungsi pendeteksi client tanpa setState di effect
+// Fungsi pendeteksi client render
 const emptySubscribe = () => () => {};
 function useIsMounted() {
   return useSyncExternalStore(
     emptySubscribe,
     () => true,
-    () => false
+    () => false,
+  );
+}
+
+// Komponen Ikon Rumah Tanpa Pintu (Khusus saat Tidak Aktif)
+function HomeOutlineNoDoor({
+  size = 25,
+  color = "#9CA3AF",
+}: {
+  size?: number;
+  color?: string;
+}) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke={color}
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" opacity="0" />
+      <path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+    </svg>
   );
 }
 
@@ -67,14 +92,13 @@ export default function MobileBottomNavbar() {
       { label: "Jadwal", href: "/jadwal-dokter", icon: faCalendarDays },
       { label: "Promo", href: "/promo", icon: faTicket },
     ],
-    []
+    [],
   );
 
-  // Index menu aktif
   const activeIndex = useMemo(() => {
     if (!isMounted) return null;
     const idx = navItems.findIndex(
-      (item) => !item.isButton && item.href === pathname
+      (item) => !item.isButton && item.href === pathname,
     );
     return idx !== -1 ? idx : null;
   }, [pathname, navItems, isMounted]);
@@ -124,7 +148,10 @@ export default function MobileBottomNavbar() {
       />
 
       {/* Nav Bawah Utama */}
-      <nav aria-label="Navigasi Bawah Seluler" className="fixed bottom-0 left-0 right-0 z-[99] w-full lg:hidden flex flex-col items-center">
+      <nav
+        aria-label="Navigasi Bawah Seluler"
+        className="fixed bottom-0 left-0 right-0 z-[99] w-full lg:hidden flex flex-col items-center"
+      >
         {/* Menu Pop-up */}
         <AnimatePresence mode="wait">
           {isActionMenuOpen && (
@@ -171,7 +198,7 @@ export default function MobileBottomNavbar() {
                 type="button"
                 onClick={() =>
                   handleActionClick(() =>
-                    router.push("/services/kamar-perawatan")
+                    router.push("/services/kamar-perawatan"),
                   )
                 }
                 className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 text-sm font-medium text-left outline-none hover:bg-gray-50 active:bg-gray-100 transition-colors rounded-lg"
@@ -252,16 +279,18 @@ export default function MobileBottomNavbar() {
                       style={{ WebkitTapHighlightColor: "transparent" }}
                     >
                       {item.isHome ? (
-                        /* Ikon Home Lucide (Solid jika Aktif) */
-                        <Home
-                          className="w-[24px] h-[24px]"
-                          style={{
-                            color: isActive ? "#003f88" : "#9CA3AF",
-                            transition: "all 0.15s ease",
-                          }}
-                          fill={isActive ? "currentColor" : "none"}
-                          strokeWidth={isActive ? 2.2 : 1.8}
-                        />
+                        isActive ? (
+                          /* Aktif: Home Lucide Solid Full (25px) */
+                          <Home
+                            className="w-[25px] h-[25px]"
+                            style={{ color: "#003f88" }}
+                            fill="currentColor"
+                            strokeWidth={2.2}
+                          />
+                        ) : (
+                          /* Tidak Aktif: Rumah Rangka Normal Tanpa Pintu (25px) */
+                          <HomeOutlineNoDoor size={25} color="#9CA3AF" />
+                        )
                       ) : (
                         /* Ikon FontAwesome Lainnya */
                         item.icon && (
