@@ -169,7 +169,7 @@ const MobileSearchModal: React.FC<MobileSearchModalProps> = memo(
             {/* Header */}
             <div className="bg-white p-4 flex items-center gap-3">
               <form
-                className="flex-1 flex items-center gap-2 rounded-full bg-gray-100 px-4 py-1 border border-transparent transition-all duration-200 focus-within:border-gray-400 focus-within:bg-white focus-within:ring-1 focus-within:ring-gray-400"
+                className="flex-1 flex items-center gap-2 rounded-[12px] bg-neutral-100 px-4 py-1 border border-transparent transition-all duration-200"
                 onSubmit={(e) => {
                   e.preventDefault();
 
@@ -180,12 +180,12 @@ const MobileSearchModal: React.FC<MobileSearchModalProps> = memo(
                   );
                 }}
               >
-                <SearchIcon size={18} className="text-gray-400" />
+                <SearchIcon size={18} className="text-neutral-700" />
 
                 <input
                   autoFocus
                   type="text"
-                  placeholder="Cari nama dokter atau spesialisasi"
+                  placeholder="Cari Dokter"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="bg-transparent flex-1 outline-none text-[16px] py-1 text-gray-700"
@@ -193,14 +193,14 @@ const MobileSearchModal: React.FC<MobileSearchModalProps> = memo(
 
                 {searchQuery && (
                   <button type="button" onClick={() => setSearchQuery("")}>
-                    <X size={18} className="text-gray-400" />
+                    <X size={17} className="bg-neutral-400 rounded-full text-neutral-100" />
                   </button>
                 )}
               </form>
 
               <button
                 onClick={handleCloseModal}
-                className="text-[14px] font-bold text-gray-700 whitespace-nowrap active:opacity-60 cursor-pointer"
+                className="text-[14px] font-semibold text-neutral-700 whitespace-nowrap active:opacity-60 cursor-pointer"
               >
                 Batal
               </button>

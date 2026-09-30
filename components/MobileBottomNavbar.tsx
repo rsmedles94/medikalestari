@@ -289,7 +289,7 @@ export default function MobileBottomNavbar() {
                           />
                         ) : (
                           /* Tidak Aktif: Rumah Rangka Normal Tanpa Pintu (25px) */
-                          <HomeOutlineNoDoor size={25} color="#9CA3AF" />
+                          <HomeOutlineNoDoor size={26} color="#9CA3AF" />
                         )
                       ) : (
                         /* Ikon FontAwesome Lainnya */
