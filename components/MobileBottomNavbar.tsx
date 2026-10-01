@@ -470,43 +470,53 @@ export default function MobileBottomNavbar() {
               scale: shouldShrink ? 0.92 : 1,
               height: shouldShrink ? "56px" : "64px",
               y: shouldShrink ? 4 : 0,
-              // Tengah super transparan, saat shrink jadi putih liquid kental
+              // Tengah super bening transparan (0.02) tapi tetep bertekstur cair saat dishrink
               backgroundColor: shouldShrink
-                ? "rgba(255, 255, 255, 0.35)"
+                ? "rgba(255, 255, 255, 0.32)"
                 : "rgba(255, 255, 255, 0.02)",
             }}
             transition={{ type: "spring", stiffness: 350, damping: 25 }}
-            className="pointer-events-auto relative w-full max-w-[390px] rounded-[32px] overflow-hidden touch-none cursor-grab active:cursor-grabbing flex items-center"
+            className="pointer-events-auto relative w-full max-w-[390px] rounded-[32px] overflow-hidden touch-none cursor-grab active:cursor-grabbing flex items-center z-10"
             style={{
               scaleX: dockScaleX,
               skewX: dockSkewX,
-              // Blur sangat tipis di tengah biar tetep jernih tembus pandang
-              WebkitBackdropFilter: "blur(3px) saturate(220%) contrast(125%)",
-              backdropFilter: "blur(3px) saturate(220%) contrast(125%)",
+              // Latar utama bening transparan & tajam
+              WebkitBackdropFilter: "blur(3px) saturate(240%) brightness(1.05)",
+              backdropFilter: "blur(3px) saturate(240%) brightness(1.05)",
               border: "none",
-              boxShadow: "none", // Hapus semua shadow
+              boxShadow: "none",
               WebkitTransform: "translateZ(0)",
               transform: "translateZ(0)",
             }}
           >
-            {/* LAYER REFRAKSI KHUSUS PINGGIRAN (Membias & Memantulkan Teks di Sekeliling Dock) */}
+            {/* LAYER REFRAKSI PINGGIRAN (Membias & Memantulkan Huruf/Objek di Sekeliling Dock) */}
             <div
               className="absolute inset-0 pointer-events-none rounded-[32px] z-0"
               style={{
-                WebkitFilter: "url(#smooth-liquid-refraction)",
-                filter: "url(#smooth-liquid-refraction)",
-                // Masking agar efek refraksi pembiasan teks hanya aktif di area pinggiran kaca
+                // Pembiasan cembung di pinggir
+                background:
+                  "radial-gradient(ellipse at center, transparent 50%, rgba(255, 255, 255, 0.45) 95%, rgba(255, 255, 255, 0.8) 100%)",
+                WebkitBackdropFilter:
+                  "blur(0.5px) contrast(220%) saturate(300%) brightness(1.3)",
+                backdropFilter:
+                  "blur(0.5px) contrast(220%) saturate(300%) brightness(1.3)",
                 WebkitMaskImage:
-                  "radial-gradient(ellipse at center, transparent 40%, black 100%)",
+                  "-webkit-radial-gradient(ellipse at center, transparent 40%, black 80%)",
                 maskImage:
-                  "radial-gradient(ellipse at center, transparent 40%, black 100%)",
-                WebkitBackdropFilter: "blur(2px)",
-                backdropFilter: "blur(2px)",
-                opacity: 1,
+                  "radial-gradient(ellipse at center, transparent 40%, black 80%)",
               }}
             />
 
-            {/* PIL INDIKATOR (Hitam Murni Transparan Smooth Tanpa Shadow) */}
+            {/* LAYER LIQUID GLOSS TENGAH (Efek Cairan Liket/Kental Tipis) */}
+            <div
+              className="absolute inset-0 pointer-events-none rounded-[32px] z-0"
+              style={{
+                background:
+                  "radial-gradient(ellipse at center, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%)",
+              }}
+            />
+
+            {/* PIL INDIKATOR (Hitam Murni Transparan Dynamic Island Style) */}
             <motion.div
               className="absolute top-1/2 pointer-events-none z-10 rounded-full"
               animate={{
@@ -514,7 +524,7 @@ export default function MobileBottomNavbar() {
                 height: `${basePilHeight}px`,
                 scale: isDragging ? DRAG_SCALE : 1,
                 backgroundColor: shouldShrink
-                  ? "rgba(0, 0, 0, 0.18)"
+                  ? "rgba(0, 0, 0, 0.20)"
                   : "rgba(0, 0, 0, 0.12)",
               }}
               transition={{ type: "spring", stiffness: 400, damping: 25 }}
@@ -523,11 +533,10 @@ export default function MobileBottomNavbar() {
                 y: "-50%",
                 left: 0,
                 translateX: "-50%",
-                WebkitBackdropFilter:
-                  "brightness(0.7) contrast(135%) blur(1px)",
-                backdropFilter: "brightness(0.7) contrast(135%) blur(1px)",
+                WebkitBackdropFilter: "brightness(0.7) contrast(130%)",
+                backdropFilter: "brightness(0.7) contrast(130%)",
                 border: "none",
-                boxShadow: "none", // Hapus shadow di pil
+                boxShadow: "none",
                 WebkitTransform: "translateZ(0)",
                 transform: "translateZ(0)",
               }}
