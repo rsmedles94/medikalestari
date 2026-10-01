@@ -111,7 +111,53 @@ function NavIcon({ item, isActive }: { item: NavItem; isActive: boolean }) {
   return null;
 }
 
+{
+  /* SVG FILTER DEFINITION — letakkan sekali di dalam komponen */
+}
+<svg
+  aria-hidden="true"
+  className="pointer-events-none absolute h-0 w-0"
+  style={{ position: "absolute" }}
+>
+  <defs>
+    <linearGradient id="dock-glass-edge" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stopColor="white" stopOpacity="0.85" />
+      <stop offset="35%" stopColor="white" stopOpacity="0.12" />
+      <stop offset="65%" stopColor="white" stopOpacity="0.04" />
+      <stop offset="100%" stopColor="white" stopOpacity="0.48" />
+    </linearGradient>
 
+    <linearGradient id="dock-glass-sheen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stopColor="white" stopOpacity="0.32" />
+      <stop offset="45%" stopColor="white" stopOpacity="0.04" />
+      <stop offset="100%" stopColor="white" stopOpacity="0" />
+    </linearGradient>
+
+    <filter
+      id="dock-glass-distortion"
+      x="-10%"
+      y="-20%"
+      width="120%"
+      height="140%"
+      colorInterpolationFilters="sRGB"
+    >
+      <feTurbulence
+        type="fractalNoise"
+        baseFrequency="0.012 0.035"
+        numOctaves="1"
+        seed="8"
+        result="noise"
+      />
+      <feDisplacementMap
+        in="SourceGraphic"
+        in2="noise"
+        scale="3"
+        xChannelSelector="R"
+        yChannelSelector="G"
+      />
+    </filter>
+  </defs>
+</svg>;
 
 export default function MobileBottomNavbar() {
   const pathname = usePathname();
@@ -470,62 +516,85 @@ export default function MobileBottomNavbar() {
               scale: shouldShrink ? 0.92 : 1,
               height: shouldShrink ? "56px" : "64px",
               y: shouldShrink ? 4 : 0,
-              // Putih transparan simetris (bening kristal)
               backgroundColor: shouldShrink
-                ? "rgba(255, 255, 255, 0.22)"
-                : "rgba(255, 255, 255, 0.05)",
+                ? "rgba(255,255,255,0.30)"
+                : "rgba(255,255,255,0.12)",
             }}
             transition={{ type: "spring", stiffness: 350, damping: 25 }}
-            className="pointer-events-auto relative w-full max-w-[390px] rounded-[32px] overflow-hidden touch-none cursor-grab active:cursor-grabbing flex items-center z-10"
+            className="pointer-events-auto relative isolate flex w-full max-w-[390px] items-center overflow-hidden rounded-[32px] touch-none cursor-grab active:cursor-grabbing"
             style={{
               scaleX: dockScaleX,
               skewX: dockSkewX,
-              // Backdrop filter bening kristal tanpa warna hitam
-              WebkitBackdropFilter: "blur(4px) saturate(220%) brightness(1.1)",
-              backdropFilter: "blur(4px) saturate(220%) brightness(1.1)",
-              border: "none",
-              boxShadow: "none",
+              WebkitBackdropFilter:
+                "blur(18px) saturate(190%) brightness(1.08)",
+              backdropFilter: "blur(18px) saturate(190%) brightness(1.08)",
+              boxShadow: `
+      0 12px 36px rgba(0,0,0,0.12),
+      0 2px 8px rgba(0,0,0,0.05),
+      inset 0 1px 0 rgba(255,255,255,0.65),
+      inset 0 -1px 0 rgba(255,255,255,0.20)
+    `,
+              border: "1px solid rgba(255,255,255,0.38)",
               WebkitTransform: "translateZ(0)",
               transform: "translateZ(0)",
             }}
           >
-            {/* LAYER PEMBIASAN REFRAKSI SIMETRIS PINGGIRAN (Tanpa Invert / Tanpa Warna Hitam) */}
+            {/* Lapisan warna dasar kaca */}
             <div
-              className="absolute inset-0 pointer-events-none rounded-[32px] z-0"
-              style={{
-                // Menggunakan kontras & saturasi tinggi + blur mikro di pinggir untuk membiaskan & memantulkan teks
-                WebkitBackdropFilter:
-                  "blur(1px) saturate(320%) contrast(200%) brightness(1.25)",
-                backdropFilter:
-                  "blur(1px) saturate(320%) contrast(200%) brightness(1.25)",
-                // Masking radial simetris murni melingkar penuh
-                WebkitMaskImage:
-                  "-webkit-radial-gradient(ellipse at center, transparent 60%, black 95%)",
-                maskImage:
-                  "radial-gradient(ellipse at center, transparent 60%, black 95%)",
-              }}
-            />
-
-            {/* LAYER LIQUID GLOSS TENGAH (Murni Bening Simetris) */}
-            <div
-              className="absolute inset-0 pointer-events-none rounded-[32px] z-0"
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 z-0 rounded-[inherit]"
               style={{
                 background:
-                  "radial-gradient(ellipse at center, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%)",
+                  "linear-gradient(145deg, rgba(255,255,255,0.24), rgba(255,255,255,0.04) 45%, rgba(255,255,255,0.12))",
               }}
             />
 
-            {/* PIL INDIKATOR (Putih Transparan Senada & Simetris) */}
+            {/* Pantulan permukaan bagian atas */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[58%] rounded-t-[inherit]"
+              style={{
+                background: "url(#dock-glass-sheen)",
+                backgroundImage:
+                  "linear-gradient(180deg, rgba(255,255,255,0.26), rgba(255,255,255,0.04) 65%, transparent)",
+                opacity: 0.85,
+              }}
+            />
+
+            {/* Highlight tepi kaca */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 z-20 rounded-[inherit]"
+              style={{
+                border: "1px solid transparent",
+                background:
+                  "linear-gradient(145deg, rgba(255,255,255,0.22), transparent 38%, rgba(255,255,255,0.08) 70%, rgba(255,255,255,0.30)) border-box",
+                WebkitMask:
+                  "linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)",
+                WebkitMaskComposite: "xor",
+                maskComposite: "exclude",
+              }}
+            />
+
+            {/* Refleksi cahaya pada lengkungan bawah */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-[8%] bottom-0 z-20 h-[1px] rounded-full"
+              style={{
+                background:
+                  "linear-gradient(90deg, transparent, rgba(255,255,255,0.75), rgba(255,255,255,0.24), transparent)",
+                boxShadow: "0 -2px 8px rgba(255,255,255,0.12)",
+              }}
+            />
+
+            {/* PIL INDIKATOR */}
             <motion.div
-              className="absolute top-1/2 pointer-events-none z-10 rounded-full"
+              className="pointer-events-none absolute top-1/2 z-10 rounded-full"
               animate={{
                 width: `${basePilWidth}px`,
                 height: `${basePilHeight}px`,
                 scale: isDragging ? DRAG_SCALE : 1,
-                // Putih bening presisi yang senada dengan warna dock
-                backgroundColor: shouldShrink
-                  ? "rgba(255, 255, 255, 0.28)"
-                  : "rgba(255, 255, 255, 0.12)",
+                backgroundColor: "rgba(255,255,255,0.16)",
               }}
               transition={{ type: "spring", stiffness: 400, damping: 25 }}
               style={{
@@ -533,15 +602,27 @@ export default function MobileBottomNavbar() {
                 y: "-50%",
                 left: 0,
                 translateX: "-50%",
-                // Meredupkan warna secara simetris tanpa bayangan hitam kasar
-                WebkitBackdropFilter: "brightness(1.15) contrast(125%)",
-                backdropFilter: "brightness(1.15) contrast(125%)",
-                border: "none",
-                boxShadow: "none",
+                WebkitBackdropFilter: "blur(12px) saturate(180%)",
+                backdropFilter: "blur(12px) saturate(180%)",
+                border: "1px solid rgba(255,255,255,0.48)",
+                boxShadow: `
+        0 2px 8px rgba(0,0,0,0.07),
+        inset 0 1px 0 rgba(255,255,255,0.65),
+        inset 0 -1px 0 rgba(255,255,255,0.12)
+      `,
                 WebkitTransform: "translateZ(0)",
                 transform: "translateZ(0)",
               }}
-            />
+            >
+              {/* Kilau pada permukaan pil */}
+              <div
+                className="absolute inset-x-[15%] top-[1px] h-[35%] rounded-full"
+                style={{
+                  background:
+                    "linear-gradient(180deg, rgba(255,255,255,0.48), transparent)",
+                }}
+              />
+            </motion.div>
 
             {/* LIST NAVITEM */}
             <menu className="relative z-10 flex items-center justify-between w-full h-full m-0 p-0 list-none">
