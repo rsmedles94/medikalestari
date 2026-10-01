@@ -101,10 +101,10 @@ const SearchDropdown: React.FC<SearchDropdownProps> = memo(
                 <input
                   id="doctor-search"
                   type="text"
-                  placeholder="Masukkan nama dokter atau spesialisasi..."
+                  placeholder="Cari dokter atau spesialisasi..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-transparent text-3xl md:text-4xl text-gray-500 font-light outline-none border-none placeholder-gray-400 py-2"
+                  className="w-full bg-transparent text-3xl md:text-3xl text-gray-500 font-normal outline-none border-none placeholder-gray-400 py-2"
                   autoFocus
                 />
                 {searchQuery && (
