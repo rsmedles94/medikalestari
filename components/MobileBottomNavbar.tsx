@@ -470,7 +470,6 @@ export default function MobileBottomNavbar() {
               scale: shouldShrink ? 0.92 : 1,
               height: shouldShrink ? "56px" : "64px",
               y: shouldShrink ? 4 : 0,
-              // Tengah super bening transparan (0.02) tapi tetep bertekstur cair saat dishrink
               backgroundColor: shouldShrink
                 ? "rgba(255, 255, 255, 0.32)"
                 : "rgba(255, 255, 255, 0.02)",
@@ -480,43 +479,41 @@ export default function MobileBottomNavbar() {
             style={{
               scaleX: dockScaleX,
               skewX: dockSkewX,
-              // Latar utama bening transparan & tajam
-              WebkitBackdropFilter: "blur(3px) saturate(240%) brightness(1.05)",
-              backdropFilter: "blur(3px) saturate(240%) brightness(1.05)",
+              WebkitBackdropFilter: "blur(3px) saturate(220%) brightness(1.05)",
+              backdropFilter: "blur(3px) saturate(220%) brightness(1.05)",
               border: "none",
               boxShadow: "none",
               WebkitTransform: "translateZ(0)",
               transform: "translateZ(0)",
             }}
           >
-            {/* LAYER REFRAKSI PINGGIRAN (Membias & Memantulkan Huruf/Objek di Sekeliling Dock) */}
+            {/* LAYER PEMBIASAN REFRAKSI NYATA DI PINGGIRAN (Safari & Desktop Compatible) */}
             <div
               className="absolute inset-0 pointer-events-none rounded-[32px] z-0"
               style={{
-                // Pembiasan cembung di pinggir
-                background:
-                  "radial-gradient(ellipse at center, transparent 50%, rgba(255, 255, 255, 0.45) 95%, rgba(255, 255, 255, 0.8) 100%)",
+                // Pembiasan Optik: contrast 280% + saturate 350% + invert 8% bikin huruf membiaskan warna & membengkok saat lewat
                 WebkitBackdropFilter:
-                  "blur(0.5px) contrast(220%) saturate(300%) brightness(1.3)",
+                  "blur(0.5px) contrast(280%) saturate(350%) invert(8%) brightness(1.2)",
                 backdropFilter:
-                  "blur(0.5px) contrast(220%) saturate(300%) brightness(1.3)",
+                  "blur(0.5px) contrast(280%) saturate(350%) invert(8%) brightness(1.2)",
+                // Masking khusus agar efek pembiasan memantul HANYA terjadi di 6px area pinggiran paling luar
                 WebkitMaskImage:
-                  "-webkit-radial-gradient(ellipse at center, transparent 40%, black 80%)",
+                  "-webkit-radial-gradient(ellipse at center, transparent 65%, black 92%)",
                 maskImage:
-                  "radial-gradient(ellipse at center, transparent 40%, black 80%)",
+                  "radial-gradient(ellipse at center, transparent 65%, black 92%)",
               }}
             />
 
-            {/* LAYER LIQUID GLOSS TENGAH (Efek Cairan Liket/Kental Tipis) */}
+            {/* LAYER GLOSS CAIRAN LIKET TENGAH (Murni Bening) */}
             <div
               className="absolute inset-0 pointer-events-none rounded-[32px] z-0"
               style={{
                 background:
-                  "radial-gradient(ellipse at center, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%)",
+                  "radial-gradient(ellipse at center, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 70%)",
               }}
             />
 
-            {/* PIL INDIKATOR (Hitam Murni Transparan Dynamic Island Style) */}
+            {/* PIL INDIKATOR (Putih Transparan Senada) */}
             <motion.div
               className="absolute top-1/2 pointer-events-none z-10 rounded-full"
               animate={{
@@ -524,8 +521,8 @@ export default function MobileBottomNavbar() {
                 height: `${basePilHeight}px`,
                 scale: isDragging ? DRAG_SCALE : 1,
                 backgroundColor: shouldShrink
-                  ? "rgba(0, 0, 0, 0.20)"
-                  : "rgba(0, 0, 0, 0.12)",
+                  ? "rgba(255, 255, 255, 0.25)"
+                  : "rgba(255, 255, 255, 0.12)",
               }}
               transition={{ type: "spring", stiffness: 400, damping: 25 }}
               style={{
@@ -533,8 +530,9 @@ export default function MobileBottomNavbar() {
                 y: "-50%",
                 left: 0,
                 translateX: "-50%",
-                WebkitBackdropFilter: "brightness(0.7) contrast(130%)",
-                backdropFilter: "brightness(0.7) contrast(130%)",
+                WebkitBackdropFilter:
+                  "brightness(1.18) contrast(120%) blur(1px)",
+                backdropFilter: "brightness(1.18) contrast(120%) blur(1px)",
                 border: "none",
                 boxShadow: "none",
                 WebkitTransform: "translateZ(0)",
