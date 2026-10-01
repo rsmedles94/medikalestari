@@ -375,8 +375,6 @@ export default function MobileBottomNavbar() {
 
   return (
     <>
-
-
       <BookingModalFloating
         isOpen={isBookingOpen}
         onClose={() => setIsBookingOpen(false)}
@@ -472,41 +470,43 @@ export default function MobileBottomNavbar() {
               scale: shouldShrink ? 0.92 : 1,
               height: shouldShrink ? "56px" : "64px",
               y: shouldShrink ? 4 : 0,
+              // Tengah super transparan, saat shrink jadi putih liquid kental
               backgroundColor: shouldShrink
-                ? "rgba(255, 255, 255, 0.42)"
-                : "rgba(255, 255, 255, 0.05)",
+                ? "rgba(255, 255, 255, 0.35)"
+                : "rgba(255, 255, 255, 0.02)",
             }}
             transition={{ type: "spring", stiffness: 350, damping: 25 }}
             className="pointer-events-auto relative w-full max-w-[390px] rounded-[32px] overflow-hidden touch-none cursor-grab active:cursor-grabbing flex items-center"
             style={{
               scaleX: dockScaleX,
               skewX: dockSkewX,
-              // Backdrop filter standar yang support 100% di Safari iOS
-              WebkitBackdropFilter:
-                "blur(6px) saturate(280%) contrast(140%) brightness(1.1)",
-              backdropFilter:
-                "blur(6px) saturate(280%) contrast(140%) brightness(1.1)",
+              // Blur sangat tipis di tengah biar tetep jernih tembus pandang
+              WebkitBackdropFilter: "blur(3px) saturate(220%) contrast(125%)",
+              backdropFilter: "blur(3px) saturate(220%) contrast(125%)",
               border: "none",
-              boxShadow: shouldShrink
-                ? "inset 0 2px 4px 0 rgba(255, 255, 255, 0.95), inset 0 -2px 4px 0 rgba(255, 255, 255, 0.35), inset 2px 0 4px 0 rgba(255, 255, 255, 0.6), inset -2px 0 4px 0 rgba(255, 255, 255, 0.6), 0 12px 30px rgba(0, 0, 0, 0.18)"
-                : "inset 0 2.5px 5px 0 rgba(255, 255, 255, 0.95), inset 0 -2.5px 5px 0 rgba(0, 0, 0, 0.25), inset 3px 0 5px 0 rgba(255, 255, 255, 0.65), inset -3px 0 5px 0 rgba(255, 255, 255, 0.65), inset 0 0 15px 1px rgba(255, 255, 255, 0.2), 0 20px 40px rgba(0, 0, 0, 0.2)",
+              boxShadow: "none", // Hapus semua shadow
               WebkitTransform: "translateZ(0)",
-              transform: "translateZ(0)", // Wajib untuk memicu hardware acceleration iOS GPU
+              transform: "translateZ(0)",
             }}
           >
-            {/* LAYER REFRAKSI UNTUK SAFARI iOS (Memaksa Refraksi SVG Diproses GPU iOS) */}
+            {/* LAYER REFRAKSI KHUSUS PINGGIRAN (Membias & Memantulkan Teks di Sekeliling Dock) */}
             <div
               className="absolute inset-0 pointer-events-none rounded-[32px] z-0"
               style={{
                 WebkitFilter: "url(#smooth-liquid-refraction)",
                 filter: "url(#smooth-liquid-refraction)",
-                WebkitBackdropFilter: "blur(0px)",
-                backdropFilter: "blur(0px)",
-                opacity: 0.99, // Memaksa Safari me-render pembiasan elemen belakang
+                // Masking agar efek refraksi pembiasan teks hanya aktif di area pinggiran kaca
+                WebkitMaskImage:
+                  "radial-gradient(ellipse at center, transparent 40%, black 100%)",
+                maskImage:
+                  "radial-gradient(ellipse at center, transparent 40%, black 100%)",
+                WebkitBackdropFilter: "blur(2px)",
+                backdropFilter: "blur(2px)",
+                opacity: 1,
               }}
             />
 
-            {/* PIL INDIKATOR (Hitam Murni Transparan Smooth) */}
+            {/* PIL INDIKATOR (Hitam Murni Transparan Smooth Tanpa Shadow) */}
             <motion.div
               className="absolute top-1/2 pointer-events-none z-10 rounded-full"
               animate={{
@@ -514,8 +514,8 @@ export default function MobileBottomNavbar() {
                 height: `${basePilHeight}px`,
                 scale: isDragging ? DRAG_SCALE : 1,
                 backgroundColor: shouldShrink
-                  ? "rgba(0, 0, 0, 0.10)"
-                  : "rgba(0, 0, 0, 0.10)",
+                  ? "rgba(0, 0, 0, 0.18)"
+                  : "rgba(0, 0, 0, 0.12)",
               }}
               transition={{ type: "spring", stiffness: 400, damping: 25 }}
               style={{
@@ -524,9 +524,10 @@ export default function MobileBottomNavbar() {
                 left: 0,
                 translateX: "-50%",
                 WebkitBackdropFilter:
-                  "brightness(0.65) contrast(140%) blur(2px)",
-                backdropFilter: "brightness(0.65) contrast(140%) blur(2px)",
+                  "brightness(0.7) contrast(135%) blur(1px)",
+                backdropFilter: "brightness(0.7) contrast(135%) blur(1px)",
                 border: "none",
+                boxShadow: "none", // Hapus shadow di pil
                 WebkitTransform: "translateZ(0)",
                 transform: "translateZ(0)",
               }}
