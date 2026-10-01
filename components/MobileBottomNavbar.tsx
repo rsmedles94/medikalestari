@@ -276,8 +276,8 @@ export default function MobileBottomNavbar() {
   const shouldShrink = isScrolledDown && !isDragging;
 
   // Indicator size
-  const basePilWidth = shouldShrink ? 68 : 74;
-  const basePilHeight = shouldShrink ? 48 : 53;
+  const basePilWidth = shouldShrink ? 68 : 72;
+  const basePilHeight = shouldShrink ? 48 : 55;
   const DRAG_SCALE = 1.04;
   const INNER_MARGIN = 4;
 
@@ -584,7 +584,7 @@ export default function MobileBottomNavbar() {
                 skewX: dockSkewX,
 
                 // Almost clear glass.
-                backgroundColor: "rgba(255, 255, 255, 0.695)",
+                backgroundColor: "rgba(255, 255, 255, 0.600)",
 
                 // Very subtle glass edge.
                 border: "1px solid rgba(255, 255, 255, 0.28)",
