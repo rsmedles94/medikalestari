@@ -375,36 +375,7 @@ export default function MobileBottomNavbar() {
 
   return (
     <>
-      {/* SVG REFRAKSI CAIRAN HALUS (Tanpa Gerigi) */}
-      <svg className="hidden absolute aria-hidden">
-        <defs>
-          <filter
-            id="smooth-liquid-refraction"
-            x="-10%"
-            y="-10%"
-            width="120%"
-            height="120%"
-          >
-            {/* Membuat pola gelombang pembiasan cair yang mulus */}
-            <feTurbulence
-              type="turbulence"
-              baseFrequency="0.008"
-              numOctaves="1"
-              result="turbulence"
-            />
-            {/* Membiaskan/melengkungkan teks di belakangnya secara halus */}
-            <feDisplacementMap
-              in="SourceGraphic"
-              in2="turbulence"
-              scale="18"
-              xChannelSelector="R"
-              yChannelSelector="G"
-              result="displaced"
-            />
-            <feGaussianBlur in="displaced" stdDeviation="0.5" />
-          </filter>
-        </defs>
-      </svg>
+
 
       <BookingModalFloating
         isOpen={isBookingOpen}
