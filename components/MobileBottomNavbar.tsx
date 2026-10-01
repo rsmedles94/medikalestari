@@ -470,58 +470,61 @@ export default function MobileBottomNavbar() {
               scale: shouldShrink ? 0.92 : 1,
               height: shouldShrink ? "56px" : "64px",
               y: shouldShrink ? 4 : 0,
+              // Putih transparan simetris (bening kristal)
               backgroundColor: shouldShrink
-                ? "rgba(255, 255, 255, 0.32)"
-                : "rgba(255, 255, 255, 0.02)",
+                ? "rgba(255, 255, 255, 0.22)"
+                : "rgba(255, 255, 255, 0.05)",
             }}
             transition={{ type: "spring", stiffness: 350, damping: 25 }}
             className="pointer-events-auto relative w-full max-w-[390px] rounded-[32px] overflow-hidden touch-none cursor-grab active:cursor-grabbing flex items-center z-10"
             style={{
               scaleX: dockScaleX,
               skewX: dockSkewX,
-              WebkitBackdropFilter: "blur(3px) saturate(220%) brightness(1.05)",
-              backdropFilter: "blur(3px) saturate(220%) brightness(1.05)",
+              // Backdrop filter bening kristal tanpa warna hitam
+              WebkitBackdropFilter: "blur(4px) saturate(220%) brightness(1.1)",
+              backdropFilter: "blur(4px) saturate(220%) brightness(1.1)",
               border: "none",
               boxShadow: "none",
               WebkitTransform: "translateZ(0)",
               transform: "translateZ(0)",
             }}
           >
-            {/* LAYER PEMBIASAN REFRAKSI NYATA DI PINGGIRAN (Safari & Desktop Compatible) */}
+            {/* LAYER PEMBIASAN REFRAKSI SIMETRIS PINGGIRAN (Tanpa Invert / Tanpa Warna Hitam) */}
             <div
               className="absolute inset-0 pointer-events-none rounded-[32px] z-0"
               style={{
-                // Pembiasan Optik: contrast 280% + saturate 350% + invert 8% bikin huruf membiaskan warna & membengkok saat lewat
+                // Menggunakan kontras & saturasi tinggi + blur mikro di pinggir untuk membiaskan & memantulkan teks
                 WebkitBackdropFilter:
-                  "blur(0.5px) contrast(280%) saturate(350%) invert(8%) brightness(1.2)",
+                  "blur(1px) saturate(320%) contrast(200%) brightness(1.25)",
                 backdropFilter:
-                  "blur(0.5px) contrast(280%) saturate(350%) invert(8%) brightness(1.2)",
-                // Masking khusus agar efek pembiasan memantul HANYA terjadi di 6px area pinggiran paling luar
+                  "blur(1px) saturate(320%) contrast(200%) brightness(1.25)",
+                // Masking radial simetris murni melingkar penuh
                 WebkitMaskImage:
-                  "-webkit-radial-gradient(ellipse at center, transparent 65%, black 92%)",
+                  "-webkit-radial-gradient(ellipse at center, transparent 60%, black 95%)",
                 maskImage:
-                  "radial-gradient(ellipse at center, transparent 65%, black 92%)",
+                  "radial-gradient(ellipse at center, transparent 60%, black 95%)",
               }}
             />
 
-            {/* LAYER GLOSS CAIRAN LIKET TENGAH (Murni Bening) */}
+            {/* LAYER LIQUID GLOSS TENGAH (Murni Bening Simetris) */}
             <div
               className="absolute inset-0 pointer-events-none rounded-[32px] z-0"
               style={{
                 background:
-                  "radial-gradient(ellipse at center, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 70%)",
+                  "radial-gradient(ellipse at center, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%)",
               }}
             />
 
-            {/* PIL INDIKATOR (Putih Transparan Senada) */}
+            {/* PIL INDIKATOR (Putih Transparan Senada & Simetris) */}
             <motion.div
               className="absolute top-1/2 pointer-events-none z-10 rounded-full"
               animate={{
                 width: `${basePilWidth}px`,
                 height: `${basePilHeight}px`,
                 scale: isDragging ? DRAG_SCALE : 1,
+                // Putih bening presisi yang senada dengan warna dock
                 backgroundColor: shouldShrink
-                  ? "rgba(255, 255, 255, 0.25)"
+                  ? "rgba(255, 255, 255, 0.28)"
                   : "rgba(255, 255, 255, 0.12)",
               }}
               transition={{ type: "spring", stiffness: 400, damping: 25 }}
@@ -530,9 +533,9 @@ export default function MobileBottomNavbar() {
                 y: "-50%",
                 left: 0,
                 translateX: "-50%",
-                WebkitBackdropFilter:
-                  "brightness(1.18) contrast(120%) blur(1px)",
-                backdropFilter: "brightness(1.18) contrast(120%) blur(1px)",
+                // Meredupkan warna secara simetris tanpa bayangan hitam kasar
+                WebkitBackdropFilter: "brightness(1.15) contrast(125%)",
+                backdropFilter: "brightness(1.15) contrast(125%)",
                 border: "none",
                 boxShadow: "none",
                 WebkitTransform: "translateZ(0)",
