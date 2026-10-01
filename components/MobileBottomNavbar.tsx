@@ -147,6 +147,7 @@ export default function MobileBottomNavbar() {
   const [isDragging, setIsDragging] = useState(false);
   const [dockWidth, setDockWidth] = useState(390);
   const [isScrolledDown, setIsScrolledDown] = useState(false);
+  const [glassFallback, setGlassFallback] = useState(false);
 
   const dockRef = useRef<HTMLDivElement>(null);
   const plusButtonRef = useRef<HTMLButtonElement>(null);
@@ -154,6 +155,9 @@ export default function MobileBottomNavbar() {
   const dragStartX = useRef(0);
   const dragMoved = useRef(false);
   const lastScrollY = useRef(0);
+  const glassInstanceRef = useRef<Awaited<
+    ReturnType<typeof LiquidGlass.init>
+  > | null>(null);
 
   // glass
   useEffect(() => {
@@ -161,9 +165,6 @@ export default function MobileBottomNavbar() {
 
     const dock = dockRef.current;
     const root = document.body;
-    const previousPosition = root.style.position;
-
-    root.style.position = previousPosition || "relative";
 
     dock.dataset.config = JSON.stringify(GLASS_CONFIG);
 
@@ -181,20 +182,18 @@ export default function MobileBottomNavbar() {
         }
 
         instance = result;
+        glassInstanceRef.current = result;
+        setGlassFallback(false);
       })
       .catch((error) => {
-        console.error("LiquidGlass initialization failed:", error);
+        console.warn("LiquidGlass unavailable, using glass fallback:", error);
+        setGlassFallback(true);
       });
 
     return () => {
       cancelled = true;
       instance?.destroy();
-
-      if (!previousPosition) {
-        root.style.removeProperty("position");
-      } else {
-        root.style.position = previousPosition;
-      }
+      glassInstanceRef.current = null;
     };
   }, [isMounted]);
 
@@ -206,6 +205,9 @@ export default function MobileBottomNavbar() {
       const currentY = window.scrollY;
       setIsScrolledDown(currentY > lastScrollY.current && currentY > 50);
       lastScrollY.current = currentY;
+
+      // refresh the glass scene after the page moves
+      glassInstanceRef.current?.markChanged();
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -477,6 +479,16 @@ export default function MobileBottomNavbar() {
 
   return createPortal(
     <>
+      <style>{`
+        @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+          .glass-fallback {
+            background: rgba(255, 255, 255, 0.52) !important;
+            -webkit-backdrop-filter: blur(22px) saturate(1.35);
+            backdrop-filter: blur(22px) saturate(1.35);
+          }
+        }
+      `}</style>
+
       <BookingModalFloating
         isOpen={isBookingOpen}
         onClose={() => setIsBookingOpen(false)}
@@ -574,14 +586,22 @@ export default function MobileBottomNavbar() {
         }}
         data-mobile-dock
         aria-label="Navigasi bawah"
-        className="pointer-events-auto fixed inset-x-4 bottom-6 z-[99] mx-auto flex max-w-[390px] items-center overflow-visible rounded-[32px] touch-none select-none"
+        className={`pointer-events-auto fixed inset-x-4 bottom-6 z-[99] mx-auto flex max-w-[390px] items-center overflow-visible rounded-[32px] touch-none select-none ${glassFallback ? "glass-fallback" : ""}`}
         style={{
           scaleX: dockScaleX,
           skewX: dockSkewX,
-          background: "rgba(255,255,255,0.035)",
+          background: glassFallback
+            ? "rgba(255,255,255,0.58)"
+            : "rgba(255,255,255,0.035)",
           border: "1px solid rgba(255,255,255,0.22)",
           boxShadow:
             "0 12px 35px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.28)",
+          WebkitBackdropFilter: glassFallback
+            ? "blur(22px) saturate(1.35)"
+            : undefined,
+          backdropFilter: glassFallback
+            ? "blur(22px) saturate(1.35)"
+            : undefined,
           WebkitTransform: "translateZ(0)",
           transform: "translateZ(0)",
         }}
