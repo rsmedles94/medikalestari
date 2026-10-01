@@ -78,13 +78,16 @@ function HomeOutlineNoDoor({
 }
 
 function NavIcon({ item, isActive }: { item: NavItem; isActive: boolean }) {
+  const iconColor = "#000000";
+
   if (item.isHome) {
     if (isActive) {
       return (
         <Home
-          className="w-[26px] h-[26px] text-black"
-          fill="#000000"
-          stroke="#000000"
+          className="w-[26px] h-[26px] transition-colors duration-200"
+          style={{ color: iconColor }}
+          fill={iconColor}
+          stroke={iconColor}
           strokeWidth={2.2}
         />
       );
@@ -96,10 +99,10 @@ function NavIcon({ item, isActive }: { item: NavItem; isActive: boolean }) {
     return (
       <FontAwesomeIcon
         icon={item.icon}
-        className="text-[24px] text-black"
+        className="text-[24px] transition-colors duration-200"
         style={{
-          color: "#000000",
-          opacity: isActive ? 1 : 0.85,
+          color: iconColor,
+          opacity: isActive ? 1 : 0.65,
         }}
       />
     );
@@ -120,14 +123,34 @@ export default function MobileBottomNavbar() {
   const plusButtonRef = useRef<HTMLButtonElement>(null);
 
   const dockRef = useRef<HTMLDivElement>(null);
-  const itemRefs = useRef<(HTMLLIElement | null)[]>([]);
 
   const [isDragging, setIsDragging] = useState(false);
   const [dockWidth, setDockWidth] = useState(390);
 
-  // Motion Value & Spring Physics
+  // Auto-Shrink saat scroll
+  const [isScrolledDown, setIsScrolledDown] = useState(false);
+  const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    if (!isMounted) return;
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      if (currentScrollY > lastScrollY.current && currentScrollY > 50) {
+        setIsScrolledDown(true);
+      } else {
+        setIsScrolledDown(false);
+      }
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isMounted]);
+
+  // Motion Values & Physics
   const rawX = useMotionValue(0);
-  const overdragVal = useMotionValue(0); // Nilai seberapa keras kursor ditarik menabrak batas
+  const overdragVal = useMotionValue(0);
 
   const springX = useSpring(rawX, {
     stiffness: 420,
@@ -136,13 +159,21 @@ export default function MobileBottomNavbar() {
   });
 
   const springOverdrag = useSpring(overdragVal, {
-    stiffness: 400,
-    damping: 20, // Membal elastis saat dilepas
+    stiffness: 380,
+    damping: 22,
   });
 
-  // Transform efek squish/tekanan saat menabrak dinding batas
-  const scaleX = useTransform(springOverdrag, [-100, 0, 100], [0.82, 1, 0.82]);
-  const scaleY = useTransform(springOverdrag, [-100, 0, 100], [1.12, 1, 1.12]);
+  // Dockbar elastis saat overdrag
+  const dockScaleX = useTransform(
+    springOverdrag,
+    [-100, 0, 100],
+    [1.05, 1, 1.05],
+  );
+  const dockSkewX = useTransform(
+    springOverdrag,
+    [-100, 0, 100],
+    [-2.5, 0, 2.5],
+  );
 
   const navItems = useMemo<NavItem[]>(
     () => [
@@ -163,80 +194,103 @@ export default function MobileBottomNavbar() {
     return idx !== -1 ? idx : 0;
   }, [pathname, navItems, isMounted]);
 
-  // Strict Clamp X (Posisi fisik pil TIDAK PERNAH keluar dari garis tepi)
+  const shouldShrink = isScrolledDown && !isDragging;
+
+  // Ukuran Pil
+  const basePilWidth = shouldShrink ? 68 : 76;
+  const basePilHeight = shouldShrink ? 48 : 53;
+  const DRAG_SCALE = 1.04;
+  const INNER_MARGIN = 4; // Margin pil
+
+  // Penguncian Batas 
   const clampX = useCallback(
-    (x: number, width: number) => {
-      const pilWidth = isDragging ? 82 : 76;
-      const padding = 8;
-      const minX = padding + pilWidth / 2;
-      const maxX = width - padding - pilWidth / 2;
+    (x: number, width: number, dragging: boolean) => {
+      const currentScale = dragging ? DRAG_SCALE : 1;
+      const effectiveHalfPil = (basePilWidth * currentScale) / 2;
+
+      const minX = INNER_MARGIN + effectiveHalfPil;
+      const maxX = width - INNER_MARGIN - effectiveHalfPil;
+
       return Math.max(minX, Math.min(maxX, x));
     },
-    [isDragging],
+    [basePilWidth],
   );
 
-  // Perhitungan seberapa jauh kursor ditarik melebihi batas untuk efek kompresi elastis
   const getOverdragAmount = useCallback(
-    (x: number, width: number) => {
-      const pilWidth = isDragging ? 82 : 76;
-      const padding = 8;
-      const minX = padding + pilWidth / 2;
-      const maxX = width - padding - pilWidth / 2;
+    (x: number, width: number, dragging: boolean) => {
+      const currentScale = dragging ? DRAG_SCALE : 1;
+      const effectiveHalfPil = (basePilWidth * currentScale) / 2;
+
+      const minX = INNER_MARGIN + effectiveHalfPil;
+      const maxX = width - INNER_MARGIN - effectiveHalfPil;
 
       if (x < minX) return x - minX;
       if (x > maxX) return x - maxX;
       return 0;
     },
-    [isDragging],
+    [basePilWidth],
   );
 
-  // Update Posisi Target Pil Sesuai Item Aktif
+  // Menghitung Titik Tengah Ikon Matematis
+  const getCenterXForIndex = useCallback(
+    (index: number, width: number) => {
+      const itemWidth = width / navItems.length;
+      return index * itemWidth + itemWidth / 2;
+    },
+    [navItems.length],
+  );
+
+  // Sync posisi pil activeIndex 
   const updateTargetPos = useCallback(() => {
     if (!dockRef.current) return;
-    const dockRect = dockRef.current.getBoundingClientRect();
-    setDockWidth(dockRect.width);
+    const rect = dockRef.current.getBoundingClientRect();
+    const realWidth = dockRef.current.offsetWidth || rect.width;
+    setDockWidth(realWidth);
 
-    const targetEl = itemRefs.current[activeIndex];
-    if (targetEl) {
-      const itemRect = targetEl.getBoundingClientRect();
-      const center = itemRect.left + itemRect.width / 2 - dockRect.left;
-      rawX.set(clampX(center, dockRect.width));
-    } else {
-      const itemWidth = dockRect.width / navItems.length;
-      const center = activeIndex * itemWidth + itemWidth / 2;
-      rawX.set(clampX(center, dockRect.width));
-    }
+    const center = getCenterXForIndex(activeIndex, realWidth);
+    rawX.set(clampX(center, realWidth, false));
     overdragVal.set(0);
-  }, [activeIndex, navItems.length, rawX, overdragVal, clampX]);
+  }, [activeIndex, getCenterXForIndex, rawX, overdragVal, clampX]);
 
   useEffect(() => {
     if (!isMounted) return;
     updateTargetPos();
-    window.addEventListener("resize", updateTargetPos);
-    return () => window.removeEventListener("resize", updateTargetPos);
+
+    const handleResize = () => updateTargetPos();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [updateTargetPos, isMounted]);
 
-  // Handler Pointer Dragging
+  // Efek Penting: Tetap pertahankan simetri presisi walau dockbar berubah ukuran (Normal/Shrink)
+  useEffect(() => {
+    if (!isMounted || isDragging) return;
+    updateTargetPos();
+  }, [shouldShrink, updateTargetPos, isMounted, isDragging]);
+
   const handlePointerDown = (e: React.PointerEvent) => {
     e.currentTarget.setPointerCapture(e.pointerId);
     setIsDragging(true);
     if (!dockRef.current) return;
-    const rect = dockRef.current.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
 
-    rawX.set(clampX(mouseX, rect.width));
-    overdragVal.set(getOverdragAmount(mouseX, rect.width));
+    const rect = dockRef.current.getBoundingClientRect();
+    const realWidth = dockRef.current.offsetWidth || rect.width;
+    // Normalisasi posisi klik X terhadap skala CSS
+    const scaleFactor = rect.width / realWidth;
+    const mouseX = (e.clientX - rect.left) / scaleFactor;
+
+    rawX.set(clampX(mouseX, realWidth, true));
+    overdragVal.set(getOverdragAmount(mouseX, realWidth, true));
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
     if (!isDragging || !dockRef.current) return;
     const rect = dockRef.current.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
+    const realWidth = dockRef.current.offsetWidth || rect.width;
+    const scaleFactor = rect.width / realWidth;
+    const mouseX = (e.clientX - rect.left) / scaleFactor;
 
-    // Posisi X tetap terkunci ketat di batas dalam
-    rawX.set(clampX(mouseX, rect.width));
-    // Efek tekanan dialokasikan ke overdragVal untuk simulasi membal
-    overdragVal.set(getOverdragAmount(mouseX, rect.width));
+    rawX.set(clampX(mouseX, realWidth, true));
+    overdragVal.set(getOverdragAmount(mouseX, realWidth, true));
   };
 
   const handlePointerUp = (e: React.PointerEvent) => {
@@ -247,9 +301,15 @@ export default function MobileBottomNavbar() {
 
     if (!dockRef.current) return;
     const rect = dockRef.current.getBoundingClientRect();
-    const currentX = clampX(e.clientX - rect.left, rect.width);
-    const itemWidth = rect.width / navItems.length;
+    const realWidth = dockRef.current.offsetWidth || rect.width;
+    const scaleFactor = rect.width / realWidth;
+    const currentX = clampX(
+      (e.clientX - rect.left) / scaleFactor,
+      realWidth,
+      false,
+    );
 
+    const itemWidth = realWidth / navItems.length;
     const targetIndex = Math.max(
       0,
       Math.min(navItems.length - 1, Math.floor(currentX / itemWidth)),
@@ -262,12 +322,10 @@ export default function MobileBottomNavbar() {
       router.push(item.href);
     }
 
-    // Reset overdrag agar pil membal kembali ke bentuk semula
     overdragVal.set(0);
     updateTargetPos();
   };
 
-  // Efek Fluid Shrink Ikon saat Dilewati Pil
   const getItemScale = useCallback(
     (itemIndex: number) => {
       if (dockWidth <= 0) return 1;
@@ -279,7 +337,7 @@ export default function MobileBottomNavbar() {
 
       if (distance < threshold) {
         const factor = 1 - distance / threshold;
-        return 1 - factor * 0.2;
+        return 1 - factor * 0.08;
       }
       return 1;
     },
@@ -315,7 +373,6 @@ export default function MobileBottomNavbar() {
 
   return (
     <>
-      {/* SVG Filter Refraksi Liquid Glass */}
       <svg className="hidden absolute w-0 h-0" aria-hidden="true">
         <defs>
           <filter
@@ -427,14 +484,22 @@ export default function MobileBottomNavbar() {
           </AnimatePresence>
 
           {/* DOCKBAR UTAMA */}
-          <div
+          <motion.div
             ref={dockRef}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
             onPointerCancel={handlePointerUp}
-            className="pointer-events-auto relative w-full max-w-[410px] h-[72px] rounded-[36px] bg-white/20 shadow-[0_12px_40px_0_rgba(0,0,0,0.08)] overflow-hidden touch-none cursor-grab active:cursor-grabbing flex items-center"
+            animate={{
+              scale: shouldShrink ? 0.92 : 1,
+              height: shouldShrink ? "56px" : "64px",
+              y: shouldShrink ? 4 : 0,
+            }}
+            transition={{ type: "spring", stiffness: 350, damping: 25 }}
+            className="pointer-events-auto relative w-full max-w-[390px] rounded-[32px] bg-white/20 shadow-[0_12px_40px_0_rgba(0,0,0,0.08)] overflow-hidden touch-none cursor-grab active:cursor-grabbing flex items-center"
             style={{
+              scaleX: dockScaleX,
+              skewX: dockSkewX,
               backdropFilter:
                 "url(#glass-refraction) blur(24px) saturate(200%)",
               WebkitBackdropFilter: "blur(24px) saturate(200%)",
@@ -443,45 +508,32 @@ export default function MobileBottomNavbar() {
                 "inset 0 1.5px 2px rgba(255, 255, 255, 0.7), inset 0 -1.5px 2px rgba(0, 0, 0, 0.05), 0 16px 32px rgba(0, 0, 0, 0.1)",
             }}
           >
-            {/* Border Highlight Outer Glass */}
-            <div className="absolute inset-0 rounded-[36px] pointer-events-none z-20 border border-white/30" />
+            {/* Glass Border Outer */}
+            <div className="absolute inset-0 rounded-[32px] pointer-events-none z-20 border border-white/30" />
 
-            {/* PIL INDIKATOR AKTIF  */}
+            {/* PIL INDIKATOR  */}
             <motion.div
-              className="absolute top-1/2 rounded-full pointer-events-none z-0 overflow-hidden"
+              className="absolute top-1/2 pointer-events-none z-0 rounded-full"
+              animate={{
+                width: `${basePilWidth}px`,
+                height: `${basePilHeight}px`,
+                scale: isDragging ? DRAG_SCALE : 1,
+              }}
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
               style={{
                 x: springX,
                 y: "-50%",
                 left: 0,
-                width: isDragging ? "82px" : "76px",
-                height: isDragging ? "56px" : "52px",
                 translateX: "-50%",
-                scaleX,
-                scaleY,
-                backdropFilter: "blur(28px) saturate(220%)",
-                WebkitBackdropFilter: "blur(28px) saturate(220%)",
-                background:
-                  "linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 240, 240, 0.82) 100%)",
-                border: "1px solid rgba(255, 255, 255, 0.9)",
-                boxShadow: `
-                  0 10px 24px -4px rgba(0, 0, 0, 0.12),
-                  inset 0 2px 3px rgba(255, 255, 255, 1),
-                  inset 0 -1px 2px rgba(0, 0, 0, 0.05)
-                `,
+                backdropFilter: "blur(12px) saturate(160%)",
+                WebkitBackdropFilter: "blur(12px) saturate(160%)",
+                background: "rgba(253, 253, 253, 0.12)",
+                border: "1px solid rgba(0, 0, 0, 0.08)",
               }}
-            >
-              {/* Highlight Kaca Refraksi Atas Pil */}
-              <div
-                className="absolute inset-x-2 top-0 h-[50%] rounded-t-full pointer-events-none"
-                style={{
-                  background:
-                    "linear-gradient(to bottom, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 100%)",
-                }}
-              />
-            </motion.div>
+            />
 
-            {/* LIST IKON DOCKBAR */}
-            <menu className="relative z-10 flex items-center justify-between w-full h-full px-2 m-0 p-0 list-none">
+            {/* LIST NAVITEM */}
+            <menu className="relative z-10 flex items-center justify-between w-full h-full m-0 p-0 list-none">
               {navItems.map((item, i) => {
                 const isActive = i === activeIndex;
                 const localScale = getItemScale(i);
@@ -489,9 +541,6 @@ export default function MobileBottomNavbar() {
                 return (
                   <li
                     key={item.href || i}
-                    ref={(el) => {
-                      itemRefs.current[i] = el;
-                    }}
                     className="flex flex-1 justify-center h-full items-center transition-transform duration-100 ease-out"
                     style={{
                       transform: `scale(${localScale})`,
@@ -508,12 +557,11 @@ export default function MobileBottomNavbar() {
                       >
                         <FontAwesomeIcon
                           icon={faPlus}
-                          className="text-[26px] text-black transition-transform duration-200"
+                          className="text-[24px] text-black transition-transform duration-200"
                           style={{
                             transform: isActionMenuOpen
                               ? "rotate(45deg)"
                               : "rotate(0deg)",
-                            color: "#000000",
                           }}
                         />
                       </button>
@@ -537,7 +585,7 @@ export default function MobileBottomNavbar() {
                 );
               })}
             </menu>
-          </div>
+          </motion.div>
         </nav>
       </div>
     </>
