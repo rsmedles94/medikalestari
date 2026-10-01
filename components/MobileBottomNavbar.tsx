@@ -375,28 +375,33 @@ export default function MobileBottomNavbar() {
 
   return (
     <>
-      <svg className="hidden absolute w-0 h-0" aria-hidden="true">
+      {/* SVG REFRAKSI CAIRAN HALUS (Tanpa Gerigi) */}
+      <svg className="hidden absolute aria-hidden">
         <defs>
           <filter
-            id="glass-refraction"
-            x="-20%"
-            y="-20%"
-            width="140%"
-            height="140%"
+            id="smooth-liquid-refraction"
+            x="-10%"
+            y="-10%"
+            width="120%"
+            height="120%"
           >
+            {/* Membuat pola gelombang pembiasan cair yang mulus */}
             <feTurbulence
-              type="fractalNoise"
-              baseFrequency="0.02 0.05"
-              numOctaves="2"
-              result="noise"
+              type="turbulence"
+              baseFrequency="0.008"
+              numOctaves="1"
+              result="turbulence"
             />
+            {/* Membiaskan/melengkungkan teks di belakangnya secara halus */}
             <feDisplacementMap
               in="SourceGraphic"
-              in2="noise"
-              scale="5"
+              in2="turbulence"
+              scale="18"
               xChannelSelector="R"
               yChannelSelector="G"
+              result="displaced"
             />
+            <feGaussianBlur in="displaced" stdDeviation="0.5" />
           </filter>
         </defs>
       </svg>
@@ -496,41 +501,40 @@ export default function MobileBottomNavbar() {
               scale: shouldShrink ? 0.92 : 1,
               height: shouldShrink ? "56px" : "64px",
               y: shouldShrink ? 4 : 0,
-              // Putih liquid transparan saat shrink (tetap kelihatan tembus latar belakang)
+              // Saat mengecil jadi putih liquid kental (liket) tembus pandang, saat normal jernih
               backgroundColor: shouldShrink
-                ? "rgba(255, 255, 255, 0.35)"
-                : "rgba(255, 255, 255, 0.04)",
+                ? "rgba(255, 255, 255, 0.42)"
+                : "rgba(255, 255, 255, 0.05)",
             }}
             transition={{ type: "spring", stiffness: 350, damping: 25 }}
             className="pointer-events-auto relative w-full max-w-[390px] rounded-[32px] overflow-hidden touch-none cursor-grab active:cursor-grabbing flex items-center"
             style={{
               scaleX: dockScaleX,
               skewX: dockSkewX,
-              // Memanggil filter refraksi distorsi cairan SVG di atas
-              filter: "url(#liquid-glass-refraction)",
+              // Refraksi SVG dikombinasikan dengan blur & kontras tinggi agar teks di belakang terbias nyata
               WebkitBackdropFilter:
-                "blur(10px) saturate(240%) contrast(125%) brightness(1.08)",
+                "blur(6px) saturate(280%) contrast(140%) brightness(1.1)",
               backdropFilter:
-                "url(#liquid-glass-refraction) blur(10px) saturate(240%) contrast(125%) brightness(1.08)",
+                "url(#smooth-liquid-refraction) blur(6px) saturate(280%) contrast(140%) brightness(1.1)",
               border: "none",
-              // Highlight cembung kaca & pembiasan cahaya cairan di pinggirannya
+              // Inset Shadow 4-Sisi untuk efek pembiasan cahaya cembung di sekeliling bingkai kaca
               boxShadow: shouldShrink
-                ? "inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.9), inset 0 -1.5px 2px 0 rgba(255, 255, 255, 0.3), 0 12px 30px rgba(0, 0, 0, 0.15)"
-                : "inset 0 1.5px 3px 0 rgba(255, 255, 255, 0.8), inset 0 -1.5px 3px 0 rgba(0, 0, 0, 0.2), inset 0 0 15px 1px rgba(255, 255, 255, 0.25), 0 20px 40px rgba(0, 0, 0, 0.12)",
-              transform: "translateZ(0)", // Paksa Hardware Acceleration di Smartphone
+                ? "inset 0 2px 4px 0 rgba(255, 255, 255, 0.95), inset 0 -2px 4px 0 rgba(255, 255, 255, 0.35), inset 2px 0 4px 0 rgba(255, 255, 255, 0.6), inset -2px 0 4px 0 rgba(255, 255, 255, 0.6), 0 12px 30px rgba(0, 0, 0, 0.18)"
+                : "inset 0 2.5px 5px 0 rgba(255, 255, 255, 0.95), inset 0 -2.5px 5px 0 rgba(0, 0, 0, 0.25), inset 3px 0 5px 0 rgba(255, 255, 255, 0.65), inset -3px 0 5px 0 rgba(255, 255, 255, 0.65), inset 0 0 15px 1px rgba(255, 255, 255, 0.2), 0 20px 40px rgba(0, 0, 0, 0.2)",
+              transform: "translateZ(0)",
             }}
           >
-            {/* PIL INDIKATOR (Hitam Murni Transparan / Tinted Glass) */}
+            {/* PIL INDIKATOR (Hitam Murni Transparan Smooth) */}
             <motion.div
               className="absolute top-1/2 pointer-events-none z-0 rounded-full"
               animate={{
                 width: `${basePilWidth}px`,
                 height: `${basePilHeight}px`,
                 scale: isDragging ? DRAG_SCALE : 1,
-                // Hitam transparan murni tanpa unsur warna cokelat/kopi
+                // Hitam transparan murni mulus
                 backgroundColor: shouldShrink
-                  ? "rgba(0, 0, 0, 0.15)"
-                  : "rgba(0, 0, 0, 0.15)",
+                  ? "rgba(0, 0, 0, 0.10)"
+                  : "rgba(0, 0, 0, 0.10)",
               }}
               transition={{ type: "spring", stiffness: 400, damping: 25 }}
               style={{
@@ -538,13 +542,10 @@ export default function MobileBottomNavbar() {
                 y: "-50%",
                 left: 0,
                 translateX: "-50%",
-                // Meredupkan warna latar tanpa blur berlebih
                 WebkitBackdropFilter:
-                  "brightness(0.7) contrast(130%) blur(4px)",
-                backdropFilter: "brightness(0.7) contrast(130%) blur(4px)",
+                  "brightness(0.65) contrast(140%) blur(2px)",
+                backdropFilter: "brightness(0.65) contrast(140%) blur(2px)",
                 border: "none",
-
-                transform: "translateZ(0)",
               }}
             />
 
