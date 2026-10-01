@@ -494,28 +494,37 @@ export default function MobileBottomNavbar() {
               scale: shouldShrink ? 0.92 : 1,
               height: shouldShrink ? "56px" : "64px",
               y: shouldShrink ? 4 : 0,
+              // Saat mengecil jadi putih solid ala Instagram, saat normal ultra transparan
+              backgroundColor: shouldShrink
+                ? "rgba(255, 255, 255, 0.85)"
+                : "rgba(255, 255, 255, 0.03)",
             }}
             transition={{ type: "spring", stiffness: 350, damping: 25 }}
-            className="pointer-events-auto relative w-full max-w-[390px] rounded-[32px] bg-white/10 shadow-[0_12px_40px_0_rgba(0,0,0,0.08)] overflow-hidden touch-none cursor-grab active:cursor-grabbing flex items-center"
+            className="pointer-events-auto relative w-full max-w-[390px] rounded-[32px] overflow-hidden touch-none cursor-grab active:cursor-grabbing flex items-center"
             style={{
               scaleX: dockScaleX,
               skewX: dockSkewX,
               backdropFilter:
-                "url(#glass-refraction) blur(24px) saturate(200%)",
-              WebkitBackdropFilter: "blur(24px) saturate(200%)",
-
+                "url(#glass-refraction) blur(16px) saturate(180%) contrast(120%)",
+              WebkitBackdropFilter: "blur(16px) saturate(180%) contrast(120%)",
+              border: "none",
+              // Multi-layer inset shadow buat bikin efek lekukan kaca 3D & refraksi liquid iOS
+              boxShadow: shouldShrink
+                ? "0 10px 25px rgba(0, 0, 0, 0.15)"
+                : "inset 0 2px 4px 0 rgba(255, 255, 255, 0.6), inset 0 -2px 4px 0 rgba(0, 0, 0, 0.2), inset 0 0 12px 2px rgba(255, 255, 255, 0.35), 0 20px 40px rgba(0, 0, 0, 0.15)",
             }}
           >
-            {/* Glass Border Outer */}
-            <div className="absolute inset-0 rounded-[32px] pointer-events-none z-20 border border-white/30" />
-
-            {/* PIL INDIKATOR  */}
+            {/* PIL INDIKATOR */}
             <motion.div
               className="absolute top-1/2 pointer-events-none z-0 rounded-full"
               animate={{
                 width: `${basePilWidth}px`,
                 height: `${basePilHeight}px`,
                 scale: isDragging ? DRAG_SCALE : 1,
+                // Hitam super transparan (muka kaca gelap halus ala iOS)
+                backgroundColor: shouldShrink
+                  ? "rgba(0, 0, 0, 0.15)"
+                  : "rgba(0, 0, 0, 0.18)",
               }}
               transition={{ type: "spring", stiffness: 400, damping: 25 }}
               style={{
@@ -523,10 +532,11 @@ export default function MobileBottomNavbar() {
                 y: "-50%",
                 left: 0,
                 translateX: "-50%",
-                backdropFilter: "blur(12px) saturate(160%)",
-                WebkitBackdropFilter: "blur(12px) saturate(160%)",
-                background: "rgba(253, 253, 253, 0.12)",
-                border: "1px solid rgba(0, 0, 0, 0.08)",
+                backdropFilter: "blur(8px) brightness(0.85) contrast(110%)",
+                WebkitBackdropFilter:
+                  "blur(8px) brightness(0.85) contrast(110%)",
+                border: "none",
+
               }}
             />
 
