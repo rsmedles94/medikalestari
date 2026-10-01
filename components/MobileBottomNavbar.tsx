@@ -501,7 +501,6 @@ export default function MobileBottomNavbar() {
               scale: shouldShrink ? 0.92 : 1,
               height: shouldShrink ? "56px" : "64px",
               y: shouldShrink ? 4 : 0,
-              // Saat mengecil jadi putih liquid kental (liket) tembus pandang, saat normal jernih
               backgroundColor: shouldShrink
                 ? "rgba(255, 255, 255, 0.42)"
                 : "rgba(255, 255, 255, 0.05)",
@@ -511,27 +510,38 @@ export default function MobileBottomNavbar() {
             style={{
               scaleX: dockScaleX,
               skewX: dockSkewX,
-              // Refraksi SVG dikombinasikan dengan blur & kontras tinggi agar teks di belakang terbias nyata
+              // Backdrop filter standar yang support 100% di Safari iOS
               WebkitBackdropFilter:
                 "blur(6px) saturate(280%) contrast(140%) brightness(1.1)",
               backdropFilter:
-                "url(#smooth-liquid-refraction) blur(6px) saturate(280%) contrast(140%) brightness(1.1)",
+                "blur(6px) saturate(280%) contrast(140%) brightness(1.1)",
               border: "none",
-              // Inset Shadow 4-Sisi untuk efek pembiasan cahaya cembung di sekeliling bingkai kaca
               boxShadow: shouldShrink
                 ? "inset 0 2px 4px 0 rgba(255, 255, 255, 0.95), inset 0 -2px 4px 0 rgba(255, 255, 255, 0.35), inset 2px 0 4px 0 rgba(255, 255, 255, 0.6), inset -2px 0 4px 0 rgba(255, 255, 255, 0.6), 0 12px 30px rgba(0, 0, 0, 0.18)"
                 : "inset 0 2.5px 5px 0 rgba(255, 255, 255, 0.95), inset 0 -2.5px 5px 0 rgba(0, 0, 0, 0.25), inset 3px 0 5px 0 rgba(255, 255, 255, 0.65), inset -3px 0 5px 0 rgba(255, 255, 255, 0.65), inset 0 0 15px 1px rgba(255, 255, 255, 0.2), 0 20px 40px rgba(0, 0, 0, 0.2)",
-              transform: "translateZ(0)",
+              WebkitTransform: "translateZ(0)",
+              transform: "translateZ(0)", // Wajib untuk memicu hardware acceleration iOS GPU
             }}
           >
+            {/* LAYER REFRAKSI UNTUK SAFARI iOS (Memaksa Refraksi SVG Diproses GPU iOS) */}
+            <div
+              className="absolute inset-0 pointer-events-none rounded-[32px] z-0"
+              style={{
+                WebkitFilter: "url(#smooth-liquid-refraction)",
+                filter: "url(#smooth-liquid-refraction)",
+                WebkitBackdropFilter: "blur(0px)",
+                backdropFilter: "blur(0px)",
+                opacity: 0.99, // Memaksa Safari me-render pembiasan elemen belakang
+              }}
+            />
+
             {/* PIL INDIKATOR (Hitam Murni Transparan Smooth) */}
             <motion.div
-              className="absolute top-1/2 pointer-events-none z-0 rounded-full"
+              className="absolute top-1/2 pointer-events-none z-10 rounded-full"
               animate={{
                 width: `${basePilWidth}px`,
                 height: `${basePilHeight}px`,
                 scale: isDragging ? DRAG_SCALE : 1,
-                // Hitam transparan murni mulus
                 backgroundColor: shouldShrink
                   ? "rgba(0, 0, 0, 0.10)"
                   : "rgba(0, 0, 0, 0.10)",
@@ -546,6 +556,8 @@ export default function MobileBottomNavbar() {
                   "brightness(0.65) contrast(140%) blur(2px)",
                 backdropFilter: "brightness(0.65) contrast(140%) blur(2px)",
                 border: "none",
+                WebkitTransform: "translateZ(0)",
+                transform: "translateZ(0)",
               }}
             />
 
