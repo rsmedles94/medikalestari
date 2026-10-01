@@ -111,6 +111,8 @@ function NavIcon({ item, isActive }: { item: NavItem; isActive: boolean }) {
   return null;
 }
 
+
+
 export default function MobileBottomNavbar() {
   const pathname = usePathname();
   const router = useRouter();
@@ -494,37 +496,40 @@ export default function MobileBottomNavbar() {
               scale: shouldShrink ? 0.92 : 1,
               height: shouldShrink ? "56px" : "64px",
               y: shouldShrink ? 4 : 0,
-              // Saat mengecil jadi putih solid ala Instagram, saat normal ultra transparan
+              // Putih cair transparan saat shrink (tetap tembus pandang), ultra transparan saat normal
               backgroundColor: shouldShrink
-                ? "rgba(255, 255, 255, 0.85)"
-                : "rgba(255, 255, 255, 0.03)",
+                ? "rgba(255, 255, 255, 0.28)"
+                : "rgba(255, 255, 255, 0.01)",
             }}
             transition={{ type: "spring", stiffness: 350, damping: 25 }}
             className="pointer-events-auto relative w-full max-w-[390px] rounded-[32px] overflow-hidden touch-none cursor-grab active:cursor-grabbing flex items-center"
             style={{
               scaleX: dockScaleX,
               skewX: dockSkewX,
+              // Blur sangat minim (2px) biar kaca BENING BANGET, tapi saturasi tinggi biar warna background tetap membias tajam
+              WebkitBackdropFilter:
+                "blur(2px) saturate(280%) contrast(135%) brightness(1.1)",
               backdropFilter:
-                "url(#glass-refraction) blur(16px) saturate(180%) contrast(120%)",
-              WebkitBackdropFilter: "blur(16px) saturate(180%) contrast(120%)",
+                "url(#glass-refraction) blur(2px) saturate(280%) contrast(135%) brightness(1.1)",
               border: "none",
-              // Multi-layer inset shadow buat bikin efek lekukan kaca 3D & refraksi liquid iOS
+              // Frame Cahaya Cembung 3D (Bikin pinggiran membiaskan cahaya seperti cairan melengkung)
               boxShadow: shouldShrink
-                ? "0 10px 25px rgba(0, 0, 0, 0.15)"
-                : "inset 0 2px 4px 0 rgba(255, 255, 255, 0.6), inset 0 -2px 4px 0 rgba(0, 0, 0, 0.2), inset 0 0 12px 2px rgba(255, 255, 255, 0.35), 0 20px 40px rgba(0, 0, 0, 0.15)",
+                ? "inset 0 2px 3px 0 rgba(255, 255, 255, 0.95), inset 0 -2px 3px 0 rgba(255, 255, 255, 0.4), inset 2px 0 3px 0 rgba(255, 255, 255, 0.5), inset -2px 0 3px 0 rgba(255, 255, 255, 0.5), 0 12px 28px rgba(0, 0, 0, 0.15)"
+                : "inset 0 2px 4px 0 rgba(255, 255, 255, 0.9), inset 0 -2px 4px 0 rgba(0, 0, 0, 0.25), inset 2px 0 4px 0 rgba(255, 255, 255, 0.6), inset -2px 0 4px 0 rgba(255, 255, 255, 0.6), inset 0 0 15px 1px rgba(255, 255, 255, 0.2), 0 20px 40px rgba(0, 0, 0, 0.18)",
+              transform: "translateZ(0)",
             }}
           >
-            {/* PIL INDIKATOR */}
+            {/* PIL INDIKATOR (Hitam Murni Transparan / Dark Tinted Glass) */}
             <motion.div
               className="absolute top-1/2 pointer-events-none z-0 rounded-full"
               animate={{
                 width: `${basePilWidth}px`,
                 height: `${basePilHeight}px`,
                 scale: isDragging ? DRAG_SCALE : 1,
-                // Hitam super transparan (muka kaca gelap halus ala iOS)
+                // Hitam transparan murni (tetap tembus pandang)
                 backgroundColor: shouldShrink
-                  ? "rgba(0, 0, 0, 0.15)"
-                  : "rgba(0, 0, 0, 0.18)",
+                  ? "rgba(0, 0, 0, 0.12)"
+                  : "rgba(0, 0, 0, 0.12)",
               }}
               transition={{ type: "spring", stiffness: 400, damping: 25 }}
               style={{
@@ -532,11 +537,11 @@ export default function MobileBottomNavbar() {
                 y: "-50%",
                 left: 0,
                 translateX: "-50%",
-                backdropFilter: "blur(8px) brightness(0.85) contrast(110%)",
-                WebkitBackdropFilter:
-                  "blur(8px) brightness(0.85) contrast(110%)",
+                // Tanpa blur di pil biar tetap jernih tembus pandang, cuma agak gelap (tinted)
+                WebkitBackdropFilter: "brightness(0.65) contrast(140%)",
+                backdropFilter: "brightness(0.65) contrast(140%)",
                 border: "none",
-
+                transform: "translateZ(0)",
               }}
             />
 
