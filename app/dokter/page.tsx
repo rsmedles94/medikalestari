@@ -1,4 +1,4 @@
-import DoctorSection from "@/components/DoctorSection";
+import DoctorSection from "@/components/DoktorDirectory/DoctorSection";
 import { PageTracker } from "@/components/PageTracker";
 
 interface DoctorPageProps {

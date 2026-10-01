@@ -3,10 +3,10 @@
 import React from "react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthProvider";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/Navigation/Navbar";
 import Footer from "@/components/Footer";
 import AdminSidebar from "@/components/AdminSidebar";
-import MobileBottomNavbar from "@/components/MobileBottomNavbar";
+import MobileBottomNavbar from "@/components/Navigation/MobileBottomNavbar";
 import { PageTracker } from "@/components/PageTracker";
 import { ServiceWorkerInitializer } from "@/components/ServiceWorkerInitializer";
 import PopupDisplay from "@/components/PopupDisplay";

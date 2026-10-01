@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, {
@@ -33,7 +34,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import { LiquidGlass } from "@ybouane/liquidglass";
-import BookingModalFloating from "./BookingModalFloating";
+import BookingModalFloating from "../BookingModalFloating";
 
 // Nav item
 interface NavItem {
@@ -141,6 +142,12 @@ export default function MobileBottomNavbar() {
 
   const [isScrolledDown, setIsScrolledDown] = useState(false);
   const lastScrollY = useRef(0);
+
+  // Drag state
+  const hasDraggedRef = useRef(false);
+
+  // Prevent the click event that follows a drag.
+  const suppressNextClickRef = useRef(false);
 
   // LiquidGlass
   useEffect(() => {
@@ -342,14 +349,14 @@ export default function MobileBottomNavbar() {
 
   // Drag
   const handlePointerDown = (e: React.PointerEvent) => {
-    const target = e.target as HTMLElement;
+    hasDraggedRef.current = false;
 
-    // Buttons and links belong to navigation, not dock dragging.
-    if (target.closest("button, a, [data-no-drag]")) {
-      return;
-    }
+    // Prevent browser gesture / selection behavior.
+    // This is especially important for PWA touch interaction.
+    e.preventDefault();
 
     e.currentTarget.setPointerCapture(e.pointerId);
+
     setIsDragging(true);
 
     if (!dockRef.current) return;
@@ -366,6 +373,8 @@ export default function MobileBottomNavbar() {
   const handlePointerMove = (e: React.PointerEvent) => {
     if (!isDragging || !dockRef.current) return;
 
+    hasDraggedRef.current = true;
+
     const rect = dockRef.current.getBoundingClientRect();
     const realWidth = dockRef.current.offsetWidth || rect.width;
     const scaleFactor = rect.width / realWidth;
@@ -380,9 +389,27 @@ export default function MobileBottomNavbar() {
       e.currentTarget.releasePointerCapture(e.pointerId);
     }
 
+    const wasDragged = hasDraggedRef.current;
+
     setIsDragging(false);
 
-    if (!dockRef.current) return;
+    if (!dockRef.current) {
+      hasDraggedRef.current = false;
+      return;
+    }
+
+    // Simple tap:
+    // Do NOT execute dock navigation here.
+    // The actual button/link handles the tap itself.
+    if (!wasDragged) {
+      overdragVal.set(0);
+      hasDraggedRef.current = false;
+      return;
+    }
+
+    // A real drag happened.
+    // The following click must be ignored so the action is executed only once.
+    suppressNextClickRef.current = true;
 
     const rect = dockRef.current.getBoundingClientRect();
     const realWidth = dockRef.current.offsetWidth || rect.width;
@@ -398,7 +425,10 @@ export default function MobileBottomNavbar() {
 
     const targetIndex = Math.max(
       0,
-      Math.min(navItems.length - 1, Math.floor(currentX / itemWidth)),
+      Math.min(
+        navItems.length - 1,
+        Math.floor(currentX / itemWidth),
+      ),
     );
 
     const item = navItems[targetIndex];
@@ -411,6 +441,14 @@ export default function MobileBottomNavbar() {
 
     overdragVal.set(0);
     updateTargetPos();
+
+    hasDraggedRef.current = false;
+
+    // Keep suppression active until the browser's click event
+    // has passed through the React event queue.
+    window.setTimeout(() => {
+      suppressNextClickRef.current = false;
+    }, 0);
   };
 
   const getItemScale = useCallback(
@@ -627,23 +665,35 @@ export default function MobileBottomNavbar() {
                           aria-expanded={isActionMenuOpen}
                           data-no-drag
                           onPointerDown={(e) => {
-                            e.stopPropagation();
-                          }}
-                          onPointerUp={(e) => {
-                            e.stopPropagation();
+                            // Do not stop propagation.
+                            // The dock must still be able to start a drag
+                            // from the exact center of the plus icon.
+                            e.preventDefault();
                           }}
                           onClick={(e) => {
+                            e.preventDefault();
                             e.stopPropagation();
+
+                            // If the pointer interaction was actually a drag,
+                            // the dock already handled the action.
+                            if (suppressNextClickRef.current) {
+                              suppressNextClickRef.current = false;
+                              return;
+                            }
+
+                            // Normal single tap/click:
+                            // one click = show, second click = hide.
                             setIsActionMenuOpen((prev) => !prev);
                           }}
                           className="flex h-12 w-12 select-none items-center justify-center rounded-full outline-none"
                           style={{
                             WebkitTapHighlightColor: "transparent",
+                            touchAction: "none",
                           }}
                         >
                           <FontAwesomeIcon
                             icon={faPlus}
-                            className="text-[24px] text-black"
+                            className="pointer-events-none text-[24px] text-black"
                             style={{
                               transform: isActionMenuOpen
                                 ? "rotate(45deg)"
@@ -657,24 +707,31 @@ export default function MobileBottomNavbar() {
                           href={item.href || "#"}
                           aria-label={item.label}
                           data-no-drag
-                          onPointerDown={(e) => {
-                            e.stopPropagation();
-                          }}
-                          onPointerUp={(e) => {
-                            e.stopPropagation();
-                          }}
                           onClick={(e) => {
+                            e.preventDefault();
+
+                            // A drag that started on an icon must never
+                            // turn into a browser navigation.
+                            if (suppressNextClickRef.current) {
+                              suppressNextClickRef.current = false;
+                              return;
+                            }
+
                             if (pathname === item.href) {
-                              e.preventDefault();
                               window.scrollTo({
                                 top: 0,
                                 behavior: "smooth",
                               });
+                            } else if (item.href) {
+                              router.push(item.href);
                             }
+
+                            e.stopPropagation();
                           }}
                           className="flex h-12 w-12 select-none items-center justify-center rounded-full outline-none"
                           style={{
                             WebkitTapHighlightColor: "transparent",
+                            touchAction: "none",
                           }}
                         >
                           <NavIcon item={item} isActive={isActive} />
@@ -691,3 +748,4 @@ export default function MobileBottomNavbar() {
     </>
   );
 }
+

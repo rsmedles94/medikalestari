@@ -1,6 +1,6 @@
 import React, { Suspense } from "react";
-import DoctorScheduleGrid from "@/components/DoctorScheduleGrid";
-import DoctorScheduleSkeleton from "@/components/DoctorScheduleSkeleton";
+import DoctorScheduleGrid from "@/components/DoktorDirectory/DoctorScheduleGrid";
+import DoctorScheduleSkeleton from "@/components/DoktorDirectory/DoctorScheduleSkeleton";
 import { fetchAllDoctorsWithSchedules } from "@/lib/api";
 import { ArrowRight, ChevronRight } from "lucide-react";
 import Link from "next/link";

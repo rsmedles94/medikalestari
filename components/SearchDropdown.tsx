@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { fetchDoctors } from "@/lib/api";
 import Image from "next/image";
 import { useCachedFetch } from "@/lib/hooks/useCachedFetch";
-import { SPECIALTY_CATEGORIES } from "./DoctorSection";
+import { SPECIALTY_CATEGORIES } from "./DoktorDirectory/DoctorSection";
 
 interface SearchDropdownProps {
   isOpen: boolean;

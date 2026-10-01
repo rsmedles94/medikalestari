@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthProvider";
 import { AdminPageSkeleton } from "@/components/AdminSkeleton";
-import { MCUPackageCard } from "@/components/MCUPackageCard";
+import { MCUPackageCard } from "@/components/McuDirectory/MCUPackageCard";
 import {
   Plus,
   Edit2,

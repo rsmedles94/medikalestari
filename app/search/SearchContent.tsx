@@ -7,7 +7,7 @@ import Link from "next/link";
 import { fetchDoctors } from "@/lib/api";
 import { Doctor } from "@/lib/types";
 import Image from "next/image";
-import { SPECIALTY_CATEGORIES } from "@/components/DoctorSection";
+import { SPECIALTY_CATEGORIES } from "@/components/DoktorDirectory/DoctorSection";
 import { motion, AnimatePresence } from "framer-motion";
 
 const SearchContent = () => {

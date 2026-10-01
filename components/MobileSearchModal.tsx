@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation";
 import { fetchDoctors } from "@/lib/api";
 import { Doctor } from "@/lib/types";
 import Image from "next/image";
-import { SPECIALTY_CATEGORIES } from "./DoctorSection";
+import { SPECIALTY_CATEGORIES } from "./DoktorDirectory/DoctorSection";
 import { useSearchModal } from "@/context/SearchModalContext";
 import { useCachedFetch } from "@/lib/hooks/useCachedFetch";
 
@@ -193,7 +193,10 @@ const MobileSearchModal: React.FC<MobileSearchModalProps> = memo(
 
                 {searchQuery && (
                   <button type="button" onClick={() => setSearchQuery("")}>
-                    <X size={17} className="bg-neutral-400 rounded-full text-neutral-100" />
+                    <X
+                      size={17}
+                      className="bg-neutral-400 rounded-full text-neutral-100"
+                    />
                   </button>
                 )}
               </form>

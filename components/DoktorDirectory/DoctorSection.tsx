@@ -26,7 +26,7 @@ interface DoctorWithSchedules extends Doctor {
   schedules?: Schedule[];
 }
 import DoctorSkeleton from "./DoctorSkeleton";
-import BookingForm from "./BookingForm";
+import BookingForm from "../BookingForm";
 
 export const SPECIALTY_CATEGORIES = [
   "Semua Spesialis",

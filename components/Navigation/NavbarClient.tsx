@@ -30,10 +30,10 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthProvider";
 import { useSearchModal } from "@/context/SearchModalContext";
-import SearchDropdown from "./SearchDropdown";
-import { MobileSearchModalWrapper } from "./MobileSearchModalWrapper";
-import DropdownMenuItem from "./DropdownMenuItem";
-import BookingForm from "./BookingForm";
+import SearchDropdown from "../SearchDropdown";
+import { MobileSearchModalWrapper } from "../MobileSearchModalWrapper";
+import DropdownMenuItem from "../DropdownMenuItem";
+import BookingForm from "../BookingForm";
 import { usePathname, useRouter } from "next/navigation";
 
 interface NavbarClientProps {
@@ -983,9 +983,7 @@ function AuthArea({
         href="/admin/dashboard"
         onClick={onClick}
         className={`flex items-center gap-2 font-semibold ${
-          isMobile
-            ? "text-gray-700 text-lg"
-            : "text-gray-700 text-sm"
+          isMobile ? "text-gray-700 text-lg" : "text-gray-700 text-sm"
         }`}
         title="Panel Admin"
       >
@@ -1001,9 +999,7 @@ function AuthArea({
       href="/admin/login"
       onClick={onClick}
       className={`flex items-center gap-2 font-semibold ${
-        isMobile
-          ? "text-gray-700 text-base"
-          : "text-gray-700 text-sm"
+        isMobile ? "text-gray-700 text-base" : "text-gray-700 text-sm"
       }`}
       title="Login"
     >

@@ -12,9 +12,9 @@ import {
   fetchDoctorsBySpecialty,
 } from "@/lib/api";
 import { Doctor, Schedule } from "@/lib/types";
-import DoctorScheduleDisplay from "@/components/DoctorScheduleDisplay";
-import DoctorRecommendation from "@/components/DoctorRecommendation";
-import DoctorDetailSkeleton from "@/components/DoctorDetailSkeleton";
+import DoctorScheduleDisplay from "@/components/DoktorDirectory/DoctorScheduleDisplay";
+import DoctorRecommendation from "@/components/DoktorDirectory/DoctorRecommendation";
+import DoctorDetailSkeleton from "@/components/DoktorDirectory/DoctorDetailSkeleton";
 import BookingForm from "@/components/BookingForm";
 
 const DoctorDetailPage = () => {
