@@ -80,7 +80,13 @@ function HomeOutlineNoDoor({
 }
 
 // icon
-function NavIcon({ item, isActive }: { item: NavItem; isActive: boolean }) {
+function NavIcon({
+  item,
+  isActive,
+}: {
+  item: NavItem;
+  isActive: boolean;
+}) {
   if (item.isHome) {
     return isActive ? (
       <Home
@@ -113,19 +119,19 @@ function NavIcon({ item, isActive }: { item: NavItem; isActive: boolean }) {
 
 const GLASS_CONFIG = {
   cornerRadius: 32,
-  refraction: 1.18,
-  chromAberration: 0.055,
-  edgeHighlight: 0.42,
-  specular: 0.16,
+  refraction: 1.08,
+  chromAberration: 0.035,
+  edgeHighlight: 0.38,
+  specular: 0.14,
   fresnel: 1.0,
-  distortion: 0.012,
-  blurAmount: 0.035,
-  opacity: 0.94,
-  saturation: 0.035,
-  tintStrength: 0.012,
-  brightness: 0.006,
-  shadowOpacity: 0.16,
-  shadowSpread: 9,
+  distortion: 0.01,
+  blurAmount: 0.08,
+  opacity: 0.78,
+  saturation: 0.025,
+  tintStrength: 0.008,
+  brightness: 0.008,
+  shadowOpacity: 0.18,
+  shadowSpread: 10,
   shadowOffsetY: 6,
   zRadius: 30,
   bevelMode: 0,
@@ -155,12 +161,8 @@ export default function MobileBottomNavbar() {
   const dragStartX = useRef(0);
   const dragMoved = useRef(false);
   const lastScrollY = useRef(0);
-  const glassInstanceRef = useRef<Awaited<
-    ReturnType<typeof LiquidGlass.init>
-  > | null>(null);
+  const glassInstanceRef = useRef<Awaited<ReturnType<typeof LiquidGlass.init>> | null>(null);
   const glassRefreshFrame = useRef<number | null>(null);
-  const scrollEndTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const lastGlassRefresh = useRef(0);
 
   // glass
   useEffect(() => {
@@ -197,20 +199,16 @@ export default function MobileBottomNavbar() {
       cancelled = true;
       instance?.destroy();
       glassInstanceRef.current = null;
+
     };
   }, [isMounted]);
 
   // glass refresh
-  const refreshGlass = useCallback((force = false) => {
-    const now = performance.now();
-    const minInterval = force ? 0 : 32;
-
-    if (now - lastGlassRefresh.current < minInterval) return;
+  const refreshGlass = useCallback(() => {
     if (glassRefreshFrame.current !== null) return;
 
     glassRefreshFrame.current = window.requestAnimationFrame(() => {
       glassRefreshFrame.current = null;
-      lastGlassRefresh.current = performance.now();
       glassInstanceRef.current?.markChanged();
     });
   }, []);
@@ -223,22 +221,12 @@ export default function MobileBottomNavbar() {
       const currentY = window.scrollY;
       setIsScrolledDown(currentY > lastScrollY.current && currentY > 50);
       lastScrollY.current = currentY;
-
-      // CSS compositor keeps the glass moving instantly;
-      // WebGL refresh is sampled to avoid DOM raster spikes.
       refreshGlass();
-
-      if (scrollEndTimer.current) clearTimeout(scrollEndTimer.current);
-      scrollEndTimer.current = setTimeout(() => {
-        refreshGlass(true);
-      }, 80);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-
     return () => {
       window.removeEventListener("scroll", handleScroll);
-      if (scrollEndTimer.current) clearTimeout(scrollEndTimer.current);
       if (glassRefreshFrame.current !== null) {
         cancelAnimationFrame(glassRefreshFrame.current);
         glassRefreshFrame.current = null;
@@ -353,7 +341,13 @@ export default function MobileBottomNavbar() {
 
     rawX.set(clampX(getCenter(activeIndex, width), width, false));
     overdrag.set(0);
-  }, [activeIndex, clampX, getCenter, overdrag, rawX]);
+  }, [
+    activeIndex,
+    clampX,
+    getCenter,
+    overdrag,
+    rawX,
+  ]);
 
   useEffect(() => {
     if (!isMounted) return;
@@ -415,9 +409,8 @@ export default function MobileBottomNavbar() {
 
       rawX.set(clampX(point.x, point.width, true));
       overdrag.set(getOverdrag(point.x, point.width, true));
-      refreshGlass(true);
     },
-    [clampX, getOverdrag, getPointerX, overdrag, rawX, refreshGlass],
+    [clampX, getOverdrag, getPointerX, overdrag, rawX],
   );
 
   const handlePointerMove = useCallback(
@@ -435,15 +428,7 @@ export default function MobileBottomNavbar() {
       overdrag.set(getOverdrag(point.x, point.width, true));
       refreshGlass();
     },
-    [
-      clampX,
-      getOverdrag,
-      getPointerX,
-      isDragging,
-      overdrag,
-      rawX,
-      refreshGlass,
-    ],
+    [clampX, getOverdrag, getPointerX, isDragging, overdrag, rawX, refreshGlass],
   );
 
   const handlePointerUp = useCallback(
@@ -467,7 +452,10 @@ export default function MobileBottomNavbar() {
       const itemWidth = point.width / navItems.length;
       const targetIndex = Math.max(
         0,
-        Math.min(navItems.length - 1, Math.floor(point.x / itemWidth)),
+        Math.min(
+          navItems.length - 1,
+          Math.floor(point.x / itemWidth),
+        ),
       );
 
       const item = navItems[targetIndex];
@@ -479,7 +467,6 @@ export default function MobileBottomNavbar() {
       }
 
       syncIndicator();
-      refreshGlass(true);
     },
     [
       getPointerX,
@@ -488,7 +475,6 @@ export default function MobileBottomNavbar() {
       overdrag,
       router,
       syncIndicator,
-      refreshGlass,
     ],
   );
 
@@ -523,7 +509,8 @@ export default function MobileBottomNavbar() {
     if (!isActionMenuOpen) return;
 
     document.addEventListener("mousedown", handleOutsideClick);
-    return () => document.removeEventListener("mousedown", handleOutsideClick);
+    return () =>
+      document.removeEventListener("mousedown", handleOutsideClick);
   }, [handleOutsideClick, isActionMenuOpen]);
 
   if (!isMounted) return null;
@@ -643,16 +630,18 @@ export default function MobileBottomNavbar() {
           skewX: dockSkewX,
           background: glassFallback
             ? "rgba(255,255,255,0.40)"
-            : "rgba(255,255,255,0.025)",
-          border: "1px solid rgba(255,255,255,0.24)",
+            : "rgba(255,255,255,0.018)",
+          border: "1px solid rgba(255,255,255,0.22)",
           boxShadow:
-            "0 10px 28px rgba(0,0,0,0.11), inset 0 1px 0 rgba(255,255,255,0.34), inset 0 0 0 1px rgba(255,255,255,0.08)",
-          WebkitBackdropFilter: "blur(10px) saturate(1.18)",
-          backdropFilter: "blur(10px) saturate(1.18)",
-          willChange: "transform",
-          WebkitTransform: "translate3d(0,0,0)",
-          transform: "translate3d(0,0,0)",
-          contain: "layout style",
+            "0 10px 28px rgba(0,0,0,0.11), inset 0 1px 0 rgba(255,255,255,0.32), inset 0 0 0 1px rgba(255,255,255,0.08)",
+          WebkitBackdropFilter: glassFallback
+            ? "blur(22px) saturate(1.35)"
+            : undefined,
+          backdropFilter: glassFallback
+            ? "blur(22px) saturate(1.35)"
+            : undefined,
+          WebkitTransform: "translateZ(0)",
+          transform: "translateZ(0)",
         }}
       >
         {/* edge */}
@@ -661,10 +650,8 @@ export default function MobileBottomNavbar() {
           className="pointer-events-none absolute inset-0 z-[5] rounded-[32px]"
           style={{
             background:
-              "linear-gradient(90deg, rgba(255,150,65,0.20) 0%, rgba(255,255,255,0.02) 13%, rgba(255,255,255,0) 35%, rgba(255,255,255,0) 65%, rgba(255,255,255,0.02) 87%, rgba(70,220,145,0.18) 100%)",
-            boxShadow:
-              "inset 0 1px 0 rgba(255,255,255,0.28), inset 0 -1px 0 rgba(255,255,255,0.08), inset 0 0 16px rgba(255,255,255,0.025)",
-            mixBlendMode: "screen",
+              "radial-gradient(ellipse at center, rgba(255,255,255,0) 30%, rgba(255,255,255,0.018) 62%, rgba(255,255,255,0.085) 100%)",
+            boxShadow: "inset 0 0 18px rgba(255,255,255,0.035)",
           }}
         />
 
@@ -686,33 +673,12 @@ export default function MobileBottomNavbar() {
             y: "-50%",
             translateX: "-50%",
             background:
-              "linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.055))",
-            border: "1px solid rgba(255,255,255,0.22)",
+              "linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.045))",
+            border: "1px solid rgba(255,255,255,0.14)",
             boxShadow:
-              "inset 0 1px 1px rgba(255,255,255,0.28), inset 0 -1px 4px rgba(0,0,0,0.10), 0 2px 10px rgba(0,0,0,0.07)",
-            willChange: "transform, width, height",
-          }}
-        />
-
-        {/* pill edge */}
-        <motion.div
-          aria-hidden="true"
-          className="pointer-events-none absolute left-0 top-1/2 z-[11] rounded-full"
-          animate={{
-            width: pillWidth + 4,
-            height: pillHeight + 4,
-            scale: isDragging ? DRAG_SCALE : 1,
-          }}
-          transition={{ type: "spring", stiffness: 400, damping: 25 }}
-          style={{
-            x: springX,
-            y: "-50%",
-            translateX: "-50%",
-            background:
-              "linear-gradient(90deg, rgba(255,145,55,0.16), rgba(255,255,255,0) 25%, rgba(255,255,255,0) 75%, rgba(70,220,145,0.15))",
-            border: "1px solid rgba(255,255,255,0.12)",
-            mixBlendMode: "screen",
-            willChange: "transform, width, height",
+              "inset 0 1px 1px rgba(255,255,255,0.20), inset 0 -1px 3px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)",
+            backdropFilter: "blur(8px) saturate(1.15)",
+            WebkitBackdropFilter: "blur(8px) saturate(1.15)",
           }}
         />
 
