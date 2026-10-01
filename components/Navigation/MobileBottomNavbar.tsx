@@ -126,14 +126,12 @@ export default function MobileBottomNavbar() {
 
   // State
   const [isBookingOpen, setIsBookingOpen] = useState(false);
-
   const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
 
   const actionMenuRef = useRef<HTMLDivElement>(null);
   const plusButtonRef = useRef<HTMLButtonElement>(null);
 
   const dockRef = useRef<HTMLDivElement>(null);
-
   const liquidRootRef = useRef<HTMLDivElement>(null);
 
   const [isDragging, setIsDragging] = useState(false);
@@ -150,6 +148,9 @@ export default function MobileBottomNavbar() {
 
   // Track the plus button pointer independently from dock dragging.
   const plusPointerRef = useRef(false);
+
+  const lockedIndexRef = useRef<number | null>(null);
+  const [lockedIndex, setLockedIndex] = useState<number | null>(null);
 
   // LiquidGlass
   useEffect(() => {
@@ -314,6 +315,29 @@ export default function MobileBottomNavbar() {
     [navItems.length],
   );
 
+  const movePillToIndex = useCallback(
+    (index: number, width?: number) => {
+      if (!dockRef.current) return;
+
+      const rect = dockRef.current.getBoundingClientRect();
+      const realWidth = width || dockRef.current.offsetWidth || rect.width;
+
+      if (!realWidth) return;
+
+      const center = getCenterXForIndex(index, realWidth);
+      const targetX = clampX(center, realWidth, false);
+
+      setDockWidth(realWidth);
+
+      rawX.jump(targetX);
+      springX.jump(targetX);
+
+      overdragVal.jump(0);
+      springOverdrag.jump(0);
+    },
+    [getCenterXForIndex, clampX, rawX, springX, overdragVal, springOverdrag],
+  );
+
   const updateTargetPos = useCallback(() => {
     if (!dockRef.current) return;
 
@@ -322,11 +346,35 @@ export default function MobileBottomNavbar() {
 
     setDockWidth(realWidth);
 
-    const center = getCenterXForIndex(activeIndex, realWidth);
+    const lockedIndex = lockedIndexRef.current;
 
-    rawX.set(clampX(center, realWidth, false));
-    overdragVal.set(0);
-  }, [activeIndex, getCenterXForIndex, rawX, overdragVal, clampX]);
+    if (lockedIndex !== null) {
+      movePillToIndex(lockedIndex, realWidth);
+      return;
+    }
+
+    movePillToIndex(activeIndex, realWidth);
+  }, [activeIndex, movePillToIndex]);
+
+  useEffect(() => {
+    if (!isMounted) return;
+
+    const lockedIndex = lockedIndexRef.current;
+
+    if (lockedIndex !== null) {
+      const targetItem = navItems[lockedIndex];
+
+      if (targetItem && !targetItem.isButton && targetItem.href === pathname) {
+        lockedIndexRef.current = null;
+        setLockedIndex(null);
+      } else {
+        movePillToIndex(lockedIndex);
+        return;
+      }
+    }
+
+    movePillToIndex(activeIndex);
+  }, [pathname, activeIndex, navItems, isMounted, movePillToIndex]);
 
   useEffect(() => {
     if (!isMounted) return;
@@ -361,6 +409,9 @@ export default function MobileBottomNavbar() {
     }
 
     hasDraggedRef.current = false;
+
+    lockedIndexRef.current = null;
+    setLockedIndex(null);
 
     // Prevent browser gesture / selection behavior.
     // This is especially important for PWA touch interaction.
@@ -449,14 +500,22 @@ export default function MobileBottomNavbar() {
 
     const item = navItems[targetIndex];
 
+    lockedIndexRef.current = targetIndex;
+    setLockedIndex(targetIndex);
+
+    movePillToIndex(targetIndex, realWidth);
+
     if (item.isButton) {
+      // Plus tidak melakukan navigasi route.
+      lockedIndexRef.current = null;
+      setLockedIndex(null);
+
       setIsActionMenuOpen((prev) => !prev);
     } else if (item.href) {
       router.push(item.href);
     }
 
     overdragVal.set(0);
-    updateTargetPos();
 
     hasDraggedRef.current = false;
 
@@ -469,24 +528,10 @@ export default function MobileBottomNavbar() {
 
   const getItemScale = useCallback(
     (itemIndex: number) => {
-      if (dockWidth <= 0) return 1;
-
-      const itemWidth = dockWidth / navItems.length;
-      const itemCenterX = itemIndex * itemWidth + itemWidth / 2;
-
-      const currentPilX = springX.get();
-      const distance = Math.abs(currentPilX - itemCenterX);
-      const threshold = itemWidth * 0.75;
-
-      if (distance < threshold) {
-        const factor = 1 - distance / threshold;
-
-        return 1 - factor * 0.08;
-      }
-
-      return 1;
+      const visualIndex = lockedIndex !== null ? lockedIndex : activeIndex;
+      return itemIndex === visualIndex ? 0.92 : 1;
     },
-    [dockWidth, navItems.length, springX],
+    [lockedIndex, activeIndex],
   );
 
   // Outside click
@@ -678,7 +723,10 @@ export default function MobileBottomNavbar() {
               {/* Navigation */}
               <menu className="relative z-20 m-0 flex h-full w-full list-none items-center justify-between p-0">
                 {navItems.map((item, i) => {
-                  const isActive = i === activeIndex;
+                  const visualActiveIndex =
+                    lockedIndex !== null ? lockedIndex : activeIndex;
+
+                  const isActive = i === visualActiveIndex;
                   const localScale = getItemScale(i);
 
                   return (
@@ -702,14 +750,6 @@ export default function MobileBottomNavbar() {
                           data-no-drag
                           data-plus-button
                           onPointerDown={(e) => {
-                            /*
-                             * PLUS IS COMPLETELY INDEPENDENT
-                             *
-                             * The menu is toggled immediately here.
-                             * It does not wait for click.
-                             * It does not start the dock drag.
-                             * It does not move the active pill.
-                             */
                             e.preventDefault();
                             e.stopPropagation();
 
@@ -718,11 +758,6 @@ export default function MobileBottomNavbar() {
                             setIsActionMenuOpen((prev) => !prev);
                           }}
                           onPointerMove={(e) => {
-                            /*
-                             * Keep the pointer interaction isolated
-                             * from the dock while the plus button
-                             * is being pressed or moved.
-                             */
                             e.preventDefault();
                             e.stopPropagation();
                           }}
@@ -739,10 +774,6 @@ export default function MobileBottomNavbar() {
                             plusPointerRef.current = false;
                           }}
                           onClick={(e) => {
-                            /*
-                             * Toggle already happened on pointerdown.
-                             * Do nothing here to prevent double toggle.
-                             */
                             e.preventDefault();
                             e.stopPropagation();
                           }}
@@ -772,15 +803,18 @@ export default function MobileBottomNavbar() {
                           onClick={(e) => {
                             e.preventDefault();
 
-                            // A drag that started on an icon must never
-                            // turn into a browser navigation.
                             if (suppressNextClickRef.current) {
                               suppressNextClickRef.current = false;
-
                               return;
                             }
 
+                            lockedIndexRef.current = i;
+
+                            movePillToIndex(i);
+
                             if (pathname === item.href) {
+                              lockedIndexRef.current = null;
+
                               window.scrollTo({
                                 top: 0,
                                 behavior: "smooth",
