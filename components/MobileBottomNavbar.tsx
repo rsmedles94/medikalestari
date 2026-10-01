@@ -496,16 +496,14 @@ export default function MobileBottomNavbar() {
               y: shouldShrink ? 4 : 0,
             }}
             transition={{ type: "spring", stiffness: 350, damping: 25 }}
-            className="pointer-events-auto relative w-full max-w-[390px] rounded-[32px] bg-white/20 shadow-[0_12px_40px_0_rgba(0,0,0,0.08)] overflow-hidden touch-none cursor-grab active:cursor-grabbing flex items-center"
+            className="pointer-events-auto relative w-full max-w-[390px] rounded-[32px] bg-white/10 shadow-[0_12px_40px_0_rgba(0,0,0,0.08)] overflow-hidden touch-none cursor-grab active:cursor-grabbing flex items-center"
             style={{
               scaleX: dockScaleX,
               skewX: dockSkewX,
               backdropFilter:
                 "url(#glass-refraction) blur(24px) saturate(200%)",
               WebkitBackdropFilter: "blur(24px) saturate(200%)",
-              border: "1px solid rgba(255, 255, 255, 0.45)",
-              boxShadow:
-                "inset 0 1.5px 2px rgba(255, 255, 255, 0.7), inset 0 -1.5px 2px rgba(0, 0, 0, 0.05), 0 16px 32px rgba(0, 0, 0, 0.1)",
+
             }}
           >
             {/* Glass Border Outer */}
