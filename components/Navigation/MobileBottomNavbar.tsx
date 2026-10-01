@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, {
@@ -148,6 +147,9 @@ export default function MobileBottomNavbar() {
 
   // Prevent the click event that follows a drag.
   const suppressNextClickRef = useRef(false);
+
+  // Track the plus button pointer independently from dock dragging.
+  const plusPointerRef = useRef(false);
 
   // LiquidGlass
   useEffect(() => {
@@ -306,6 +308,7 @@ export default function MobileBottomNavbar() {
   const getCenterXForIndex = useCallback(
     (index: number, width: number) => {
       const itemWidth = width / navItems.length;
+
       return index * itemWidth + itemWidth / 2;
     },
     [navItems.length],
@@ -349,6 +352,14 @@ export default function MobileBottomNavbar() {
 
   // Drag
   const handlePointerDown = (e: React.PointerEvent) => {
+    const target = e.target as HTMLElement;
+
+    // Plus button has its own pointer interaction.
+    // Never start dock dragging from the plus button.
+    if (target.closest("[data-plus-button]")) {
+      return;
+    }
+
     hasDraggedRef.current = false;
 
     // Prevent browser gesture / selection behavior.
@@ -371,6 +382,9 @@ export default function MobileBottomNavbar() {
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
+    // Plus button never participates in dock dragging.
+    if (plusPointerRef.current) return;
+
     if (!isDragging || !dockRef.current) return;
 
     hasDraggedRef.current = true;
@@ -385,6 +399,11 @@ export default function MobileBottomNavbar() {
   };
 
   const handlePointerUp = (e: React.PointerEvent) => {
+    // Plus button owns this pointer interaction.
+    if (plusPointerRef.current) {
+      return;
+    }
+
     if (e.currentTarget.hasPointerCapture(e.pointerId)) {
       e.currentTarget.releasePointerCapture(e.pointerId);
     }
@@ -425,10 +444,7 @@ export default function MobileBottomNavbar() {
 
     const targetIndex = Math.max(
       0,
-      Math.min(
-        navItems.length - 1,
-        Math.floor(currentX / itemWidth),
-      ),
+      Math.min(navItems.length - 1, Math.floor(currentX / itemWidth)),
     );
 
     const item = navItems[targetIndex];
@@ -457,12 +473,14 @@ export default function MobileBottomNavbar() {
 
       const itemWidth = dockWidth / navItems.length;
       const itemCenterX = itemIndex * itemWidth + itemWidth / 2;
+
       const currentPilX = springX.get();
       const distance = Math.abs(currentPilX - itemCenterX);
       const threshold = itemWidth * 0.75;
 
       if (distance < threshold) {
         const factor = 1 - distance / threshold;
+
         return 1 - factor * 0.08;
       }
 
@@ -518,9 +536,21 @@ export default function MobileBottomNavbar() {
               {isActionMenuOpen && (
                 <motion.aside
                   ref={actionMenuRef}
-                  initial={{ opacity: 0, scale: 0.9, y: 14 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.9, y: 14 }}
+                  initial={{
+                    opacity: 0,
+                    scale: 0.9,
+                    y: 14,
+                  }}
+                  animate={{
+                    opacity: 1,
+                    scale: 1,
+                    y: 0,
+                  }}
+                  exit={{
+                    opacity: 0,
+                    scale: 0.9,
+                    y: 14,
+                  }}
                   transition={{
                     duration: 0.2,
                     ease: [0.16, 1, 0.3, 1],
@@ -540,6 +570,7 @@ export default function MobileBottomNavbar() {
                       icon={faCalendarCheck}
                       className="h-[20px] w-[20px]"
                     />
+
                     <span>Buat Janji Temu</span>
                   </button>
 
@@ -558,6 +589,7 @@ export default function MobileBottomNavbar() {
                       icon={faProcedures}
                       className="h-[20px] w-[20px]"
                     />
+
                     <span>Kamar Perawatan</span>
                   </button>
 
@@ -576,6 +608,7 @@ export default function MobileBottomNavbar() {
                       icon={faBed}
                       className="h-[20px] w-[20px]"
                     />
+
                     <span>Ketersediaan Kamar</span>
                   </button>
                 </motion.aside>
@@ -605,9 +638,12 @@ export default function MobileBottomNavbar() {
                 skewX: dockSkewX,
 
                 backgroundColor: "rgba(255, 255, 255, 0.600)",
+
                 border: "1px solid rgba(255, 255, 255, 0.28)",
+
                 boxShadow:
                   "inset 0 0 0 1px rgba(255, 255, 255, 0.26), inset 0 0 18px rgba(255, 255, 255, 0.035), 0 10px 30px rgba(0, 0, 0, 0.10)",
+
                 WebkitTransform: "translateZ(0)",
                 transform: "translateZ(0)",
               }}
@@ -664,26 +700,51 @@ export default function MobileBottomNavbar() {
                           }
                           aria-expanded={isActionMenuOpen}
                           data-no-drag
+                          data-plus-button
                           onPointerDown={(e) => {
-                            // Do not stop propagation.
-                            // The dock must still be able to start a drag
-                            // from the exact center of the plus icon.
-                            e.preventDefault();
-                          }}
-                          onClick={(e) => {
+                            /*
+                             * PLUS IS COMPLETELY INDEPENDENT
+                             *
+                             * The menu is toggled immediately here.
+                             * It does not wait for click.
+                             * It does not start the dock drag.
+                             * It does not move the active pill.
+                             */
                             e.preventDefault();
                             e.stopPropagation();
 
-                            // If the pointer interaction was actually a drag,
-                            // the dock already handled the action.
-                            if (suppressNextClickRef.current) {
-                              suppressNextClickRef.current = false;
-                              return;
-                            }
+                            plusPointerRef.current = true;
 
-                            // Normal single tap/click:
-                            // one click = show, second click = hide.
                             setIsActionMenuOpen((prev) => !prev);
+                          }}
+                          onPointerMove={(e) => {
+                            /*
+                             * Keep the pointer interaction isolated
+                             * from the dock while the plus button
+                             * is being pressed or moved.
+                             */
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }}
+                          onPointerUp={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+
+                            plusPointerRef.current = false;
+                          }}
+                          onPointerCancel={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+
+                            plusPointerRef.current = false;
+                          }}
+                          onClick={(e) => {
+                            /*
+                             * Toggle already happened on pointerdown.
+                             * Do nothing here to prevent double toggle.
+                             */
+                            e.preventDefault();
+                            e.stopPropagation();
                           }}
                           className="flex h-12 w-12 select-none items-center justify-center rounded-full outline-none"
                           style={{
@@ -698,6 +759,7 @@ export default function MobileBottomNavbar() {
                               transform: isActionMenuOpen
                                 ? "rotate(45deg)"
                                 : "rotate(0deg)",
+
                               transition: "transform 200ms ease",
                             }}
                           />
@@ -714,6 +776,7 @@ export default function MobileBottomNavbar() {
                             // turn into a browser navigation.
                             if (suppressNextClickRef.current) {
                               suppressNextClickRef.current = false;
+
                               return;
                             }
 
@@ -748,4 +811,3 @@ export default function MobileBottomNavbar() {
     </>
   );
 }
-
