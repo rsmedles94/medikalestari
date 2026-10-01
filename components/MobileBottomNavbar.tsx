@@ -197,7 +197,7 @@ export default function MobileBottomNavbar() {
   const shouldShrink = isScrolledDown && !isDragging;
 
   // Ukuran Pil
-  const basePilWidth = shouldShrink ? 68 : 76;
+  const basePilWidth = shouldShrink ? 68 : 74;
   const basePilHeight = shouldShrink ? 48 : 53;
   const DRAG_SCALE = 1.04;
   const INNER_MARGIN = 4; // Margin pil
