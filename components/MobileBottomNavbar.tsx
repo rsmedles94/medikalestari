@@ -8,6 +8,7 @@ import React, {
   useRef,
   useSyncExternalStore,
 } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -19,7 +20,6 @@ import {
 } from "framer-motion";
 
 import { Home } from "lucide-react";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import {
@@ -35,7 +35,6 @@ import {
 import { LiquidGlass } from "@ybouane/liquidglass";
 import BookingModalFloating from "./BookingModalFloating";
 
-// Navigation item
 interface NavItem {
   label: string;
   href: string;
@@ -44,10 +43,8 @@ interface NavItem {
   isButton?: boolean;
 }
 
-// Empty subscription
 const emptySubscribe = () => () => {};
 
-// Mounted state
 function useIsMounted() {
   return useSyncExternalStore(
     emptySubscribe,
@@ -56,7 +53,7 @@ function useIsMounted() {
   );
 }
 
-// Home outline icon
+// home
 function HomeOutlineNoDoor({
   size = 26,
   color = "#000000",
@@ -82,90 +79,95 @@ function HomeOutlineNoDoor({
   );
 }
 
-// Navigation icon
+// icon
 function NavIcon({ item, isActive }: { item: NavItem; isActive: boolean }) {
-  const iconColor = "#000000";
-
   if (item.isHome) {
-    if (isActive) {
-      return (
-        <Home
-          className="h-[26px] w-[26px]"
-          style={{ color: iconColor }}
-          fill={iconColor}
-          stroke={iconColor}
-          strokeWidth={2.2}
-          aria-hidden="true"
-        />
-      );
-    }
-
-    return <HomeOutlineNoDoor size={26} color={iconColor} />;
-  }
-
-  if (item.icon) {
-    return (
-      <FontAwesomeIcon
-        icon={item.icon}
-        className="text-[24px]"
-        style={{
-          color: iconColor,
-          opacity: isActive ? 1 : 0.65,
-        }}
+    return isActive ? (
+      <Home
+        className="h-[26px] w-[26px]"
+        style={{ color: "#000000" }}
+        fill="#000000"
+        stroke="#000000"
+        strokeWidth={2.2}
+        aria-hidden="true"
       />
+    ) : (
+      <HomeOutlineNoDoor size={26} />
     );
   }
 
-  return null;
+  if (!item.icon) return null;
+
+  return (
+    <FontAwesomeIcon
+      icon={item.icon}
+      className="text-[24px]"
+      style={{
+        color: "#000000",
+        opacity: isActive ? 1 : 0.65,
+      }}
+      aria-hidden="true"
+    />
+  );
 }
+
+const GLASS_CONFIG = {
+  cornerRadius: 32,
+  refraction: 1.15,
+  chromAberration: 0.055,
+  edgeHighlight: 0.32,
+  specular: 0.18,
+  fresnel: 0.9,
+  distortion: 0.015,
+  blurAmount: 0.16,
+  opacity: 0.96,
+  saturation: 0.04,
+  tintStrength: 0.015,
+  brightness: 0.015,
+  shadowOpacity: 0.18,
+  shadowSpread: 10,
+  shadowOffsetY: 6,
+  zRadius: 30,
+  bevelMode: 0,
+  floating: false,
+  button: false,
+} as const;
+
+const DRAG_SCALE = 1.04;
+const INNER_MARGIN = 4;
+const DRAG_THRESHOLD = 5;
 
 export default function MobileBottomNavbar() {
   const pathname = usePathname();
   const router = useRouter();
   const isMounted = useIsMounted();
 
-  // Booking state
   const [isBookingOpen, setIsBookingOpen] = useState(false);
-
-  // Action menu state
   const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
-
-  // Menu refs
-  const actionMenuRef = useRef<HTMLDivElement>(null);
-  const plusButtonRef = useRef<HTMLButtonElement>(null);
-
-  // Dock ref
-  const dockRef = useRef<HTMLDivElement>(null);
-
-  // LiquidGlass root
-  const liquidRootRef = useRef<HTMLDivElement>(null);
-
-  // Drag state
   const [isDragging, setIsDragging] = useState(false);
   const [dockWidth, setDockWidth] = useState(390);
-
-  // Scroll state
   const [isScrolledDown, setIsScrolledDown] = useState(false);
+
+  const dockRef = useRef<HTMLDivElement>(null);
+  const plusButtonRef = useRef<HTMLButtonElement>(null);
+  const actionMenuRef = useRef<HTMLElement>(null);
+  const dragStartX = useRef(0);
+  const dragMoved = useRef(false);
   const lastScrollY = useRef(0);
 
-  // Initialize LiquidGlass
+  // glass
   useEffect(() => {
-    const root = liquidRootRef.current;
+    if (!isMounted || !dockRef.current) return;
+
     const dock = dockRef.current;
+    const root = document.body;
+    const previousPosition = root.style.position;
 
-    if (!root || !dock) return;
+    root.style.position = previousPosition || "relative";
 
-    // Strong iOS-style glass configuration
-    dock.dataset.config = JSON.stringify({
-      cornerRadius: 32,
-      refraction: 2.1,
-      chromAberration: 0.065,
-      edgeHighlight: 0.42,
-      blurAmount: 0.025,
-    });
+    dock.dataset.config = JSON.stringify(GLASS_CONFIG);
 
     let instance: Awaited<ReturnType<typeof LiquidGlass.init>> | undefined;
-
     let cancelled = false;
 
     LiquidGlass.init({
@@ -187,64 +189,57 @@ export default function MobileBottomNavbar() {
     return () => {
       cancelled = true;
       instance?.destroy();
-    };
-  }, []);
 
-  // Handle page scroll
+      if (!previousPosition) {
+        root.style.removeProperty("position");
+      } else {
+        root.style.position = previousPosition;
+      }
+    };
+  }, [isMounted]);
+
+  // scroll
   useEffect(() => {
     if (!isMounted) return;
 
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-
-      if (currentScrollY > lastScrollY.current && currentScrollY > 50) {
-        setIsScrolledDown(true);
-      } else {
-        setIsScrolledDown(false);
-      }
-
-      lastScrollY.current = currentScrollY;
+      const currentY = window.scrollY;
+      setIsScrolledDown(currentY > lastScrollY.current && currentY > 50);
+      lastScrollY.current = currentY;
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [isMounted]);
 
-  // Motion values
+  // motion
   const rawX = useMotionValue(0);
-  const overdragVal = useMotionValue(0);
+  const overdrag = useMotionValue(0);
 
-  // Dock position spring
   const springX = useSpring(rawX, {
     stiffness: 420,
     damping: 28,
     mass: 0.6,
   });
 
-  // Overdrag spring
-  const springOverdrag = useSpring(overdragVal, {
+  const springOverdrag = useSpring(overdrag, {
     stiffness: 380,
     damping: 22,
   });
 
-  // Dock horizontal scale
   const dockScaleX = useTransform(
     springOverdrag,
     [-100, 0, 100],
     [1.05, 1, 1.05],
   );
 
-  // Dock horizontal skew
   const dockSkewX = useTransform(
     springOverdrag,
     [-100, 0, 100],
     [-2.5, 0, 2.5],
   );
 
-  // Navigation items
+  // navigation
   const navItems = useMemo<NavItem[]>(
     () => [
       { label: "Beranda", href: "/", isHome: true },
@@ -255,65 +250,59 @@ export default function MobileBottomNavbar() {
         icon: faPlus,
         isButton: true,
       },
-      { label: "Jadwal", href: "/jadwal-dokter", icon: faCalendarDays },
+      {
+        label: "Jadwal",
+        href: "/jadwal-dokter",
+        icon: faCalendarDays,
+      },
       { label: "Promo", href: "/promo", icon: faTicket },
     ],
     [],
   );
 
-  // Active navigation index
   const activeIndex = useMemo(() => {
     if (!isMounted) return 0;
 
-    const idx = navItems.findIndex(
+    const index = navItems.findIndex(
       (item) => !item.isButton && item.href === pathname,
     );
 
-    return idx !== -1 ? idx : 0;
-  }, [pathname, navItems, isMounted]);
+    return index === -1 ? 0 : index;
+  }, [isMounted, navItems, pathname]);
 
-  // Dock shrink state
+  // sizes
   const shouldShrink = isScrolledDown && !isDragging;
+  const pillWidth = shouldShrink ? 68 : 72;
+  const pillHeight = shouldShrink ? 48 : 55;
 
-  // Indicator size
-  const basePilWidth = shouldShrink ? 68 : 72;
-  const basePilHeight = shouldShrink ? 48 : 55;
-  const DRAG_SCALE = 1.04;
-  const INNER_MARGIN = 4;
-
-  // Clamp dock position
+  // position
   const clampX = useCallback(
     (x: number, width: number, dragging: boolean) => {
-      const currentScale = dragging ? DRAG_SCALE : 1;
-      const effectiveHalfPil = (basePilWidth * currentScale) / 2;
+      const scale = dragging ? DRAG_SCALE : 1;
+      const halfPill = (pillWidth * scale) / 2;
+      const min = INNER_MARGIN + halfPill;
+      const max = width - INNER_MARGIN - halfPill;
 
-      const minX = INNER_MARGIN + effectiveHalfPil;
-      const maxX = width - INNER_MARGIN - effectiveHalfPil;
-
-      return Math.max(minX, Math.min(maxX, x));
+      return Math.max(min, Math.min(max, x));
     },
-    [basePilWidth],
+    [pillWidth],
   );
 
-  // Calculate overdrag
-  const getOverdragAmount = useCallback(
+  const getOverdrag = useCallback(
     (x: number, width: number, dragging: boolean) => {
-      const currentScale = dragging ? DRAG_SCALE : 1;
-      const effectiveHalfPil = (basePilWidth * currentScale) / 2;
+      const scale = dragging ? DRAG_SCALE : 1;
+      const halfPill = (pillWidth * scale) / 2;
+      const min = INNER_MARGIN + halfPill;
+      const max = width - INNER_MARGIN - halfPill;
 
-      const minX = INNER_MARGIN + effectiveHalfPil;
-      const maxX = width - INNER_MARGIN - effectiveHalfPil;
-
-      if (x < minX) return x - minX;
-      if (x > maxX) return x - maxX;
-
+      if (x < min) return x - min;
+      if (x > max) return x - max;
       return 0;
     },
-    [basePilWidth],
+    [pillWidth],
   );
 
-  // Calculate item center
-  const getCenterXForIndex = useCallback(
+  const getCenter = useCallback(
     (index: number, width: number) => {
       const itemWidth = width / navItems.length;
       return index * itemWidth + itemWidth / 2;
@@ -321,378 +310,381 @@ export default function MobileBottomNavbar() {
     [navItems.length],
   );
 
-  // Sync indicator position
-  const updateTargetPos = useCallback(() => {
-    if (!dockRef.current) return;
+  const syncIndicator = useCallback(() => {
+    const dock = dockRef.current;
+    if (!dock) return;
 
-    const rect = dockRef.current.getBoundingClientRect();
-    const realWidth = dockRef.current.offsetWidth || rect.width;
+    const width = dock.offsetWidth || dock.getBoundingClientRect().width;
+    setDockWidth(width);
 
-    setDockWidth(realWidth);
+    rawX.set(clampX(getCenter(activeIndex, width), width, false));
+    overdrag.set(0);
+  }, [activeIndex, clampX, getCenter, overdrag, rawX]);
 
-    const center = getCenterXForIndex(activeIndex, realWidth);
-
-    rawX.set(clampX(center, realWidth, false));
-    overdragVal.set(0);
-  }, [activeIndex, getCenterXForIndex, rawX, overdragVal, clampX]);
-
-  // Update dock on resize
   useEffect(() => {
     if (!isMounted) return;
 
-    updateTargetPos();
+    syncIndicator();
 
-    const handleResize = () => {
-      updateTargetPos();
-    };
+    const observer = new ResizeObserver(syncIndicator);
+    if (dockRef.current) observer.observe(dockRef.current);
 
-    window.addEventListener("resize", handleResize);
+    window.addEventListener("resize", syncIndicator);
 
     return () => {
-      window.removeEventListener("resize", handleResize);
+      observer.disconnect();
+      window.removeEventListener("resize", syncIndicator);
     };
-  }, [updateTargetPos, isMounted]);
+  }, [isMounted, syncIndicator]);
 
-  // Keep indicator centered
   useEffect(() => {
     if (!isMounted || isDragging) return;
+    syncIndicator();
+  }, [isMounted, isDragging, shouldShrink, syncIndicator]);
 
-    updateTargetPos();
-  }, [shouldShrink, updateTargetPos, isMounted, isDragging]);
+  // drag
+  const getPointerX = useCallback((event: React.PointerEvent) => {
+    const dock = dockRef.current;
+    if (!dock) return null;
 
-  // Start dock drag
-  const handlePointerDown = (e: React.PointerEvent) => {
-    e.currentTarget.setPointerCapture(e.pointerId);
-    setIsDragging(true);
+    const rect = dock.getBoundingClientRect();
+    const width = dock.offsetWidth || rect.width;
+    const scale = rect.width / width || 1;
 
-    if (!dockRef.current) return;
+    return {
+      x: (event.clientX - rect.left) / scale,
+      width,
+    };
+  }, []);
 
-    const rect = dockRef.current.getBoundingClientRect();
-    const realWidth = dockRef.current.offsetWidth || rect.width;
-    const scaleFactor = rect.width / realWidth;
-    const mouseX = (e.clientX - rect.left) / scaleFactor;
+  const handlePointerDown = useCallback(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      const target = event.target as HTMLElement;
 
-    rawX.set(clampX(mouseX, realWidth, true));
-    overdragVal.set(getOverdragAmount(mouseX, realWidth, true));
-  };
+      if (
+        target.closest("button") ||
+        target.closest("a") ||
+        target.closest("[data-no-drag]")
+      ) {
+        dragMoved.current = false;
+        return;
+      }
 
-  // Move dock while dragging
-  const handlePointerMove = (e: React.PointerEvent) => {
-    if (!isDragging || !dockRef.current) return;
+      event.currentTarget.setPointerCapture(event.pointerId);
 
-    const rect = dockRef.current.getBoundingClientRect();
-    const realWidth = dockRef.current.offsetWidth || rect.width;
-    const scaleFactor = rect.width / realWidth;
-    const mouseX = (e.clientX - rect.left) / scaleFactor;
+      const point = getPointerX(event);
+      if (!point) return;
 
-    rawX.set(clampX(mouseX, realWidth, true));
-    overdragVal.set(getOverdragAmount(mouseX, realWidth, true));
-  };
+      dragStartX.current = point.x;
+      dragMoved.current = false;
+      setIsDragging(true);
 
-  // Finish dock drag
-  const handlePointerUp = (e: React.PointerEvent) => {
-    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
-      e.currentTarget.releasePointerCapture(e.pointerId);
-    }
+      rawX.set(clampX(point.x, point.width, true));
+      overdrag.set(getOverdrag(point.x, point.width, true));
+    },
+    [clampX, getOverdrag, getPointerX, overdrag, rawX],
+  );
 
-    setIsDragging(false);
+  const handlePointerMove = useCallback(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      if (!isDragging) return;
 
-    if (!dockRef.current) return;
+      const point = getPointerX(event);
+      if (!point) return;
 
-    const rect = dockRef.current.getBoundingClientRect();
-    const realWidth = dockRef.current.offsetWidth || rect.width;
-    const scaleFactor = rect.width / realWidth;
+      if (Math.abs(point.x - dragStartX.current) > DRAG_THRESHOLD) {
+        dragMoved.current = true;
+      }
 
-    const currentX = clampX(
-      (e.clientX - rect.left) / scaleFactor,
-      realWidth,
-      false,
-    );
+      rawX.set(clampX(point.x, point.width, true));
+      overdrag.set(getOverdrag(point.x, point.width, true));
+    },
+    [clampX, getOverdrag, getPointerX, isDragging, overdrag, rawX],
+  );
 
-    const itemWidth = realWidth / navItems.length;
+  const handlePointerUp = useCallback(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      if (!isDragging) return;
 
-    const targetIndex = Math.max(
-      0,
-      Math.min(navItems.length - 1, Math.floor(currentX / itemWidth)),
-    );
+      if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+        event.currentTarget.releasePointerCapture(event.pointerId);
+      }
 
-    const item = navItems[targetIndex];
+      setIsDragging(false);
 
-    if (item.isButton) {
-      setIsActionMenuOpen((prev) => !prev);
-    } else if (item.href) {
-      router.push(item.href);
-    }
+      const point = getPointerX(event);
+      overdrag.set(0);
 
-    overdragVal.set(0);
-    updateTargetPos();
-  };
+      if (!point || !dragMoved.current) {
+        syncIndicator();
+        return;
+      }
 
-  // Calculate icon scale
+      const itemWidth = point.width / navItems.length;
+      const targetIndex = Math.max(
+        0,
+        Math.min(navItems.length - 1, Math.floor(point.x / itemWidth)),
+      );
+
+      const item = navItems[targetIndex];
+
+      if (item.isButton) {
+        setIsActionMenuOpen((open) => !open);
+      } else {
+        router.push(item.href);
+      }
+
+      syncIndicator();
+    },
+    [getPointerX, isDragging, navItems, overdrag, router, syncIndicator],
+  );
+
+  // icon scale
   const getItemScale = useCallback(
-    (itemIndex: number) => {
+    (index: number) => {
       if (dockWidth <= 0) return 1;
 
       const itemWidth = dockWidth / navItems.length;
-      const itemCenterX = itemIndex * itemWidth + itemWidth / 2;
-      const currentPilX = springX.get();
-      const distance = Math.abs(currentPilX - itemCenterX);
+      const center = index * itemWidth + itemWidth / 2;
+      const distance = Math.abs(springX.get() - center);
       const threshold = itemWidth * 0.75;
 
-      if (distance < threshold) {
-        const factor = 1 - distance / threshold;
-        return 1 - factor * 0.08;
-      }
+      if (distance >= threshold) return 1;
 
-      return 1;
+      return 1 - (1 - distance / threshold) * 0.08;
     },
     [dockWidth, navItems.length, springX],
   );
 
-  // Close menu on outside click
+  // outside
   const handleOutsideClick = useCallback((event: MouseEvent) => {
-    if (
-      plusButtonRef.current &&
-      plusButtonRef.current.contains(event.target as Node)
-    ) {
-      return;
-    }
+    const target = event.target as Node;
 
-    if (
-      actionMenuRef.current &&
-      !actionMenuRef.current.contains(event.target as Node)
-    ) {
-      setIsActionMenuOpen(false);
-    }
+    if (plusButtonRef.current?.contains(target)) return;
+    if (actionMenuRef.current?.contains(target)) return;
+
+    setIsActionMenuOpen(false);
   }, []);
 
-  // Listen outside click
   useEffect(() => {
     if (!isActionMenuOpen) return;
 
     document.addEventListener("mousedown", handleOutsideClick);
-
-    return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
-    };
-  }, [isActionMenuOpen, handleOutsideClick]);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, [handleOutsideClick, isActionMenuOpen]);
 
   if (!isMounted) return null;
 
-  return (
+  return createPortal(
     <>
       <BookingModalFloating
         isOpen={isBookingOpen}
         onClose={() => setIsBookingOpen(false)}
       />
 
-      <div ref={liquidRootRef} className="relative min-h-0 w-full">
-        <div className="fixed inset-x-0 bottom-0 z-[99] flex flex-col items-center justify-end pb-6 pointer-events-none">
-          <nav
-            aria-label="Navigasi Bawah Seluler"
-            className="flex w-full flex-col items-center px-4 select-none lg:hidden"
+      {/* popup */}
+      <AnimatePresence mode="wait">
+        {isActionMenuOpen && (
+          <motion.aside
+            ref={actionMenuRef}
+            initial={{ opacity: 0, scale: 0.9, y: 14 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 14 }}
+            transition={{
+              duration: 0.2,
+              ease: [0.16, 1, 0.3, 1],
+            }}
+            aria-label="Menu aksi tambahan"
+            className="pointer-events-auto fixed bottom-[102px] left-1/2 z-[100] flex w-[230px] -translate-x-1/2 flex-col rounded-3xl bg-white/70 p-2 shadow-[0_16px_40px_rgba(0,0,0,0.12)] backdrop-blur-xl lg:hidden"
           >
-            {/* Action popup */}
-            <AnimatePresence mode="wait">
-              {isActionMenuOpen && (
-                <motion.aside
-                  ref={actionMenuRef}
-                  initial={{ opacity: 0, scale: 0.9, y: 14 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.9, y: 14 }}
-                  transition={{
-                    duration: 0.2,
-                    ease: [0.16, 1, 0.3, 1],
-                  }}
-                  className="pointer-events-auto mb-3.5 flex w-[230px] flex-col rounded-3xl bg-white/70 p-2 shadow-[0_16px_40px_rgba(0,0,0,0.12)]"
-                >
-                  {/* Booking button */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsActionMenuOpen(false);
-                      setIsBookingOpen(true);
-                    }}
-                    className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-black outline-none transition-colors hover:bg-black/5 active:bg-black/10"
-                  >
-                    <FontAwesomeIcon
-                      icon={faCalendarCheck}
-                      className="h-[20px] w-[20px]"
-                    />
-                    <span>Buat Janji Temu</span>
-                  </button>
-
-                  <div className="my-1 h-px w-full bg-black/10" />
-
-                  {/* Treatment room button */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsActionMenuOpen(false);
-                      router.push("/services/kamar-perawatan");
-                    }}
-                    className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-black outline-none transition-colors hover:bg-black/5 active:bg-black/10"
-                  >
-                    <FontAwesomeIcon
-                      icon={faProcedures}
-                      className="h-[20px] w-[20px]"
-                    />
-                    <span>Kamar Perawatan</span>
-                  </button>
-
-                  <div className="my-1 h-px w-full bg-black/10" />
-
-                  {/* Room availability button */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsActionMenuOpen(false);
-                      router.push("/ketersediaan-kamar");
-                    }}
-                    className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-black outline-none transition-colors hover:bg-black/5 active:bg-black/10"
-                  >
-                    <FontAwesomeIcon
-                      icon={faBed}
-                      className="h-[20px] w-[20px]"
-                    />
-                    <span>Ketersediaan Kamar</span>
-                  </button>
-                </motion.aside>
-              )}
-            </AnimatePresence>
-
-            {/* Main LiquidGlass dock */}
-            <motion.div
-              ref={dockRef}
-              onPointerDown={handlePointerDown}
-              onPointerMove={handlePointerMove}
-              onPointerUp={handlePointerUp}
-              onPointerCancel={handlePointerUp}
-              animate={{
-                scale: shouldShrink ? 0.92 : 1,
-                height: shouldShrink ? "56px" : "64px",
-                y: shouldShrink ? 4 : 0,
+            {/* button */}
+            <button
+              type="button"
+              onClick={() => {
+                setIsActionMenuOpen(false);
+                setIsBookingOpen(true);
               }}
-              transition={{
-                type: "spring",
-                stiffness: 350,
-                damping: 25,
-              }}
-              className="pointer-events-auto relative flex w-full max-w-[390px] items-center overflow-hidden rounded-[32px] touch-none cursor-grab active:cursor-grabbing"
-              style={{
-                scaleX: dockScaleX,
-                skewX: dockSkewX,
-
-                // Almost clear glass.
-                backgroundColor: "rgba(255, 255, 255, 0.600)",
-
-                // Very subtle glass edge.
-                border: "1px solid rgba(255, 255, 255, 0.28)",
-
-                // Refraction edge is kept around the entire dock.
-                boxShadow:
-                  "inset 0 0 0 1px rgba(255, 255, 255, 0.26), inset 0 0 18px rgba(255, 255, 255, 0.035), 0 10px 30px rgba(0, 0, 0, 0.10)",
-
-                // Important: no CSS backdrop blur.
-                // LiquidGlass handles refraction.
-                WebkitTransform: "translateZ(0)",
-                transform: "translateZ(0)",
-              }}
+              className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-black outline-none transition-colors hover:bg-black/5 active:bg-black/10"
             >
-              {/* Active black transparent pill */}
-              <motion.div
-                className="pointer-events-none absolute top-1/2 z-10 rounded-full"
-                animate={{
-                  width: `${basePilWidth}px`,
-                  height: `${basePilHeight}px`,
-                  scale: isDragging ? DRAG_SCALE : 1,
-
-                  // Only the active pill is black.
-                  backgroundColor: "rgba(0, 0, 0, 0.19)",
-                }}
-                transition={{
-                  type: "spring",
-                  stiffness: 400,
-                  damping: 25,
-                }}
-                style={{
-                  x: springX,
-                  y: "-50%",
-                  left: 0,
-                  translateX: "-50%",
-
-
-
-                  WebkitTransform: "translateZ(0)",
-                  transform: "translateZ(0)",
-                }}
+              <FontAwesomeIcon
+                icon={faCalendarCheck}
+                className="h-5 w-5"
+                aria-hidden="true"
               />
+              <span>Buat Janji Temu</span>
+            </button>
 
-              {/* Navigation list */}
-              <menu className="relative z-20 m-0 flex h-full w-full list-none items-center justify-between p-0">
-                {navItems.map((item, i) => {
-                  const isActive = i === activeIndex;
-                  const localScale = getItemScale(i);
+            <div className="my-1 h-px w-full bg-black/10" />
 
-                  return (
-                    <li
-                      key={item.href || i}
-                      className="flex h-full flex-1 items-center justify-center transition-transform duration-100 ease-out"
+            {/* button */}
+            <button
+              type="button"
+              onClick={() => {
+                setIsActionMenuOpen(false);
+                router.push("/services/kamar-perawatan");
+              }}
+              className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-black outline-none transition-colors hover:bg-black/5 active:bg-black/10"
+            >
+              <FontAwesomeIcon
+                icon={faProcedures}
+                className="h-5 w-5"
+                aria-hidden="true"
+              />
+              <span>Kamar Perawatan</span>
+            </button>
+
+            <div className="my-1 h-px w-full bg-black/10" />
+
+            {/* button */}
+            <button
+              type="button"
+              onClick={() => {
+                setIsActionMenuOpen(false);
+                router.push("/ketersediaan-kamar");
+              }}
+              className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-black outline-none transition-colors hover:bg-black/5 active:bg-black/10"
+            >
+              <FontAwesomeIcon
+                icon={faBed}
+                className="h-5 w-5"
+                aria-hidden="true"
+              />
+              <span>Ketersediaan Kamar</span>
+            </button>
+          </motion.aside>
+        )}
+      </AnimatePresence>
+
+      {/* dock */}
+      <motion.div
+        ref={dockRef}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
+        animate={{
+          scale: shouldShrink ? 0.92 : 1,
+          height: shouldShrink ? "56px" : "64px",
+          y: shouldShrink ? 4 : 0,
+        }}
+        transition={{
+          type: "spring",
+          stiffness: 350,
+          damping: 25,
+        }}
+        data-mobile-dock
+        aria-label="Navigasi bawah"
+        className="pointer-events-auto fixed inset-x-4 bottom-6 z-[99] mx-auto flex max-w-[390px] items-center overflow-visible rounded-[32px] touch-none select-none"
+        style={{
+          scaleX: dockScaleX,
+          skewX: dockSkewX,
+          background: "rgba(255,255,255,0.035)",
+          border: "1px solid rgba(255,255,255,0.22)",
+          boxShadow:
+            "0 12px 35px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.28)",
+          WebkitTransform: "translateZ(0)",
+          transform: "translateZ(0)",
+        }}
+      >
+        {/* active */}
+        <motion.div
+          className="pointer-events-none absolute left-0 top-1/2 z-10 rounded-full"
+          animate={{
+            width: pillWidth,
+            height: pillHeight,
+            scale: isDragging ? DRAG_SCALE : 1,
+          }}
+          transition={{
+            type: "spring",
+            stiffness: 400,
+            damping: 25,
+          }}
+          style={{
+            x: springX,
+            y: "-50%",
+            translateX: "-50%",
+            background: "rgba(0,0,0,0.17)",
+            boxShadow:
+              "inset 0 1px 1px rgba(255,255,255,0.10), inset 0 -1px 2px rgba(0,0,0,0.08)",
+          }}
+        />
+
+        {/* navigation */}
+        <menu className="relative z-20 m-0 flex h-full w-full list-none items-center justify-between p-0">
+          {navItems.map((item, index) => {
+            const isActive = index === activeIndex;
+            const scale = getItemScale(index);
+
+            return (
+              <li
+                key={item.href || index}
+                className="flex h-full flex-1 items-center justify-center"
+                style={{
+                  transform: `scale(${scale})`,
+                }}
+              >
+                {item.isButton ? (
+                  <button
+                    ref={plusButtonRef}
+                    type="button"
+                    aria-label={
+                      isActionMenuOpen
+                        ? "Tutup menu aksi tambahan"
+                        : "Buka menu aksi tambahan"
+                    }
+                    aria-expanded={isActionMenuOpen}
+                    data-no-drag
+                    onPointerDown={(event) => {
+                      event.stopPropagation();
+                    }}
+                    onClick={() => {
+                      setIsActionMenuOpen((open) => !open);
+                    }}
+                    className="flex h-12 w-12 select-none items-center justify-center rounded-full outline-none"
+                    style={{
+                      WebkitTapHighlightColor: "transparent",
+                    }}
+                  >
+                    <FontAwesomeIcon
+                      icon={faPlus}
+                      className="text-[24px] text-black"
                       style={{
-                        transform: `scale(${localScale})`,
+                        transform: isActionMenuOpen
+                          ? "rotate(45deg)"
+                          : "rotate(0deg)",
+                        transition:
+                          "transform 260ms cubic-bezier(0.16,1,0.3,1)",
                       }}
-                    >
-                      {item.isButton ? (
-                        <button
-                          ref={plusButtonRef}
-                          type="button"
-                          aria-label="Menu Aksi Tambahan"
-                          onClick={() => setIsActionMenuOpen((prev) => !prev)}
-                          className="flex h-12 w-12 select-none items-center justify-center rounded-full outline-none"
-                          style={{
-                            WebkitTapHighlightColor: "transparent",
-                          }}
-                        >
-                          <FontAwesomeIcon
-                            icon={faPlus}
-                            className="text-[24px] text-black"
-                            style={{
-                              transform: isActionMenuOpen
-                                ? "rotate(45deg)"
-                                : "rotate(0deg)",
-                              transition: "transform 200ms ease",
-                            }}
-                          />
-                        </button>
-                      ) : (
-                        <Link
-                          href={item.href || "#"}
-                          aria-label={item.label}
-                          onClick={(e) => {
-                            if (pathname === item.href) {
-                              e.preventDefault();
-                              window.scrollTo({
-                                top: 0,
-                                behavior: "smooth",
-                              });
-                            }
-                          }}
-                          className="flex h-12 w-12 select-none items-center justify-center rounded-full outline-none"
-                          style={{
-                            WebkitTapHighlightColor: "transparent",
-                          }}
-                        >
-                          <NavIcon item={item} isActive={isActive} />
-                        </Link>
-                      )}
-                    </li>
-                  );
-                })}
-              </menu>
-            </motion.div>
-          </nav>
-        </div>
-      </div>
-    </>
+                      aria-hidden="true"
+                    />
+                  </button>
+                ) : (
+                  <Link
+                    href={item.href}
+                    aria-label={item.label}
+                    onClick={(event) => {
+                      if (pathname === item.href) {
+                        event.preventDefault();
+                        window.scrollTo({
+                          top: 0,
+                          behavior: "smooth",
+                        });
+                      }
+                    }}
+                    className="flex h-12 w-12 select-none items-center justify-center rounded-full outline-none"
+                    style={{
+                      WebkitTapHighlightColor: "transparent",
+                    }}
+                  >
+                    <NavIcon item={item} isActive={isActive} />
+                  </Link>
+                )}
+              </li>
+            );
+          })}
+        </menu>
+      </motion.div>
+    </>,
+    document.body,
   );
 }
