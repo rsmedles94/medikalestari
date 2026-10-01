@@ -8,7 +8,6 @@ import React, {
   useRef,
   useSyncExternalStore,
 } from "react";
-import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -20,6 +19,7 @@ import {
 } from "framer-motion";
 
 import { Home } from "lucide-react";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import {
@@ -35,6 +35,7 @@ import {
 import { LiquidGlass } from "@ybouane/liquidglass";
 import BookingModalFloating from "./BookingModalFloating";
 
+// Nav item
 interface NavItem {
   label: string;
   href: string;
@@ -43,8 +44,10 @@ interface NavItem {
   isButton?: boolean;
 }
 
+// Mounted state
 const emptySubscribe = () => () => {};
 
+// Mounted state
 function useIsMounted() {
   return useSyncExternalStore(
     emptySubscribe,
@@ -53,7 +56,7 @@ function useIsMounted() {
   );
 }
 
-// home
+// Home icon
 function HomeOutlineNoDoor({
   size = 26,
   color = "#000000",
@@ -79,101 +82,83 @@ function HomeOutlineNoDoor({
   );
 }
 
-// icon
-function NavIcon({
-  item,
-  isActive,
-}: {
-  item: NavItem;
-  isActive: boolean;
-}) {
+// Nav icon
+function NavIcon({ item, isActive }: { item: NavItem; isActive: boolean }) {
+  const iconColor = "#000000";
+
   if (item.isHome) {
-    return isActive ? (
-      <Home
-        className="h-[26px] w-[26px]"
-        style={{ color: "#000000" }}
-        fill="#000000"
-        stroke="#000000"
-        strokeWidth={2.2}
-        aria-hidden="true"
+    if (isActive) {
+      return (
+        <Home
+          className="h-[26px] w-[26px]"
+          style={{ color: iconColor }}
+          fill={iconColor}
+          stroke={iconColor}
+          strokeWidth={2.2}
+          aria-hidden="true"
+        />
+      );
+    }
+
+    return <HomeOutlineNoDoor size={26} color={iconColor} />;
+  }
+
+  if (item.icon) {
+    return (
+      <FontAwesomeIcon
+        icon={item.icon}
+        className="text-[24px]"
+        style={{
+          color: iconColor,
+          opacity: isActive ? 1 : 0.65,
+        }}
       />
-    ) : (
-      <HomeOutlineNoDoor size={26} />
     );
   }
 
-  if (!item.icon) return null;
-
-  return (
-    <FontAwesomeIcon
-      icon={item.icon}
-      className="text-[24px]"
-      style={{
-        color: "#000000",
-        opacity: isActive ? 1 : 0.65,
-      }}
-      aria-hidden="true"
-    />
-  );
+  return null;
 }
-
-const GLASS_CONFIG = {
-  cornerRadius: 32,
-  refraction: 1.08,
-  chromAberration: 0.035,
-  edgeHighlight: 0.38,
-  specular: 0.14,
-  fresnel: 1.0,
-  distortion: 0.01,
-  blurAmount: 0.08,
-  opacity: 0.78,
-  saturation: 0.025,
-  tintStrength: 0.008,
-  brightness: 0.008,
-  shadowOpacity: 0.18,
-  shadowSpread: 10,
-  shadowOffsetY: 6,
-  zRadius: 30,
-  bevelMode: 0,
-  floating: false,
-  button: false,
-} as const;
-
-const DRAG_SCALE = 1.04;
-const INNER_MARGIN = 4;
-const DRAG_THRESHOLD = 5;
 
 export default function MobileBottomNavbar() {
   const pathname = usePathname();
   const router = useRouter();
   const isMounted = useIsMounted();
 
+  // State
   const [isBookingOpen, setIsBookingOpen] = useState(false);
+
   const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
-  const [dockWidth, setDockWidth] = useState(390);
-  const [isScrolledDown, setIsScrolledDown] = useState(false);
-  const [glassFallback, setGlassFallback] = useState(false);
+
+  const actionMenuRef = useRef<HTMLDivElement>(null);
+  const plusButtonRef = useRef<HTMLButtonElement>(null);
 
   const dockRef = useRef<HTMLDivElement>(null);
-  const plusButtonRef = useRef<HTMLButtonElement>(null);
-  const actionMenuRef = useRef<HTMLElement>(null);
-  const dragStartX = useRef(0);
-  const dragMoved = useRef(false);
+
+  const liquidRootRef = useRef<HTMLDivElement>(null);
+
+  const [isDragging, setIsDragging] = useState(false);
+  const [dockWidth, setDockWidth] = useState(390);
+
+  const [isScrolledDown, setIsScrolledDown] = useState(false);
   const lastScrollY = useRef(0);
-  const glassInstanceRef = useRef<Awaited<ReturnType<typeof LiquidGlass.init>> | null>(null);
-  const glassRefreshFrame = useRef<number | null>(null);
 
-  // glass
+  // LiquidGlass
   useEffect(() => {
-    if (!isMounted || !dockRef.current) return;
-
+    const root = liquidRootRef.current;
     const dock = dockRef.current;
-    const root = document.body;
 
-    dock.dataset.config = JSON.stringify(GLASS_CONFIG);
+    if (!root || !dock) return;
+
+    dock.dataset.config = JSON.stringify({
+      cornerRadius: 32,
+      refraction: 2.1,
+      chromAberration: 0.065,
+      edgeHighlight: 0.42,
+      blurAmount: 0.025,
+    });
 
     let instance: Awaited<ReturnType<typeof LiquidGlass.init>> | undefined;
+
     let cancelled = false;
 
     LiquidGlass.init({
@@ -187,64 +172,51 @@ export default function MobileBottomNavbar() {
         }
 
         instance = result;
-        glassInstanceRef.current = result;
-        setGlassFallback(false);
       })
       .catch((error) => {
-        console.warn("LiquidGlass unavailable, using glass fallback:", error);
-        setGlassFallback(true);
+        console.error("LiquidGlass initialization failed:", error);
       });
 
     return () => {
       cancelled = true;
       instance?.destroy();
-      glassInstanceRef.current = null;
-
     };
-  }, [isMounted]);
-
-  // glass refresh
-  const refreshGlass = useCallback(() => {
-    if (glassRefreshFrame.current !== null) return;
-
-    glassRefreshFrame.current = window.requestAnimationFrame(() => {
-      glassRefreshFrame.current = null;
-      glassInstanceRef.current?.markChanged();
-    });
   }, []);
 
-  // scroll
+  // Scroll
   useEffect(() => {
     if (!isMounted) return;
 
     const handleScroll = () => {
-      const currentY = window.scrollY;
-      setIsScrolledDown(currentY > lastScrollY.current && currentY > 50);
-      lastScrollY.current = currentY;
-      refreshGlass();
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY > lastScrollY.current && currentScrollY > 50) {
+        setIsScrolledDown(true);
+      } else {
+        setIsScrolledDown(false);
+      }
+
+      lastScrollY.current = currentScrollY;
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
+
     return () => {
       window.removeEventListener("scroll", handleScroll);
-      if (glassRefreshFrame.current !== null) {
-        cancelAnimationFrame(glassRefreshFrame.current);
-        glassRefreshFrame.current = null;
-      }
     };
-  }, [isMounted, refreshGlass]);
+  }, [isMounted]);
 
-  // motion
+  // Motion
   const rawX = useMotionValue(0);
-  const overdrag = useMotionValue(0);
+  const overdragVal = useMotionValue(0);
 
   const springX = useSpring(rawX, {
-    stiffness: 420,
-    damping: 28,
-    mass: 0.6,
+    stiffness: 520,
+    damping: 34,
+    mass: 0.65,
   });
 
-  const springOverdrag = useSpring(overdrag, {
+  const springOverdrag = useSpring(overdragVal, {
     stiffness: 380,
     damping: 22,
   });
@@ -261,7 +233,7 @@ export default function MobileBottomNavbar() {
     [-2.5, 0, 2.5],
   );
 
-  // navigation
+  // Nav items
   const navItems = useMemo<NavItem[]>(
     () => [
       { label: "Beranda", href: "/", isHome: true },
@@ -272,11 +244,7 @@ export default function MobileBottomNavbar() {
         icon: faPlus,
         isButton: true,
       },
-      {
-        label: "Jadwal",
-        href: "/jadwal-dokter",
-        icon: faCalendarDays,
-      },
+      { label: "Jadwal", href: "/jadwal-dokter", icon: faCalendarDays },
       { label: "Promo", href: "/promo", icon: faTicket },
     ],
     [],
@@ -285,46 +253,50 @@ export default function MobileBottomNavbar() {
   const activeIndex = useMemo(() => {
     if (!isMounted) return 0;
 
-    const index = navItems.findIndex(
+    const idx = navItems.findIndex(
       (item) => !item.isButton && item.href === pathname,
     );
 
-    return index === -1 ? 0 : index;
-  }, [isMounted, navItems, pathname]);
+    return idx !== -1 ? idx : 0;
+  }, [pathname, navItems, isMounted]);
 
-  // sizes
   const shouldShrink = isScrolledDown && !isDragging;
-  const pillWidth = shouldShrink ? 68 : 72;
-  const pillHeight = shouldShrink ? 48 : 55;
 
-  // position
+  const basePilWidth = shouldShrink ? 68 : 72;
+  const basePilHeight = shouldShrink ? 48 : 55;
+  const DRAG_SCALE = 1.04;
+  const INNER_MARGIN = 4;
+
   const clampX = useCallback(
     (x: number, width: number, dragging: boolean) => {
-      const scale = dragging ? DRAG_SCALE : 1;
-      const halfPill = (pillWidth * scale) / 2;
-      const min = INNER_MARGIN + halfPill;
-      const max = width - INNER_MARGIN - halfPill;
+      const currentScale = dragging ? DRAG_SCALE : 1;
+      const effectiveHalfPil = (basePilWidth * currentScale) / 2;
 
-      return Math.max(min, Math.min(max, x));
+      const minX = INNER_MARGIN + effectiveHalfPil;
+      const maxX = width - INNER_MARGIN - effectiveHalfPil;
+
+      return Math.max(minX, Math.min(maxX, x));
     },
-    [pillWidth],
+    [basePilWidth],
   );
 
-  const getOverdrag = useCallback(
+  const getOverdragAmount = useCallback(
     (x: number, width: number, dragging: boolean) => {
-      const scale = dragging ? DRAG_SCALE : 1;
-      const halfPill = (pillWidth * scale) / 2;
-      const min = INNER_MARGIN + halfPill;
-      const max = width - INNER_MARGIN - halfPill;
+      const currentScale = dragging ? DRAG_SCALE : 1;
+      const effectiveHalfPil = (basePilWidth * currentScale) / 2;
 
-      if (x < min) return x - min;
-      if (x > max) return x - max;
+      const minX = INNER_MARGIN + effectiveHalfPil;
+      const maxX = width - INNER_MARGIN - effectiveHalfPil;
+
+      if (x < minX) return x - minX;
+      if (x > maxX) return x - maxX;
+
       return 0;
     },
-    [pillWidth],
+    [basePilWidth],
   );
 
-  const getCenter = useCallback(
+  const getCenterXForIndex = useCallback(
     (index: number, width: number) => {
       const itemWidth = width / navItems.length;
       return index * itemWidth + itemWidth / 2;
@@ -332,432 +304,390 @@ export default function MobileBottomNavbar() {
     [navItems.length],
   );
 
-  const syncIndicator = useCallback(() => {
-    const dock = dockRef.current;
-    if (!dock) return;
+  const updateTargetPos = useCallback(() => {
+    if (!dockRef.current) return;
 
-    const width = dock.offsetWidth || dock.getBoundingClientRect().width;
-    setDockWidth(width);
+    const rect = dockRef.current.getBoundingClientRect();
+    const realWidth = dockRef.current.offsetWidth || rect.width;
 
-    rawX.set(clampX(getCenter(activeIndex, width), width, false));
-    overdrag.set(0);
-  }, [
-    activeIndex,
-    clampX,
-    getCenter,
-    overdrag,
-    rawX,
-  ]);
+    setDockWidth(realWidth);
+
+    const center = getCenterXForIndex(activeIndex, realWidth);
+
+    rawX.set(clampX(center, realWidth, false));
+    overdragVal.set(0);
+  }, [activeIndex, getCenterXForIndex, rawX, overdragVal, clampX]);
 
   useEffect(() => {
     if (!isMounted) return;
 
-    syncIndicator();
+    updateTargetPos();
 
-    const observer = new ResizeObserver(syncIndicator);
-    if (dockRef.current) observer.observe(dockRef.current);
+    const handleResize = () => {
+      updateTargetPos();
+    };
 
-    window.addEventListener("resize", syncIndicator);
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      observer.disconnect();
-      window.removeEventListener("resize", syncIndicator);
+      window.removeEventListener("resize", handleResize);
     };
-  }, [isMounted, syncIndicator]);
+  }, [updateTargetPos, isMounted]);
 
   useEffect(() => {
     if (!isMounted || isDragging) return;
-    syncIndicator();
-  }, [isMounted, isDragging, shouldShrink, syncIndicator]);
 
-  // drag
-  const getPointerX = useCallback((event: React.PointerEvent) => {
-    const dock = dockRef.current;
-    if (!dock) return null;
+    updateTargetPos();
+  }, [shouldShrink, updateTargetPos, isMounted, isDragging]);
 
-    const rect = dock.getBoundingClientRect();
-    const width = dock.offsetWidth || rect.width;
-    const scale = rect.width / width || 1;
+  // Drag
+  const handlePointerDown = (e: React.PointerEvent) => {
+    const target = e.target as HTMLElement;
 
-    return {
-      x: (event.clientX - rect.left) / scale,
-      width,
-    };
-  }, []);
+    // Buttons and links belong to navigation, not dock dragging.
+    if (target.closest("button, a, [data-no-drag]")) {
+      return;
+    }
 
-  const handlePointerDown = useCallback(
-    (event: React.PointerEvent<HTMLDivElement>) => {
-      const target = event.target as HTMLElement;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    setIsDragging(true);
 
-      if (
-        target.closest("button") ||
-        target.closest("a") ||
-        target.closest("[data-no-drag]")
-      ) {
-        dragMoved.current = false;
-        return;
-      }
+    if (!dockRef.current) return;
 
-      event.currentTarget.setPointerCapture(event.pointerId);
+    const rect = dockRef.current.getBoundingClientRect();
+    const realWidth = dockRef.current.offsetWidth || rect.width;
+    const scaleFactor = rect.width / realWidth;
+    const mouseX = (e.clientX - rect.left) / scaleFactor;
 
-      const point = getPointerX(event);
-      if (!point) return;
+    rawX.set(clampX(mouseX, realWidth, true));
+    overdragVal.set(getOverdragAmount(mouseX, realWidth, true));
+  };
 
-      dragStartX.current = point.x;
-      dragMoved.current = false;
-      setIsDragging(true);
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!isDragging || !dockRef.current) return;
 
-      rawX.set(clampX(point.x, point.width, true));
-      overdrag.set(getOverdrag(point.x, point.width, true));
-    },
-    [clampX, getOverdrag, getPointerX, overdrag, rawX],
-  );
+    const rect = dockRef.current.getBoundingClientRect();
+    const realWidth = dockRef.current.offsetWidth || rect.width;
+    const scaleFactor = rect.width / realWidth;
+    const mouseX = (e.clientX - rect.left) / scaleFactor;
 
-  const handlePointerMove = useCallback(
-    (event: React.PointerEvent<HTMLDivElement>) => {
-      if (!isDragging) return;
+    rawX.set(clampX(mouseX, realWidth, true));
+    overdragVal.set(getOverdragAmount(mouseX, realWidth, true));
+  };
 
-      const point = getPointerX(event);
-      if (!point) return;
+  const handlePointerUp = (e: React.PointerEvent) => {
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
 
-      if (Math.abs(point.x - dragStartX.current) > DRAG_THRESHOLD) {
-        dragMoved.current = true;
-      }
+    setIsDragging(false);
 
-      rawX.set(clampX(point.x, point.width, true));
-      overdrag.set(getOverdrag(point.x, point.width, true));
-      refreshGlass();
-    },
-    [clampX, getOverdrag, getPointerX, isDragging, overdrag, rawX, refreshGlass],
-  );
+    if (!dockRef.current) return;
 
-  const handlePointerUp = useCallback(
-    (event: React.PointerEvent<HTMLDivElement>) => {
-      if (!isDragging) return;
+    const rect = dockRef.current.getBoundingClientRect();
+    const realWidth = dockRef.current.offsetWidth || rect.width;
+    const scaleFactor = rect.width / realWidth;
 
-      if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-        event.currentTarget.releasePointerCapture(event.pointerId);
-      }
+    const currentX = clampX(
+      (e.clientX - rect.left) / scaleFactor,
+      realWidth,
+      false,
+    );
 
-      setIsDragging(false);
+    const itemWidth = realWidth / navItems.length;
 
-      const point = getPointerX(event);
-      overdrag.set(0);
+    const targetIndex = Math.max(
+      0,
+      Math.min(navItems.length - 1, Math.floor(currentX / itemWidth)),
+    );
 
-      if (!point || !dragMoved.current) {
-        syncIndicator();
-        return;
-      }
+    const item = navItems[targetIndex];
 
-      const itemWidth = point.width / navItems.length;
-      const targetIndex = Math.max(
-        0,
-        Math.min(
-          navItems.length - 1,
-          Math.floor(point.x / itemWidth),
-        ),
-      );
+    if (item.isButton) {
+      setIsActionMenuOpen((prev) => !prev);
+    } else if (item.href) {
+      router.push(item.href);
+    }
 
-      const item = navItems[targetIndex];
+    overdragVal.set(0);
+    updateTargetPos();
+  };
 
-      if (item.isButton) {
-        setIsActionMenuOpen((open) => !open);
-      } else {
-        router.push(item.href);
-      }
-
-      syncIndicator();
-    },
-    [
-      getPointerX,
-      isDragging,
-      navItems,
-      overdrag,
-      router,
-      syncIndicator,
-    ],
-  );
-
-  // icon scale
   const getItemScale = useCallback(
-    (index: number) => {
+    (itemIndex: number) => {
       if (dockWidth <= 0) return 1;
 
       const itemWidth = dockWidth / navItems.length;
-      const center = index * itemWidth + itemWidth / 2;
-      const distance = Math.abs(springX.get() - center);
+      const itemCenterX = itemIndex * itemWidth + itemWidth / 2;
+      const currentPilX = springX.get();
+      const distance = Math.abs(currentPilX - itemCenterX);
       const threshold = itemWidth * 0.75;
 
-      if (distance >= threshold) return 1;
+      if (distance < threshold) {
+        const factor = 1 - distance / threshold;
+        return 1 - factor * 0.08;
+      }
 
-      return 1 - (1 - distance / threshold) * 0.08;
+      return 1;
     },
     [dockWidth, navItems.length, springX],
   );
 
-  // outside
+  // Outside click
   const handleOutsideClick = useCallback((event: MouseEvent) => {
-    const target = event.target as Node;
+    if (
+      plusButtonRef.current &&
+      plusButtonRef.current.contains(event.target as Node)
+    ) {
+      return;
+    }
 
-    if (plusButtonRef.current?.contains(target)) return;
-    if (actionMenuRef.current?.contains(target)) return;
-
-    setIsActionMenuOpen(false);
+    if (
+      actionMenuRef.current &&
+      !actionMenuRef.current.contains(event.target as Node)
+    ) {
+      setIsActionMenuOpen(false);
+    }
   }, []);
 
   useEffect(() => {
     if (!isActionMenuOpen) return;
 
     document.addEventListener("mousedown", handleOutsideClick);
-    return () =>
+
+    return () => {
       document.removeEventListener("mousedown", handleOutsideClick);
-  }, [handleOutsideClick, isActionMenuOpen]);
+    };
+  }, [isActionMenuOpen, handleOutsideClick]);
 
   if (!isMounted) return null;
 
-  return createPortal(
+  return (
     <>
-      <style>{`
-        @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-          .glass-fallback {
-            background: rgba(255, 255, 255, 0.52) !important;
-            -webkit-backdrop-filter: blur(22px) saturate(1.35);
-            backdrop-filter: blur(22px) saturate(1.35);
-          }
-        }
-      `}</style>
-
       <BookingModalFloating
         isOpen={isBookingOpen}
         onClose={() => setIsBookingOpen(false)}
       />
 
-      {/* popup */}
-      <AnimatePresence mode="wait">
-        {isActionMenuOpen && (
-          <motion.aside
-            ref={actionMenuRef}
-            initial={{ opacity: 0, scale: 0.9, y: 14 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 14 }}
-            transition={{
-              duration: 0.2,
-              ease: [0.16, 1, 0.3, 1],
-            }}
-            aria-label="Menu aksi tambahan"
-            className="pointer-events-auto fixed bottom-[102px] left-1/2 z-[100] flex w-[230px] -translate-x-1/2 flex-col rounded-3xl bg-white/70 p-2 shadow-[0_16px_40px_rgba(0,0,0,0.12)] backdrop-blur-xl lg:hidden"
+      <div ref={liquidRootRef} className="relative min-h-0 w-full">
+        <div className="fixed inset-x-0 bottom-0 z-[99] flex flex-col items-center justify-end pb-6 pointer-events-none">
+          <nav
+            aria-label="Navigasi Bawah Seluler"
+            className="flex w-full flex-col items-center px-4 select-none lg:hidden"
           >
-            {/* button */}
-            <button
-              type="button"
-              onClick={() => {
-                setIsActionMenuOpen(false);
-                setIsBookingOpen(true);
-              }}
-              className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-black outline-none transition-colors hover:bg-black/5 active:bg-black/10"
-            >
-              <FontAwesomeIcon
-                icon={faCalendarCheck}
-                className="h-5 w-5"
-                aria-hidden="true"
-              />
-              <span>Buat Janji Temu</span>
-            </button>
-
-            <div className="my-1 h-px w-full bg-black/10" />
-
-            {/* button */}
-            <button
-              type="button"
-              onClick={() => {
-                setIsActionMenuOpen(false);
-                router.push("/services/kamar-perawatan");
-              }}
-              className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-black outline-none transition-colors hover:bg-black/5 active:bg-black/10"
-            >
-              <FontAwesomeIcon
-                icon={faProcedures}
-                className="h-5 w-5"
-                aria-hidden="true"
-              />
-              <span>Kamar Perawatan</span>
-            </button>
-
-            <div className="my-1 h-px w-full bg-black/10" />
-
-            {/* button */}
-            <button
-              type="button"
-              onClick={() => {
-                setIsActionMenuOpen(false);
-                router.push("/ketersediaan-kamar");
-              }}
-              className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-black outline-none transition-colors hover:bg-black/5 active:bg-black/10"
-            >
-              <FontAwesomeIcon
-                icon={faBed}
-                className="h-5 w-5"
-                aria-hidden="true"
-              />
-              <span>Ketersediaan Kamar</span>
-            </button>
-          </motion.aside>
-        )}
-      </AnimatePresence>
-
-      {/* dock */}
-      <motion.div
-        ref={dockRef}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
-        animate={{
-          scale: shouldShrink ? 0.92 : 1,
-          height: shouldShrink ? "56px" : "64px",
-          y: shouldShrink ? 4 : 0,
-        }}
-        transition={{
-          type: "spring",
-          stiffness: 350,
-          damping: 25,
-        }}
-        data-mobile-dock
-        aria-label="Navigasi bawah"
-        className={`pointer-events-auto fixed inset-x-4 bottom-6 z-[99] mx-auto flex max-w-[390px] items-center overflow-visible rounded-[32px] touch-none select-none ${glassFallback ? "glass-fallback" : ""}`}
-        style={{
-          scaleX: dockScaleX,
-          skewX: dockSkewX,
-          background: glassFallback
-            ? "rgba(255,255,255,0.40)"
-            : "rgba(255,255,255,0.018)",
-          border: "1px solid rgba(255,255,255,0.22)",
-          boxShadow:
-            "0 10px 28px rgba(0,0,0,0.11), inset 0 1px 0 rgba(255,255,255,0.32), inset 0 0 0 1px rgba(255,255,255,0.08)",
-          WebkitBackdropFilter: glassFallback
-            ? "blur(22px) saturate(1.35)"
-            : undefined,
-          backdropFilter: glassFallback
-            ? "blur(22px) saturate(1.35)"
-            : undefined,
-          WebkitTransform: "translateZ(0)",
-          transform: "translateZ(0)",
-        }}
-      >
-        {/* edge */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 z-[5] rounded-[32px]"
-          style={{
-            background:
-              "radial-gradient(ellipse at center, rgba(255,255,255,0) 30%, rgba(255,255,255,0.018) 62%, rgba(255,255,255,0.085) 100%)",
-            boxShadow: "inset 0 0 18px rgba(255,255,255,0.035)",
-          }}
-        />
-
-        {/* active */}
-        <motion.div
-          className="pointer-events-none absolute left-0 top-1/2 z-10 rounded-full"
-          animate={{
-            width: pillWidth,
-            height: pillHeight,
-            scale: isDragging ? DRAG_SCALE : 1,
-          }}
-          transition={{
-            type: "spring",
-            stiffness: 400,
-            damping: 25,
-          }}
-          style={{
-            x: springX,
-            y: "-50%",
-            translateX: "-50%",
-            background:
-              "linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.045))",
-            border: "1px solid rgba(255,255,255,0.14)",
-            boxShadow:
-              "inset 0 1px 1px rgba(255,255,255,0.20), inset 0 -1px 3px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)",
-            backdropFilter: "blur(8px) saturate(1.15)",
-            WebkitBackdropFilter: "blur(8px) saturate(1.15)",
-          }}
-        />
-
-        {/* navigation */}
-        <menu className="relative z-20 m-0 flex h-full w-full list-none items-center justify-between p-0">
-          {navItems.map((item, index) => {
-            const isActive = index === activeIndex;
-            const scale = getItemScale(index);
-
-            return (
-              <li
-                key={item.href || index}
-                className="flex h-full flex-1 items-center justify-center"
-                style={{
-                  transform: `scale(${scale})`,
-                }}
-              >
-                {item.isButton ? (
+            {/* Action menu */}
+            <AnimatePresence mode="wait">
+              {isActionMenuOpen && (
+                <motion.aside
+                  ref={actionMenuRef}
+                  initial={{ opacity: 0, scale: 0.9, y: 14 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.9, y: 14 }}
+                  transition={{
+                    duration: 0.2,
+                    ease: [0.16, 1, 0.3, 1],
+                  }}
+                  className="pointer-events-auto mb-3.5 flex w-[230px] flex-col rounded-3xl bg-white/70 p-2 shadow-[0_16px_40px_rgba(0,0,0,0.12)]"
+                >
+                  {/* Button */}
                   <button
-                    ref={plusButtonRef}
                     type="button"
-                    aria-label={
-                      isActionMenuOpen
-                        ? "Tutup menu aksi tambahan"
-                        : "Buka menu aksi tambahan"
-                    }
-                    aria-expanded={isActionMenuOpen}
-                    data-no-drag
-                    onPointerDown={(event) => {
-                      event.stopPropagation();
-                    }}
                     onClick={() => {
-                      setIsActionMenuOpen((open) => !open);
+                      setIsActionMenuOpen(false);
+                      setIsBookingOpen(true);
                     }}
-                    className="flex h-12 w-12 select-none items-center justify-center rounded-full outline-none"
-                    style={{
-                      WebkitTapHighlightColor: "transparent",
-                    }}
+                    className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-black outline-none transition-colors hover:bg-black/5 active:bg-black/10"
                   >
                     <FontAwesomeIcon
-                      icon={faPlus}
-                      className="text-[24px] text-black"
-                      style={{
-                        transform: isActionMenuOpen
-                          ? "rotate(45deg)"
-                          : "rotate(0deg)",
-                        transition:
-                          "transform 260ms cubic-bezier(0.16,1,0.3,1)",
-                      }}
-                      aria-hidden="true"
+                      icon={faCalendarCheck}
+                      className="h-[20px] w-[20px]"
                     />
+                    <span>Buat Janji Temu</span>
                   </button>
-                ) : (
-                  <Link
-                    href={item.href}
-                    aria-label={item.label}
-                    onClick={(event) => {
-                      if (pathname === item.href) {
-                        event.preventDefault();
-                        window.scrollTo({
-                          top: 0,
-                          behavior: "smooth",
-                        });
-                      }
+
+                  <div className="my-1 h-px w-full bg-black/10" />
+
+                  {/* Button */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsActionMenuOpen(false);
+                      router.push("/services/kamar-perawatan");
                     }}
-                    className="flex h-12 w-12 select-none items-center justify-center rounded-full outline-none"
-                    style={{
-                      WebkitTapHighlightColor: "transparent",
-                    }}
+                    className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-black outline-none transition-colors hover:bg-black/5 active:bg-black/10"
                   >
-                    <NavIcon item={item} isActive={isActive} />
-                  </Link>
-                )}
-              </li>
-            );
-          })}
-        </menu>
-      </motion.div>
-    </>,
-    document.body,
+                    <FontAwesomeIcon
+                      icon={faProcedures}
+                      className="h-[20px] w-[20px]"
+                    />
+                    <span>Kamar Perawatan</span>
+                  </button>
+
+                  <div className="my-1 h-px w-full bg-black/10" />
+
+                  {/* Button */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsActionMenuOpen(false);
+                      router.push("/ketersediaan-kamar");
+                    }}
+                    className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-black outline-none transition-colors hover:bg-black/5 active:bg-black/10"
+                  >
+                    <FontAwesomeIcon
+                      icon={faBed}
+                      className="h-[20px] w-[20px]"
+                    />
+                    <span>Ketersediaan Kamar</span>
+                  </button>
+                </motion.aside>
+              )}
+            </AnimatePresence>
+
+            {/* Dock */}
+            <motion.div
+              ref={dockRef}
+              onPointerDown={handlePointerDown}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerUp}
+              onPointerCancel={handlePointerUp}
+              animate={{
+                scale: shouldShrink ? 0.92 : 1,
+                height: shouldShrink ? "56px" : "64px",
+                y: shouldShrink ? 4 : 0,
+              }}
+              transition={{
+                type: "spring",
+                stiffness: 350,
+                damping: 25,
+              }}
+              className="pointer-events-auto relative flex w-full max-w-[390px] items-center overflow-hidden rounded-[32px] touch-none cursor-grab active:cursor-grabbing"
+              style={{
+                scaleX: dockScaleX,
+                skewX: dockSkewX,
+
+                backgroundColor: "rgba(255, 255, 255, 0.600)",
+                border: "1px solid rgba(255, 255, 255, 0.28)",
+                boxShadow:
+                  "inset 0 0 0 1px rgba(255, 255, 255, 0.26), inset 0 0 18px rgba(255, 255, 255, 0.035), 0 10px 30px rgba(0, 0, 0, 0.10)",
+                WebkitTransform: "translateZ(0)",
+                transform: "translateZ(0)",
+              }}
+            >
+              {/* Active pill */}
+              <motion.div
+                className="pointer-events-none absolute top-1/2 z-10 rounded-full"
+                animate={{
+                  width: `${basePilWidth}px`,
+                  height: `${basePilHeight}px`,
+                  scale: isDragging ? DRAG_SCALE : 1,
+
+                  // Only the active pill is black.
+                  backgroundColor: "rgba(0, 0, 0, 0.19)",
+                }}
+                transition={{
+                  type: "spring",
+                  stiffness: 400,
+                  damping: 25,
+                }}
+                style={{
+                  x: springX,
+                  y: "-50%",
+                  left: 0,
+                  translateX: "-50%",
+
+                  WebkitTransform: "translateZ(0)",
+                  transform: "translateZ(0)",
+                }}
+              />
+
+              {/* Navigation */}
+              <menu className="relative z-20 m-0 flex h-full w-full list-none items-center justify-between p-0">
+                {navItems.map((item, i) => {
+                  const isActive = i === activeIndex;
+                  const localScale = getItemScale(i);
+
+                  return (
+                    <li
+                      key={item.href || i}
+                      className="flex h-full flex-1 items-center justify-center transition-transform duration-100 ease-out"
+                      style={{
+                        transform: `scale(${localScale})`,
+                      }}
+                    >
+                      {item.isButton ? (
+                        <button
+                          ref={plusButtonRef}
+                          type="button"
+                          aria-label={
+                            isActionMenuOpen
+                              ? "Tutup menu aksi tambahan"
+                              : "Buka menu aksi tambahan"
+                          }
+                          aria-expanded={isActionMenuOpen}
+                          data-no-drag
+                          onPointerDown={(e) => {
+                            e.stopPropagation();
+                          }}
+                          onPointerUp={(e) => {
+                            e.stopPropagation();
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setIsActionMenuOpen((prev) => !prev);
+                          }}
+                          className="flex h-12 w-12 select-none items-center justify-center rounded-full outline-none"
+                          style={{
+                            WebkitTapHighlightColor: "transparent",
+                          }}
+                        >
+                          <FontAwesomeIcon
+                            icon={faPlus}
+                            className="text-[24px] text-black"
+                            style={{
+                              transform: isActionMenuOpen
+                                ? "rotate(45deg)"
+                                : "rotate(0deg)",
+                              transition: "transform 200ms ease",
+                            }}
+                          />
+                        </button>
+                      ) : (
+                        <Link
+                          href={item.href || "#"}
+                          aria-label={item.label}
+                          data-no-drag
+                          onPointerDown={(e) => {
+                            e.stopPropagation();
+                          }}
+                          onPointerUp={(e) => {
+                            e.stopPropagation();
+                          }}
+                          onClick={(e) => {
+                            if (pathname === item.href) {
+                              e.preventDefault();
+                              window.scrollTo({
+                                top: 0,
+                                behavior: "smooth",
+                              });
+                            }
+                          }}
+                          className="flex h-12 w-12 select-none items-center justify-center rounded-full outline-none"
+                          style={{
+                            WebkitTapHighlightColor: "transparent",
+                          }}
+                        >
+                          <NavIcon item={item} isActive={isActive} />
+                        </Link>
+                      )}
+                    </li>
+                  );
+                })}
+              </menu>
+            </motion.div>
+          </nav>
+        </div>
+      </div>
+    </>
   );
 }
