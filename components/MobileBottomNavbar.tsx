@@ -533,7 +533,7 @@ export default function MobileBottomNavbar() {
                 scale: isDragging ? DRAG_SCALE : 1,
                 // Hitam transparan murni mulus
                 backgroundColor: shouldShrink
-                  ? "rgba(255, 0, 0, 0.1)"
+                  ? "rgba(0, 0, 0, 0.10)"
                   : "rgba(0, 0, 0, 0.10)",
               }}
               transition={{ type: "spring", stiffness: 400, damping: 25 }}
