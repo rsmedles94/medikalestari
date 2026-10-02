@@ -62,12 +62,26 @@ const DOCK_HEIGHT = 64;
 const DOCK_HEIGHT_SHRUNK = 56;
 const DOCK_WIDTH_SHRUNK = "88%";
 
-// Optik lensa: refraksi hanya di tepi, tengah dibuat datar.
-// Elemen "garis pinggir" (specular/sheen/glow/dispersion) diturunkan supaya
-// tidak terlihat seperti border yang mengelilingi dock.
+// Jarak ikon paling kiri/kanan ke batas dockbar (px). Dipakai juga untuk
+// menghitung posisi pil dan area sentuh agar tetap sejajar dengan ikon.
+const ICON_PAD = 2;
+
+// Warna kaca SERAGAM di seluruh dock (tengah = pinggir), putih lengket.
+// Dipakai sama persis di Android (Glass) dan iOS/Safari (fallback WebKit),
+// sehingga warnanya serupa di semua browser.
+const GLASS_TINT = "rgba(255, 255, 255, 0.40)";
+
+// Kilau sangat tipis dan merata dari atas untuk kesan kaca tebal yang elegan.
+const GLASS_SHEEN =
+  "linear-gradient(180deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0) 55%)";
+
+// Pil aktif
+const PILL_COLOR = "rgba(0, 0, 0, 0.12)";
+
+// Optik lensa
 const GLASS_OPTICS = {
   strength: 0.1,
-  depth: 0.3,
+  depth: 0.2,
   curvature: 0.15,
   bend: 0.4,
   bendWidth: 0.06,
@@ -77,11 +91,11 @@ const GLASS_OPTICS = {
   sheen: 0.35,
   sheenWidth: 2.5,
   sheenFalloff: 1.5,
-  glow: 0.05,
+  glow: 0.09,
   glowSpread: 1,
   glowFalloff: 1.5,
-  frost: 1,
-  brightness: 0.03,
+  frost: 0,
+  brightness: 0.18,
 };
 
 /* ------------------------------------------------------------------ */
@@ -298,7 +312,7 @@ export default function MobileBottomNavbar() {
 
   const shouldShrink = isScrolledDown && !isDragging;
 
-  const basePilWidth = shouldShrink ? 64 : 72;
+  const basePilWidth = shouldShrink ? 58 : 66;
   const basePilHeight = shouldShrink ? 48 : 55;
   const dockHeight = shouldShrink ? DOCK_HEIGHT_SHRUNK : DOCK_HEIGHT;
   const dockRadius = dockHeight / 2;
@@ -336,9 +350,9 @@ export default function MobileBottomNavbar() {
 
   const getCenterXForIndex = useCallback(
     (index: number, width: number) => {
-      const itemWidth = width / navItems.length;
+      const itemWidth = (width - ICON_PAD * 2) / navItems.length;
 
-      return index * itemWidth + itemWidth / 2;
+      return ICON_PAD + index * itemWidth + itemWidth / 2;
     },
     [navItems.length],
   );
@@ -518,11 +532,14 @@ export default function MobileBottomNavbar() {
       false,
     );
 
-    const itemWidth = realWidth / navItems.length;
+    const itemWidth = (realWidth - ICON_PAD * 2) / navItems.length;
 
     const targetIndex = Math.max(
       0,
-      Math.min(navItems.length - 1, Math.floor(currentX / itemWidth)),
+      Math.min(
+        navItems.length - 1,
+        Math.floor((currentX - ICON_PAD) / itemWidth),
+      ),
     );
 
     const item = navItems[targetIndex];
@@ -724,17 +741,11 @@ export default function MobileBottomNavbar() {
                   className="pointer-events-none absolute inset-0 z-[1] overflow-hidden"
                   style={{
                     borderRadius: dockRadius,
-                    background:
-                      "linear-gradient(180deg, rgba(255, 255, 255, 0.36) 0%, rgba(255, 255, 255, 0.26) 55%, rgba(255, 255, 255, 0.32) 100%)",
+                    background: GLASS_TINT,
                     WebkitBackdropFilter:
-                      "blur(16px) saturate(1.9) brightness(1.08)",
-                    backdropFilter: "blur(16px) saturate(1.9) brightness(1.08)",
-                    boxShadow: [
-                      "inset 0 6px 14px -8px rgba(255, 255, 255, 0.60)",
-                      "inset 0 -6px 14px -10px rgba(255, 255, 255, 0.35)",
-                      "inset 4px 0 12px -8px rgba(255, 255, 255, 0.40)",
-                      "inset -4px 0 12px -8px rgba(255, 255, 255, 0.40)",
-                    ].join(", "),
+                      "blur(18px) saturate(1.8) brightness(1.06)",
+                    backdropFilter: "blur(18px) saturate(1.8) brightness(1.06)",
+                    boxShadow: "none",
                     transition: `border-radius ${SHRINK_MS}ms ${SHRINK_EASE}`,
                     transform: "translate3d(0, 0, 0)",
                   }}
@@ -746,14 +757,10 @@ export default function MobileBottomNavbar() {
                   className="pointer-events-none absolute inset-0 z-[1] overflow-hidden"
                   optics={GLASS_OPTICS}
                   style={{
-                    background:
-                      "linear-gradient(180deg, rgba(255, 255, 255, 0.34) 0%, rgba(255, 255, 255, 0.24) 55%, rgba(255, 255, 255, 0.30) 100%)",
+                    background: GLASS_TINT,
                     border: "none",
                     borderRadius: dockRadius,
-                    boxShadow: [
-                      "inset 0 6px 14px -8px rgba(255, 255, 255, 0.55)",
-                      "inset 0 -6px 14px -10px rgba(255, 255, 255, 0.30)",
-                    ].join(", "),
+                    boxShadow: "none",
                   }}
                 >
                   {/* A child is required to activate the library's live material mode. */}
@@ -768,10 +775,7 @@ export default function MobileBottomNavbar() {
                 className="pointer-events-none absolute inset-0 z-[2]"
                 style={{
                   borderRadius: dockRadius,
-                  background: [
-                    "radial-gradient(130% 170% at 50% 50%, rgba(255, 255, 255, 0) 60%, rgba(255, 255, 255, 0.26) 100%)",
-                    "linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 40%)",
-                  ].join(", "),
+                  background: GLASS_SHEEN,
                   transition: `border-radius ${SHRINK_MS}ms ${SHRINK_EASE}`,
                 }}
               />
@@ -792,7 +796,7 @@ export default function MobileBottomNavbar() {
                     width: `${basePilWidth}px`,
                     height: `${basePilHeight}px`,
                     scale: isDragging ? DRAG_SCALE : 1,
-                    backgroundColor: "rgba(0, 0, 0, 0.19)",
+                    backgroundColor: PILL_COLOR,
                   }}
                   transition={{
                     type: "spring",
@@ -808,7 +812,10 @@ export default function MobileBottomNavbar() {
                 />
 
                 {/* Navigation */}
-                <menu className="relative z-20 m-0 flex h-full w-full list-none items-center justify-between p-0">
+                <menu
+                  className="relative z-20 m-0 box-border flex h-full w-full list-none items-center justify-between p-0"
+                  style={{ paddingInline: ICON_PAD }}
+                >
                   {navItems.map((item, i) => {
                     const visualActiveIndex =
                       lockedIndex !== null ? lockedIndex : activeIndex;
