@@ -44,6 +44,50 @@ interface NavItem {
   isButton?: boolean;
 }
 
+/* ------------------------------------------------------------------ */
+/* Konstanta                                                          */
+/* ------------------------------------------------------------------ */
+
+// Kurva & durasi ala iOS (dipakai untuk shrink dock).
+const SHRINK_MS = 360;
+const SHRINK_EASE = "cubic-bezier(0.32, 0.72, 0, 1)";
+
+// Ukuran dock normal vs. mengecil. Pengecilan dilakukan lewat ukuran LAYOUT
+// (width/height), BUKAN transform scale. Lensa Glass membuat salinan konten
+// halaman di dalamnya; jika induknya di-scale, salinan itu ikut ter-scale
+// terhadap titik origin dan bergeser dari konten asli -> tampak ganda,
+// terutama di sisi kanan (paling jauh dari origin). Tanpa transform di atas
+// Glass, salinan selalu sejajar 1:1 dengan halaman.
+const DOCK_HEIGHT = 64;
+const DOCK_HEIGHT_SHRUNK = 56;
+const DOCK_WIDTH_SHRUNK = "88%";
+
+// Optik lensa: refraksi hanya di tepi, tengah dibuat datar.
+// Elemen "garis pinggir" (specular/sheen/glow/dispersion) diturunkan supaya
+// tidak terlihat seperti border yang mengelilingi dock.
+const GLASS_OPTICS = {
+  strength: 0.1,
+  depth: 0.3,
+  curvature: 0.15,
+  bend: 0.4,
+  bendWidth: 0.06,
+  dispersion: 0.06,
+  specular: 0.7,
+  sheenAngle: 0,
+  sheen: 0.35,
+  sheenWidth: 2.5,
+  sheenFalloff: 1.5,
+  glow: 0.05,
+  glowSpread: 1,
+  glowFalloff: 1.5,
+  frost: 1,
+  brightness: 0.03,
+};
+
+/* ------------------------------------------------------------------ */
+/* Util                                                               */
+/* ------------------------------------------------------------------ */
+
 // Mounted state
 const emptySubscribe = () => () => {};
 
@@ -53,6 +97,23 @@ function useIsMounted() {
     () => true,
     () => false,
   );
+}
+
+// Semua browser iOS (Safari, Chrome iOS, dst.) memakai WebKit dan tidak bisa
+// merefraksi lewat SVG filter di backdrop. Safari desktop juga sama.
+function detectWebKitOnly(): boolean {
+  if (typeof navigator === "undefined") return false;
+
+  const ua = navigator.userAgent;
+
+  const isIOS =
+    /iPad|iPhone|iPod/.test(ua) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+  const isDesktopSafari =
+    /^((?!chrome|chromium|android|crios|fxios|edg).)*safari/i.test(ua);
+
+  return isIOS || isDesktopSafari;
 }
 
 // Home icon
@@ -118,10 +179,21 @@ function NavIcon({ item, isActive }: { item: NavItem; isActive: boolean }) {
   return null;
 }
 
+/* ------------------------------------------------------------------ */
+/* Komponen                                                           */
+/* ------------------------------------------------------------------ */
+
 export default function MobileBottomNavbar() {
   const pathname = usePathname();
   const router = useRouter();
   const isMounted = useIsMounted();
+
+  // iOS / Safari memakai kaca fallback (blur WebKit + highlight CSS),
+  // Android / Chromium memakai lensa refraksi <Glass />.
+  const useWebKitGlass = useMemo(
+    () => (isMounted ? detectWebKitOnly() : false),
+    [isMounted],
+  );
 
   // State
   const [isBookingOpen, setIsBookingOpen] = useState(false);
@@ -133,7 +205,6 @@ export default function MobileBottomNavbar() {
   const dockRef = useRef<HTMLDivElement>(null);
 
   const [isDragging, setIsDragging] = useState(false);
-  const [dockWidth, setDockWidth] = useState(390);
 
   const [isScrolledDown, setIsScrolledDown] = useState(false);
   const lastScrollY = useRef(0);
@@ -147,7 +218,6 @@ export default function MobileBottomNavbar() {
 
   const lockedIndexRef = useRef<number | null>(null);
   const [lockedIndex, setLockedIndex] = useState<number | null>(null);
-
 
   // Scroll
   useEffect(() => {
@@ -228,8 +298,10 @@ export default function MobileBottomNavbar() {
 
   const shouldShrink = isScrolledDown && !isDragging;
 
-  const basePilWidth = shouldShrink ? 68 : 72;
+  const basePilWidth = shouldShrink ? 64 : 72;
   const basePilHeight = shouldShrink ? 48 : 55;
+  const dockHeight = shouldShrink ? DOCK_HEIGHT_SHRUNK : DOCK_HEIGHT;
+  const dockRadius = dockHeight / 2;
   const DRAG_SCALE = 1.04;
   const INNER_MARGIN = 4;
 
@@ -283,8 +355,6 @@ export default function MobileBottomNavbar() {
       const center = getCenterXForIndex(index, realWidth);
       const targetX = clampX(center, realWidth, false);
 
-      setDockWidth(realWidth);
-
       rawX.set(targetX);
       overdragVal.set(0);
     },
@@ -296,8 +366,6 @@ export default function MobileBottomNavbar() {
 
     const rect = dockRef.current.getBoundingClientRect();
     const realWidth = dockRef.current.offsetWidth || rect.width;
-
-    setDockWidth(realWidth);
 
     const lockedIndex = lockedIndexRef.current;
 
@@ -345,11 +413,23 @@ export default function MobileBottomNavbar() {
     };
   }, [updateTargetPos, isMounted]);
 
+  // Lebar dock sekarang ikut berubah saat shrink (layout asli), jadi posisi
+  // pil harus mengikuti tiap frame selama transisi.
   useEffect(() => {
-    if (!isMounted || isDragging) return;
+    if (!isMounted || !dockRef.current) return;
+    if (typeof ResizeObserver === "undefined") return;
 
-    updateTargetPos();
-  }, [shouldShrink, updateTargetPos, isMounted, isDragging]);
+    const observer = new ResizeObserver(() => {
+      if (dragStartPos.current) return;
+      updateTargetPos();
+    });
+
+    observer.observe(dockRef.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [updateTargetPos, isMounted]);
 
   // Handle Drag & Pointer Interactions
   const handlePointerDown = (e: React.PointerEvent) => {
@@ -598,219 +678,259 @@ export default function MobileBottomNavbar() {
               )}
             </AnimatePresence>
 
-            {/* Dock */}
-            <motion.div
+            {/* Dock
+                PENTING: elemen ini dan semua leluhur lapisan kaca TIDAK boleh punya
+                transform (scale/skew/translate). Shrink dilakukan lewat width/height
+                + border-radius dengan transisi CSS, sehingga lensa selalu sejajar
+                1:1 dengan halaman dan tidak ada bayangan ganda. */}
+            <div
               ref={dockRef}
               onPointerDown={handlePointerDown}
               onPointerMove={handlePointerMove}
               onPointerUp={handlePointerUp}
               onPointerCancel={handlePointerUp}
               onContextMenu={(e) => e.preventDefault()}
-              animate={{
-                scale: shouldShrink ? 0.92 : 1,
-                height: shouldShrink ? "56px" : "64px",
-                y: shouldShrink ? 4 : 0,
-              }}
-              transition={{
-                type: "spring",
-                stiffness: 350,
-                damping: 25,
-              }}
-              className="pointer-events-auto relative flex w-full max-w-[390px] items-center overflow-hidden rounded-[32px] touch-none cursor-grab active:cursor-grabbing select-none"
+              className="pointer-events-auto relative flex max-w-[390px] items-center touch-none cursor-grab active:cursor-grabbing select-none"
               style={{
-                scaleX: dockScaleX,
-                skewX: dockSkewX,
+                width: shouldShrink ? DOCK_WIDTH_SHRUNK : "100%",
+                height: dockHeight,
+                borderRadius: dockRadius,
+                transition: `width ${SHRINK_MS}ms ${SHRINK_EASE}, height ${SHRINK_MS}ms ${SHRINK_EASE}, border-radius ${SHRINK_MS}ms ${SHRINK_EASE}`,
                 backgroundColor: "transparent",
-                border: "1px solid transparent",
+                border: "none",
                 boxShadow: "none",
-                WebkitTransform: "translateZ(0)",
-                transform: "translateZ(0)",
                 WebkitTouchCallout: "none",
                 WebkitUserSelect: "none",
               }}
             >
-              {/* Liquid glass background: live DOM refraction, no screenshot capture */}
-              <Glass
+              {/* Bayangan sangat lembut di belakang kaca (tanpa garis tepi). */}
+              <div
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[32px]"
-                optics={{
-                  // Stronger optical bend while keeping the lens inexpensive.
-                  strength: 0.14,
-                  depth: 0.72,
-                  curvature: 0.5,
-                  bend: 0.34,
-                  bendWidth: 0.075,
-                  dispersion: 0.14,
-                  specular: 1.15,
-                  sheenAngle: 0,
-                  sheen: 0.95,
-                  sheenWidth: 2.5,
-                  sheenFalloff: 1.5,
-                  glow: 0.1,
-                  glowSpread: 1,
-                  glowFalloff: 1.5,
-                  frost: 1,
-                  brightness: 0,
-                }}
+                className="pointer-events-none absolute inset-0 z-0"
                 style={{
-                  background: "rgba(255, 255, 255, 0.22)",
-                  border: "1px solid rgba(255, 255, 255, 0.42)",
-                  borderRadius: 32,
-                  boxShadow:
-                    "inset 0 1px 0 rgba(255, 255, 255, 0.62), inset 0 -1px 0 rgba(255, 255, 255, 0.18), inset 0 0 14px rgba(255, 255, 255, 0.055), 0 10px 30px rgba(0, 0, 0, 0.10)",
-                }}
-              >
-                {/* A child is required to activate the library's live material mode. */}
-                <span className="pointer-events-none absolute inset-0" />
-              </Glass>
-
-              {/* Active pill */}
-              <motion.div
-                className="pointer-events-none absolute top-1/2 z-10 rounded-full"
-                animate={{
-                  width: `${basePilWidth}px`,
-                  height: `${basePilHeight}px`,
-                  scale: isDragging ? DRAG_SCALE : 1,
-                  backgroundColor: "rgba(0, 0, 0, 0.19)",
-                }}
-                transition={{
-                  type: "spring",
-                  stiffness: 400,
-                  damping: 25,
-                }}
-                style={{
-                  x: springX,
-                  y: "-50%",
-                  left: 0,
-                  translateX: "-50%",
-                  WebkitTransform: "translateZ(0)",
-                  transform: "translateZ(0)",
+                  borderRadius: dockRadius,
+                  boxShadow: "0 10px 26px -8px rgba(0, 0, 0, 0.12)",
+                  transition: `border-radius ${SHRINK_MS}ms ${SHRINK_EASE}`,
                 }}
               />
 
-              {/* Navigation */}
-              <menu className="relative z-20 m-0 flex h-full w-full list-none items-center justify-between p-0">
-                {navItems.map((item, i) => {
-                  const visualActiveIndex =
-                    lockedIndex !== null ? lockedIndex : activeIndex;
+              {/* Lapisan kaca */}
+              {useWebKitGlass ? (
+                // iOS / Safari: lensa SVG-filter tidak didukung WebKit, jadi memakai
+                // blur + saturasi bawaan WebKit sebagai satu-satunya cara membaca
+                // piksel halaman di belakang dock.
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 z-[1] overflow-hidden"
+                  style={{
+                    borderRadius: dockRadius,
+                    background:
+                      "linear-gradient(180deg, rgba(255, 255, 255, 0.36) 0%, rgba(255, 255, 255, 0.26) 55%, rgba(255, 255, 255, 0.32) 100%)",
+                    WebkitBackdropFilter:
+                      "blur(16px) saturate(1.9) brightness(1.08)",
+                    backdropFilter: "blur(16px) saturate(1.9) brightness(1.08)",
+                    boxShadow: [
+                      "inset 0 6px 14px -8px rgba(255, 255, 255, 0.60)",
+                      "inset 0 -6px 14px -10px rgba(255, 255, 255, 0.35)",
+                      "inset 4px 0 12px -8px rgba(255, 255, 255, 0.40)",
+                      "inset -4px 0 12px -8px rgba(255, 255, 255, 0.40)",
+                    ].join(", "),
+                    transition: `border-radius ${SHRINK_MS}ms ${SHRINK_EASE}`,
+                    transform: "translate3d(0, 0, 0)",
+                  }}
+                />
+              ) : (
+                // Android / Chromium: lensa refraksi live (tanpa backdrop-filter biasa).
+                <Glass
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 z-[1] overflow-hidden"
+                  optics={GLASS_OPTICS}
+                  style={{
+                    background:
+                      "linear-gradient(180deg, rgba(255, 255, 255, 0.34) 0%, rgba(255, 255, 255, 0.24) 55%, rgba(255, 255, 255, 0.30) 100%)",
+                    border: "none",
+                    borderRadius: dockRadius,
+                    boxShadow: [
+                      "inset 0 6px 14px -8px rgba(255, 255, 255, 0.55)",
+                      "inset 0 -6px 14px -10px rgba(255, 255, 255, 0.30)",
+                    ].join(", "),
+                  }}
+                >
+                  {/* A child is required to activate the library's live material mode. */}
+                  <span className="pointer-events-none absolute inset-0" />
+                </Glass>
+              )}
 
-                  const isActive = i === visualActiveIndex;
-                  const localScale = getItemScale(i);
+              {/* Cahaya tepi lembut: terang di pinggir, bening di tengah.
+                  Gradasi halus, bukan garis, sehingga tidak tampak seperti border. */}
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 z-[2]"
+                style={{
+                  borderRadius: dockRadius,
+                  background: [
+                    "radial-gradient(130% 170% at 50% 50%, rgba(255, 255, 255, 0) 60%, rgba(255, 255, 255, 0.26) 100%)",
+                    "linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 40%)",
+                  ].join(", "),
+                  transition: `border-radius ${SHRINK_MS}ms ${SHRINK_EASE}`,
+                }}
+              />
 
-                  return (
-                    <li
-                      key={item.href || i}
-                      className="flex h-full flex-1 items-center justify-center transition-transform duration-100 ease-out"
-                      style={{
-                        transform: `scale(${localScale})`,
-                      }}
-                    >
-                      {item.isButton ? (
-                        <button
-                          ref={plusButtonRef}
-                          type="button"
-                          aria-label={
-                            isActionMenuOpen
-                              ? "Tutup menu aksi tambahan"
-                              : "Buka menu aksi tambahan"
-                          }
-                          aria-expanded={isActionMenuOpen}
-                          data-no-drag
-                          data-plus-button
-                          onPointerDown={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
+              {/* Konten: pil + menu. Efek overdrag (scaleX/skewX) hanya diterapkan
+                  di sini, TIDAK pada lapisan kaca, supaya refraksi tidak bergeser. */}
+              <motion.div
+                className="absolute inset-0 z-10"
+                style={{
+                  scaleX: dockScaleX,
+                  skewX: dockSkewX,
+                }}
+              >
+                {/* Active pill */}
+                <motion.div
+                  className="pointer-events-none absolute top-1/2 z-10 rounded-full"
+                  animate={{
+                    width: `${basePilWidth}px`,
+                    height: `${basePilHeight}px`,
+                    scale: isDragging ? DRAG_SCALE : 1,
+                    backgroundColor: "rgba(0, 0, 0, 0.19)",
+                  }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 400,
+                    damping: 25,
+                  }}
+                  style={{
+                    x: springX,
+                    y: "-50%",
+                    left: 0,
+                    translateX: "-50%",
+                  }}
+                />
 
-                            plusPointerRef.current = true;
-                            setIsActionMenuOpen((prev) => !prev);
-                          }}
-                          onPointerMove={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                          }}
-                          onPointerUp={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
+                {/* Navigation */}
+                <menu className="relative z-20 m-0 flex h-full w-full list-none items-center justify-between p-0">
+                  {navItems.map((item, i) => {
+                    const visualActiveIndex =
+                      lockedIndex !== null ? lockedIndex : activeIndex;
 
-                            plusPointerRef.current = false;
-                          }}
-                          onPointerCancel={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
+                    const isActive = i === visualActiveIndex;
+                    const localScale = getItemScale(i);
 
-                            plusPointerRef.current = false;
-                          }}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                          }}
-                          className="flex h-12 w-12 select-none items-center justify-center rounded-full outline-none"
-                          style={{
-                            WebkitTapHighlightColor: "transparent",
-                            touchAction: "none",
-                            WebkitTouchCallout: "none",
-                          }}
-                        >
-                          <FontAwesomeIcon
-                            icon={faPlus}
-                            className="pointer-events-none text-[24px] text-black"
-                            style={{
-                              transform: isActionMenuOpen
-                                ? "rotate(45deg)"
-                                : "rotate(0deg)",
-                              transition: "transform 200ms ease",
+                    return (
+                      <li
+                        key={item.href || i}
+                        className="flex h-full flex-1 items-center justify-center transition-transform duration-100 ease-out"
+                        style={{
+                          transform: `scale(${localScale})`,
+                        }}
+                      >
+                        {item.isButton ? (
+                          <button
+                            ref={plusButtonRef}
+                            type="button"
+                            aria-label={
+                              isActionMenuOpen
+                                ? "Tutup menu aksi tambahan"
+                                : "Buka menu aksi tambahan"
+                            }
+                            aria-expanded={isActionMenuOpen}
+                            data-no-drag
+                            data-plus-button
+                            onPointerDown={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+
+                              plusPointerRef.current = true;
+                              setIsActionMenuOpen((prev) => !prev);
                             }}
-                          />
-                        </button>
-                      ) : (
-                        <Link
-                          href={item.href || "#"}
-                          aria-label={item.label}
-                          data-no-drag
-                          onContextMenu={(e) => e.preventDefault()}
-                          onClick={(e) => {
-                            e.preventDefault();
+                            onPointerMove={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                            }}
+                            onPointerUp={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
 
-                            if (suppressNextClickRef.current) {
-                              suppressNextClickRef.current = false;
-                              return;
-                            }
+                              plusPointerRef.current = false;
+                            }}
+                            onPointerCancel={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
 
-                            lockedIndexRef.current = i;
-                            setLockedIndex(i);
+                              plusPointerRef.current = false;
+                            }}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                            }}
+                            className="flex h-12 w-12 select-none items-center justify-center rounded-full outline-none"
+                            style={{
+                              WebkitTapHighlightColor: "transparent",
+                              touchAction: "none",
+                              WebkitTouchCallout: "none",
+                            }}
+                          >
+                            <FontAwesomeIcon
+                              icon={faPlus}
+                              className="pointer-events-none text-[24px] text-black"
+                              style={{
+                                transform: isActionMenuOpen
+                                  ? "rotate(45deg)"
+                                  : "rotate(0deg)",
+                                transition: "transform 200ms ease",
+                              }}
+                            />
+                          </button>
+                        ) : (
+                          <Link
+                            href={item.href || "#"}
+                            aria-label={item.label}
+                            data-no-drag
+                            onContextMenu={(e) => e.preventDefault()}
+                            onClick={(e) => {
+                              e.preventDefault();
 
-                            movePillToIndex(i);
+                              if (suppressNextClickRef.current) {
+                                suppressNextClickRef.current = false;
+                                return;
+                              }
 
-                            if (pathname === item.href) {
-                              lockedIndexRef.current = null;
-                              setLockedIndex(null);
+                              lockedIndexRef.current = i;
+                              setLockedIndex(i);
 
-                              window.scrollTo({
-                                top: 0,
-                                behavior: "smooth",
-                              });
-                            } else if (item.href) {
-                              router.push(item.href);
-                            }
+                              movePillToIndex(i);
 
-                            e.stopPropagation();
-                          }}
-                          className="flex h-12 w-12 select-none items-center justify-center rounded-full outline-none"
-                          style={{
-                            WebkitTapHighlightColor: "transparent",
-                            touchAction: "none",
-                            WebkitTouchCallout: "none",
-                            WebkitUserSelect: "none",
-                          }}
-                        >
-                          <NavIcon item={item} isActive={isActive} />
-                        </Link>
-                      )}
-                    </li>
-                  );
-                })}
-              </menu>
-            </motion.div>
+                              if (pathname === item.href) {
+                                lockedIndexRef.current = null;
+                                setLockedIndex(null);
+
+                                window.scrollTo({
+                                  top: 0,
+                                  behavior: "smooth",
+                                });
+                              } else if (item.href) {
+                                router.push(item.href);
+                              }
+
+                              e.stopPropagation();
+                            }}
+                            className="flex h-12 w-12 select-none items-center justify-center rounded-full outline-none"
+                            style={{
+                              WebkitTapHighlightColor: "transparent",
+                              touchAction: "none",
+                              WebkitTouchCallout: "none",
+                              WebkitUserSelect: "none",
+                            }}
+                          >
+                            <NavIcon item={item} isActive={isActive} />
+                          </Link>
+                        )}
+                      </li>
+                    );
+                  })}
+                </menu>
+              </motion.div>
+            </div>
           </nav>
         </div>
       </div>
