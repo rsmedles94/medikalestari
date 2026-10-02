@@ -139,13 +139,11 @@ export default function MobileBottomNavbar() {
   const [isScrolledDown, setIsScrolledDown] = useState(false);
   const lastScrollY = useRef(0);
 
-  // Drag state
-  const hasDraggedRef = useRef(false);
-
-  // Prevent the click event that follows a drag.
+  // Precision Drag / Tap Tracking
+  const dragStartPos = useRef<{ x: number; y: number; time: number } | null>(
+    null,
+  );
   const suppressNextClickRef = useRef(false);
-
-  // Track the plus button pointer independently from dock dragging.
   const plusPointerRef = useRef(false);
 
   const lockedIndexRef = useRef<number | null>(null);
@@ -167,7 +165,6 @@ export default function MobileBottomNavbar() {
     });
 
     let instance: Awaited<ReturnType<typeof LiquidGlass.init>> | undefined;
-
     let cancelled = false;
 
     LiquidGlass.init({
@@ -179,7 +176,6 @@ export default function MobileBottomNavbar() {
           result.destroy();
           return;
         }
-
         instance = result;
       })
       .catch((error) => {
@@ -328,9 +324,7 @@ export default function MobileBottomNavbar() {
 
       setDockWidth(realWidth);
 
-      // Gunakan set() agar terjadi transisi spring yang halus, bukan jump() instan
       rawX.set(targetX);
-
       overdragVal.set(0);
     },
     [getCenterXForIndex, clampX, rawX, overdragVal],
@@ -396,7 +390,7 @@ export default function MobileBottomNavbar() {
     updateTargetPos();
   }, [shouldShrink, updateTargetPos, isMounted, isDragging]);
 
-  // Drag
+  // Handle Drag & Pointer Interactions
   const handlePointerDown = (e: React.PointerEvent) => {
     const target = e.target as HTMLElement;
 
@@ -404,34 +398,41 @@ export default function MobileBottomNavbar() {
       return;
     }
 
-    hasDraggedRef.current = false;
+    // Tangkap pointer langsung untuk instant drag
+    if (dockRef.current) {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    }
 
+    dragStartPos.current = {
+      x: e.clientX,
+      y: e.clientY,
+      time: Date.now(),
+    };
+
+    setIsDragging(true);
     lockedIndexRef.current = null;
     setLockedIndex(null);
 
-    e.preventDefault();
+    // Perbarui posisi pil secara langsung
+    if (dockRef.current) {
+      const rect = dockRef.current.getBoundingClientRect();
+      const realWidth = dockRef.current.offsetWidth || rect.width;
+      const scaleFactor = rect.width / realWidth;
+      const mouseX = (e.clientX - rect.left) / scaleFactor;
 
-    e.currentTarget.setPointerCapture(e.pointerId);
-
-    setIsDragging(true);
-
-    if (!dockRef.current) return;
-
-    const rect = dockRef.current.getBoundingClientRect();
-    const realWidth = dockRef.current.offsetWidth || rect.width;
-    const scaleFactor = rect.width / realWidth;
-    const mouseX = (e.clientX - rect.left) / scaleFactor;
-
-    rawX.set(clampX(mouseX, realWidth, true));
-    overdragVal.set(getOverdragAmount(mouseX, realWidth, true));
+      rawX.set(clampX(mouseX, realWidth, true));
+      overdragVal.set(getOverdragAmount(mouseX, realWidth, true));
+    }
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
-    if (plusPointerRef.current) return;
-
-    if (!isDragging || !dockRef.current) return;
-
-    hasDraggedRef.current = true;
+    if (
+      plusPointerRef.current ||
+      !dragStartPos.current ||
+      !isDragging ||
+      !dockRef.current
+    )
+      return;
 
     const rect = dockRef.current.getBoundingClientRect();
     const realWidth = dockRef.current.offsetWidth || rect.width;
@@ -451,22 +452,20 @@ export default function MobileBottomNavbar() {
       e.currentTarget.releasePointerCapture(e.pointerId);
     }
 
-    const wasDragged = hasDraggedRef.current;
-
     setIsDragging(false);
 
-    if (!dockRef.current) {
-      hasDraggedRef.current = false;
+    if (!dockRef.current || !dragStartPos.current) {
+      dragStartPos.current = null;
       return;
     }
 
-    if (!wasDragged) {
-      overdragVal.set(0);
-      hasDraggedRef.current = false;
-      return;
-    }
+    const duration = Date.now() - dragStartPos.current.time;
+    const deltaX = Math.abs(e.clientX - dragStartPos.current.x);
+    const deltaY = Math.abs(e.clientY - dragStartPos.current.y);
 
-    suppressNextClickRef.current = true;
+    const isQuickTap = duration < 180 && deltaX < 8 && deltaY < 8;
+
+    dragStartPos.current = null;
 
     const rect = dockRef.current.getBoundingClientRect();
     const realWidth = dockRef.current.offsetWidth || rect.width;
@@ -495,19 +494,19 @@ export default function MobileBottomNavbar() {
     if (item.isButton) {
       lockedIndexRef.current = null;
       setLockedIndex(null);
-
       setIsActionMenuOpen((prev) => !prev);
     } else if (item.href) {
+      if (!isQuickTap) {
+        suppressNextClickRef.current = true;
+      }
       router.push(item.href);
     }
 
     overdragVal.set(0);
 
-    hasDraggedRef.current = false;
-
     window.setTimeout(() => {
       suppressNextClickRef.current = false;
-    }, 0);
+    }, 50);
   };
 
   const getItemScale = useCallback(
@@ -645,6 +644,7 @@ export default function MobileBottomNavbar() {
               onPointerMove={handlePointerMove}
               onPointerUp={handlePointerUp}
               onPointerCancel={handlePointerUp}
+              onContextMenu={(e) => e.preventDefault()}
               animate={{
                 scale: shouldShrink ? 0.92 : 1,
                 height: shouldShrink ? "56px" : "64px",
@@ -655,7 +655,7 @@ export default function MobileBottomNavbar() {
                 stiffness: 350,
                 damping: 25,
               }}
-              className="pointer-events-auto relative flex w-full max-w-[390px] items-center overflow-hidden rounded-[32px] touch-none cursor-grab active:cursor-grabbing"
+              className="pointer-events-auto relative flex w-full max-w-[390px] items-center overflow-hidden rounded-[32px] touch-none cursor-grab active:cursor-grabbing select-none"
               style={{
                 scaleX: dockScaleX,
                 skewX: dockSkewX,
@@ -665,6 +665,8 @@ export default function MobileBottomNavbar() {
                   "inset 0 0 0 1px rgba(255, 255, 255, 0.26), inset 0 0 18px rgba(255, 255, 255, 0.035), 0 10px 30px rgba(0, 0, 0, 0.10)",
                 WebkitTransform: "translateZ(0)",
                 transform: "translateZ(0)",
+                WebkitTouchCallout: "none",
+                WebkitUserSelect: "none",
               }}
             >
               {/* Active pill */}
@@ -725,7 +727,6 @@ export default function MobileBottomNavbar() {
                             e.stopPropagation();
 
                             plusPointerRef.current = true;
-
                             setIsActionMenuOpen((prev) => !prev);
                           }}
                           onPointerMove={(e) => {
@@ -752,6 +753,7 @@ export default function MobileBottomNavbar() {
                           style={{
                             WebkitTapHighlightColor: "transparent",
                             touchAction: "none",
+                            WebkitTouchCallout: "none",
                           }}
                         >
                           <FontAwesomeIcon
@@ -770,6 +772,7 @@ export default function MobileBottomNavbar() {
                           href={item.href || "#"}
                           aria-label={item.label}
                           data-no-drag
+                          onContextMenu={(e) => e.preventDefault()}
                           onClick={(e) => {
                             e.preventDefault();
 
@@ -801,6 +804,8 @@ export default function MobileBottomNavbar() {
                           style={{
                             WebkitTapHighlightColor: "transparent",
                             touchAction: "none",
+                            WebkitTouchCallout: "none",
+                            WebkitUserSelect: "none",
                           }}
                         >
                           <NavIcon item={item} isActive={isActive} />
