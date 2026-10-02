@@ -538,7 +538,7 @@ const DoctorSection = ({
                 <input
                   id="doctor-name-mobile"
                   type="text"
-                  placeholder="Masukkan Nama Dokter"
+                  placeholder="Cari Dokter"
                   value={tempFilter.name}
                   onChange={(e) => {
                     setTempFilter({ ...tempFilter, name: e.target.value });

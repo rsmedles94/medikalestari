@@ -412,7 +412,7 @@ export default function DoctorScheduleGrid({
               <input
                 id="search-doctor-mobile"
                 type="search"
-                placeholder="Masukkan Nama Dokter"
+                placeholder="Cari Dokter"
                 value={searchDoctorInput}
                 onChange={(e) => {
                   setSearchDoctorInput(e.target.value);
@@ -636,7 +636,7 @@ export default function DoctorScheduleGrid({
                   <input
                     id="search-doctor-desktop"
                     type="search"
-                    placeholder="Masukkan Nama Dokter"
+                    placeholder="Cari Dokter"
                     value={searchDoctorInput}
                     onChange={(e) => {
                       setSearchDoctorInput(e.target.value);
