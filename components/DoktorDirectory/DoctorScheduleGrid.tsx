@@ -874,7 +874,7 @@ export default function DoctorScheduleGrid({
         <div className="lg:hidden flex flex-col gap-4">
           {Object.keys(groupedDoctors).map((specialtyName) => (
             <div key={`mobile-${specialtyName}`} className="space-y-3">
-              <h3 className="text-base font-bold text-white bg-[#003f88] p-2 m-0">
+              <h3 className="text-base font-bold text-white bg-[#003f88] px-2 p-2 m-0">
                 {specialtyName}
               </h3>
 
