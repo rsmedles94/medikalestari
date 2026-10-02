@@ -554,7 +554,7 @@ const DoctorSection = ({
                   }}
                   inputMode="search"
                   enterKeyHint="search"
-                  className="w-full border border-slate-200 h-11 pl-10 pr-4 outline-none focus:border-[#003f88] text-sm bg-white"
+                  className="w-full border border-slate-200 h-11 pl-10 pr-4 outline-none focus:border-[#003f88] text-[14px] bg-white"
                 />
               </div>
               {/* tombol spesialis */}
