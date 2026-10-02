@@ -32,7 +32,7 @@ import {
   faBed,
 } from "@fortawesome/free-solid-svg-icons";
 
-import { LiquidGlass } from "@ybouane/liquidglass";
+import { Glass } from "@samasante/liquid-glass";
 import BookingModalFloating from "../BookingModalFloating";
 
 // Nav item
@@ -131,7 +131,6 @@ export default function MobileBottomNavbar() {
   const plusButtonRef = useRef<HTMLButtonElement>(null);
 
   const dockRef = useRef<HTMLDivElement>(null);
-  const liquidRootRef = useRef<HTMLDivElement>(null);
 
   const [isDragging, setIsDragging] = useState(false);
   const [dockWidth, setDockWidth] = useState(390);
@@ -149,44 +148,6 @@ export default function MobileBottomNavbar() {
   const lockedIndexRef = useRef<number | null>(null);
   const [lockedIndex, setLockedIndex] = useState<number | null>(null);
 
-  // LiquidGlass
-  useEffect(() => {
-    const root = liquidRootRef.current;
-    const dock = dockRef.current;
-
-    if (!root || !dock) return;
-
-    dock.dataset.config = JSON.stringify({
-      cornerRadius: 32,
-      refraction: 2.1,
-      chromAberration: 0.065,
-      edgeHighlight: 0.42,
-      blurAmount: 0.025,
-    });
-
-    let instance: Awaited<ReturnType<typeof LiquidGlass.init>> | undefined;
-    let cancelled = false;
-
-    LiquidGlass.init({
-      root,
-      glassElements: [dock],
-    })
-      .then((result) => {
-        if (cancelled) {
-          result.destroy();
-          return;
-        }
-        instance = result;
-      })
-      .catch((error) => {
-        console.error("LiquidGlass initialization failed:", error);
-      });
-
-    return () => {
-      cancelled = true;
-      instance?.destroy();
-    };
-  }, []);
 
   // Scroll
   useEffect(() => {
@@ -553,7 +514,7 @@ export default function MobileBottomNavbar() {
         onClose={() => setIsBookingOpen(false)}
       />
 
-      <div ref={liquidRootRef} className="relative min-h-0 w-full">
+      <div className="relative min-h-0 w-full">
         <div className="fixed inset-x-0 bottom-0 z-[99] flex flex-col items-center justify-end pb-6 pointer-events-none">
           <nav
             aria-label="Navigasi Bawah Seluler"
@@ -659,16 +620,50 @@ export default function MobileBottomNavbar() {
               style={{
                 scaleX: dockScaleX,
                 skewX: dockSkewX,
-                backgroundColor: "rgba(255, 255, 255, 0.600)",
-                border: "1px solid rgba(255, 255, 255, 0.28)",
-                boxShadow:
-                  "inset 0 0 0 1px rgba(255, 255, 255, 0.26), inset 0 0 18px rgba(255, 255, 255, 0.035), 0 10px 30px rgba(0, 0, 0, 0.10)",
+                backgroundColor: "transparent",
+                border: "1px solid transparent",
+                boxShadow: "none",
                 WebkitTransform: "translateZ(0)",
                 transform: "translateZ(0)",
                 WebkitTouchCallout: "none",
                 WebkitUserSelect: "none",
               }}
             >
+              {/* Liquid glass background: live DOM refraction, no screenshot capture */}
+              <Glass
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[32px]"
+                optics={{
+                  // Stronger optical bend while keeping the lens inexpensive.
+                  strength: 0.14,
+                  depth: 0.72,
+                  curvature: 0.5,
+                  bend: 0.34,
+                  bendWidth: 0.075,
+                  dispersion: 0.14,
+                  specular: 1.15,
+                  sheenAngle: 0,
+                  sheen: 0.95,
+                  sheenWidth: 2.5,
+                  sheenFalloff: 1.5,
+                  glow: 0.1,
+                  glowSpread: 1,
+                  glowFalloff: 1.5,
+                  frost: 1,
+                  brightness: 0,
+                }}
+                style={{
+                  background: "rgba(255, 255, 255, 0.22)",
+                  border: "1px solid rgba(255, 255, 255, 0.42)",
+                  borderRadius: 32,
+                  boxShadow:
+                    "inset 0 1px 0 rgba(255, 255, 255, 0.62), inset 0 -1px 0 rgba(255, 255, 255, 0.18), inset 0 0 14px rgba(255, 255, 255, 0.055), 0 10px 30px rgba(0, 0, 0, 0.10)",
+                }}
+              >
+                {/* A child is required to activate the library's live material mode. */}
+                <span className="pointer-events-none absolute inset-0" />
+              </Glass>
+
               {/* Active pill */}
               <motion.div
                 className="pointer-events-none absolute top-1/2 z-10 rounded-full"
