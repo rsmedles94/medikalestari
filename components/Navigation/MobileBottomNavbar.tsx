@@ -35,7 +35,7 @@ import {
 import { Glass } from "@samasante/liquid-glass";
 import BookingModalFloating from "../BookingModalFloating";
 
-// Nav item
+// Nav item interface
 interface NavItem {
   label: string;
   href: string;
@@ -44,48 +44,29 @@ interface NavItem {
   isButton?: boolean;
 }
 
-/* ------------------------------------------------------------------ */
-/* Konstanta                                                          */
-/* ------------------------------------------------------------------ */
-
-// Kurva & durasi ala iOS (dipakai untuk shrink dock).
+// Layout & Animation Constants
 const SHRINK_MS = 360;
 const SHRINK_EASE = "cubic-bezier(0.32, 0.72, 0, 1)";
 
-// Ukuran dock normal vs. mengecil. Pengecilan dilakukan lewat ukuran LAYOUT
-// (width/height), BUKAN transform scale. Lensa Glass membuat salinan konten
-// halaman di dalamnya; jika induknya di-scale, salinan itu ikut ter-scale
-// terhadap titik origin dan bergeser dari konten asli -> tampak ganda,
-// terutama di sisi kanan (paling jauh dari origin). Tanpa transform di atas
-// Glass, salinan selalu sejajar 1:1 dengan halaman.
 const DOCK_HEIGHT = 64;
 const DOCK_HEIGHT_SHRUNK = 56;
 const DOCK_WIDTH_SHRUNK = "88%";
 
-// Jarak ikon paling kiri/kanan ke batas dockbar (px). Dipakai juga untuk
-// menghitung posisi pil dan area sentuh agar tetap sejajar dengan ikon.
 const ICON_PAD = 2;
 
-// Warna kaca SERAGAM di seluruh dock (tengah = pinggir), putih lengket.
-// Dipakai sama persis di Android (Glass) dan iOS/Safari (fallback WebKit),
-// sehingga warnanya serupa di semua browser.
+// Glass & Pill Styling
 const GLASS_TINT = "rgba(255, 255, 255, 0.40)";
-
-// Kilau sangat tipis dan merata dari atas untuk kesan kaca tebal yang elegan.
 const GLASS_SHEEN =
   "linear-gradient(180deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0) 55%)";
-
-// Pil aktif
 const PILL_COLOR = "rgba(0, 0, 0, 0.12)";
 
-// Optik lensa
 const GLASS_OPTICS = {
   strength: 0.1,
   depth: 0.2,
   curvature: 0.15,
   bend: 0.4,
   bendWidth: 0.06,
-  dispersion: 0.06,
+  dispersion: 0.08,
   specular: 0.7,
   sheenAngle: 0,
   sheen: 0.35,
@@ -95,14 +76,10 @@ const GLASS_OPTICS = {
   glowSpread: 1,
   glowFalloff: 1.5,
   frost: 0,
-  brightness: 0.18,
+  brightness: 0,
 };
 
-/* ------------------------------------------------------------------ */
-/* Util                                                               */
-/* ------------------------------------------------------------------ */
-
-// Mounted state
+// Mount hook
 const emptySubscribe = () => () => {};
 
 function useIsMounted() {
@@ -113,8 +90,7 @@ function useIsMounted() {
   );
 }
 
-// Semua browser iOS (Safari, Chrome iOS, dst.) memakai WebKit dan tidak bisa
-// merefraksi lewat SVG filter di backdrop. Safari desktop juga sama.
+// WebKit check
 function detectWebKitOnly(): boolean {
   if (typeof navigator === "undefined") return false;
 
@@ -130,7 +106,7 @@ function detectWebKitOnly(): boolean {
   return isIOS || isDesktopSafari;
 }
 
-// Home icon
+// Home Icon
 function HomeOutlineNoDoor({
   size = 26,
   color = "#000000",
@@ -156,7 +132,7 @@ function HomeOutlineNoDoor({
   );
 }
 
-// Nav icon
+// Nav Icon
 function NavIcon({ item, isActive }: { item: NavItem; isActive: boolean }) {
   const iconColor = "#000000";
 
@@ -193,17 +169,12 @@ function NavIcon({ item, isActive }: { item: NavItem; isActive: boolean }) {
   return null;
 }
 
-/* ------------------------------------------------------------------ */
-/* Komponen                                                           */
-/* ------------------------------------------------------------------ */
-
+// Component
 export default function MobileBottomNavbar() {
   const pathname = usePathname();
   const router = useRouter();
   const isMounted = useIsMounted();
 
-  // iOS / Safari memakai kaca fallback (blur WebKit + highlight CSS),
-  // Android / Chromium memakai lensa refraksi <Glass />.
   const useWebKitGlass = useMemo(
     () => (isMounted ? detectWebKitOnly() : false),
     [isMounted],
@@ -223,7 +194,7 @@ export default function MobileBottomNavbar() {
   const [isScrolledDown, setIsScrolledDown] = useState(false);
   const lastScrollY = useRef(0);
 
-  // Precision Drag / Tap Tracking
+  // Tracking refs
   const dragStartPos = useRef<{ x: number; y: number; time: number } | null>(
     null,
   );
@@ -233,7 +204,7 @@ export default function MobileBottomNavbar() {
   const lockedIndexRef = useRef<number | null>(null);
   const [lockedIndex, setLockedIndex] = useState<number | null>(null);
 
-  // Scroll
+  // Scroll listener
   useEffect(() => {
     if (!isMounted) return;
 
@@ -256,34 +227,41 @@ export default function MobileBottomNavbar() {
     };
   }, [isMounted]);
 
-  // Motion
+  // Motion values & membal / rubberbanding springs
   const rawX = useMotionValue(0);
   const overdragVal = useMotionValue(0);
 
+  // Spring pil membal saat dilepas
   const springX = useSpring(rawX, {
     stiffness: 450,
-    damping: 32,
+    damping: 28,
     mass: 0.6,
   });
 
+  // Spring elastisitas dockbar saat ditarik melebihi batas
   const springOverdrag = useSpring(overdragVal, {
-    stiffness: 380,
-    damping: 22,
+    stiffness: 320,
+    damping: 20,
+    mass: 0.8,
   });
 
+  // Translasi geser elastis dockbar saat pil ditarik melewati batas
+  const dockTranslateX = useTransform(
+    springOverdrag,
+    [-100, 0, 100],
+    [-18, 0, 18],
+  );
+
+  // Skala peregangan dockbar saat ditarik
   const dockScaleX = useTransform(
     springOverdrag,
     [-100, 0, 100],
-    [1.05, 1, 1.05],
+    [1.04, 1, 1.04],
   );
 
-  const dockSkewX = useTransform(
-    springOverdrag,
-    [-100, 0, 100],
-    [-2.5, 0, 2.5],
-  );
+  const dockSkewX = useTransform(springOverdrag, [-100, 0, 100], [-2, 0, 2]);
 
-  // Nav items
+  // Navigation menu items
   const navItems = useMemo<NavItem[]>(
     () => [
       { label: "Beranda", href: "/", isHome: true },
@@ -319,6 +297,7 @@ export default function MobileBottomNavbar() {
   const DRAG_SCALE = 1.04;
   const INNER_MARGIN = 4;
 
+  // Klem presisi agar pil tidak menembus batas dockbar
   const clampX = useCallback(
     (x: number, width: number, dragging: boolean) => {
       const currentScale = dragging ? DRAG_SCALE : 1;
@@ -332,6 +311,7 @@ export default function MobileBottomNavbar() {
     [basePilWidth],
   );
 
+  // Perhitungan overdrag untuk menggerakkan elastisitas dockbar
   const getOverdragAmount = useCallback(
     (x: number, width: number, dragging: boolean) => {
       const currentScale = dragging ? DRAG_SCALE : 1;
@@ -391,6 +371,7 @@ export default function MobileBottomNavbar() {
     movePillToIndex(activeIndex, realWidth);
   }, [activeIndex, movePillToIndex]);
 
+  // Route sync
   useEffect(() => {
     if (!isMounted) return;
 
@@ -411,6 +392,7 @@ export default function MobileBottomNavbar() {
     movePillToIndex(activeIndex);
   }, [pathname, activeIndex, navItems, isMounted, movePillToIndex]);
 
+  // Resize listener
   useEffect(() => {
     if (!isMounted) return;
 
@@ -427,8 +409,7 @@ export default function MobileBottomNavbar() {
     };
   }, [updateTargetPos, isMounted]);
 
-  // Lebar dock sekarang ikut berubah saat shrink (layout asli), jadi posisi
-  // pil harus mengikuti tiap frame selama transisi.
+  // ResizeObserver for shrink transition
   useEffect(() => {
     if (!isMounted || !dockRef.current) return;
     if (typeof ResizeObserver === "undefined") return;
@@ -445,7 +426,7 @@ export default function MobileBottomNavbar() {
     };
   }, [updateTargetPos, isMounted]);
 
-  // Handle Drag & Pointer Interactions
+  // Pointer event handlers dengan elastisitas drag
   const handlePointerDown = (e: React.PointerEvent) => {
     const target = e.target as HTMLElement;
 
@@ -453,7 +434,6 @@ export default function MobileBottomNavbar() {
       return;
     }
 
-    // Tangkap pointer langsung untuk instant drag
     if (dockRef.current) {
       e.currentTarget.setPointerCapture(e.pointerId);
     }
@@ -468,7 +448,6 @@ export default function MobileBottomNavbar() {
     lockedIndexRef.current = null;
     setLockedIndex(null);
 
-    // Perbarui posisi pil secara langsung
     if (dockRef.current) {
       const rect = dockRef.current.getBoundingClientRect();
       const realWidth = dockRef.current.offsetWidth || rect.width;
@@ -494,7 +473,9 @@ export default function MobileBottomNavbar() {
     const scaleFactor = rect.width / realWidth;
     const mouseX = (e.clientX - rect.left) / scaleFactor;
 
+    // Klem posisi pil dalam batas piksel riil
     rawX.set(clampX(mouseX, realWidth, true));
+    // Tarik dockbar secara elastis saat melebihi batas
     overdragVal.set(getOverdragAmount(mouseX, realWidth, true));
   };
 
@@ -560,6 +541,7 @@ export default function MobileBottomNavbar() {
       router.push(item.href);
     }
 
+    // Kembalikan efek overdrag elastis dockbar secara membal
     overdragVal.set(0);
 
     window.setTimeout(() => {
@@ -575,7 +557,7 @@ export default function MobileBottomNavbar() {
     [lockedIndex, activeIndex],
   );
 
-  // Outside click
+  // Outside click listener
   const handleOutsideClick = useCallback((event: MouseEvent) => {
     if (
       plusButtonRef.current &&
@@ -606,6 +588,7 @@ export default function MobileBottomNavbar() {
 
   return (
     <>
+      {/* Booking Modal */}
       <BookingModalFloating
         isOpen={isBookingOpen}
         onClose={() => setIsBookingOpen(false)}
@@ -617,7 +600,7 @@ export default function MobileBottomNavbar() {
             aria-label="Navigasi Bawah Seluler"
             className="flex w-full flex-col items-center px-4 select-none lg:hidden"
           >
-            {/* Action menu */}
+            {/* Action Menu */}
             <AnimatePresence mode="wait">
               {isActionMenuOpen && (
                 <motion.aside
@@ -643,6 +626,7 @@ export default function MobileBottomNavbar() {
                   }}
                   className="pointer-events-auto mb-3.5 flex w-[230px] flex-col rounded-3xl bg-white/70 p-2 shadow-[0_16px_40px_rgba(0,0,0,0.12)]"
                 >
+                  {/* Button: Booking */}
                   <button
                     type="button"
                     onClick={() => {
@@ -660,6 +644,7 @@ export default function MobileBottomNavbar() {
 
                   <div className="my-1 h-px w-full bg-black/10" />
 
+                  {/* Button: Kamar Perawatan */}
                   <button
                     type="button"
                     onClick={() => {
@@ -677,6 +662,7 @@ export default function MobileBottomNavbar() {
 
                   <div className="my-1 h-px w-full bg-black/10" />
 
+                  {/* Button: Ketersediaan Kamar */}
                   <button
                     type="button"
                     onClick={() => {
@@ -695,12 +681,8 @@ export default function MobileBottomNavbar() {
               )}
             </AnimatePresence>
 
-            {/* Dock
-                PENTING: elemen ini dan semua leluhur lapisan kaca TIDAK boleh punya
-                transform (scale/skew/translate). Shrink dilakukan lewat width/height
-                + border-radius dengan transisi CSS, sehingga lensa selalu sejajar
-                1:1 dengan halaman dan tidak ada bayangan ganda. */}
-            <div
+            {/* Dock Container dengan animasi elastisitas saat overdrag */}
+            <motion.div
               ref={dockRef}
               onPointerDown={handlePointerDown}
               onPointerMove={handlePointerMove}
@@ -712,6 +694,9 @@ export default function MobileBottomNavbar() {
                 width: shouldShrink ? DOCK_WIDTH_SHRUNK : "100%",
                 height: dockHeight,
                 borderRadius: dockRadius,
+                x: dockTranslateX,
+                scaleX: dockScaleX,
+                skewX: dockSkewX,
                 transition: `width ${SHRINK_MS}ms ${SHRINK_EASE}, height ${SHRINK_MS}ms ${SHRINK_EASE}, border-radius ${SHRINK_MS}ms ${SHRINK_EASE}`,
                 backgroundColor: "transparent",
                 border: "none",
@@ -720,7 +705,7 @@ export default function MobileBottomNavbar() {
                 WebkitUserSelect: "none",
               }}
             >
-              {/* Bayangan sangat lembut di belakang kaca (tanpa garis tepi). */}
+              {/* Dock Shadow Layer */}
               <div
                 aria-hidden="true"
                 className="pointer-events-none absolute inset-0 z-0"
@@ -731,11 +716,8 @@ export default function MobileBottomNavbar() {
                 }}
               />
 
-              {/* Lapisan kaca */}
+              {/* Dock Glass Background Layer */}
               {useWebKitGlass ? (
-                // iOS / Safari: lensa SVG-filter tidak didukung WebKit, jadi memakai
-                // blur + saturasi bawaan WebKit sebagai satu-satunya cara membaca
-                // piksel halaman di belakang dock.
                 <div
                   aria-hidden="true"
                   className="pointer-events-none absolute inset-0 z-[1] overflow-hidden"
@@ -751,7 +733,6 @@ export default function MobileBottomNavbar() {
                   }}
                 />
               ) : (
-                // Android / Chromium: lensa refraksi live (tanpa backdrop-filter biasa).
                 <Glass
                   aria-hidden="true"
                   className="pointer-events-none absolute inset-0 z-[1] overflow-hidden"
@@ -763,13 +744,11 @@ export default function MobileBottomNavbar() {
                     boxShadow: "none",
                   }}
                 >
-                  {/* A child is required to activate the library's live material mode. */}
                   <span className="pointer-events-none absolute inset-0" />
                 </Glass>
               )}
 
-              {/* Cahaya tepi lembut: terang di pinggir, bening di tengah.
-                  Gradasi halus, bukan garis, sehingga tidak tampak seperti border. */}
+              {/* Dock Glass Sheen Layer */}
               <div
                 aria-hidden="true"
                 className="pointer-events-none absolute inset-0 z-[2]"
@@ -780,16 +759,9 @@ export default function MobileBottomNavbar() {
                 }}
               />
 
-              {/* Konten: pil + menu. Efek overdrag (scaleX/skewX) hanya diterapkan
-                  di sini, TIDAK pada lapisan kaca, supaya refraksi tidak bergeser. */}
-              <motion.div
-                className="absolute inset-0 z-10"
-                style={{
-                  scaleX: dockScaleX,
-                  skewX: dockSkewX,
-                }}
-              >
-                {/* Active pill */}
+              {/* Dock Content Layer */}
+              <div className="absolute inset-0 z-10">
+                {/* Active Pill Component */}
                 <motion.div
                   className="pointer-events-none absolute top-1/2 z-10 rounded-full"
                   animate={{
@@ -811,7 +783,7 @@ export default function MobileBottomNavbar() {
                   }}
                 />
 
-                {/* Navigation */}
+                {/* Navigation Items */}
                 <menu
                   className="relative z-20 m-0 box-border flex h-full w-full list-none items-center justify-between p-0"
                   style={{ paddingInline: ICON_PAD }}
@@ -832,6 +804,7 @@ export default function MobileBottomNavbar() {
                         }}
                       >
                         {item.isButton ? (
+                          /* Plus Action Button */
                           <button
                             ref={plusButtonRef}
                             type="button"
@@ -889,6 +862,7 @@ export default function MobileBottomNavbar() {
                             />
                           </button>
                         ) : (
+                          /* Nav Link Item */
                           <Link
                             href={item.href || "#"}
                             aria-label={item.label}
@@ -936,8 +910,8 @@ export default function MobileBottomNavbar() {
                     );
                   })}
                 </menu>
-              </motion.div>
-            </div>
+              </div>
+            </motion.div>
           </nav>
         </div>
       </div>
