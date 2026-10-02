@@ -249,7 +249,7 @@ export default function MobileBottomNavbar() {
   const dockTranslateX = useTransform(
     springOverdrag,
     [-100, 0, 100],
-    [-18, 0, 18],
+    [-2, 0, 2],
   );
 
   // Skala peregangan dockbar saat ditarik
