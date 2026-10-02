@@ -47,7 +47,6 @@ interface NavItem {
 // Mounted state
 const emptySubscribe = () => () => {};
 
-// Mounted state
 function useIsMounted() {
   return useSyncExternalStore(
     emptySubscribe,
@@ -221,9 +220,9 @@ export default function MobileBottomNavbar() {
   const overdragVal = useMotionValue(0);
 
   const springX = useSpring(rawX, {
-    stiffness: 520,
-    damping: 34,
-    mass: 0.65,
+    stiffness: 450,
+    damping: 32,
+    mass: 0.6,
   });
 
   const springOverdrag = useSpring(overdragVal, {
@@ -329,13 +328,12 @@ export default function MobileBottomNavbar() {
 
       setDockWidth(realWidth);
 
-      rawX.jump(targetX);
-      springX.jump(targetX);
+      // Gunakan set() agar terjadi transisi spring yang halus, bukan jump() instan
+      rawX.set(targetX);
 
-      overdragVal.jump(0);
-      springOverdrag.jump(0);
+      overdragVal.set(0);
     },
-    [getCenterXForIndex, clampX, rawX, springX, overdragVal, springOverdrag],
+    [getCenterXForIndex, clampX, rawX, overdragVal],
   );
 
   const updateTargetPos = useCallback(() => {
@@ -402,8 +400,6 @@ export default function MobileBottomNavbar() {
   const handlePointerDown = (e: React.PointerEvent) => {
     const target = e.target as HTMLElement;
 
-    // Plus button has its own pointer interaction.
-    // Never start dock dragging from the plus button.
     if (target.closest("[data-plus-button]")) {
       return;
     }
@@ -413,8 +409,6 @@ export default function MobileBottomNavbar() {
     lockedIndexRef.current = null;
     setLockedIndex(null);
 
-    // Prevent browser gesture / selection behavior.
-    // This is especially important for PWA touch interaction.
     e.preventDefault();
 
     e.currentTarget.setPointerCapture(e.pointerId);
@@ -433,7 +427,6 @@ export default function MobileBottomNavbar() {
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
-    // Plus button never participates in dock dragging.
     if (plusPointerRef.current) return;
 
     if (!isDragging || !dockRef.current) return;
@@ -450,7 +443,6 @@ export default function MobileBottomNavbar() {
   };
 
   const handlePointerUp = (e: React.PointerEvent) => {
-    // Plus button owns this pointer interaction.
     if (plusPointerRef.current) {
       return;
     }
@@ -468,17 +460,12 @@ export default function MobileBottomNavbar() {
       return;
     }
 
-    // Simple tap:
-    // Do NOT execute dock navigation here.
-    // The actual button/link handles the tap itself.
     if (!wasDragged) {
       overdragVal.set(0);
       hasDraggedRef.current = false;
       return;
     }
 
-    // A real drag happened.
-    // The following click must be ignored so the action is executed only once.
     suppressNextClickRef.current = true;
 
     const rect = dockRef.current.getBoundingClientRect();
@@ -506,7 +493,6 @@ export default function MobileBottomNavbar() {
     movePillToIndex(targetIndex, realWidth);
 
     if (item.isButton) {
-      // Plus tidak melakukan navigasi route.
       lockedIndexRef.current = null;
       setLockedIndex(null);
 
@@ -519,8 +505,6 @@ export default function MobileBottomNavbar() {
 
     hasDraggedRef.current = false;
 
-    // Keep suppression active until the browser's click event
-    // has passed through the React event queue.
     window.setTimeout(() => {
       suppressNextClickRef.current = false;
     }, 0);
@@ -602,7 +586,6 @@ export default function MobileBottomNavbar() {
                   }}
                   className="pointer-events-auto mb-3.5 flex w-[230px] flex-col rounded-3xl bg-white/70 p-2 shadow-[0_16px_40px_rgba(0,0,0,0.12)]"
                 >
-                  {/* Button */}
                   <button
                     type="button"
                     onClick={() => {
@@ -615,13 +598,11 @@ export default function MobileBottomNavbar() {
                       icon={faCalendarCheck}
                       className="h-[20px] w-[20px]"
                     />
-
                     <span>Buat Janji Temu</span>
                   </button>
 
                   <div className="my-1 h-px w-full bg-black/10" />
 
-                  {/* Button */}
                   <button
                     type="button"
                     onClick={() => {
@@ -634,13 +615,11 @@ export default function MobileBottomNavbar() {
                       icon={faProcedures}
                       className="h-[20px] w-[20px]"
                     />
-
                     <span>Kamar Perawatan</span>
                   </button>
 
                   <div className="my-1 h-px w-full bg-black/10" />
 
-                  {/* Button */}
                   <button
                     type="button"
                     onClick={() => {
@@ -653,7 +632,6 @@ export default function MobileBottomNavbar() {
                       icon={faBed}
                       className="h-[20px] w-[20px]"
                     />
-
                     <span>Ketersediaan Kamar</span>
                   </button>
                 </motion.aside>
@@ -681,14 +659,10 @@ export default function MobileBottomNavbar() {
               style={{
                 scaleX: dockScaleX,
                 skewX: dockSkewX,
-
                 backgroundColor: "rgba(255, 255, 255, 0.600)",
-
                 border: "1px solid rgba(255, 255, 255, 0.28)",
-
                 boxShadow:
                   "inset 0 0 0 1px rgba(255, 255, 255, 0.26), inset 0 0 18px rgba(255, 255, 255, 0.035), 0 10px 30px rgba(0, 0, 0, 0.10)",
-
                 WebkitTransform: "translateZ(0)",
                 transform: "translateZ(0)",
               }}
@@ -700,8 +674,6 @@ export default function MobileBottomNavbar() {
                   width: `${basePilWidth}px`,
                   height: `${basePilHeight}px`,
                   scale: isDragging ? DRAG_SCALE : 1,
-
-                  // Only the active pill is black.
                   backgroundColor: "rgba(0, 0, 0, 0.19)",
                 }}
                 transition={{
@@ -714,7 +686,6 @@ export default function MobileBottomNavbar() {
                   y: "-50%",
                   left: 0,
                   translateX: "-50%",
-
                   WebkitTransform: "translateZ(0)",
                   transform: "translateZ(0)",
                 }}
@@ -790,7 +761,6 @@ export default function MobileBottomNavbar() {
                               transform: isActionMenuOpen
                                 ? "rotate(45deg)"
                                 : "rotate(0deg)",
-
                               transition: "transform 200ms ease",
                             }}
                           />
@@ -809,11 +779,13 @@ export default function MobileBottomNavbar() {
                             }
 
                             lockedIndexRef.current = i;
+                            setLockedIndex(i);
 
                             movePillToIndex(i);
 
                             if (pathname === item.href) {
                               lockedIndexRef.current = null;
+                              setLockedIndex(null);
 
                               window.scrollTo({
                                 top: 0,

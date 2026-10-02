@@ -40,10 +40,10 @@ export async function fetchDoctors(
   specialty?: string,
   searchName?: string,
 ): Promise<Doctor[]> {
-// Menghasilkan kunci cache berdasarkan parameter untuk menangani berbagai kombinasi filter
+  // Menghasilkan kunci cache berdasarkan parameter untuk menangani berbagai kombinasi filter
   const cacheKey = `doctors:${specialty || "all"}:${searchName || "all"}`;
 
- // Periksa CacheManager terlebih dahulu
+  // Periksa CacheManager terlebih dahulu
   const cachedData = cacheManager.get(cacheKey);
   if (cachedData) {
     console.debug(`[fetchDoctors] Cache hit for ${cacheKey}`);
@@ -195,7 +195,7 @@ export async function fetchAllDoctorsWithSchedules() {
       }));
     }
 
-   // Gabungkan dokter dengan jadwalnya
+    // Gabungkan dokter dengan jadwalnya
     const doctorsWithSchedules = doctors.map((doctor) => ({
       ...doctor,
       schedules: (schedules || []).filter(
@@ -302,7 +302,7 @@ export async function uploadDoctorImage(file: File): Promise<string> {
   }
 }
 
-// MADING 
+// MADING
 export async function fetchMadingContent(
   type?: "edukasi" | "event",
 ): Promise<MadingContent[]> {
