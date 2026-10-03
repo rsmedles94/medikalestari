@@ -355,7 +355,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                   isMenuOpen
                     ? ""
                     : "transition-transform duration-300 ease-in-out"
-                } ${isCompact ? "scale-80" : "scale-110"}`}
+                } ${isCompact ? "scale-100" : "scale-120"}`}
               >
                 {logoNode}
               </div>
