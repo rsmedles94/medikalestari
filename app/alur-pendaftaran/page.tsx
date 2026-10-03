@@ -143,9 +143,7 @@ export default function AlurPendaftaran() {
                 className="text-white/70"
                 aria-hidden="true"
               />
-              <span className="font-normal text-white">
-                Alur Pendaftaran
-              </span>
+              <span className="font-normal text-white">Alur Pendaftaran</span>
             </div>
           </nav>
 

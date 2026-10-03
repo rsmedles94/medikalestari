@@ -175,7 +175,7 @@ export default function NotFound() {
       }
 
       // 4. Update & Deteksi Tabrakan Rintangan
-      ctx.fillStyle = "#EF4444"; 
+      ctx.fillStyle = "#EF4444";
 
       for (let i = gs.obstacles.length - 1; i >= 0; i--) {
         const obs = gs.obstacles[i];
@@ -195,7 +195,7 @@ export default function NotFound() {
         const distanceY = ball.y - closestY;
         const distanceSquared = distanceX * distanceX + distanceY * distanceY;
 
-        // Toleransi hitbox 
+        // Toleransi hitbox
         const hitRadius = ball.radius - 2;
 
         if (distanceSquared < hitRadius * hitRadius) {
@@ -253,8 +253,6 @@ export default function NotFound() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-4 select-none overflow-x-hidden">
-
-
       {/* Arena Game Canvas */}
       <div
         ref={gameContainerRef}
@@ -276,7 +274,7 @@ export default function NotFound() {
               <span className="font-mono font-bold bg-gray-100 px-1.5 py-0.5 rounded border">
                 Space
               </span>{" "}
-               untuk Melompat
+              untuk Melompat
             </p>
           </div>
         )}

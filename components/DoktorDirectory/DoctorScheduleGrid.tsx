@@ -53,8 +53,7 @@ const saveFilterState = (state: FilterState) => {
   try {
     if (typeof window === "undefined") return;
     localStorage.setItem(FILTER_CACHE_KEY, JSON.stringify(state));
-  } catch {
-  }
+  } catch {}
 };
 
 const loadDoctorsCache = (): DoctorWithSchedule[] | null => {
@@ -82,8 +81,7 @@ const saveDoctorsCache = (data: DoctorWithSchedule[]) => {
       DOCTORS_CACHE_KEY,
       JSON.stringify({ data, timestamp: Date.now() }),
     );
-  } catch {
-  }
+  } catch {}
 };
 
 const DAY_NAME_BY_INDEX = [
@@ -254,12 +252,7 @@ export default function DoctorScheduleGrid({
         return matchesSpecialty && matchesSearch && matchesDay;
       })
       .sort((a, b) => a.name.localeCompare(b.name));
-  }, [
-    doctors,
-    selectedSpecialty,
-    searchDoctor,
-    selectedDay,
-  ]);
+  }, [doctors, selectedSpecialty, searchDoctor, selectedDay]);
 
   const groupedDoctors = useMemo(() => {
     const groups: { [key: string]: DoctorWithSchedule[] } = {};
@@ -286,8 +279,7 @@ export default function DoctorScheduleGrid({
           (s) =>
             `${s.start_time.substring(0, 5)} - ${s.end_time.substring(0, 5)}`,
         )
-        .join(
-);
+        .join();
     },
     [],
   );
@@ -307,9 +299,7 @@ export default function DoctorScheduleGrid({
       if (typeof window !== "undefined") {
         localStorage.removeItem(FILTER_CACHE_KEY);
       }
-    } catch {
-    }
-
+    } catch {}
   }, []);
 
   const handleSearch = useCallback(() => {

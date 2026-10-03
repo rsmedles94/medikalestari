@@ -71,7 +71,6 @@ export default function MedicalCheckup() {
                       </h3>
                     </Link>
 
-
                     {/* Harga*/}
                     <p className="text-[#e67e22] font-bold text-xs md:text-base mb-5 mt-auto">
                       {item.price}

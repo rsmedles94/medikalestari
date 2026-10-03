@@ -16,7 +16,6 @@ interface BreadcrumbProps {
 const Breadcrumb: React.FC<BreadcrumbProps> = ({ items }) => {
   const pathname = usePathname();
 
-
   const generateBreadcrumbs = (): BreadcrumbItem[] => {
     if (items && items.length > 0) {
       return items;

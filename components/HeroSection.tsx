@@ -15,7 +15,6 @@ import {
 import { fetchHeroBanners } from "@/lib/api";
 import { HeroBanner } from "@/lib/types";
 
-// Component Tombol Panah Banner (Desktop)
 interface DesktopChevronButtonProps {
   direction: "left" | "right";
   onClick: () => void;
@@ -67,29 +66,12 @@ const shimmerStyle = `
   }
 `;
 
-// Inject Custom Style Dropdown & Shimmer
 if (typeof document !== "undefined") {
   const style = document.createElement("style");
   style.textContent = shimmerStyle;
   if (!document.head.querySelector("style[data-shimmer]")) {
     style.dataset.shimmer = "true";
     document.head.appendChild(style);
-  }
-
-  const dropdownStyle = document.createElement("style");
-  dropdownStyle.textContent = `
-    select option {
-      color: #003f88;
-      background-color: white;
-    }
-    select option:hover, select option:checked {
-      background-color: #003f88;
-      color: white;
-    }
-  `;
-  if (!document.head.querySelector("style[data-dropdown]")) {
-    dropdownStyle.dataset.dropdown = "true";
-    document.head.appendChild(dropdownStyle);
   }
 }
 
@@ -109,6 +91,10 @@ const HeroSection = () => {
   const [day, setDay] = useState("");
   const [isSpecialtyOpen, setIsSpecialtyOpen] = useState(false);
   const [isDayOpen, setIsDayOpen] = useState(false);
+
+  // Refs untuk klik di luar dropdown (Close on click outside)
+  const specialtyRef = useRef<HTMLDivElement>(null);
+  const dayRef = useRef<HTMLDivElement>(null);
 
   // Banner hover state
   const [isHoveringBanner, setIsHoveringBanner] = useState(false);
@@ -139,6 +125,23 @@ const HeroSection = () => {
     "Sabtu",
     "Minggu",
   ];
+
+  // Click outside listener untuk menutup dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        specialtyRef.current &&
+        !specialtyRef.current.contains(event.target as Node)
+      ) {
+        setIsSpecialtyOpen(false);
+      }
+      if (dayRef.current && !dayRef.current.contains(event.target as Node)) {
+        setIsDayOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // Fetch Banners
   useEffect(() => {
@@ -246,104 +249,21 @@ const HeroSection = () => {
     setLoadedSlides((prev) => ({ ...prev, [String(id)]: true }));
   };
 
-  // Handler submit pencarian
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams();
     if (search) params.append("search", search);
-    if (specialty) params.append("specialty", specialty);
-    if (day) params.append("day", day);
+    if (specialty && specialty !== "Semua Spesialis")
+      params.append("specialty", specialty);
+    if (day && day !== "Semua Hari") params.append("day", day);
     if (globalThis.window?.location) {
       globalThis.window.location.href = `/dokter?${params.toString()}`;
     }
   };
 
-  // Loading / Fallback UI
-  if (loading || filteredSlides.length === 0) {
-    return (
-      <section className="relative w-full bg-transparent mb-20">
-        <div className="hidden md:block relative w-full aspect-[1900/550] bg-gray-200" />
-        <div className="md:hidden relative w-full aspect-2208/2760 bg-gray-200" />
-
-        {/* Mobile Searchbar Fallback */}
-        <div className="relative w-full px-4 py-8 md:py-0 md:-mt-4 md:z-50 bg-transparent">
-          <form onSubmit={handleSearchSubmit} className="max-w-5xl mx-auto">
-            <div className="bg-white rounded-3xl flex flex-col md:flex-row overflow-hidden border border-gray-100 shadow-md">
-              <div className="flex-1 px-5 py-4 border-b md:border-b-0 md:border-r border-gray-100">
-                <label className="block text-xs text-[#003f88] font-semibold mb-1">
-                  Nama Dokter
-                </label>
-                <div className="flex items-center gap-2">
-                  <User size={18} className="text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="Cari nama dokter..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="w-full outline-none text-sm bg-transparent"
-                  />
-                </div>
-              </div>
-
-              <div className="flex-1 px-5 py-4 border-b md:border-b-0 md:border-r border-gray-100">
-                <label className="block text-xs text-[#003f88] font-semibold mb-1">
-                  Spesialis
-                </label>
-                <div className="flex items-center gap-2">
-                  <Stethoscope size={16} className="text-gray-400" />
-                  <select
-                    value={specialty}
-                    onChange={(e) => setSpecialty(e.target.value)}
-                    className="w-full outline-none text-sm bg-transparent cursor-pointer"
-                  >
-                    {SPECIALTY_CATEGORIES.map((s) => (
-                      <option key={s} value={s === "Semua Spesialis" ? "" : s}>
-                        {s}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="flex-1 px-5 py-4 border-b md:border-b-0 md:border-r border-gray-100">
-                <label className="block text-xs text-[#003f88] font-semibold mb-1">
-                  Pilih Hari
-                </label>
-                <div className="flex items-center gap-2">
-                  <CalendarDays size={16} className="text-gray-400" />
-                  <select
-                    value={day}
-                    onChange={(e) => setDay(e.target.value)}
-                    className="w-full outline-none text-sm bg-transparent cursor-pointer"
-                  >
-                    {DAYS.map((d) => (
-                      <option key={d} value={d === "Semua Hari" ? "" : d}>
-                        {d}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-center p-3">
-                <button
-                  type="submit"
-                  className="w-full md:w-14 h-12 md:h-14 rounded-full bg-[#003f88] flex items-center justify-center gap-2 text-white active:scale-95 transition cursor-pointer"
-                >
-                  <Search className="w-5 h-5 md:w-6 md:h-6" />
-                  <span className="font-semibold md:hidden">Cari Dokter</span>
-                </button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </section>
-    );
-  }
-
   return (
-    <section className="relative w-full bg-transparent mb-12 md:mb-20">
-      {/* Banner desktop (Aspect Ratio Ringkas) */}
+    <section className="relative w-full bg-transparent mb-12 md:mb-24">
+      {/* Banner desktop */}
       <section
         aria-label="Hero banner carousel"
         className="hidden md:block relative w-full aspect-[1900/720] bg-black"
@@ -379,7 +299,6 @@ const HeroSection = () => {
               );
             })}
 
-            {/* Navigasi panah desktop */}
             <DesktopChevronButton
               direction="left"
               onClick={() => paginate(-1)}
@@ -393,7 +312,6 @@ const HeroSection = () => {
               isHovering={isHoveringBanner}
             />
 
-            {/* Indicator dots desktop */}
             <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1">
               {desktopSlides.map((slide) => (
                 <button
@@ -449,112 +367,150 @@ const HeroSection = () => {
             </div>
           );
         })}
-
-        {/* Indicator dots mobile */}
-        {mobileSlides.length >= 2 && (
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-40 flex items-center gap-1">
-            {mobileSlides.map((slide) => {
-              const index = mobileSlides.findIndex((s) => s.id === slide.id);
-              return (
-                <button
-                  type="button"
-                  key={`mobile-indicator-${slide.id}`}
-                  onClick={() => setPage(index)}
-                  className={`h-1 transition-all duration-300 ${
-                    index === currentSlide ? "bg-white w-6" : "bg-white/50 w-2"
-                  }`}
-                />
-              );
-            })}
-          </div>
-        )}
       </div>
 
-      {/* Desktop Searchbar - Posisi Tengah Menggantung Keluar Banner */}
+      {/* Desktop Searchbar - Custom Dropdown Presisi */}
       <div className="hidden md:block absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 z-30 w-full max-w-5xl px-4">
-        <section className="bg-white p-6 md:p-8 rounded-md border border-gray-200 w-full">
-          {/* Header & Title */}
+        <section className="bg-white p-6 md:p-8 rounded-md border border-gray-100 w-full">
           <header className="mb-6">
             <h2 className="text-2xl font-bold text-[#003f88]">
               Temukan Dokter
             </h2>
           </header>
 
-          {/* Form pencarian */}
           <form
             onSubmit={handleSearchSubmit}
             className="flex flex-row items-center gap-3"
           >
-            {/* Input nama dokter */}
-            <div className="flex-1 h-[52px] border border-gray-300 rounded-lg px-4 flex items-center gap-3 bg-white focus-within:border-[#003f88] focus-within:ring-1 focus-within:ring-[#003f88] transition-all">
+            {/* Input Nama Dokter */}
+            <div className="flex-1 h-[52px] border border-gray-300 rounded-md px-4 flex items-center gap-3 bg-white focus-within:border-[#003f88] focus-within:ring-1 focus-within:ring-[#003f88]/20 transition-all">
               <User size={20} className="text-gray-400 shrink-0" />
               <input
                 type="text"
                 placeholder="Cari nama dokter..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full h-full outline-none text-sm md:text-base text-gray-800 placeholder-gray-400 bg-transparent leading-none"
+                className="w-full h-full outline-none text-sm md:text-base text-gray-800 placeholder-gray-400 bg-transparent"
               />
             </div>
 
-            {/* Select spesialis */}
-            <div className="flex-1 h-[52px] border border-gray-300 rounded-lg px-4 flex items-center gap-3 bg-white relative focus-within:border-[#003f88] focus-within:ring-1 focus-within:ring-[#003f88] transition-all">
-              <Stethoscope size={20} className="text-gray-400 shrink-0" />
-              <select
-                value={specialty}
-                onChange={(e) => {
-                  setSpecialty(e.target.value);
-                  setIsSpecialtyOpen(false);
-                }}
-                onFocus={() => setIsSpecialtyOpen(true)}
-                onBlur={() => setTimeout(() => setIsSpecialtyOpen(false), 100)}
-                className="w-full h-full outline-none text-sm md:text-base bg-transparent appearance-none text-gray-800 cursor-pointer pr-8 leading-none truncate"
-              >
-                {SPECIALTY_CATEGORIES.map((s) => (
-                  <option key={s} value={s === "Semua Spesialis" ? "" : s}>
-                    {s}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown
-                size={18}
-                className={`text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none transition-transform duration-300 ${
-                  isSpecialtyOpen ? "rotate-180" : ""
-                }`}
-              />
-            </div>
-
-            {/* Select hari */}
-            <div className="flex-1 h-[52px] border border-gray-300 rounded-lg px-4 flex items-center gap-3 bg-white relative focus-within:border-[#003f88] focus-within:ring-1 focus-within:ring-[#003f88] transition-all">
-              <CalendarDays size={20} className="text-gray-400 shrink-0" />
-              <select
-                value={day}
-                onChange={(e) => {
-                  setDay(e.target.value);
+            {/* Custom Dropdown Spesialis */}
+            <div ref={specialtyRef} className="flex-1 relative">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsSpecialtyOpen(!isSpecialtyOpen);
                   setIsDayOpen(false);
                 }}
-                onFocus={() => setIsDayOpen(true)}
-                onBlur={() => setTimeout(() => setIsDayOpen(false), 100)}
-                className="w-full h-full outline-none text-sm md:text-base bg-transparent appearance-none text-gray-800 cursor-pointer pr-8 leading-none truncate"
-              >
-                {DAYS.map((d) => (
-                  <option key={d} value={d === "Semua Hari" ? "" : d}>
-                    {d}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown
-                size={18}
-                className={`text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none  ${
-                  isDayOpen ? "rotate-180" : ""
+                className={`w-full h-[52px] border rounded-md px-4 flex items-center justify-between bg-white text-left transition-all ${
+                  isSpecialtyOpen
+                    ? "border-[#003f88] ring-1 ring-[#003f88]/20"
+                    : "border-gray-300 hover:border-gray-400"
                 }`}
-              />
+              >
+                <div className="flex items-center gap-3 min-w-0 pr-2">
+                  <Stethoscope size={20} className="text-gray-400 shrink-0" />
+                  <span className="text-sm md:text-base text-gray-800 truncate">
+                    {specialty || "Semua Spesialis"}
+                  </span>
+                </div>
+                <ChevronDown
+                  size={18}
+                  className={`text-gray-400 shrink-0 transition-transform duration-200 ${
+                    isSpecialtyOpen ? "rotate-180 text-[#003f88]" : ""
+                  }`}
+                />
+              </button>
+
+              {/* Menu Opsi Custom Spesialis */}
+              {isSpecialtyOpen && (
+                <div className="absolute left-0 right-0 top-full mt-2 bg-white border border-gray-200 rounded-md shadow-xl z-50 max-h-60 overflow-y-auto py-1">
+                  {SPECIALTY_CATEGORIES.map((s) => {
+                    const isSelected =
+                      specialty === s ||
+                      (!specialty && s === "Semua Spesialis");
+                    return (
+                      <button
+                        key={s}
+                        type="button"
+                        onClick={() => {
+                          setSpecialty(s === "Semua Spesialis" ? "" : s);
+                          setIsSpecialtyOpen(false);
+                        }}
+                        className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
+                          isSelected
+                            ? "bg-[#003f88] text-white font-medium"
+                            : "text-gray-700 hover:bg-blue-50 hover:text-[#003f88]"
+                        }`}
+                      >
+                        {s}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
-            {/* Button search */}
+            {/* Custom Dropdown Hari */}
+            <div ref={dayRef} className="flex-1 relative">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsDayOpen(!isDayOpen);
+                  setIsSpecialtyOpen(false);
+                }}
+                className={`w-full h-[52px] border rounded-md px-4 flex items-center justify-between bg-white text-left transition-all ${
+                  isDayOpen
+                    ? "border-[#003f88] ring-1 ring-[#003f88]/20"
+                    : "border-gray-300 hover:border-gray-400"
+                }`}
+              >
+                <div className="flex items-center gap-3 min-w-0 pr-2">
+                  <CalendarDays size={20} className="text-gray-400 shrink-0" />
+                  <span className="text-sm md:text-base text-gray-800 truncate">
+                    {day || "Semua Hari"}
+                  </span>
+                </div>
+                <ChevronDown
+                  size={18}
+                  className={`text-gray-400 shrink-0 transition-transform duration-200 ${
+                    isDayOpen ? "rotate-180 text-[#003f88]" : ""
+                  }`}
+                />
+              </button>
+
+              {/* Menu Opsi Custom Hari */}
+              {isDayOpen && (
+                <div className="absolute left-0 right-0 top-full mt-2 bg-white border border-gray-200 rounded-md shadow-xl z-50 max-h-60 overflow-y-auto py-1">
+                  {DAYS.map((d) => {
+                    const isSelected =
+                      day === d || (!day && d === "Semua Hari");
+                    return (
+                      <button
+                        key={d}
+                        type="button"
+                        onClick={() => {
+                          setDay(d === "Semua Hari" ? "" : d);
+                          setIsDayOpen(false);
+                        }}
+                        className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
+                          isSelected
+                            ? "bg-[#003f88] text-white font-medium"
+                            : "text-gray-700 hover:bg-blue-50 hover:text-[#003f88]"
+                        }`}
+                      >
+                        {d}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Tombol Search */}
             <button
               type="submit"
-              className="h-[52px] px-8 rounded-lg bg-[#003f88] hover:bg-[#002f66] text-white font-semibold text-base transition-colors cursor-pointer shrink-0 flex items-center justify-center active:scale-95"
+              className="h-[52px] px-8 rounded-md bg-[#003f88] hover:bg-[#002f66] text-white font-semibold text-base transition-colors cursor-pointer shrink-0 flex items-center justify-center active:scale-95"
             >
               Search
             </button>
