@@ -293,7 +293,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
       {/* desktop (>= md) */}
       <div className="hidden md:block">
         {/* utility bar */}
-        <div className="bg-[#5f5f5f] text-[12px] font-medium text-white">
+        <div className="bg-[#5f5f5f] text-[12px] font-normal text-white">
           <div className="mx-auto flex h-7 max-w-[1280px] items-stretch justify-between pl-6">
             {/* quick links */}
             <nav aria-label="Tautan cepat">

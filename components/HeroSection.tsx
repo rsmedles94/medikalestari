@@ -424,7 +424,10 @@ const HeroSection = () => {
 
               {/* Menu Opsi Custom Spesialis */}
               {isSpecialtyOpen && (
-                <div className="absolute left-0 right-0 top-full mt-2 bg-white border border-gray-200 rounded-md shadow-xl z-50 max-h-60 overflow-y-auto py-1">
+                <div
+                  data-lenis-prevent
+                  className="absolute left-0 right-0 top-full mt-2 bg-white border border-gray-200 rounded-md shadow-xl z-50 max-h-60 overflow-y-auto py-1"
+                >
                   {SPECIALTY_CATEGORIES.map((s) => {
                     const isSelected =
                       specialty === s ||
@@ -481,7 +484,10 @@ const HeroSection = () => {
 
               {/* Menu Opsi Custom Hari */}
               {isDayOpen && (
-                <div className="absolute left-0 right-0 top-full mt-2 bg-white border border-gray-200 rounded-md shadow-xl z-50 max-h-60 overflow-y-auto py-1">
+                <div
+                  data-lenis-prevent
+                  className="absolute left-0 right-0 top-full mt-2 bg-white border border-gray-200 rounded-md shadow-xl z-50 max-h-60 overflow-y-auto py-1"
+                >
                   {DAYS.map((d) => {
                     const isSelected =
                       day === d || (!day && d === "Semua Hari");
