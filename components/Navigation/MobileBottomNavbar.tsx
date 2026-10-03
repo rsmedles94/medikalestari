@@ -76,7 +76,7 @@ const GLASS_OPTICS = {
   glowSpread: 1,
   glowFalloff: 1.5,
   frost: 0,
-  brightness: 0,
+  brightness: 0.6,
 };
 
 // Mount hook
@@ -726,7 +726,7 @@ export default function MobileBottomNavbar() {
                     background: GLASS_TINT,
                     WebkitBackdropFilter:
                       "blur(18px) saturate(1.8) brightness(1.06)",
-                    backdropFilter: "blur(18px) saturate(1.8) brightness(1.06)",
+                    backdropFilter: "blur(0.1px) saturate(1.8) brightness(1.06)",
                     boxShadow: "none",
                     transition: `border-radius ${SHRINK_MS}ms ${SHRINK_EASE}`,
                     transform: "translate3d(0, 0, 0)",
