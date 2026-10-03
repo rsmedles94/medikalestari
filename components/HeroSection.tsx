@@ -8,53 +8,14 @@ import {
   User,
   Stethoscope,
   CalendarDays,
-  ChevronLeft,
   ChevronRight,
   ChevronDown,
 } from "lucide-react";
 import { fetchHeroBanners } from "@/lib/api";
 import { HeroBanner } from "@/lib/types";
 
-interface DesktopChevronButtonProps {
-  direction: "left" | "right";
-  onClick: () => void;
-  disabled: boolean;
-  isHovering: boolean;
-}
-
-const DesktopChevronButton: React.FC<DesktopChevronButtonProps> = ({
-  direction,
-  onClick,
-  disabled,
-  isHovering,
-}) => {
-  const isLeft = direction === "left";
-  const isDisabled = disabled;
-  const shouldShow = !isDisabled && isHovering;
-  const baseOpacity = isDisabled ? "opacity-0 cursor-not-allowed" : "opacity-0";
-  const hoverOpacity = shouldShow
-    ? "opacity-70 hover:opacity-100 cursor-pointer"
-    : baseOpacity;
-
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      aria-label={`${isLeft ? "Previous" : "Next"} slide`}
-      className={`absolute ${isLeft ? "left-6" : "right-6"} top-1/2 -translate-y-1/2 z-40 p-2 bg-black/50 backdrop-blur transition-all duration-300 rounded-[45px] ${hoverOpacity}`}
-    >
-      {isLeft ? (
-        <ChevronLeft size={20} className="text-white" />
-      ) : (
-        <ChevronRight size={20} className="text-white" />
-      )}
-    </button>
-  );
-};
-
-// Shimmer Animation Style
-const shimmerStyle = `
+// Shimmer Animation & Circular Loader Keyframes
+const customStyles = `
   @keyframes shimmer {
     0% { background-position: -1000px 0; }
     100% { background-position: 1000px 0; }
@@ -64,13 +25,39 @@ const shimmerStyle = `
     background-size: 1000px 100%;
     animation: shimmer 2s infinite;
   }
+
+  @keyframes circleProgress {
+    0% {
+      stroke-dashoffset: 163.36; /* 2 * PI * 26 */
+    }
+    100% {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes circleProgressMobile {
+    0% {
+      stroke-dashoffset: 113.1; /* 2 * PI * 18 */
+    }
+    100% {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  .animate-circle-progress {
+    animation: circleProgress 5s linear infinite;
+  }
+
+  .animate-circle-progress-mobile {
+    animation: circleProgressMobile 5s linear infinite;
+  }
 `;
 
 if (typeof document !== "undefined") {
   const style = document.createElement("style");
-  style.textContent = shimmerStyle;
-  if (!document.head.querySelector("style[data-shimmer]")) {
-    style.dataset.shimmer = "true";
+  style.textContent = customStyles;
+  if (!document.head.querySelector("style[data-custom-hero]")) {
+    style.dataset.customHero = "true";
     document.head.appendChild(style);
   }
 }
@@ -92,12 +79,12 @@ const HeroSection = () => {
   const [isSpecialtyOpen, setIsSpecialtyOpen] = useState(false);
   const [isDayOpen, setIsDayOpen] = useState(false);
 
-  // Refs untuk klik di luar dropdown (Close on click outside)
+  // Key untuk mereset animasi CSS setiap kali slide berganti/diklik
+  const [animKey, setAnimKey] = useState(0);
+
+  // Refs untuk klik di luar dropdown
   const specialtyRef = useRef<HTMLDivElement>(null);
   const dayRef = useRef<HTMLDivElement>(null);
-
-  // Banner hover state
-  const [isHoveringBanner, setIsHoveringBanner] = useState(false);
 
   const SPECIALTY_CATEGORIES = [
     "Semua Spesialis",
@@ -213,31 +200,25 @@ const HeroSection = () => {
     }
   }, [slides]);
 
-  // Filter slides
-  const desktopSlides = slides.filter(
-    (slide) => slide.device_type === "desktop",
-  );
-  const mobileSlides = slides.filter((slide) => slide.device_type === "mobile");
-  const filteredSlides =
-    currentDeviceType === "desktop" ? desktopSlides : mobileSlides;
-
-  const validSlideCount = filteredSlides.length > 0 ? filteredSlides.length : 1;
+  const activeSlides = slides;
+  const validSlideCount = activeSlides.length > 0 ? activeSlides.length : 1;
   const currentSlide = Math.abs(page) % validSlideCount;
 
-  const paginate = useCallback(
-    (newDirection: number) => {
-      setPage(page + newDirection);
-    },
-    [page],
-  );
+  const paginate = useCallback((newDirection: number) => {
+    setPage((prevPage) => prevPage + newDirection);
+    setAnimKey((prev) => prev + 1); // Reset animasi melingkar
+  }, []);
 
+  // Timer Pindah Slide Otomatis Setiap 5 Detik
   useEffect(() => {
-    let slideInterval: NodeJS.Timeout;
-    if (filteredSlides.length > 0) {
-      slideInterval = setInterval(() => paginate(1), 5000);
-    }
-    return () => clearInterval(slideInterval);
-  }, [paginate, filteredSlides.length]);
+    if (activeSlides.length <= 1) return;
+
+    const timer = setInterval(() => {
+      paginate(1);
+    }, 5000);
+
+    return () => clearInterval(timer);
+  }, [paginate, activeSlides.length]);
 
   const handleImageLoaded = (id?: string | number) => {
     if (id === undefined || id === null) return;
@@ -261,18 +242,19 @@ const HeroSection = () => {
     }
   };
 
+  const radius = 26;
+  const circumference = 2 * Math.PI * radius; // ~163.36
+
   return (
     <section className="relative w-full bg-transparent mb-12 md:mb-24">
       {/* Banner desktop */}
       <section
         aria-label="Hero banner carousel"
-        className="hidden md:block relative w-full aspect-[1900/720] bg-black"
-        onMouseEnter={() => setIsHoveringBanner(true)}
-        onMouseLeave={() => setIsHoveringBanner(false)}
+        className="hidden md:block relative w-full aspect-[1600/620] bg-black overflow-hidden"
       >
-        {desktopSlides.length > 0 ? (
+        {activeSlides.length > 0 ? (
           <>
-            {desktopSlides.map((slide, index) => {
+            {activeSlides.map((slide, index) => {
               const key = String(slide.id);
               const isLoaded = !!loadedSlides[key];
               const isActive = index === currentSlide;
@@ -299,50 +281,62 @@ const HeroSection = () => {
               );
             })}
 
-            <DesktopChevronButton
-              direction="left"
-              onClick={() => paginate(-1)}
-              disabled={desktopSlides.length <= 1}
-              isHovering={isHoveringBanner}
-            />
-            <DesktopChevronButton
-              direction="right"
-              onClick={() => paginate(1)}
-              disabled={desktopSlides.length <= 1}
-              isHovering={isHoveringBanner}
-            />
-
-            <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1">
-              {desktopSlides.map((slide) => (
+            {/* Tombol Transparan Sisi Kiri dengan Pertemuan di Kanan Atas (-45deg) */}
+            {activeSlides.length > 1 && (
+              <div className="absolute left-8 bottom-16 z-40">
                 <button
                   type="button"
-                  key={`indicator-${slide.id}`}
-                  onClick={() => {
-                    const index = desktopSlides.findIndex(
-                      (s) => s.id === slide.id,
-                    );
-                    setPage(index);
-                  }}
-                  className={`h-1 transition-all duration-300 ${
-                    desktopSlides.findIndex((s) => s.id === slide.id) ===
-                    currentSlide
-                      ? "bg-white/40 w-10"
-                      : "bg-white bg-opacity-50 w-10"
-                  }`}
-                />
-              ))}
-            </div>
+                  onClick={() => paginate(1)}
+                  aria-label="Next slide"
+                  className="relative flex items-center justify-center w-16 h-16 bg-transparent transition-transform duration-200 active:scale-95 focus:outline-none group cursor-pointer"
+                >
+                  {/* SVG di-rotate -45deg agar titik mulai & temu di kanan atas */}
+                  <svg
+                    key={`desktop-ring-${animKey}`}
+                    className="absolute inset-0 w-full h-full pointer-events-none -rotate-90"
+                  >
+                    {/* Track lingkaran transparan */}
+                    <circle
+                      cx="32"
+                      cy="32"
+                      r={radius}
+                      className="stroke-white/30"
+                      strokeWidth="2.5"
+                      fill="transparent"
+                    />
+                    {/* Ring progress animasi bergerak mulus */}
+                    <circle
+                      cx="32"
+                      cy="32"
+                      r={radius}
+                      className="stroke-white animate-circle-progress"
+                      strokeWidth="2.5"
+                      strokeDasharray={circumference}
+                      strokeLinecap="round"
+                      fill="transparent"
+                    />
+                  </svg>
+
+                  <ChevronRight
+                    size={28}
+                    className="text-white relative z-10 drop-shadow-md group-hover:translate-x-0.5 transition-transform"
+                  />
+                </button>
+              </div>
+            )}
           </>
         ) : (
           <div className="absolute inset-0 bg-gray-300 flex items-center justify-center">
-            <p className="text-gray-500">No desktop banner available</p>
+            <p className="text-gray-500">
+              {loading ? "" : "No banner available"}
+            </p>
           </div>
         )}
       </section>
 
       {/* Banner mobile */}
-      <div className="md:hidden relative w-full aspect-2208/2760 bg-black">
-        {mobileSlides.map((slide, index) => {
+      <div className="md:hidden relative w-full aspect-2208/2760 bg-black overflow-hidden">
+        {activeSlides.map((slide, index) => {
           const key = String(slide.id);
           const isLoaded = !!loadedSlides[key];
           return (
@@ -367,11 +361,51 @@ const HeroSection = () => {
             </div>
           );
         })}
+
+        {/* Tombol Mobile */}
+        {activeSlides.length > 1 && (
+          <div className="absolute left-4 bottom-4 z-40">
+            <button
+              type="button"
+              onClick={() => paginate(1)}
+              aria-label="Next slide"
+              className="relative flex items-center justify-center w-12 h-12 bg-transparent transition-transform duration-200 active:scale-95 focus:outline-none group cursor-pointer"
+            >
+              <svg
+                key={`mobile-ring-${animKey}`}
+                className="absolute inset-0 w-full h-full pointer-events-none -rotate-90"
+              >
+                <circle
+                  cx="24"
+                  cy="24"
+                  r={18}
+                  className="stroke-white/30"
+                  strokeWidth="2"
+                  fill="transparent"
+                />
+                <circle
+                  cx="24"
+                  cy="24"
+                  r={18}
+                  className="stroke-white animate-circle-progress-mobile"
+                  strokeWidth="2"
+                  strokeDasharray={113.1}
+                  strokeLinecap="round"
+                  fill="transparent"
+                />
+              </svg>
+              <ChevronRight
+                size={22}
+                className="text-white relative z-10 drop-shadow-md group-hover:translate-x-0.5 transition-transform"
+              />
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* Desktop Searchbar - Custom Dropdown Presisi */}
+      {/* Desktop Searchbar */}
       <div className="hidden md:block absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 z-30 w-full max-w-5xl px-4">
-        <section className="bg-white p-6 md:p-8 rounded-md border border-gray-100 w-full">
+        <section className="bg-white p-6 md:p-8 rounded-md border border-gray-200 w-full">
           <header className="mb-6">
             <h2 className="text-2xl font-bold text-[#003f88]">
               Temukan Dokter
@@ -422,7 +456,6 @@ const HeroSection = () => {
                 />
               </button>
 
-              {/* Menu Opsi Custom Spesialis */}
               {isSpecialtyOpen && (
                 <div
                   data-lenis-prevent
@@ -482,7 +515,6 @@ const HeroSection = () => {
                 />
               </button>
 
-              {/* Menu Opsi Custom Hari */}
               {isDayOpen && (
                 <div
                   data-lenis-prevent
