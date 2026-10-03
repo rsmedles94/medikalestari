@@ -1,4 +1,6 @@
 "use client";
+
+import Link from "next/link";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
 import {
@@ -13,7 +15,7 @@ import {
 import { fetchHeroBanners } from "@/lib/api";
 import { HeroBanner } from "@/lib/types";
 
-// Desktop Chevron Button Component
+// Component Tombol Panah Banner (Desktop)
 interface DesktopChevronButtonProps {
   direction: "left" | "right";
   onClick: () => void;
@@ -37,6 +39,7 @@ const DesktopChevronButton: React.FC<DesktopChevronButtonProps> = ({
 
   return (
     <button
+      type="button"
       onClick={onClick}
       disabled={disabled}
       aria-label={`${isLeft ? "Previous" : "Next"} slide`}
@@ -51,30 +54,20 @@ const DesktopChevronButton: React.FC<DesktopChevronButtonProps> = ({
   );
 };
 
-// Shimmer gradient animation untuk skeleton loading
+// Shimmer Animation Style
 const shimmerStyle = `
   @keyframes shimmer {
-    0% {
-      background-position: -1000px 0;
-    }
-    100% {
-      background-position: 1000px 0;
-    }
+    0% { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
   }
-  
   .skeleton-shimmer {
-    background: linear-gradient(
-      90deg,
-      #f3f4f6 0%,
-      #e5e7eb 50%,
-      #f3f4f6 100%
-    );
+    background: linear-gradient(90deg, #f3f4f6 0%, #e5e7eb 50%, #f3f4f6 100%);
     background-size: 1000px 100%;
     animation: shimmer 2s infinite;
   }
 `;
 
-// Inject style ke dalam dokumen
+// Inject Custom Style Dropdown & Shimmer
 if (typeof document !== "undefined") {
   const style = document.createElement("style");
   style.textContent = shimmerStyle;
@@ -83,18 +76,13 @@ if (typeof document !== "undefined") {
     document.head.appendChild(style);
   }
 
-  // Add styles for dropdown options
   const dropdownStyle = document.createElement("style");
   dropdownStyle.textContent = `
     select option {
       color: #003f88;
       background-color: white;
     }
-    select option:hover {
-      background-color: #003f88;
-      color: white;
-    }
-    select option:checked {
+    select option:hover, select option:checked {
       background-color: #003f88;
       color: white;
     }
@@ -112,19 +100,17 @@ const HeroSection = () => {
   const [currentDeviceType, setCurrentDeviceType] = useState<
     "desktop" | "mobile"
   >("desktop");
-  // track which slide images have finished loading (by id)
   const [loadedSlides, setLoadedSlides] = useState<Record<string, boolean>>({});
-  // Keep reference to current slides to check for actual changes
   const prevSlidesRef = useRef<string>("");
 
-  // SEARCH STATE
+  // Search state
   const [search, setSearch] = useState("");
   const [specialty, setSpecialty] = useState("");
   const [day, setDay] = useState("");
   const [isSpecialtyOpen, setIsSpecialtyOpen] = useState(false);
   const [isDayOpen, setIsDayOpen] = useState(false);
 
-  // BANNER HOVER STATE
+  // Banner hover state
   const [isHoveringBanner, setIsHoveringBanner] = useState(false);
 
   const SPECIALTY_CATEGORIES = [
@@ -154,61 +140,33 @@ const HeroSection = () => {
     "Minggu",
   ];
 
+  // Fetch Banners
   useEffect(() => {
     const loadBanners = async () => {
       try {
         setLoading(true);
-
-        // Determine if we're on mobile based on window width
         const isMobileDevice =
           typeof globalThis !== "undefined" &&
           globalThis.window?.innerWidth !== undefined &&
           globalThis.window.innerWidth <= 768;
 
-        // Set device type and fetch appropriate banners
         const deviceType = isMobileDevice ? "mobile" : "desktop";
         setCurrentDeviceType(deviceType);
 
-        console.log(`[HeroSection] 🔄 Loading ${deviceType} banners...`);
-        console.log("[HeroSection] Environment check:", {
-          supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ? "SET" : "MISSING",
-          supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-            ? "SET"
-            : "MISSING",
-        });
-
         const banners = await fetchHeroBanners(deviceType);
-
-        // Only set slides if banners exist, otherwise keep empty
         if (banners && banners.length > 0) {
-          console.log(
-            `[HeroSection] ✅ Loaded ${banners.length} ${deviceType} banners`,
-            banners.map((b) => ({ id: b.id, url: b.image_url })),
-          );
           setSlides(banners);
         } else {
-          console.warn(
-            `[HeroSection] ⚠️ No ${deviceType} banners found. Checklist:
-            1. ✓ hero_banners table exists in Supabase
-            2. ✓ is_active = true for ${deviceType} banners
-            3. ✓ At least one ${deviceType} banner exists
-            4. ✓ NEXT_PUBLIC_SUPABASE_URL is set
-            5. ✓ NEXT_PUBLIC_SUPABASE_ANON_KEY is set`,
-          );
           setSlides([]);
         }
       } catch (error) {
-        console.error("[HeroSection] ❌ Error loading hero banners:", {
-          message: error instanceof Error ? error.message : String(error),
-          stack: error instanceof Error ? error.stack : undefined,
-        });
+        console.error("[HeroSection] Error loading hero banners:", error);
         setSlides([]);
       } finally {
         setLoading(false);
       }
     };
 
-    // Initial load with debounce
     let resizeTimeout: NodeJS.Timeout | null = null;
     let isFirstLoad = true;
 
@@ -217,57 +175,42 @@ const HeroSection = () => {
         loadBanners();
         isFirstLoad = false;
       } else {
-        // Debounce subsequent loads (resize events)
-        if (resizeTimeout) {
-          clearTimeout(resizeTimeout);
-        }
+        if (resizeTimeout) clearTimeout(resizeTimeout);
         resizeTimeout = setTimeout(() => {
           loadBanners();
         }, 300);
       }
     };
 
-    // Initial load
     loadWithDebounce();
 
-    // Handle window resize to switch between desktop and mobile banners
-    const handleResize = () => {
-      loadWithDebounce();
-    };
-
+    const handleResize = () => loadWithDebounce();
     globalThis.window?.addEventListener("resize", handleResize);
+
     return () => {
       globalThis.window?.removeEventListener("resize", handleResize);
-      if (resizeTimeout) {
-        clearTimeout(resizeTimeout);
-      }
+      if (resizeTimeout) clearTimeout(resizeTimeout);
     };
   }, []);
 
-  // Sync loaded slides when slides actually change (not just component re-renders)
+  // Sync loaded states
   useEffect(() => {
     const currentSlidesJson = JSON.stringify(slides.map((s) => s.id));
-
-    // Only update if slides actually changed
     if (prevSlidesRef.current !== currentSlidesJson) {
       prevSlidesRef.current = currentSlidesJson;
-
-      // Keep loaded states only for slides that still exist
       const existingIds = new Set(slides.map((s) => String(s.id)));
 
       setLoadedSlides((prev) => {
         const updated: Record<string, boolean> = {};
         Object.entries(prev).forEach(([id, loaded]) => {
-          if (existingIds.has(id)) {
-            updated[id] = loaded;
-          }
+          if (existingIds.has(id)) updated[id] = loaded;
         });
         return updated;
       });
     }
   }, [slides]);
 
-  // Filter slides based on device type - IMPORTANT: Use filtered length for currentSlide calculation
+  // Filter slides
   const desktopSlides = slides.filter(
     (slide) => slide.device_type === "desktop",
   );
@@ -275,25 +218,6 @@ const HeroSection = () => {
   const filteredSlides =
     currentDeviceType === "desktop" ? desktopSlides : mobileSlides;
 
-  // Debug log untuk melihat filtering
-  useEffect(() => {
-    console.log("🔍 Slide filtering debug:", {
-      totalSlides: slides.length,
-      currentDeviceType,
-      desktopSlidesCount: desktopSlides.length,
-      mobileSlidesCount: mobileSlides.length,
-      filteredSlidesCount: filteredSlides.length,
-      allSlides: slides.map((s) => ({ id: s.id, device_type: s.device_type })),
-    });
-  }, [
-    slides,
-    currentDeviceType,
-    desktopSlides.length,
-    mobileSlides.length,
-    filteredSlides.length,
-  ]);
-
-  // Calculate current slide - ensure it's always valid
   const validSlideCount = filteredSlides.length > 0 ? filteredSlides.length : 1;
   const currentSlide = Math.abs(page) % validSlideCount;
 
@@ -307,53 +231,48 @@ const HeroSection = () => {
   useEffect(() => {
     let slideInterval: NodeJS.Timeout;
     if (filteredSlides.length > 0) {
-      slideInterval = setInterval(() => {
-        paginate(1);
-      }, 5000);
+      slideInterval = setInterval(() => paginate(1), 5000);
     }
     return () => clearInterval(slideInterval);
   }, [paginate, filteredSlides.length]);
 
   const handleImageLoaded = (id?: string | number) => {
     if (id === undefined || id === null) return;
-    const key = String(id);
-    setLoadedSlides((prev) => ({ ...prev, [key]: true }));
+    setLoadedSlides((prev) => ({ ...prev, [String(id)]: true }));
   };
 
   const handleImageError = (id?: string | number) => {
     if (id === undefined || id === null) return;
-    const key = String(id);
-    console.error(`[HeroSection] ❌ Image failed to load for banner ${key}`);
-    // Mark as loaded anyway to remove skeleton
-    setLoadedSlides((prev) => ({ ...prev, [key]: true }));
+    setLoadedSlides((prev) => ({ ...prev, [String(id)]: true }));
   };
 
+  // Handler submit pencarian
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const params = new URLSearchParams();
+    if (search) params.append("search", search);
+    if (specialty) params.append("specialty", specialty);
+    if (day) params.append("day", day);
+    if (globalThis.window?.location) {
+      globalThis.window.location.href = `/dokter?${params.toString()}`;
+    }
+  };
+
+  // Loading / Fallback UI
   if (loading || filteredSlides.length === 0) {
     return (
-      <section className="relative w-full bg-transparent overflow-hidden pt-8 md:pt-12">
-        {/* Empty state untuk desktop */}
-        <div className="hidden md:block relative w-full aspect-1900/780 bg-gray-200" />
-
-        {/* Empty state untuk mobile */}
+      <section className="relative w-full bg-transparent mb-20">
+        <div className="hidden md:block relative w-full aspect-[1900/550] bg-gray-200" />
         <div className="md:hidden relative w-full aspect-2208/2760 bg-gray-200" />
-        {/* SEARCH BAR MOBILE */}
+
+        {/* Mobile Searchbar Fallback */}
         <div className="relative w-full px-4 py-8 md:py-0 md:-mt-4 md:z-50 bg-transparent">
-          <div className="max-w-5xl mx-auto">
-            <div
-              className="
-                max-w-5xl mx-auto 
-                bg-white
-                mrounded-full rounded-3xl 
-                flex flex-col md:flex-row 
-                overflow-hidden 
-                
-              "
-            >
-              {/* NAMA DOKTER */}
-              <div className="flex-1 px-5 py-4 border-b md:px-8 md:border-b-0 md:border-r border-gray-100 ">
-                <p className="text-xs text-[#003f88] font-semibold mb-1">
+          <form onSubmit={handleSearchSubmit} className="max-w-5xl mx-auto">
+            <div className="bg-white rounded-3xl flex flex-col md:flex-row overflow-hidden border border-gray-100 shadow-md">
+              <div className="flex-1 px-5 py-4 border-b md:border-b-0 md:border-r border-gray-100">
+                <label className="block text-xs text-[#003f88] font-semibold mb-1">
                   Nama Dokter
-                </p>
+                </label>
                 <div className="flex items-center gap-2">
                   <User size={18} className="text-gray-400" />
                   <input
@@ -366,11 +285,10 @@ const HeroSection = () => {
                 </div>
               </div>
 
-              {/* SPESIALIS */}
               <div className="flex-1 px-5 py-4 border-b md:border-b-0 md:border-r border-gray-100">
-                <p className="text-xs text-[#003f88] font-semibold mb-1">
+                <label className="block text-xs text-[#003f88] font-semibold mb-1">
                   Spesialis
-                </p>
+                </label>
                 <div className="flex items-center gap-2">
                   <Stethoscope size={16} className="text-gray-400" />
                   <select
@@ -387,11 +305,10 @@ const HeroSection = () => {
                 </div>
               </div>
 
-              {/* HARI */}
               <div className="flex-1 px-5 py-4 border-b md:border-b-0 md:border-r border-gray-100">
-                <p className="text-xs text-[#003f88] font-semibold mb-1">
+                <label className="block text-xs text-[#003f88] font-semibold mb-1">
                   Pilih Hari
-                </p>
+                </label>
                 <div className="flex items-center gap-2">
                   <CalendarDays size={16} className="text-gray-400" />
                   <select
@@ -408,37 +325,28 @@ const HeroSection = () => {
                 </div>
               </div>
 
-              {/* BUTTON SEARCH */}
               <div className="flex items-center justify-center p-3">
                 <button
-                  onClick={() => {
-                    const params = new URLSearchParams();
-                    if (search) params.append("search", search);
-                    if (specialty) params.append("specialty", specialty);
-                    if (day) params.append("day", day);
-                    globalThis.window?.location.replace(
-                      `/dokter?${params.toString()}`,
-                    );
-                  }}
-                  className="w-full md:w-14 h-12 md:h-14 rounded-full md:rounded-full bg-[#003f88] flex items-center justify-center gap-2 text-white active:scale-95 transition cursor-pointer"
+                  type="submit"
+                  className="w-full md:w-14 h-12 md:h-14 rounded-full bg-[#003f88] flex items-center justify-center gap-2 text-white active:scale-95 transition cursor-pointer"
                 >
-                  <Search className="w-5 h-5 md:w-10 md:h-8" />
+                  <Search className="w-5 h-5 md:w-6 md:h-6" />
                   <span className="font-semibold md:hidden">Cari Dokter</span>
                 </button>
               </div>
             </div>
-          </div>
+          </form>
         </div>
       </section>
     );
   }
 
   return (
-    <section className="relative w-full bg-transparent overflow-hidden pt-4 md:pt-10">
-      {/* BANNER AREA - Desktop */}
+    <section className="relative w-full bg-transparent mb-12 md:mb-20">
+      {/* Banner desktop (Aspect Ratio Ringkas) */}
       <section
         aria-label="Hero banner carousel"
-        className="hidden md:block relative w-full aspect-1900/780 bg-black"
+        className="hidden md:block relative w-full aspect-[1900/720] bg-black"
         onMouseEnter={() => setIsHoveringBanner(true)}
         onMouseLeave={() => setIsHoveringBanner(false)}
       >
@@ -455,11 +363,9 @@ const HeroSection = () => {
                     isActive ? "opacity-100 z-10" : "opacity-0 z-0"
                   }`}
                 >
-                  {/* Skeleton shimmer shown until image loads */}
                   {!isLoaded && (
                     <div className="absolute inset-0 skeleton-shimmer" />
                   )}
-
                   <img
                     src={slide.image_url}
                     alt={`Slide ${index}`}
@@ -473,15 +379,13 @@ const HeroSection = () => {
               );
             })}
 
-            {/* Chevron Left */}
+            {/* Navigasi panah desktop */}
             <DesktopChevronButton
               direction="left"
               onClick={() => paginate(-1)}
               disabled={desktopSlides.length <= 1}
               isHovering={isHoveringBanner}
             />
-
-            {/* Chevron Right */}
             <DesktopChevronButton
               direction="right"
               onClick={() => paginate(1)}
@@ -489,10 +393,11 @@ const HeroSection = () => {
               isHovering={isHoveringBanner}
             />
 
-            {/* IMAGE INDICATORS - Desktop */}
-            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1">
+            {/* Indicator dots desktop */}
+            <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1">
               {desktopSlides.map((slide) => (
                 <button
+                  type="button"
                   key={`indicator-${slide.id}`}
                   onClick={() => {
                     const index = desktopSlides.findIndex(
@@ -503,7 +408,7 @@ const HeroSection = () => {
                   className={`h-1 transition-all duration-300 ${
                     desktopSlides.findIndex((s) => s.id === slide.id) ===
                     currentSlide
-                      ? "bg-white/20 w-10"
+                      ? "bg-white/40 w-10"
                       : "bg-white bg-opacity-50 w-10"
                   }`}
                 />
@@ -517,7 +422,7 @@ const HeroSection = () => {
         )}
       </section>
 
-      {/* BANNER AREA - Mobile */}
+      {/* Banner mobile */}
       <div className="md:hidden relative w-full aspect-2208/2760 bg-black">
         {mobileSlides.map((slide, index) => {
           const key = String(slide.id);
@@ -532,7 +437,6 @@ const HeroSection = () => {
               {!isLoaded && (
                 <div className="absolute inset-0 skeleton-shimmer" />
               )}
-
               <img
                 src={slide.image_url}
                 alt={`Slide ${index}`}
@@ -545,13 +449,15 @@ const HeroSection = () => {
             </div>
           );
         })}
-        {/* IMAGE INDICATORS - Mobile (Hanya muncul jika minimal ada 2 gambar) */}
+
+        {/* Indicator dots mobile */}
         {mobileSlides.length >= 2 && (
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-40 flex items-center gap-1">
             {mobileSlides.map((slide) => {
               const index = mobileSlides.findIndex((s) => s.id === slide.id);
               return (
                 <button
+                  type="button"
                   key={`mobile-indicator-${slide.id}`}
                   onClick={() => setPage(index)}
                   className={`h-1 transition-all duration-300 ${
@@ -564,118 +470,96 @@ const HeroSection = () => {
         )}
       </div>
 
-      {/* Searchbar Desktop */}
-      <div className="hidden md:absolute md:inset-0 md:flex md:flex-col md:items-end md:justify-end md:z-20 md:pr-9 md:pb-15 md:pointer-events-none">
-        <div className="md:pointer-events-auto bg-[#003f88] p-5 rounded-md">
-          {/* titlr */}
-          <h2 className="text-lg font-bold text-white mb-4">
-            Cari Dokter Spesialis atau Jadwal Praktek
-          </h2>
+      {/* Desktop Searchbar - Posisi Tengah Menggantung Keluar Banner */}
+      <div className="hidden md:block absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 z-30 w-full max-w-5xl px-4">
+        <section className="bg-white p-6 md:p-8 rounded-md border border-gray-200 w-full">
+          {/* Header & Title */}
+          <header className="mb-6">
+            <h2 className="text-2xl font-bold text-[#003f88]">
+              Temukan Dokter
+            </h2>
+          </header>
 
-          <div
-            className="
-              flex flex-row
-              gap-0
-            "
+          {/* Form pencarian */}
+          <form
+            onSubmit={handleSearchSubmit}
+            className="flex flex-row items-center gap-3"
           >
-            {/* doctor name */}
-            <div className="px-4 py-3 border border-gray-300">
-              <p className="text-xs text-white font-semibold mb-1">
-                Nama Dokter
-              </p>
-              <div className="flex items-center gap-2">
-                <User size={16} className="text-white" />
-                <input
-                  type="text"
-                  placeholder="Cari dokter..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="w-40 outline-none text-xs bg-transparent text-white placeholder-white"
-                />
-              </div>
+            {/* Input nama dokter */}
+            <div className="flex-1 h-[52px] border border-gray-300 rounded-lg px-4 flex items-center gap-3 bg-white focus-within:border-[#003f88] focus-within:ring-1 focus-within:ring-[#003f88] transition-all">
+              <User size={20} className="text-gray-400 shrink-0" />
+              <input
+                type="text"
+                placeholder="Cari nama dokter..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full h-full outline-none text-sm md:text-base text-gray-800 placeholder-gray-400 bg-transparent leading-none"
+              />
             </div>
 
-            {/* SPESIALIS */}
-            <div className="px-4 py-3 border border-gray-300">
-              <p className="text-xs text-white font-semibold mb-1">Spesialis</p>
-              <div className="flex items-center gap-2 relative">
-                <Stethoscope size={16} className="text-white" />
-                <select
-                  value={specialty}
-                  onChange={(e) => {
-                    setSpecialty(e.target.value);
-                    setIsSpecialtyOpen(false);
-                  }}
-                  onFocus={() => setIsSpecialtyOpen(true)}
-                  onBlur={() =>
-                    setTimeout(() => setIsSpecialtyOpen(false), 100)
-                  }
-                  className="w-44 outline-none text-xs bg-transparent appearance-none text-white"
-                >
-                  {SPECIALTY_CATEGORIES.map((s) => (
-                    <option key={s} value={s === "Semua Spesialis" ? "" : s}>
-                      {s}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown
-                  size={16}
-                  className={`text-white absolute right-0 pointer-events-none transition-transform duration-300 ${
-                    isSpecialtyOpen ? "rotate-180" : ""
-                  }`}
-                />
-              </div>
-            </div>
-
-            {/* HARI */}
-            <div className="px-4 py-3 border border-gray-300">
-              <p className="text-xs text-white font-semibold mb-1">Hari</p>
-              <div className="flex items-center gap-2 relative">
-                <CalendarDays size={16} className="text-white" />
-                <select
-                  value={day}
-                  onChange={(e) => {
-                    setDay(e.target.value);
-                    setIsDayOpen(false);
-                  }}
-                  onFocus={() => setIsDayOpen(true)}
-                  onBlur={() => setTimeout(() => setIsDayOpen(false), 100)}
-                  className="w-32 outline-none text-xs bg-transparent appearance-none text-white"
-                >
-                  {DAYS.map((d) => (
-                    <option key={d} value={d === "Semua Hari" ? "" : d}>
-                      {d}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown
-                  size={16}
-                  className={`text-white absolute right-0 pointer-events-none transition-transform duration-300 ${
-                    isDayOpen ? "rotate-180" : ""
-                  }`}
-                />
-              </div>
-            </div>
-
-            {/* BUTTON SEARCH */}
-            <div className="flex items-center justify-center px-3">
-              <button
-                onClick={() => {
-                  const params = new URLSearchParams();
-                  if (search) params.append("search", search);
-                  if (specialty) params.append("specialty", specialty);
-                  if (day) params.append("day", day);
-                  if (globalThis.window?.location) {
-                    globalThis.window.location.href = `/dokter?${params.toString()}`;
-                  }
+            {/* Select spesialis */}
+            <div className="flex-1 h-[52px] border border-gray-300 rounded-lg px-4 flex items-center gap-3 bg-white relative focus-within:border-[#003f88] focus-within:ring-1 focus-within:ring-[#003f88] transition-all">
+              <Stethoscope size={20} className="text-gray-400 shrink-0" />
+              <select
+                value={specialty}
+                onChange={(e) => {
+                  setSpecialty(e.target.value);
+                  setIsSpecialtyOpen(false);
                 }}
-                className="h-14 px-4 rounded-full bg-white flex items-center justify-center text-[#003f88] active:scale-95 transition cursor-pointer"
+                onFocus={() => setIsSpecialtyOpen(true)}
+                onBlur={() => setTimeout(() => setIsSpecialtyOpen(false), 100)}
+                className="w-full h-full outline-none text-sm md:text-base bg-transparent appearance-none text-gray-800 cursor-pointer pr-8 leading-none truncate"
               >
-                <Search className="w-6 h-6" />
-              </button>
+                {SPECIALTY_CATEGORIES.map((s) => (
+                  <option key={s} value={s === "Semua Spesialis" ? "" : s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown
+                size={18}
+                className={`text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none transition-transform duration-300 ${
+                  isSpecialtyOpen ? "rotate-180" : ""
+                }`}
+              />
             </div>
-          </div>
-        </div>
+
+            {/* Select hari */}
+            <div className="flex-1 h-[52px] border border-gray-300 rounded-lg px-4 flex items-center gap-3 bg-white relative focus-within:border-[#003f88] focus-within:ring-1 focus-within:ring-[#003f88] transition-all">
+              <CalendarDays size={20} className="text-gray-400 shrink-0" />
+              <select
+                value={day}
+                onChange={(e) => {
+                  setDay(e.target.value);
+                  setIsDayOpen(false);
+                }}
+                onFocus={() => setIsDayOpen(true)}
+                onBlur={() => setTimeout(() => setIsDayOpen(false), 100)}
+                className="w-full h-full outline-none text-sm md:text-base bg-transparent appearance-none text-gray-800 cursor-pointer pr-8 leading-none truncate"
+              >
+                {DAYS.map((d) => (
+                  <option key={d} value={d === "Semua Hari" ? "" : d}>
+                    {d}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown
+                size={18}
+                className={`text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none  ${
+                  isDayOpen ? "rotate-180" : ""
+                }`}
+              />
+            </div>
+
+            {/* Button search */}
+            <button
+              type="submit"
+              className="h-[52px] px-8 rounded-lg bg-[#003f88] hover:bg-[#002f66] text-white font-semibold text-base transition-colors cursor-pointer shrink-0 flex items-center justify-center active:scale-95"
+            >
+              Search
+            </button>
+          </form>
+        </section>
       </div>
     </section>
   );

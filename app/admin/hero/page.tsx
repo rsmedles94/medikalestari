@@ -257,7 +257,7 @@ const AdminHeroBannersPage = () => {
                         }`}
                       >
                         {banner.device_type === "desktop"
-                          ? "Desktop (1900x780)"
+                          ? "Desktop (1900x720)"
                           : "Mobile (220x2760)"}
                       </span>
                     </td>
