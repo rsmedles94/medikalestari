@@ -60,6 +60,10 @@ const GLASS_SHEEN =
   "linear-gradient(180deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0) 55%)";
 const PILL_COLOR = "rgba(0, 0, 0, 0.12)";
 
+// Action Menu Glass Styling (rounded-3xl = 24px)
+const MENU_GLASS_TINT = "rgba(255, 255, 255, 0.55)";
+const MENU_GLASS_RADIUS = 24;
+
 const GLASS_OPTICS = {
   strength: 0.1,
   depth: 0.2,
@@ -624,59 +628,104 @@ export default function MobileBottomNavbar() {
                     duration: 0.2,
                     ease: [0.16, 1, 0.3, 1],
                   }}
-                  className="pointer-events-auto mb-3.5 flex w-[230px] flex-col rounded-3xl bg-white/70 p-2 shadow-[0_16px_40px_rgba(0,0,0,0.12)]"
+                  className="pointer-events-auto relative mb-3.5 flex w-[230px] flex-col rounded-3xl p-2 shadow-[0_16px_40px_rgba(0,0,0,0.12)]"
                 >
-                  {/* Button: Booking */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsActionMenuOpen(false);
-                      setIsBookingOpen(true);
-                    }}
-                    className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-black outline-none transition-colors hover:bg-black/5 active:bg-black/10"
-                  >
-                    <FontAwesomeIcon
-                      icon={faCalendarCheck}
-                      className="h-[20px] w-[20px]"
+                  {/* Menu Glass Background Layer */}
+                  {useWebKitGlass ? (
+                    <div
+                      aria-hidden="true"
+                      className="pointer-events-none absolute inset-0 z-[1] overflow-hidden"
+                      style={{
+                        borderRadius: MENU_GLASS_RADIUS,
+                        background: MENU_GLASS_TINT,
+                        WebkitBackdropFilter:
+                          "blur(18px) saturate(1.8) brightness(1.06)",
+                        backdropFilter:
+                          "blur(18px) saturate(1.8) brightness(1.06)",
+                        boxShadow: "none",
+                        transform: "translate3d(0, 0, 0)",
+                      }}
                     />
-                    <span>Buat Janji Temu</span>
-                  </button>
+                  ) : (
+                    <Glass
+                      aria-hidden="true"
+                      className="pointer-events-none absolute inset-0 z-[1] overflow-hidden"
+                      optics={GLASS_OPTICS}
+                      style={{
+                        background: MENU_GLASS_TINT,
+                        border: "none",
+                        borderRadius: MENU_GLASS_RADIUS,
+                        boxShadow: "none",
+                      }}
+                    >
+                      <span className="pointer-events-none absolute inset-0" />
+                    </Glass>
+                  )}
 
-                  <div className="my-1 h-px w-full bg-black/10" />
-
-                  {/* Button: Kamar Perawatan */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsActionMenuOpen(false);
-                      router.push("/services/kamar-perawatan");
+                  {/* Menu Glass Sheen Layer */}
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 z-[2]"
+                    style={{
+                      borderRadius: MENU_GLASS_RADIUS,
+                      background: GLASS_SHEEN,
                     }}
-                    className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-black outline-none transition-colors hover:bg-black/5 active:bg-black/10"
-                  >
-                    <FontAwesomeIcon
-                      icon={faProcedures}
-                      className="h-[20px] w-[20px]"
-                    />
-                    <span>Kamar Perawatan</span>
-                  </button>
+                  />
 
-                  <div className="my-1 h-px w-full bg-black/10" />
+                  {/* Menu Content Layer */}
+                  <div className="relative z-10 flex w-full flex-col">
+                    {/* Button: Booking */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsActionMenuOpen(false);
+                        setIsBookingOpen(true);
+                      }}
+                      className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-black outline-none transition-colors hover:bg-black/5 active:bg-black/10"
+                    >
+                      <FontAwesomeIcon
+                        icon={faCalendarCheck}
+                        className="h-[20px] w-[20px]"
+                      />
+                      <span>Buat Janji Temu</span>
+                    </button>
 
-                  {/* Button: Ketersediaan Kamar */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsActionMenuOpen(false);
-                      router.push("/ketersediaan-kamar");
-                    }}
-                    className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-black outline-none transition-colors hover:bg-black/5 active:bg-black/10"
-                  >
-                    <FontAwesomeIcon
-                      icon={faBed}
-                      className="h-[20px] w-[20px]"
-                    />
-                    <span>Ketersediaan Kamar</span>
-                  </button>
+                    <div className="my-1 h-px w-full bg-black/10" />
+
+                    {/* Button: Kamar Perawatan */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsActionMenuOpen(false);
+                        router.push("/services/kamar-perawatan");
+                      }}
+                      className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-black outline-none transition-colors hover:bg-black/5 active:bg-black/10"
+                    >
+                      <FontAwesomeIcon
+                        icon={faProcedures}
+                        className="h-[20px] w-[20px]"
+                      />
+                      <span>Kamar Perawatan</span>
+                    </button>
+
+                    <div className="my-1 h-px w-full bg-black/10" />
+
+                    {/* Button: Ketersediaan Kamar */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsActionMenuOpen(false);
+                        router.push("/ketersediaan-kamar");
+                      }}
+                      className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-black outline-none transition-colors hover:bg-black/5 active:bg-black/10"
+                    >
+                      <FontAwesomeIcon
+                        icon={faBed}
+                        className="h-[20px] w-[20px]"
+                      />
+                      <span>Ketersediaan Kamar</span>
+                    </button>
+                  </div>
                 </motion.aside>
               )}
             </AnimatePresence>
@@ -726,7 +775,8 @@ export default function MobileBottomNavbar() {
                     background: GLASS_TINT,
                     WebkitBackdropFilter:
                       "blur(18px) saturate(1.8) brightness(1.06)",
-                    backdropFilter: "blur(0.1px) saturate(1.8) brightness(1.06)",
+                    backdropFilter:
+                      "blur(0.1px) saturate(1.8) brightness(1.06)",
                     boxShadow: "none",
                     transition: `border-radius ${SHRINK_MS}ms ${SHRINK_EASE}`,
                     transform: "translate3d(0, 0, 0)",
