@@ -412,7 +412,7 @@ const PromoKesehatan = () => {
               className="h-20 w-auto mx-auto mb-6 object-contain"
             />
 
-            <h2 className="text-3xl md:text-[40px] font-bold mb-4">
+            <h2 className="text-3xl md:text-[39px] font-bold mb-4">
               Selamat Datang di Rumah Sakit Medika Lestari
             </h2>
             <p className="text-sm md:text-base text-white/90 mb-4 leading-normal">

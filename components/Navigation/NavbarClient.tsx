@@ -321,10 +321,31 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                     ? "Bahasa saat ini Indonesia. Klik untuk beralih ke English"
                     : "Current language English. Click to switch to Indonesian"
                 }
-                className="px-4 font-semibold hover:underline"
+                className="px-4 font-semibold hover:underline inline-flex items-center gap-2"
               >
-                <span aria-hidden="true">
-                  {language === "ID" ? "🇮🇩 ID" : "🇬🇧 EN"}
+                <span
+                  aria-hidden="true"
+                  className="inline-flex items-center gap-1.5"
+                >
+                  {language === "ID" ? (
+                    <>
+                      <img
+                        src="https://flagcdn.com/w40/id.png"
+                        alt="Indonesia Flag"
+                        className="w-4 h-4 rounded-full object-cover border border-gray-200"
+                      />
+                      <span>ID</span>
+                    </>
+                  ) : (
+                    <>
+                      <img
+                        src="https://flagcdn.com/w40/gb.png"
+                        alt="UK Flag"
+                        className="w-4 h-4 rounded-full object-cover border border-gray-200"
+                      />
+                      <span>EN</span>
+                    </>
+                  )}
                 </span>
               </button>
 
