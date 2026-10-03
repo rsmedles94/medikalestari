@@ -293,7 +293,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
       {/* desktop (>= md) */}
       <div className="hidden md:block">
         {/* utility bar */}
-        <div className="bg-[#5f5f5f] text-[12px] font-normal text-white">
+        <div className="bg-[#003f88] text-[12px] font-normal text-white">
           <div className="mx-auto flex h-7 max-w-[1280px] items-stretch justify-between pl-6">
             {/* quick links */}
             <nav aria-label="Tautan cepat">
@@ -332,7 +332,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                       <img
                         src="https://flagcdn.com/w40/id.png"
                         alt="Indonesia Flag"
-                        className="w-4 h-4 rounded-full object-cover border border-gray-200"
+                        className="w-5 h-3 "
                       />
                       <span>ID</span>
                     </>
@@ -341,7 +341,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                       <img
                         src="https://flagcdn.com/w40/gb.png"
                         alt="UK Flag"
-                        className="w-4 h-4 rounded-full object-cover border border-gray-200"
+                        className="w-5 h-3 "
                       />
                       <span>EN</span>
                     </>
@@ -352,7 +352,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               {/* admin */}
               <Link
                 href={adminHref}
-                className="flex h-full items-center gap-2 bg-[#003f88] px-4 font-bold text-white transition-colors hover:bg-[#002e66]"
+                className="flex h-full items-center gap-2 bg-[#003f88] px-4 font-bold text-white"
               >
                 <UserRound size={14} aria-hidden="true" />
                 <span>{adminLabel}</span>
