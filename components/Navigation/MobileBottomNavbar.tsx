@@ -17,6 +17,7 @@ import {
   useSpring,
   useTransform,
 } from "framer-motion";
+import type { TargetAndTransition } from "framer-motion";
 
 import { Home } from "lucide-react";
 
@@ -67,6 +68,42 @@ const WEBKIT_BACKDROP = "blur(0.1px) saturate(1.8) brightness(1.06)";
 // Action Menu Glass Styling (rounded-3xl = 24px, tint sama dengan dock)
 const MENU_GLASS_TINT = GLASS_TINT;
 const MENU_GLASS_RADIUS = 24;
+
+// Genie motion (keluar / masuk dari tombol plus, tanpa opacity di parent glass)
+const GENIE_HIDDEN = { scaleX: 0.1, scaleY: 0.05, y: 44 };
+
+// Genie show (X lebih lambat dari Y = bentuk corong, lalu melebar)
+const GENIE_SHOW: TargetAndTransition = {
+  scaleX: 1,
+  scaleY: 1,
+  y: 0,
+  transition: {
+    y: { type: "spring", stiffness: 340, damping: 30, mass: 0.9 },
+    scaleY: { type: "spring", stiffness: 300, damping: 24, mass: 0.9 },
+    scaleX: { type: "spring", stiffness: 190, damping: 26, mass: 0.9 },
+  },
+};
+
+// Genie hide (X menyempit lebih dulu, lalu tersedot ke tombol)
+const GENIE_HIDE: TargetAndTransition = {
+  ...GENIE_HIDDEN,
+  transition: {
+    scaleX: { duration: 0.24, ease: [0.5, 0, 0.75, 0] },
+    scaleY: { duration: 0.32, ease: [0.5, 0, 0.75, 0] },
+    y: { duration: 0.32, ease: [0.5, 0, 0.75, 0] },
+  },
+};
+
+// Genie content (muncul belakangan, hilang duluan)
+const GENIE_CONTENT_SHOW: TargetAndTransition = {
+  opacity: 1,
+  transition: { delay: 0.08, duration: 0.18, ease: "easeOut" },
+};
+
+const GENIE_CONTENT_HIDE: TargetAndTransition = {
+  opacity: 0,
+  transition: { duration: 0.1, ease: "easeIn" },
+};
 
 const GLASS_OPTICS = {
   strength: 0.1,
@@ -667,18 +704,16 @@ export default function MobileBottomNavbar() {
             aria-label="Navigasi Bawah Seluler"
             className="flex w-full flex-col items-center px-4 select-none lg:hidden"
           >
-            {/* Action Menu (tanpa opacity di parent glass agar tidak glitch) */}
+            {/* Action Menu (genie, tanpa opacity di parent glass agar tidak glitch) */}
             <AnimatePresence mode="wait">
               {isActionMenuOpen && (
                 <motion.aside
+                  key="action-menu"
                   ref={actionMenuRef}
-                  initial={{ scale: 0.9, y: 14 }}
-                  animate={{ scale: 1, y: 0 }}
-                  exit={{ scale: 0.9, y: 14 }}
-                  transition={{
-                    duration: 0.2,
-                    ease: [0.16, 1, 0.3, 1],
-                  }}
+                  initial={GENIE_HIDDEN}
+                  animate={GENIE_SHOW}
+                  exit={GENIE_HIDE}
+                  style={{ originX: 0.5, originY: 1 }}
                   className="pointer-events-auto relative mb-3.5 flex w-[230px] flex-col rounded-3xl p-2"
                 >
                   {/* Menu shadow */}
@@ -701,9 +736,8 @@ export default function MobileBottomNavbar() {
                   {/* Menu content (fade di sini saja) */}
                   <motion.div
                     initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.2 }}
+                    animate={GENIE_CONTENT_SHOW}
+                    exit={GENIE_CONTENT_HIDE}
                     className="relative z-10 flex w-full flex-col"
                   >
                     {/* Button: Booking */}
