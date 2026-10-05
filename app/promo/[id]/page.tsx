@@ -605,7 +605,7 @@ export default function PromoDetailPage() {
                                       : "bg-[#003f88] hover:bg-[#e67e22]"
                                   }`}
                                 >
-                                  ⭢ Selengkapnya
+                                  → Selengkapnya
                                 </button>
                               </Link>
                             </div>

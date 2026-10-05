@@ -58,10 +58,14 @@ const ICON_PAD = 2;
 const GLASS_TINT = "rgba(255, 255, 255, 0.40)";
 const GLASS_SHEEN =
   "linear-gradient(180deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0) 55%)";
+const GLASS_SHADOW = "0 10px 26px -8px rgba(0, 0, 0, 0.12)";
 const PILL_COLOR = "rgba(0, 0, 0, 0.12)";
 
-// Action Menu Glass Styling (rounded-3xl = 24px)
-const MENU_GLASS_TINT = "rgba(255, 255, 255, 0.55)";
+// iOS / Safari blur (dock & panel sama)
+const WEBKIT_BACKDROP = "blur(0.1px) saturate(1.8) brightness(1.06)";
+
+// Action Menu Glass Styling (rounded-3xl = 24px, tint sama dengan dock)
+const MENU_GLASS_TINT = GLASS_TINT;
 const MENU_GLASS_RADIUS = 24;
 
 const GLASS_OPTICS = {
@@ -108,6 +112,65 @@ function detectWebKitOnly(): boolean {
     /^((?!chrome|chromium|android|crios|fxios|edg).)*safari/i.test(ua);
 
   return isIOS || isDesktopSafari;
+}
+
+// Glass layer (dipakai dock & panel agar identik)
+function GlassLayer({
+  webKit,
+  radius,
+  tint,
+  radiusTransition,
+}: {
+  webKit: boolean;
+  radius: number;
+  tint: string;
+  radiusTransition?: string;
+}) {
+  return (
+    <>
+      {/* Glass background */}
+      {webKit ? (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-[1] overflow-hidden"
+          style={{
+            borderRadius: radius,
+            background: tint,
+            WebkitBackdropFilter: WEBKIT_BACKDROP,
+            backdropFilter: WEBKIT_BACKDROP,
+            boxShadow: "none",
+            transition: radiusTransition,
+            transform: "translate3d(0, 0, 0)",
+          }}
+        />
+      ) : (
+        <Glass
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-[1] overflow-hidden"
+          optics={GLASS_OPTICS}
+          style={{
+            background: tint,
+            border: "none",
+            borderRadius: radius,
+            boxShadow: "none",
+          }}
+        >
+          <span className="pointer-events-none absolute inset-0" />
+        </Glass>
+      )}
+
+      {/* Glass sheen */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-[2]"
+        style={{
+          borderRadius: radius,
+          background: GLASS_SHEEN,
+          transition: radiusTransition,
+        }}
+      />
+    </>
+  );
 }
 
 // Home Icon
@@ -604,76 +667,45 @@ export default function MobileBottomNavbar() {
             aria-label="Navigasi Bawah Seluler"
             className="flex w-full flex-col items-center px-4 select-none lg:hidden"
           >
-            {/* Action Menu */}
+            {/* Action Menu (tanpa opacity di parent glass agar tidak glitch) */}
             <AnimatePresence mode="wait">
               {isActionMenuOpen && (
                 <motion.aside
                   ref={actionMenuRef}
-                  initial={{
-                    opacity: 0,
-                    scale: 0.9,
-                    y: 14,
-                  }}
-                  animate={{
-                    opacity: 1,
-                    scale: 1,
-                    y: 0,
-                  }}
-                  exit={{
-                    opacity: 0,
-                    scale: 0.9,
-                    y: 14,
-                  }}
+                  initial={{ scale: 0.9, y: 14 }}
+                  animate={{ scale: 1, y: 0 }}
+                  exit={{ scale: 0.9, y: 14 }}
                   transition={{
                     duration: 0.2,
                     ease: [0.16, 1, 0.3, 1],
                   }}
-                  className="pointer-events-auto relative mb-3.5 flex w-[230px] flex-col rounded-3xl p-2 shadow-[0_16px_40px_rgba(0,0,0,0.12)]"
+                  className="pointer-events-auto relative mb-3.5 flex w-[230px] flex-col rounded-3xl p-2"
                 >
-                  {/* Menu Glass Background Layer */}
-                  {useWebKitGlass ? (
-                    <div
-                      aria-hidden="true"
-                      className="pointer-events-none absolute inset-0 z-[1] overflow-hidden"
-                      style={{
-                        borderRadius: MENU_GLASS_RADIUS,
-                        background: MENU_GLASS_TINT,
-                        WebkitBackdropFilter:
-                          "blur(18px) saturate(1.8) brightness(1.06)",
-                        backdropFilter:
-                          "blur(18px) saturate(1.8) brightness(1.06)",
-                        boxShadow: "none",
-                        transform: "translate3d(0, 0, 0)",
-                      }}
-                    />
-                  ) : (
-                    <Glass
-                      aria-hidden="true"
-                      className="pointer-events-none absolute inset-0 z-[1] overflow-hidden"
-                      optics={GLASS_OPTICS}
-                      style={{
-                        background: MENU_GLASS_TINT,
-                        border: "none",
-                        borderRadius: MENU_GLASS_RADIUS,
-                        boxShadow: "none",
-                      }}
-                    >
-                      <span className="pointer-events-none absolute inset-0" />
-                    </Glass>
-                  )}
-
-                  {/* Menu Glass Sheen Layer */}
+                  {/* Menu shadow */}
                   <div
                     aria-hidden="true"
-                    className="pointer-events-none absolute inset-0 z-[2]"
+                    className="pointer-events-none absolute inset-0 z-0"
                     style={{
                       borderRadius: MENU_GLASS_RADIUS,
-                      background: GLASS_SHEEN,
+                      boxShadow: GLASS_SHADOW,
                     }}
                   />
 
-                  {/* Menu Content Layer */}
-                  <div className="relative z-10 flex w-full flex-col">
+                  {/* Menu glass */}
+                  <GlassLayer
+                    webKit={useWebKitGlass}
+                    radius={MENU_GLASS_RADIUS}
+                    tint={MENU_GLASS_TINT}
+                  />
+
+                  {/* Menu content (fade di sini saja) */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="relative z-10 flex w-full flex-col"
+                  >
                     {/* Button: Booking */}
                     <button
                       type="button"
@@ -725,7 +757,7 @@ export default function MobileBottomNavbar() {
                       />
                       <span>Ketersediaan Kamar</span>
                     </button>
-                  </div>
+                  </motion.div>
                 </motion.aside>
               )}
             </AnimatePresence>
@@ -754,64 +786,28 @@ export default function MobileBottomNavbar() {
                 WebkitUserSelect: "none",
               }}
             >
-              {/* Dock Shadow Layer */}
+              {/* Dock shadow */}
               <div
                 aria-hidden="true"
                 className="pointer-events-none absolute inset-0 z-0"
                 style={{
                   borderRadius: dockRadius,
-                  boxShadow: "0 10px 26px -8px rgba(0, 0, 0, 0.12)",
+                  boxShadow: GLASS_SHADOW,
                   transition: `border-radius ${SHRINK_MS}ms ${SHRINK_EASE}`,
                 }}
               />
 
-              {/* Dock Glass Background Layer */}
-              {useWebKitGlass ? (
-                <div
-                  aria-hidden="true"
-                  className="pointer-events-none absolute inset-0 z-[1] overflow-hidden"
-                  style={{
-                    borderRadius: dockRadius,
-                    background: GLASS_TINT,
-                    WebkitBackdropFilter:
-                      "blur(18px) saturate(1.8) brightness(1.06)",
-                    backdropFilter:
-                      "blur(0.1px) saturate(1.8) brightness(1.06)",
-                    boxShadow: "none",
-                    transition: `border-radius ${SHRINK_MS}ms ${SHRINK_EASE}`,
-                    transform: "translate3d(0, 0, 0)",
-                  }}
-                />
-              ) : (
-                <Glass
-                  aria-hidden="true"
-                  className="pointer-events-none absolute inset-0 z-[1] overflow-hidden"
-                  optics={GLASS_OPTICS}
-                  style={{
-                    background: GLASS_TINT,
-                    border: "none",
-                    borderRadius: dockRadius,
-                    boxShadow: "none",
-                  }}
-                >
-                  <span className="pointer-events-none absolute inset-0" />
-                </Glass>
-              )}
-
-              {/* Dock Glass Sheen Layer */}
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-0 z-[2]"
-                style={{
-                  borderRadius: dockRadius,
-                  background: GLASS_SHEEN,
-                  transition: `border-radius ${SHRINK_MS}ms ${SHRINK_EASE}`,
-                }}
+              {/* Dock glass */}
+              <GlassLayer
+                webKit={useWebKitGlass}
+                radius={dockRadius}
+                tint={GLASS_TINT}
+                radiusTransition={`border-radius ${SHRINK_MS}ms ${SHRINK_EASE}`}
               />
 
-              {/* Dock Content Layer */}
+              {/* Dock content */}
               <div className="absolute inset-0 z-10">
-                {/* Active Pill Component */}
+                {/* Active pill */}
                 <motion.div
                   className="pointer-events-none absolute top-1/2 z-10 rounded-full"
                   animate={{
@@ -833,7 +829,7 @@ export default function MobileBottomNavbar() {
                   }}
                 />
 
-                {/* Navigation Items */}
+                {/* Nav items */}
                 <menu
                   className="relative z-20 m-0 box-border flex h-full w-full list-none items-center justify-between p-0"
                   style={{ paddingInline: ICON_PAD }}
@@ -854,7 +850,7 @@ export default function MobileBottomNavbar() {
                         }}
                       >
                         {item.isButton ? (
-                          /* Plus Action Button */
+                          /* Plus button */
                           <button
                             ref={plusButtonRef}
                             type="button"
@@ -912,7 +908,7 @@ export default function MobileBottomNavbar() {
                             />
                           </button>
                         ) : (
-                          /* Nav Link Item */
+                          /* Nav link */
                           <Link
                             href={item.href || "#"}
                             aria-label={item.label}

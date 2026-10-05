@@ -44,7 +44,7 @@ export default function MedicalCheckup() {
 
         {/* Packages Grid */}
         <section className="mb-12">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 md:gap-6">
             {MCU_DATA.map((item) => (
               <div key={item.id} className="p-0">
                 <article className="bg-white border border-gray-300 flex flex-col h-full overflow-hidden transition-all duration-300 group">
