@@ -65,23 +65,9 @@ const AdminLoginPage = () => {
   };
 
   return (
-    <main className="min-h-screen w-full flex bg-white font-sans antialiased overflow-hidden">
-      {/* Sisi Kiri - Banner Gambar */}
-      <aside className="hidden lg:block relative lg:w-[55%] xl:w-[60%] min-h-screen pl-20 bg-white">
-        <div className="relative w-full h-full bg-gray-100">
-          <Image
-            src="/reservasi.jpeg"
-            alt="Informasi RS Medika Lestari"
-            fill
-            priority
-            sizes="(max-width: 1024px) 0vw, 100vw"
-            className="object-cover"
-          />
-        </div>
-      </aside>
-
+    <main className="min-h-screen w-full flex items-center justify-center bg-white font-sans antialiased overflow-hidden">
       {/* Form Login  */}
-      <section className="w-full lg:w-[45%] xl:w-[40%] min-h-screen flex flex-col justify-between p-8 sm:p-12 md:p-16 bg-white">
+      <section className="w-full max-w-lg min-h-screen flex flex-col justify-between p-8 sm:p-12 md:p-16 bg-white">
         {/* Header: Logo & Tombol Close (X) */}
         <header className="flex items-center justify-between w-full h-12">
           <div className="relative w-32 h-10">
