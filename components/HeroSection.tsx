@@ -450,7 +450,7 @@ const HeroSection = () => {
                 </div>
                 <ChevronDown
                   size={18}
-                  className={`text-gray-400 shrink-0 transition-transform duration-200 ${
+                  className={`text-gray-400 shrink-0  ${
                     isSpecialtyOpen ? "rotate-180 text-[#003f88]" : ""
                   }`}
                 />
@@ -509,7 +509,7 @@ const HeroSection = () => {
                 </div>
                 <ChevronDown
                   size={18}
-                  className={`text-gray-400 shrink-0 transition-transform duration-200 ${
+                  className={`text-gray-400 shrink-0  ${
                     isDayOpen ? "rotate-180 text-[#003f88]" : ""
                   }`}
                 />
