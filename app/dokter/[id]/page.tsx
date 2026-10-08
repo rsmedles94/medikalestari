@@ -104,13 +104,13 @@ const DoctorDetailPage = () => {
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              whileHover={{ scale: 1.3 }}
+              whileHover={{ scale: 1.2 }}
               transition={{
                 type: "spring",
                 stiffness: 300,
                 damping: 25,
               }}
-              className="relative w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden border-8 border-white shadow-[0_10px_50px_rgba(0,0,0,0.1)] bg-slate-50 cursor-crosshair"
+              className="relative w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden  bg-slate-50 cursor-crosshair"
             >
               <Image
                 src={doctor.image_url || "/placeholder-doctor.jpg"}
