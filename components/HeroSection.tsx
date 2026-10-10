@@ -394,10 +394,10 @@ const HeroSection = () => {
       {/* Pengumuman informasi rumah sakit */}
       {isAnnouncementVisible && (
         <div
-          className="hero-announcement hidden sm:flex absolute inset-x-0 top-1/2 z-[9999] h-11 w-full -translate-y-1/2 items-center overflow-hidden bg-[#003f88] text-white shadow-sm backdrop-blur-sm sm:h-10"
+          className="hero-announcement hidden sm:flex absolute inset-x-0 top-1/2 z-[9999] h-11 w-full -translate-y-1/2 items-center overflow-hidden bg-[#003f88] text-white  sm:h-8"
           style={{
             position: "absolute",
-            top: "12%",
+            top: "11%",
             left: 0,
             right: 0,
             transform: "translateY(-50%)",
