@@ -401,21 +401,21 @@ const PromoKesehatan = () => {
 
       <div className="absolute bottom-0 left-0 right-0 h-48 bg-white z-0" />
 
-      {/* 1. SECTION ATAS: KONTEN DI AREA BIRU */}
+      {/* section atas */}
       <section className="relative z-10 w-full pt-20 pb-16 px-4 sm:px-6 lg:px-8 text-white">
         <div className="max-w-[1180px] mx-auto md:px-8">
-          {/* UTUH BAGIAN A: HEADER */}
-          <div className="text-center max-w-4xl mx-auto mb-16">
+          {/* header */}
+          <div className="text-center mb-16">
             <img
               src="/medikalestari.png"
               alt="Logo Medika Lestari"
               className="h-20 w-auto mx-auto mb-6 object-contain"
             />
 
-            <h2 className="text-3xl md:text-[39px] font-bold mb-4">
+            <h2 className="text-2xl md:text-[45px] font-bold mb-4">
               Selamat Datang di Rumah Sakit Medika Lestari
             </h2>
-            <p className="text-sm md:text-base text-white/90 mb-4 leading-normal">
+            <p className="max-w-4xl mx-auto text-sm md:text-base text-white/90 mb-4 leading-normal">
               Kami hadir sebagai rumah sakit umum modern di Kota Tangerang yang
               berkomitmen memberikan pelayanan kesehatan terpadu, profesional,
               dan penuh kepedulian demi kenyamanan Anda dan keluarga.
