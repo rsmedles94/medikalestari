@@ -390,7 +390,7 @@ const HeroSection = () => {
   const circumference = 2 * Math.PI * radius; // ~163.36
 
   return (
-    <section className="relative isolate w-full bg-transparent mb-12 md:mb-24">
+    <section className="relative isolate w-full bg-transparent mb-12 md:mb-24 z-30">
       {/* Pengumuman informasi rumah sakit */}
       {isAnnouncementVisible && (
         <div
@@ -822,7 +822,7 @@ const HeroSection = () => {
 
             <button
               type="submit"
-              className="h-[52px] px-8 rounded-md bg-[#003f88] hover:bg-[#002f66] text-white font-semibold text-base transition-colors cursor-pointer shrink-0 flex items-center justify-center active:scale-95"
+              className="h-[52px] px-8 rounded-md bg-[#003f88] hover:bg-[#002f66] ease-in-out duration-700 text-white font-semibold text-base transition-colors cursor-pointer shrink-0 flex items-center justify-center active:scale-95"
             >
               Search
             </button>
