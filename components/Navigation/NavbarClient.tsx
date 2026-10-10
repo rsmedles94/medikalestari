@@ -109,7 +109,7 @@ const MEGA_MENUS: MegaMenu[] = [
 ];
 
 const MENU_ITEM_CLASS =
-  "cursor-pointer text-left text-[20px] font-normal leading-snug text-gray-900";
+  "cursor-pointer text-left text-[20px] font-light leading-snug text-[#003f88] hover:text-[#e67e22] duration-700 ease-in-out";
 
 /* ---------- search spesialisasi ---------- */
 
@@ -386,7 +386,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
             <div className="relative ml-auto flex flex-1 flex-col items-end justify-center gap-2.5">
               {/* menu */}
               <nav aria-label="Menu utama">
-                <ul className="flex items-center justify-end gap-9 text-[18px] font-medium text-gray-900">
+                <ul className="flex items-center justify-end gap-9 text-[18px] font-medium text-black">
                   {MEGA_MENUS.map((menu) => {
                     const isOpen = activeMenu === menu.key;
                     return (
@@ -527,7 +527,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               aria-label={activeMenuData.label}
               className="pointer-events-none absolute inset-x-0 top-full z-50 px-4"
             >
-              <div className="pointer-events-auto relative mx-auto max-h-[80vh] max-w-[1600px] overflow-y-auto bg-white px-12 py-12 antialiased shadow-2xl 2xl:px-[100px]">
+              <div className="pointer-events-auto relative mx-auto max-h-[80vh] max-w-[1600px] overflow-y-auto bg-[#EEF4FA] px-12 py-12 antialiased shadow-2xl 2xl:px-[100px]">
                 {/* close */}
                 <button
                   type="button"
