@@ -302,7 +302,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="opacity-90 hover:underline hover:opacity-100"
+                      className="hover:underline hover:opacity-100"
                     >
                       {link.label}
                     </Link>
