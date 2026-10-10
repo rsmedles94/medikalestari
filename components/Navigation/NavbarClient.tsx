@@ -532,10 +532,10 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                 <button
                   type="button"
                   onClick={closeMenu}
-                  className="absolute right-12 top-12 -mr-1 -mt-1 p-1 text-gray-800 hover:text-black 2xl:right-[100px] cursor-pointer"
+                  className="absolute right-12 top-12 -mr-1 -mt-1 p-1 text-black 2xl:right-[100px] cursor-pointer"
                   aria-label="Tutup Menu"
                 >
-                  <X size={40} strokeWidth={1} aria-hidden="true" />
+                  <X size={45} strokeWidth={1} aria-hidden="true" />
                 </button>
 
                 {/* heading */}
