@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import {
   Upload,
@@ -76,7 +75,7 @@ const CareersPage = () => {
     loadConfig();
   }, []);
 
-  // kunci scroll saat modal buka
+  // lock scroll
   useEffect(() => {
     if (showModal) {
       const scrollY = window.scrollY;
@@ -176,7 +175,7 @@ const CareersPage = () => {
         resumeUrl = uploadData.url || "";
       }
 
-      // siapkan pesan whatsapp
+      // wa message
       const criteria_text = Object.entries(formData.criteria_fields)
         .map(([key, value]) => `${key}: ${value}`)
         .join("\n");
@@ -201,7 +200,7 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
       const whatsappMessage = encodeURIComponent(message);
       const whatsappLink = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
 
-      // simpan ke database
+      // save to db
       const registrationData = {
         full_name: formData.full_name,
         email: formData.email,
@@ -240,7 +239,7 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
       setResumeFile(null);
       setResumePreview("");
 
-      // redirect ke whatsapp
+      // redirect whatsapp
       setTimeout(() => {
         window.open(whatsappLink, "_blank");
       }, 1500);
@@ -258,7 +257,7 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
     return <CareersFormSkeleton />;
   }
 
-  // JSON-LD breadcrumb untuk SEO
+  // seo json-ld
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -268,7 +267,6 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
     ],
   };
 
-  // JSON-LD daftar posisi lowongan untuk SEO
   const positionsJsonLd =
     config?.position_photos && config.position_photos.length > 0
       ? {
@@ -284,7 +282,7 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
       : null;
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-white pb-16 md:pb-24 font-sans">
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
@@ -321,13 +319,13 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
         <h1 className="sr-only">Karir - Lowongan Kerja RS Medika Lestari</h1>
       </div>
 
-      {/* grid posisi lowongan */}
+      {/* positions grid */}
       {config?.position_photos && config.position_photos.length > 0 && (
         <section
           aria-labelledby="positions-heading"
-          className="max-w-293.75 mx-auto px-4 md:px-8 py-1"
+          className="max-w-293.75 mx-auto px-4 md:px-8 pt-1 pb-10"
         >
-          <div className="text-center mb-8">
+          <div className="text-center mb-8 md:mb-10">
             <h2
               id="positions-heading"
               className="text-3xl md:text-4xl font-bold text-gray-800 mb-2"
@@ -340,131 +338,130 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
             </p>
           </div>
 
-          <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 list-none p-0 m-0">
+          <ul className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-8 list-none p-0 m-0">
             {config.position_photos.map((photo, index) => (
               <li
                 key={photo.id ?? `photo-${index}`}
-                className="border border-gray-200 overflow-hidden"
+                className="border border-gray-200 rounded-md overflow-hidden bg-white hover:border-gray-300 transition-all shadow-xs"
               >
-                <figure className="m-0">
-                  <div className="relative w-full aspect-square overflow-hidden">
-                    {photo.image_url ? (
-                      <img
-                        src={photo.image_url}
-                        alt={photo.position_name}
-                        loading="lazy"
-                        decoding="async"
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          console.error(
-                            "Failed to load image:",
-                            photo.image_url,
-                          );
-                          // cek blob url yang sudah kadaluarsa
-                          if (photo.image_url?.startsWith("blob:")) {
-                            console.warn(
-                              "Blob URL detected - image is temporary and may have expired",
-                            );
-                          }
-                          e.currentTarget.style.display = "none";
-                          const parent = e.currentTarget.parentElement;
-                          if (
-                            parent &&
-                            !parent.querySelector("[data-error-message]")
-                          ) {
-                            const errorDiv = document.createElement("div");
-                            errorDiv.setAttribute("data-error-message", "true");
-                            errorDiv.className =
-                              "flex items-center justify-center h-full text-center text-gray-400 text-xs p-4";
-                            errorDiv.innerHTML =
-                              "<p>Gambar tidak dapat dimuat</p>";
-                            parent.appendChild(errorDiv);
-                          }
-                        }}
-                      />
-                    ) : (
-                      <div className="flex items-center justify-center h-full text-gray-400 text-sm">
-                        Gambar tidak tersedia
-                      </div>
-                    )}
-                  </div>
-                  <figcaption className="px-3 py-3 text-center border-t border-gray-100">
-                    <p className="text-sm md:text-base font-semibold text-gray-900 truncate">
-                      {photo.position_name}
-                    </p>
-                  </figcaption>
-                </figure>
+                <article className="h-full flex flex-col justify-between">
+                  <figure className="m-0">
+                    <div className="relative w-full aspect-square overflow-hidden bg-gray-50">
+                      {photo.image_url ? (
+                        <img
+                          src={photo.image_url}
+                          alt={photo.position_name}
+                          loading="lazy"
+                          decoding="async"
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.style.display = "none";
+                            const parent = e.currentTarget.parentElement;
+                            if (
+                              parent &&
+                              !parent.querySelector("[data-error-message]")
+                            ) {
+                              const errorDiv = document.createElement("div");
+                              errorDiv.setAttribute(
+                                "data-error-message",
+                                "true",
+                              );
+                              errorDiv.className =
+                                "flex items-center justify-center h-full text-center text-gray-400 text-xs p-4";
+                              errorDiv.innerHTML =
+                                "<p>Gambar tidak dapat dimuat</p>";
+                              parent.appendChild(errorDiv);
+                            }
+                          }}
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center h-full text-gray-400 text-sm">
+                          Gambar tidak tersedia
+                        </div>
+                      )}
+                    </div>
+                    <figcaption className="p-4 border-t border-gray-100 flex items-center justify-between gap-4 bg-white">
+                      <h3 className="text-base font-semibold text-gray-900 truncate">
+                        {photo.position_name}
+                      </h3>
+                      {config?.is_form_active && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setFormData((prev) => ({
+                              ...prev,
+                              position: photo.position_name,
+                            }));
+                            setShowModal(true);
+                          }}
+                          className="px-5 py-2 bg-[#003f88] text-white text-xs font-semibold hover:bg-[#002b5c] transition-colors cursor-pointer rounded-md shrink-0 active:scale-95"
+                        >
+                          Daftar
+                        </button>
+                      )}
+                    </figcaption>
+                  </figure>
+                </article>
               </li>
             ))}
           </ul>
         </section>
       )}
 
-      {/* form nonaktif */}
-      {!config?.is_form_active ? (
+      {/* form inactive info */}
+      {!config?.is_form_active && (
         <div className="max-w-2xl mx-auto px-4 py-12 text-center">
           <p className="text-gray-600">
             Maaf saat ini RS Medika Lestari belum membuka lowongan. Silakan
             kunjungi kembali di lain waktu.
           </p>
         </div>
-      ) : (
-        <>
-          {/* button daftar */}
-          <div className="max-w-2xl mx-auto px-4 py-12 flex justify-center ">
-            <button
-              type="button"
-              onClick={() => setShowModal(true)}
-              className="px-8 py-4 bg-[#003f88] text-white font-semibold hover:bg-[#003f88]/90 transition-colors cursor-pointer active:scale-95 mb-20 rounded"
-            >
-              Daftar
-            </button>
-          </div>
-        </>
       )}
 
-      {/* backdrop modal */}
+      {/* modal */}
       {showModal && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 flex items-center justify-center p-2 sm:p-4"
+          className="fixed inset-0 bg-black/60 backdrop-blur-md z-[99999] flex items-center justify-center p-3 sm:p-4 transition-all duration-300"
           onClick={() => setShowModal(false)}
           onKeyDown={(e) => {
             if (e.key === "Escape") setShowModal(false);
           }}
           role="presentation"
         >
-          {/* container modal */}
           <div
-            className="bg-white rounded-xl shadow-2xl w-full max-w-xl max-h-[95vh] sm:max-h-[90vh] flex flex-col z-50"
+            className="bg-white rounded-md shadow-2xl w-full max-w-lg sm:max-w-xl max-h-[85vh] sm:max-h-[90vh] flex flex-col overflow-hidden my-auto border border-gray-100"
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
             aria-labelledby="careers-modal-title"
           >
-            {/* header modal */}
-            <div className="flex items-center justify-between p-3 sm:p-4 border-b border-gray-200 shrink-0">
+            {/* header */}
+            <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4 border-b border-gray-100 bg-gray-50/50 shrink-0">
               <h2
                 id="careers-modal-title"
-                className="text-lg sm:text-xl font-bold text-gray-800"
+                className="text-base sm:text-lg font-bold text-gray-900"
               >
                 Formulir Pendaftaran Karir
               </h2>
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
-                className="text-gray-500 hover:text-gray-700 transition-colors p-1"
+                className="text-gray-400  cursor-pointer"
                 aria-label="Tutup formulir"
               >
-                <X size={20} aria-hidden="true" />
+                <X size={30} aria-hidden="true" />
               </button>
             </div>
 
-            {/* konten modal */}
-            <div className="flex-1 overflow-y-auto p-3 sm:p-4">
-              <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+            {/* body */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+              <form
+                onSubmit={handleSubmit}
+                className="space-y-3.5 sm:space-y-4"
+              >
                 {error && (
                   <div
-                    className="p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2"
+                    className="p-3 bg-red-50 border border-red-200 rounded-md flex items-center gap-2.5"
                     role="alert"
                   >
                     <AlertCircle
@@ -472,13 +469,15 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
                       className="text-red-500 shrink-0"
                       aria-hidden="true"
                     />
-                    <p className="text-red-700 text-xs sm:text-sm">{error}</p>
+                    <p className="text-red-700 text-xs sm:text-sm font-medium">
+                      {error}
+                    </p>
                   </div>
                 )}
 
                 {success && (
                   <div
-                    className="p-3 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2"
+                    className="p-3 bg-green-50 border border-green-200 rounded-md flex items-center gap-2.5"
                     role="status"
                   >
                     <CheckCircle
@@ -486,19 +485,19 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
                       className="text-green-500 shrink-0"
                       aria-hidden="true"
                     />
-                    <p className="text-green-700 text-xs sm:text-sm">
+                    <p className="text-green-700 text-xs sm:text-sm font-medium">
                       Data berhasil dikirim! Anda akan dialihkan ke WhatsApp...
                     </p>
                   </div>
                 )}
 
-                {/* info dasar */}
-                <fieldset className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 border-0 p-0 m-0">
+                {/* basic info */}
+                <fieldset className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 border-0 p-0 m-0">
                   <legend className="sr-only">Data diri pelamar</legend>
                   <div>
                     <label
                       htmlFor="full_name"
-                      className="block text-xs sm:text-sm font-medium text-gray-700 mb-1"
+                      className="block text-xs font-semibold text-gray-700 mb-1"
                     >
                       Nama Lengkap *
                     </label>
@@ -509,7 +508,7 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
                       value={formData.full_name}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#003f88] focus:border-transparent outline-none"
+                      className="w-full px-3 py-2 text-xs sm:text-sm border border-gray-200 rounded-md focus:ring-2 focus:ring-[#003f88] focus:border-transparent outline-none transition-all"
                       placeholder="Masukkan nama lengkap"
                     />
                   </div>
@@ -517,7 +516,7 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
                   <div>
                     <label
                       htmlFor="email"
-                      className="block text-xs sm:text-sm font-medium text-gray-700 mb-1"
+                      className="block text-xs font-semibold text-gray-700 mb-1"
                     >
                       Email *
                     </label>
@@ -528,7 +527,7 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
                       value={formData.email}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#003f88] focus:border-transparent outline-none"
+                      className="w-full px-3 py-2 text-xs sm:text-sm border border-gray-200 rounded-md focus:ring-2 focus:ring-[#003f88] focus:border-transparent outline-none transition-all"
                       placeholder="email@example.com"
                     />
                   </div>
@@ -536,7 +535,7 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
                   <div>
                     <label
                       htmlFor="phone"
-                      className="block text-xs sm:text-sm font-medium text-gray-700 mb-1"
+                      className="block text-xs font-semibold text-gray-700 mb-1"
                     >
                       No. HP *
                     </label>
@@ -547,7 +546,7 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
                       value={formData.phone}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#003f88] focus:border-transparent outline-none"
+                      className="w-full px-3 py-2 text-xs sm:text-sm border border-gray-200 rounded-md focus:ring-2 focus:ring-[#003f88] focus:border-transparent outline-none transition-all"
                       placeholder="08xxxxxxxxxx"
                     />
                   </div>
@@ -555,7 +554,7 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
                   <div>
                     <label
                       htmlFor="position"
-                      className="block text-xs sm:text-sm font-medium text-gray-700 mb-1"
+                      className="block text-xs font-semibold text-gray-700 mb-1"
                     >
                       Posisi Lamaran *
                     </label>
@@ -567,7 +566,7 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
                         value={formData.position}
                         onChange={handleInputChange}
                         required
-                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#003f88] focus:border-transparent outline-none bg-white"
+                        className="w-full px-3 py-2 text-xs sm:text-sm border border-gray-200 rounded-md focus:ring-2 focus:ring-[#003f88] focus:border-transparent outline-none bg-white transition-all"
                       >
                         <option value="">Pilih Posisi</option>
                         {config.position_photos.map((photo) => (
@@ -584,7 +583,7 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
                         value={formData.position}
                         onChange={handleInputChange}
                         required
-                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#003f88] focus:border-transparent outline-none"
+                        className="w-full px-3 py-2 text-xs sm:text-sm border border-gray-200 rounded-md focus:ring-2 focus:ring-[#003f88] focus:border-transparent outline-none transition-all"
                         placeholder="Misal: Perawat, Dokter, dll"
                       />
                     )}
@@ -593,7 +592,7 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
                   <div>
                     <label
                       htmlFor="education"
-                      className="block text-xs sm:text-sm font-medium text-gray-700 mb-1"
+                      className="block text-xs font-semibold text-gray-700 mb-1"
                     >
                       Pendidikan Terakhir *
                     </label>
@@ -603,7 +602,7 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
                       value={formData.education}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#003f88] focus:border-transparent outline-none bg-white"
+                      className="w-full px-3 py-2 text-xs sm:text-sm border border-gray-200 rounded-md focus:ring-2 focus:ring-[#003f88] focus:border-transparent outline-none bg-white transition-all"
                     >
                       <option value="">Pilih Pendidikan Terakhir</option>
                       <option value="D3">D3</option>
@@ -618,7 +617,7 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
                   <div>
                     <label
                       htmlFor="experience_years"
-                      className="block text-xs sm:text-sm font-medium text-gray-700 mb-1"
+                      className="block text-xs font-semibold text-gray-700 mb-1"
                     >
                       Pengalaman Kerja (Tahun) *
                     </label>
@@ -630,21 +629,20 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
                       onChange={handleInputChange}
                       min="0"
                       required
-                      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#003f88] focus:border-transparent outline-none"
+                      className="w-full px-3 py-2 text-xs sm:text-sm border border-gray-200 rounded-md focus:ring-2 focus:ring-[#003f88] focus:border-transparent outline-none transition-all"
                       placeholder="0"
                     />
                   </div>
                 </fieldset>
 
-                {/* field kriteria */}
+                {/* criteria */}
                 {config?.criteria &&
                   Array.isArray(config.criteria) &&
                   config.criteria.length > 0 && (
-                    <fieldset className="pb-3 sm:pb-4 border-0 border-b border-gray-200 p-0">
+                    <fieldset className="pt-1 border-0 p-0">
                       <legend className="sr-only">Kriteria tambahan</legend>
-                      <div className="space-y-2 sm:space-y-3">
+                      <div className="space-y-3">
                         {config.criteria.map((criterion) => {
-                          // ganti label "not"
                           const displayCriterion =
                             criterion.toLowerCase() === "not"
                               ? "Alasan Ingin Bekerja Disini"
@@ -654,7 +652,7 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
                             <div key={`criterion-${criterion}`}>
                               <label
                                 htmlFor={`criterion-${criterion}`}
-                                className="block text-xs sm:text-sm font-medium text-gray-700 mb-1"
+                                className="block text-xs font-semibold text-gray-700 mb-1"
                               >
                                 {displayCriterion}
                               </label>
@@ -670,7 +668,7 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
                                     e.target.value,
                                   )
                                 }
-                                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#003f88] focus:border-transparent outline-none"
+                                className="w-full px-3 py-2 text-xs sm:text-sm border border-gray-200 rounded-md focus:ring-2 focus:ring-[#003f88] focus:border-transparent outline-none transition-all"
                                 placeholder={
                                   criterion.toLowerCase() === "not"
                                     ? "Jelaskan alasan Anda ingin bekerja di RS Medika Lestari"
@@ -684,15 +682,15 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
                     </fieldset>
                   )}
 
-                {/* upload resume */}
+                {/* resume upload */}
                 <div>
                   <label
                     htmlFor="resume-input"
-                    className="block text-xs sm:text-sm font-medium text-gray-700 mb-1"
+                    className="block text-xs font-semibold text-gray-700 mb-1 mt-4"
                   >
                     Upload Resume (PDF) *
                   </label>
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-3 sm:p-4 text-center hover:border-[#003f88] transition-colors">
+                  <div className="border border-dashed border-gray-300 rounded-md p-3 sm:p-4 text-center hover:border-[#003f88] transition-colors bg-gray-50/50">
                     <input
                       type="file"
                       accept=".pdf"
@@ -705,40 +703,39 @@ ${resumeUrl ? `\nResume: ${resumeUrl}` : ""}
                       className="cursor-pointer block"
                     >
                       <Upload
-                        size={24}
+                        size={18}
                         className="mx-auto mb-1 text-gray-400"
                         aria-hidden="true"
                       />
-                      <p className="text-xs sm:text-sm font-medium text-gray-600">
-                        {resumePreview || "Klik upload resume (Max 5MB)"}
+                      <p className="text-xs font-medium text-gray-600 truncate px-2">
+                        {resumePreview || "Klik upload resume (PDF, Max 5MB)"}
                       </p>
                     </label>
                   </div>
                 </div>
 
-                {/* tombol form */}
-                <div className="flex gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-gray-200">
+                {/* buttons */}
+                <div className="flex gap-2.5 sm:gap-3 pt-3.5 border-t border-gray-100">
                   <button
                     type="button"
                     onClick={() => setShowModal(false)}
-                    className="flex-1 px-3 py-2 text-sm border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+                    className="flex-1 px-3 py-2 text-xs font-semibold border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors cursor-pointer"
                   >
                     Batal
                   </button>
                   <button
                     type="submit"
                     disabled={submitting || !config?.is_form_active}
-                    className="flex-1 bg-[#003f88] text-white py-2 text-sm rounded-lg font-semibold hover:bg-[#003f88]/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                    className="flex-1 bg-[#003f88] text-white py-2 text-xs font-semibold rounded-md hover:bg-[#002b5c] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                   >
                     {submitting ? (
                       <>
                         <Loader2
-                          size={16}
+                          size={14}
                           className="animate-spin"
                           aria-hidden="true"
                         />
-                        <span className="hidden sm:inline">Mengirim...</span>
-                        <span className="sm:hidden">Kirim...</span>
+                        <span>Mengirim...</span>
                       </>
                     ) : (
                       "Kirim Pendaftaran"
