@@ -9,9 +9,9 @@ const actions = [
   { id: "booking", aria: "Janji Temu", icon: CalendarCheck, href: null },
   {
     id: "doctors",
-    aria: "Dokter Spesialis",
+    aria: "Jadwal Dokter",
     icon: Stethoscope,
-    href: "/dokter",
+    href: "/jadwal-dokter",
   },
   {
     id: "contact",
