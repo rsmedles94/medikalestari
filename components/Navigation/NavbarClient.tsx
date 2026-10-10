@@ -101,7 +101,7 @@ const MEGA_MENUS: MegaMenu[] = [
         { label: "Karir & Kesempatan Kerja", href: "/careers" },
       ],
       [
-        { label: "Hubungi Kami", href: "/kontak-kami" },
+        { label: "Kontak Kami", href: "/kontak-kami" },
         { label: "Syarat & Ketentuan Layanan", href: "/syarat-ketentuan" },
       ],
     ],
@@ -113,7 +113,7 @@ const MENU_ITEM_CLASS =
 
 /* ---------- search spesialisasi ---------- */
 
-// hapus spasi & simbol agar pencarian lebih longgar
+
 const normalize = (value: string) =>
   value.toLowerCase().replace(/[^a-z0-9]/g, "");
 

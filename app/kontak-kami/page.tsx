@@ -3,12 +3,12 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronRight, Send, ArrowRight, AlertCircle } from "lucide-react";
+import { ChevronRight, Send } from "lucide-react";
 
 const FEATURES_DATA = [
   {
     icon: "/images/icons/whatsapp.svg",
-    title: "Ask Us",
+    title: "Tanya Kami?",
     link: "https://wa.me/6285717028133",
   },
   {
@@ -23,7 +23,7 @@ const FEATURES_DATA = [
   },
   {
     icon: "/images/icons/callcenter.svg",
-    title: "Customer Care",
+    title: "Telpon Darurat",
     link: "tel:1500XXX",
   },
   {
@@ -46,54 +46,6 @@ const KontakKami = () => {
     pesan: "",
   });
 
-  const contactInfo = [
-    {
-      id: 2,
-      title: "Email",
-      details: "marketing@rsmedikalestari.com",
-      subtitle: "Hubungan Masyarakat & Kemitraan",
-      icon: (
-        <Image
-          src="/images/icons/gmail.svg"
-          alt="Gmail Icon"
-          width={40}
-          height={40}
-          className="object-contain"
-        />
-      ),
-      action: () => {
-        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=marketing@rsmedikalestari.com`;
-        window.open(gmailUrl, "_blank");
-      },
-    },
-    {
-      id: 3,
-      title: "Lokasi Kami",
-      details:
-        "Jl. HOS Cokroaminoto No.56, RT.001/RW.012, Kec. Karang Tengah, Kota Tangerang, Banten 15151",
-      icon: (
-        <Image
-          src="/images/icons/gmaps.svg"
-          alt="Map Icon"
-          width={40}
-          height={40}
-          className="object-contain"
-        />
-      ),
-      action: () =>
-        window.open("https://maps.app.goo.gl/zgcaBi6iNRcpiNWFA", "_blank"),
-    },
-  ];
-
-  const departments = [
-    { name: "IGD (Gawat Darurat)", phone: "(021) 584 4521", isUrgent: true },
-    { name: "Pendaftaran Jalan", phone: "(021) 585 4858", isUrgent: false },
-    { name: "Radiologi", phone: "Ext. 112", isUrgent: false },
-    { name: "Laboratorium", phone: "Ext. 105", isUrgent: false },
-    { name: "Farmasi", phone: "Ext. 201", isUrgent: false },
-    { name: "Informasi", phone: "021-585-4858", isUrgent: false },
-  ];
-
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
@@ -103,12 +55,16 @@ const KontakKami = () => {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const mailtoUrl = `mailto:marketing@rsmedikalestari.com?subject=${encodeURIComponent(formData.subjek)}&body=${encodeURIComponent(`Nama: ${formData.nama}\nEmail: ${formData.email}\n\nPesan:\n${formData.pesan}`)}`;
+    const mailtoUrl = `mailto:marketing@rsmedikalestari.com?subject=${encodeURIComponent(
+      formData.subjek,
+    )}&body=${encodeURIComponent(
+      `Nama: ${formData.nama}\nEmail: ${formData.email}\n\nPesan:\n${formData.pesan}`,
+    )}`;
     window.location.href = mailtoUrl;
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-700 pb-20">
+    <main className="min-h-screen bg-white text-slate-700 pb-20 font-sans">
       <div className="max-w-[1172px] mx-auto px-4 md:px-8">
         {/* BREADCRUMB & TITLE SECTION */}
         <div className="pt-8 md:pt-16 pb-2">
@@ -127,14 +83,8 @@ const KontakKami = () => {
           </h1>
         </div>
 
-        <p className="text-slate-600 text-sm md:text-base leading-relaxed max-w-3xl mb-10">
-          Silakan hubungi pusat layanan Rumah Sakit Medika Lestari melalui kanal
-          media sosial resmi, layanan pelanggan, atau kunjungi langsung
-          fasilitas kesehatan kami di bawah ini.
-        </p>
-
         {/* MENU SOSIAL MEDIA & LAYANAN */}
-        <div className="mb-12">
+        <section aria-label="Media Sosial dan Kanal Resmi" className="mb-12 mt-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {FEATURES_DATA.map((feat, index) => (
               <a
@@ -142,28 +92,28 @@ const KontakKami = () => {
                 href={feat.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between p-5 bg-white rounded-none border border-transparent hover:shadow-md transition-all duration-200 min-h-[88px] group"
+                className="flex items-center justify-between p-5 bg-white border border-slate-200 hover:shadow-md rounded-full transition-colors min-h-[88px] group"
               >
                 <div className="flex items-center gap-4">
-                  <div className="shrink-0 w-10 h-10 flex items-center justify-center">
+                  <div className="shrink-0 w-9 h-9 flex items-center justify-center">
                     <Image
                       src={feat.icon}
                       alt={feat.title}
-                      width={40}
-                      height={40}
+                      width={36}
+                      height={36}
                       className="object-contain"
                     />
                   </div>
-                  <span className="text-[16px] font-bold tracking-wide leading-snug text-slate-800 group-hover:text-[#003f88] transition-colors">
+                  <span className="text-[15px] font-semibold text-slate-800 ">
                     {feat.title}
                   </span>
                 </div>
-                <div className="shrink-0 pl-2 transform group-hover:translate-x-1 transition-transform">
+                <div className="shrink-0 pl-2 text-slate-400 group-hover:text-[#003f88] transition-colors">
                   <svg
-                    className="w-3 h-3 text-[#003f88]"
+                    className="w-3 h-3"
                     fill="none"
                     stroke="currentColor"
-                    strokeWidth="3"
+                    strokeWidth="2.5"
                     viewBox="0 0 24 24"
                   >
                     <path
@@ -176,48 +126,14 @@ const KontakKami = () => {
               </a>
             ))}
           </div>
-        </div>
+        </section>
 
-        {/* INFO LAYANAN UTAMA  */}
-        <div className="flex flex-col gap-4 mb-12">
-          {contactInfo.map((item) => (
-            <div
-              key={item.id}
-              onClick={item.action}
-              className="flex flex-col sm:flex-row sm:items-center justify-between p-5 bg-white rounded-none border border-transparent hover:shadow-md cursor-pointer transition-all duration-200 group"
-            >
-              <div className="flex items-center gap-4 mb-3 sm:mb-0">
-                <div className="shrink-0 w-10 h-10 flex items-center justify-center">
-                  {item.icon}
-                </div>
-                <div>
-                  <span className="text-base font-semibold text-[#003f88]  tracking-wider block mb-0.5">
-                    {item.title}
-                  </span>
-                  <p className="text-base font-bold text-slate-900 transition-colors">
-                    {item.details}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 sm:text-right">
-                <span className="text-xs md:text-sm text-slate-500 font-medium">
-                  {item.subtitle}
-                </span>
-                <ArrowRight
-                  size={16}
-                  className="text-slate-400 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 hidden sm:block"
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* LAYOUT DUA KOLOM SIMETRIS */}
+        {/* FORM & MAPS */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
           {/* FORM KIRIM PESAN */}
-          <div className="bg-white rounded-none border border-transparent p-6 md:p-8 transition-all duration-200 flex flex-col justify-between">
+          <section className="bg-white border border-slate-200 rounded-lg p-6 md:p-8 flex flex-col justify-between">
             <div>
-              <h2 className="text-lg font-bold text-slate-900 mb-6 pb-3 border-b border-slate-100">
+              <h2 className="text-base font-bold text-slate-900 mb-6 pb-3 border-b border-slate-100">
                 Kirim Pesan
               </h2>
 
@@ -233,7 +149,7 @@ const KontakKami = () => {
                       name="nama"
                       value={formData.nama}
                       onChange={handleChange}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-none p-3 text-sm text-slate-900 focus:border-[#003f88] focus:bg-white outline-none transition-all"
+                      className="w-full bg-slate-50/50 border border-slate-200/60 rounded-lg p-3 text-sm text-slate-900 focus:border-[#003f88] focus:bg-white outline-none transition-colors"
                       placeholder="Nama lengkap"
                     />
                   </div>
@@ -247,7 +163,7 @@ const KontakKami = () => {
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-none p-3 text-sm text-slate-900 focus:border-[#003f88] focus:bg-white outline-none transition-all"
+                      className="w-full bg-slate-50/50 border border-slate-200/60 rounded-lg p-3 text-sm text-slate-900 focus:border-[#003f88] focus:bg-white outline-none transition-colors"
                       placeholder="nama@email.com"
                     />
                   </div>
@@ -263,7 +179,7 @@ const KontakKami = () => {
                     name="subjek"
                     value={formData.subjek}
                     onChange={handleChange}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-none p-3 text-sm text-slate-900 focus:border-[#003f88] focus:bg-white outline-none transition-all"
+                    className="w-full bg-slate-50/50 border border-slate-200/60 rounded-lg p-3 text-sm text-slate-900 focus:border-[#003f88] focus:bg-white outline-none transition-colors"
                     placeholder="Perihal keperluan"
                   />
                 </div>
@@ -278,69 +194,38 @@ const KontakKami = () => {
                     name="pesan"
                     value={formData.pesan}
                     onChange={handleChange}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-none p-3 text-sm text-slate-900 focus:border-[#003f88] focus:bg-white outline-none resize-none transition-all"
+                    className="w-full bg-slate-50/50 border border-slate-200/60 rounded-lg p-3 text-sm text-slate-900 focus:border-[#003f88] focus:bg-white outline-none resize-none transition-colors"
                     placeholder="Tuliskan pesan atau pertanyaan Anda..."
                   />
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full sm:w-auto bg-[#003f88] hover:bg-[#002b5c] text-white px-6 py-3 rounded-none text-xs font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer mt-2"
+                  className="w-full sm:w-auto bg-[#003f88] hover:bg-[#002b5c] text-white px-6 py-3 rounded-full text-xs font-bold transition-colors flex items-center justify-center gap-2 cursor-pointer mt-2"
                 >
                   Kirim Pesan <Send size={13} />
                 </button>
               </form>
             </div>
-          </div>
+          </section>
 
-          {/* DAFTAR EKSTENSI */}
-          <div className="bg-white rounded-none border border-transparent p-6 md:p-8 transition-all duration-200 flex flex-col justify-between mb-5 md:mb-0">
+          {/* GOOGLE MAPS EMBED SECTION */}
+          <section className="bg-white border border-slate-200 rounded-lg p-6 md:p-8 flex flex-col justify-between">
             <div>
-              <h2 className="text-lg font-bold text-slate-900 mb-6 pb-3 border-b border-slate-100">
-                Silahkan hubungi nomer dibawah
+              <h2 className="text-base font-bold text-slate-900 mb-6 pb-3 border-b border-slate-100">
+                Lokasi Rumah Sakit
               </h2>
-
-              <div className="divide-y divide-slate-100">
-                {departments.map((dept, index) => (
-                  <div
-                    key={index}
-                    className="flex justify-between items-center py-3.5"
-                  >
-                    <span className="text-sm font-medium text-slate-700 flex items-center gap-2">
-                      {dept.isUrgent && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-                      )}
-                      {dept.name}
-                    </span>
-                    <a
-                      href={`tel:${dept.phone.replace(/\D/g, "")}`}
-                      className={`text-sm font-bold transition-colors ${
-                        dept.isUrgent
-                          ? "text-red-600 hover:text-red-700 underline"
-                          : "text-[#003f88] hover:text-[#002b5c] hover:underline"
-                      }`}
-                    >
-                      {dept.phone}
-                    </a>
-                  </div>
-                ))}
+              <div className="w-full h-[400px] overflow-hidden rounded-lg">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4880.401141816898!2d106.70870002499038!3d-6.224877593763206!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69fa1cb5b440a1%3A0xe21244587f98ac8f!2sRS%20Medika%20Lestari!5e1!3m2!1sid!2sid!4v1791648435409!5m2!1sid!2sid"
+                  className="w-full h-full border-0"
+                  allowFullScreen={true}
+                  loading="lazy"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                ></iframe>
               </div>
             </div>
-
-            {/* BOX INFORMASI PENTING */}
-            <div className="mt-8 p-4 bg-red-50 border-l-4 border-red-500 rounded-none flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
-              <p className="text-xs leading-relaxed text-red-800 font-medium">
-                <span className="font-bold">Penting:</span> Untuk penanganan
-                darurat segera medis, silakan hubungi pusat penanganan langsung
-                IGD pada nomor{" "}
-                <a href="tel:0215844521" className="font-bold underline">
-                  (021) 584 4521
-                </a>
-                .
-              </p>
-            </div>
-          </div>
+          </section>
         </div>
       </div>
     </main>
