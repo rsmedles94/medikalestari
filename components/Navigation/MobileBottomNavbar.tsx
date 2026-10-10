@@ -73,14 +73,14 @@ const ICON_PAD = 2;
 const DOCK_BACKGROUND = "#FFFFFF";
 const DOCK_BORDER = "1px solid rgba(0, 0, 0, 0.06)";
 const GLASS_SHADOW = "0 10px 26px -8px rgba(0, 0, 0, 0.14)";
-const PILL_COLOR = "#000000";
+const PILL_COLOR = "#003f88";
 const MENU_GLASS_RADIUS = 24;
 
-// Genie motion (keluar / masuk dari tombol plus, tanpa opacity di parent glass)
+// Genie motion 
 
 const GENIE_HIDDEN = { scaleX: 0.08, scaleY: 0.025, y: 30 };
 
-// Genie show (X lebih lambat dari Y = bentuk corong, lalu melebar)
+// Genie show 
 
 const GENIE_SHOW: TargetAndTransition = {
   scaleX: 1,
@@ -98,7 +98,7 @@ const GENIE_SHOW: TargetAndTransition = {
   },
 };
 
-// Genie hide (X menyempit lebih dulu, lalu tersedot ke tombol)
+// Genie hide 
 
 const GENIE_HIDE: TargetAndTransition = {
   ...GENIE_HIDDEN,
@@ -112,7 +112,7 @@ const GENIE_HIDE: TargetAndTransition = {
   },
 };
 
-// Genie content (muncul belakangan, hilang duluan)
+// Genie content 
 
 const GENIE_CONTENT_SHOW: TargetAndTransition = {
   opacity: 1,
