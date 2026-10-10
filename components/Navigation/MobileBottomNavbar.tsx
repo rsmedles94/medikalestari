@@ -73,7 +73,7 @@ const ICON_PAD = 2;
 const DOCK_BACKGROUND = "#FFFFFF";
 const DOCK_BORDER = "1px solid rgba(0, 0, 0, 0.06)";
 const GLASS_SHADOW = "0 10px 26px -8px rgba(0, 0, 0, 0.14)";
-const PILL_COLOR = "#003f88";
+const PILL_COLOR = "rgb(0, 63, 136)";
 const MENU_GLASS_RADIUS = 24;
 
 // Genie motion 
