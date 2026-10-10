@@ -460,7 +460,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                             ? `navbar-search-option-${activeSuggestion}`
                             : undefined
                         }
-                        placeholder="Nama Dokter / Spesialisasi"
+                        placeholder="Cari Dokter / Spesialisasi"
                         autoComplete="off"
                         className="w-full px-3 py-2 text-sm font-light text-neutral-700 placeholder-gray-400 focus:outline-none [&::-webkit-search-cancel-button]:appearance-none"
                       />

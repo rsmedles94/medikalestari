@@ -602,7 +602,7 @@ const DoctorSection = ({
                 }}
                 className="px-4 h-11 bg-[#003f88] text-white font-semibold hover:bg-[#003f88]/90 transition-all border border-[#003f88] text-base flex items-center justify-center rounded-lg cursor-pointer"
               >
-                Seacrh
+                Search
               </button>
             </div>
 
