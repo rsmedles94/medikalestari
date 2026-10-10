@@ -43,11 +43,11 @@ export default function Emergency() {
       {/* Konten Utama */}
       <main className="max-w-[1106px] mx-auto px-4 md:px-0 pb-16">
         {/* Banner Utama - Panggilan Darurat */}
-        <div className="bg-white p-6 md:p-10 text-center mb-8 border border-slate-200 rounded-3xl shadow-sm">
+        <div className="bg-white p-6 md:p-10 text-center mb-8 border border-slate-200 rounded-lg shadow-sm">
           <h1 className="text-2xl md:text-5xl font-semibold text-slate-950 tracking-tight mb-2">
             Instalasi Gawat Darurat (IGD)
           </h1>
-          <p className="text-slate-600 max-w-lg mx-auto text-sm md:text-base mb-8">
+          <p className="text-slate-600 max-w-xl mx-auto text-sm md:text-base mb-8">
             Jika Anda atau orang di sekitar Anda mengalami kondisi medis kritis,
             segera hubungi nomor di bawah ini atau datang langsung ke IGD kami.
           </p>
@@ -56,7 +56,7 @@ export default function Emergency() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl mx-auto">
             <button
               onClick={() => handleCallEmergency("+6281210601963")}
-              className="flex items-center justify-center gap-3 bg-rose-600 hover:bg-rose-700 text-white py-4 px-6 font-bold text-md active:bg-rose-800 transition-all duration-200 cursor-pointer rounded-full"
+              className="flex items-center justify-center gap-3 bg-rose-600 hover:bg-rose-700 text-white py-4 px-6 font-bold text-md active:bg-rose-800 transition-all duration-200 cursor-pointer rounded-lg"
             >
               <PhoneCall size={22} />
               Instalasi Gawat Darurat
@@ -64,7 +64,7 @@ export default function Emergency() {
 
             <button
               onClick={handleWhatsAppEmergency}
-              className="flex items-center justify-center gap-3 bg-emerald-600 hover:bg-emerald-700 text-white py-4 px-6 font-bold text-md active:bg-emerald-800 transition-all duration-200 cursor-pointer rounded-full"
+              className="flex items-center justify-center gap-3 bg-emerald-600 hover:bg-emerald-700 text-white py-4 px-6 font-bold text-md active:bg-emerald-800 transition-all duration-200 cursor-pointer rounded-lg"
             >
               <Image
                 src="/images/icons/whatsapp-fill.svg"
@@ -82,7 +82,7 @@ export default function Emergency() {
         <div className="mt-8">
           <div className="flex items-center gap-2 mb-4"></div>
 
-          <div className="w-full h-[450px] md:h-[550px] overflow-hidden border border-slate-200 shadow-md mb-5 md:mb-5 rounded-3xl">
+          <div className="w-full h-[450px] md:h-[550px] overflow-hidden border border-slate-200 shadow-md mb-5 md:mb-5 rounded-lg">
             <iframe
               title="Google Maps Lokasi Rumah Sakit"
               src={embedUrl}
@@ -95,7 +95,7 @@ export default function Emergency() {
         </div>
 
         {/* Catatan Kaki Alur Medis */}
-        <div className="bg-slate-100 p-6 sm:p-5 border border-slate-200 text-center md:text-left md:flex md:items-center md:justify-between gap-4 mb-12 rounded-2xl">
+        <div className="bg-slate-100 p-6 sm:p-5 border border-slate-200 text-center md:text-left md:flex md:items-center md:justify-between gap-4 mb-12 rounded-lg">
           <div>
             <h4 className="text-sm font-semibold text-slate-900 mb-1">
               Siapkan Informasi Ini Saat Menghubungi Kami:
