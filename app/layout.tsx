@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   description:
     "RS Medika Lestari adalah sebuah Rumah Sakit Umum modern yang memiliki fasilitas lengkap, dan memiliki jaringan yang luas bertempat di Jl. HOS Cokroaminoto Perum Pondok Lestari Blok C1 No.1-2, Ciledug Kota Tangerang 15157.",
   verification: {
-    google: "eyjfqIvPYx6jaBG2ugpaU4DNiViW1lXVeitE2ciduXs",
+    google: "Th6lu-NdN8e4ZAo2P9c-j15Tfnc9oL_2znO4rLe9WJI",
   },
   manifest: "/manifest.json",
   icons: {
