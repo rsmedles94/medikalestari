@@ -1,7 +1,7 @@
 /**
  * Service Worker
  * Optimized caching strategy untuk offline support dan performance
- * 
+ *
  * Strategies:
  * - Cache First: Static assets (js, css, images)
  * - Stale While Revalidate: API responses
@@ -35,8 +35,8 @@ self.addEventListener("install", (event) => {
       try {
         const cache = await caches.open(CACHE_NAMES.STATIC);
         await cache.addAll(STATIC_ASSETS);
-  console.log("[SW] Static assets cached");
-  await globalThis.skipWaiting?.();
+        console.log("[SW] Static assets cached");
+        await globalThis.skipWaiting?.();
       } catch (error) {
         console.error("[SW] Installation failed:", error);
       }
@@ -70,7 +70,7 @@ self.addEventListener("activate", (event) => {
       try {
         await globalThis.registration?.navigationPreload?.enable?.();
       } catch (err) {
-        console.warn('[SW] navigationPreload enable failed:', err);
+        console.warn("[SW] navigationPreload enable failed:", err);
       }
       await globalThis.clients?.claim?.();
     })(),
@@ -101,7 +101,10 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  if (request.mode === "navigate" || request.headers.get?.("accept")?.includes("text/html")) {
+  if (
+    request.mode === "navigate" ||
+    request.headers.get?.("accept")?.includes("text/html")
+  ) {
     event.respondWith(navigationCacheStrategy(event));
     return;
   }
@@ -123,15 +126,15 @@ self.addEventListener("fetch", (event) => {
  * Return cached HTML immediately for back/forward navigation so the page doesn't reload.
  * Meanwhile fetch in background and update cache so next navigation gets fresh content.
  */
-// Accept either a Request or a FetchEvent (use event.preloadResponse if available)
 async function navigationCacheStrategy(eventOrRequest) {
   const request = eventOrRequest.request || eventOrRequest;
   const cache = await caches.open(CACHE_NAMES.PAGES);
 
   try {
-    // If navigation preload provided a response, use it and cache it
     try {
-      const preloadResp = eventOrRequest.preloadResponse ? await eventOrRequest.preloadResponse : null;
+      const preloadResp = eventOrRequest.preloadResponse
+        ? await eventOrRequest.preloadResponse
+        : null;
       if (preloadResp) {
         if (preloadResp.ok) {
           await cache.put(request, preloadResp.clone());
@@ -139,13 +142,11 @@ async function navigationCacheStrategy(eventOrRequest) {
         return preloadResp;
       }
     } catch (err) {
-      // ignore preload errors
-      console.warn('[SW] preloadResponse error:', err);
+      console.warn("[SW] preloadResponse error:", err);
     }
 
     const cached = await cache.match(request);
 
-    // Kick off background update regardless
     const fetchAndUpdate = fetch(request)
       .then(async (response) => {
         if (response?.status === 200 && response?.type === "basic") {
@@ -155,17 +156,14 @@ async function navigationCacheStrategy(eventOrRequest) {
       })
       .catch(() => null);
 
-    // If we have cached HTML, return it immediately and update in background
     if (cached) {
       void fetchAndUpdate;
       return cached;
     }
 
-    // Otherwise wait for network and cache the result
     const networkResponse = await fetchAndUpdate;
     if (networkResponse) return networkResponse;
 
-    // Fallback to a generic offline page if available
     const offlineCache = await caches.open(CACHE_NAMES.STATIC);
     const offlineResp = await offlineCache.match("/offline.html");
     return offlineResp || new Response("Offline", { status: 503 });
@@ -180,12 +178,10 @@ async function navigationCacheStrategy(eventOrRequest) {
 
 /**
  * Cache First Strategy
- * Untuk static assets yang tidak pernah berubah
  */
-// cacheFirstStrategy optionally accepts a cacheName to use instead of STATIC
 async function cacheFirstStrategy(request, cacheName = CACHE_NAMES.STATIC) {
   try {
-  const cache = await caches.open(cacheName);
+    const cache = await caches.open(cacheName);
     const cached = await cache.match(request);
 
     if (cached) {
@@ -206,7 +202,6 @@ async function cacheFirstStrategy(request, cacheName = CACHE_NAMES.STATIC) {
 
 /**
  * Image Caching Strategy
- * Cache images with size limitation
  */
 async function cacheImageStrategy(request) {
   try {
@@ -220,9 +215,11 @@ async function cacheImageStrategy(request) {
     const response = await fetch(request);
 
     if (response?.status === 200) {
-      // Check if size is reasonable (< 5MB)
       const contentLength = response.headers.get("content-length");
-      if (!contentLength || Number.parseInt(contentLength, 10) < 5 * 1024 * 1024) {
+      if (
+        !contentLength ||
+        Number.parseInt(contentLength, 10) < 5 * 1024 * 1024
+      ) {
         cache.put(request, response.clone());
       }
     }
@@ -230,14 +227,12 @@ async function cacheImageStrategy(request) {
     return response;
   } catch (error) {
     console.warn(`[SW] Image caching failed for ${request.url}:`, error);
-    // Return a placeholder or offline image
     return new Response("Image not available", { status: 503 });
   }
 }
 
 /**
  * Stale While Revalidate Strategy
- * Return cached version immediately, update in background
  */
 async function staleWhileRevalidateStrategy(request) {
   let cached = null;
@@ -247,7 +242,6 @@ async function staleWhileRevalidateStrategy(request) {
 
     const fetchPromise = fetch(request)
       .then((response) => {
-        // Update cache with fresh response
         if (response?.status === 200) {
           cache.put(request, response.clone());
         }
@@ -258,28 +252,26 @@ async function staleWhileRevalidateStrategy(request) {
         return null;
       });
 
-    // Return cached immediately if available, otherwise wait for network
     return cached || (await fetchPromise);
   } catch (error) {
-    console.warn(`[SW] Stale While Revalidate failed for ${request.url}:`, error);
-
+    console.warn(
+      `[SW] Stale While Revalidate failed for ${request.url}:`,
+      error,
+    );
     if (cached) {
       return cached;
     }
-
     return new Response("Offline", { status: 503 });
   }
 }
 
 /**
  * Network First Strategy
- * Try network first, fallback to cache
  */
 async function networkFirstStrategy(request) {
   try {
     const response = await fetch(request);
 
-    // Cache successful responses
     if (response?.status === 200) {
       const cache = await caches.open(CACHE_NAMES.DYNAMIC);
       cache.put(request, response.clone());
@@ -289,7 +281,6 @@ async function networkFirstStrategy(request) {
   } catch (error) {
     console.warn(`[SW] Network First failed for ${request.url}:`, error);
 
-    // Try cache fallback
     const cache = await caches.open(CACHE_NAMES.DYNAMIC);
     const cached = await cache.match(request);
 
@@ -315,3 +306,63 @@ function isImageRequest(pathname) {
 function isApiRequest(pathname) {
   return pathname.startsWith("/api/");
 }
+
+/* ========================================================== */
+/* TAMBAHAN: WEB PUSH NOTIFICATION & NOTIFICATION CLICK LOGIC */
+/* ========================================================== */
+
+// Event saat server mengirim sinyal push (berjalan walau aplikasi/tab ditutup)
+self.addEventListener("push", (event) => {
+  if (!(self.Notification && self.Notification.permission === "granted")) {
+    return;
+  }
+
+  let data = {
+    title: "Rumah Sakit Medika Lestari",
+    body: "Kesehatan Anda adalah prioritas utama kami.",
+    icon: "/medikalestari.png",
+    badge: "/medikalestari.png",
+  };
+
+  if (event.data) {
+    try {
+      data = event.data.json();
+    } catch (e) {
+      data.body = event.data.text();
+    }
+  }
+
+  const options = {
+    body: data.body,
+    icon: data.icon || "/medikalestari.png",
+    badge: data.badge || "/medikalestari.png",
+    tag: "rs-medika-lestari-push",
+    renotify: true,
+    vibrate: [200, 100, 200],
+  };
+
+  event.waitUntil(self.registration.showNotification(data.title, options));
+});
+
+// Event saat notifikasi diklik oleh user
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+
+  event.waitUntil(
+    clients
+      .matchAll({ type: "window", includeUncontrolled: true })
+      .then((clientList) => {
+        // Jika tab web sudah terbuka, fokuskan kembali ke tab tersebut
+        for (let i = 0; i < clientList.length; i++) {
+          let client = clientList[i];
+          if ("focus" in client) {
+            return client.focus();
+          }
+        }
+        // Jika tab ditutup, buka halaman utama web/PWA secara otomatis
+        if (clients.openWindow) {
+          return clients.openWindow("/");
+        }
+      }),
+  );
+});
