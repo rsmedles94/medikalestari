@@ -9,7 +9,6 @@ export interface PushSubscriptionData {
   };
 }
 
-// Gunakan 'const' karena array hanya dimutasi isinya (.push), bukan di-reassign
 const subscriptionsDB: PushSubscriptionData[] = [];
 
 export async function POST(request: Request) {
