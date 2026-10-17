@@ -523,7 +523,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               aria-label={activeMenuData.label}
               className="pointer-events-none absolute inset-x-0 top-full z-50 px-4"
             >
-              <div className="pointer-events-auto relative mx-auto max-h-[80vh] max-w-[1600px] overflow-y-auto bg-white px-12 py-12 antialiased shadow-2xl 2xl:px-[100px]">
+              <div className="pointer-events-auto relative mx-auto max-h-[80vh] max-w-[1600px] overflow-y-auto bg-[#eef4fa] px-12 py-12 antialiased shadow-2xl 2xl:px-[100px]">
                 {/* close */}
                 <button
                   type="button"
