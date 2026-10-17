@@ -6,7 +6,7 @@ import { AuthProvider } from "@/context/AuthProvider";
 import { SearchModalProvider } from "@/context/SearchModalContext";
 import LayoutContent from "./LayoutContentClient";
 
-// Konfigurasi Font Inter (Native Next.js)
+// Konfigurasi Font 
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],

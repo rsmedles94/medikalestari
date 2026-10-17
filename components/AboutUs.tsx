@@ -201,10 +201,10 @@ const AboutUs = () => {
       {/* mitra kami */}
       <section className="max-w-[1160px] mx-auto px-6 py-24">
         <div className="text-center mb-16">
-          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-4 uppercase">
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 mb-4 uppercase">
             Mitra Kami
           </h2>
-          <p className="text-slate-500 text-[15px] max-w-[600px] mx-auto">
+          <p className="text-slate-500 text-[15px] max-w-[700px] mx-auto">
             Komitmen kami terhadap kualitas divalidasi oleh organisasi perawatan
             kesehatan bergengsi
           </p>
@@ -214,7 +214,7 @@ const AboutUs = () => {
           {partners.map((item) => (
             <div
               key={item}
-              className="flex items-center justify-center p-4 border border-slate-100 bg-white shadow-sm h-32 relative"
+              className="flex items-center justify-center p-4 border border-slate-100 bg-white shadow-sm h-32 relative rounded-lg"
             >
               {!isImageLoaded(`partner-${item}`) && (
                 <ImageSkeleton width="w-24" height="h-24" />
