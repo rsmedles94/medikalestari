@@ -44,7 +44,7 @@ const MEGA_MENUS: MegaMenu[] = [
   {
     key: "Cari Dokter",
     label: "Temukan Dokter",
-    heading: "Temukan Semua Dokter",
+    heading: "Semua Dokter",
     headingHref: "/dokter",
     columns: [
       [
@@ -112,7 +112,6 @@ const MENU_ITEM_CLASS =
   "cursor-pointer text-left text-[20px] font-light leading-snug text-[#003f88] hover:text-[#e67e22] duration-700 ease-in-out";
 
 /* ---------- search spesialisasi ---------- */
-
 
 const normalize = (value: string) =>
   value.toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -509,9 +508,6 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                       }`}
                     >
                       <span>{option.label}</span>
-                      <span className="text-xs font-medium text-gray-500">
-                        Spesialisasi
-                      </span>
                     </li>
                   ))}
                 </ul>
@@ -519,7 +515,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
             </div>
           </div>
 
-          {/* mega menu (tanpa animasi) */}
+          {/* mega menu */}
           {activeMenuData && (
             <div
               id="mega-menu-panel"
@@ -527,7 +523,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               aria-label={activeMenuData.label}
               className="pointer-events-none absolute inset-x-0 top-full z-50 px-4"
             >
-              <div className="pointer-events-auto relative mx-auto max-h-[80vh] max-w-[1600px] overflow-y-auto bg-[#EEF4FA] px-12 py-12 antialiased shadow-2xl 2xl:px-[100px]">
+              <div className="pointer-events-auto relative mx-auto max-h-[80vh] max-w-[1600px] overflow-y-auto bg-white px-12 py-12 antialiased shadow-2xl 2xl:px-[100px]">
                 {/* close */}
                 <button
                   type="button"
@@ -549,6 +545,19 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                       {activeMenuData.heading}
                     </Link>
                   </h2>
+
+                  {/* link Jadwal Dokter  */}
+                  {activeMenuData.key === "Cari Dokter" && (
+                    <p className="mt-2">
+                      <Link
+                        href="/jadwal-dokter"
+                        onClick={closeMenu}
+                        className={MENU_ITEM_CLASS}
+                      >
+                        Jadwal Dokter
+                      </Link>
+                    </p>
+                  )}
                 </div>
 
                 {/* columns */}

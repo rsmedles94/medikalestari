@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 
 interface AnnouncementProps {
@@ -8,20 +8,79 @@ interface AnnouncementProps {
   onClose: () => void;
 }
 
+const ANNOUNCEMENT_DELAY = 1000;
+const ANNOUNCEMENT_VISIBLE_DURATION = 15000;
+const ANIMATION_DURATION = 300;
+
 export const Announcement: React.FC<AnnouncementProps> = ({
   isVisible,
   onClose,
 }) => {
   const [showAnimation, setShowAnimation] = useState(false);
 
-  useEffect(() => {
-    // Jeda 1 detik (1000ms) sebelum animasi turun dimulai
-    const timer = setTimeout(() => {
-      setShowAnimation(true);
-    }, 1000);
+  const onCloseRef = useRef(onClose);
+  const closeAnimationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
 
-    return () => clearTimeout(timer);
-  }, []);
+  // callback onClose dari parent.
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
+  // Mengatur animasi masuk dan penutupan otomatis.
+  useEffect(() => {
+    if (!isVisible) return;
+
+    let hideTimer: ReturnType<typeof setTimeout> | undefined;
+    let closeTimer: ReturnType<typeof setTimeout> | undefined;
+
+    // Tampilkan pengumuman setelah jeda 1 detik.
+    const showTimer = setTimeout(() => {
+      setShowAnimation(true);
+
+      // Mulai menghitung 30 detik setelah pengumuman tampil.
+      hideTimer = setTimeout(() => {
+        setShowAnimation(false);
+
+        // Tunggu animasi ke atas selesai sebelum menutup komponen.
+        closeTimer = setTimeout(() => {
+          onCloseRef.current();
+        }, ANIMATION_DURATION);
+      }, ANNOUNCEMENT_VISIBLE_DURATION);
+    }, ANNOUNCEMENT_DELAY);
+
+    return () => {
+      clearTimeout(showTimer);
+
+      if (hideTimer) {
+        clearTimeout(hideTimer);
+      }
+
+      if (closeTimer) {
+        clearTimeout(closeTimer);
+      }
+
+      if (closeAnimationTimerRef.current) {
+        clearTimeout(closeAnimationTimerRef.current);
+        closeAnimationTimerRef.current = null;
+      }
+    };
+  }, [isVisible]);
+
+  // Menutup pengumuman melalui tombol X dengan animasi ke atas.
+  const handleClose = () => {
+    setShowAnimation(false);
+
+    if (closeAnimationTimerRef.current) {
+      clearTimeout(closeAnimationTimerRef.current);
+    }
+
+    closeAnimationTimerRef.current = setTimeout(() => {
+      onCloseRef.current();
+      closeAnimationTimerRef.current = null;
+    }, ANIMATION_DURATION);
+  };
 
   if (!isVisible) return null;
 
@@ -32,13 +91,11 @@ export const Announcement: React.FC<AnnouncementProps> = ({
           ? "translate-y-0 opacity-100"
           : "-translate-y-full opacity-0"
       }`}
-      style={{
-        zIndex: 9999,
-      }}
+      style={{ zIndex: 9999 }}
       aria-label="Pengumuman Penting Rumah Sakit"
     >
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between relative px-6 lg:px-8">
-        {/* Track Marquee Area */}
+        {/* Area teks berjalan */}
         <div
           className="min-w-0 flex-1 overflow-hidden pr-12"
           aria-label="Informasi Rumah Sakit Medika Lestari"
@@ -59,16 +116,20 @@ export const Announcement: React.FC<AnnouncementProps> = ({
                     RS Medika Lestari Buka 24 Jam Setiap Hari
                   </span>
                 </span>
+
                 <span className="mx-8 text-white/50" aria-hidden="true">
                   |
                 </span>
+
                 <span className="mx-8 inline-flex items-center gap-2">
                   <span className="font-semibold">Alamat:</span>
+
                   <span>
                     Jl. HOS Cokroaminoto No.56, RT.001/RW.012, Karang Timur,
                     Kec. Karang Tengah, Kota Tangerang, Banten 15151
                   </span>
                 </span>
+
                 <span className="mx-8 text-white/50" aria-hidden="true">
                   |
                 </span>
@@ -77,10 +138,10 @@ export const Announcement: React.FC<AnnouncementProps> = ({
           </div>
         </div>
 
-        {/* Close Button (Selalu di Kanan) */}
+        {/* Tombol tutup */}
         <button
           type="button"
-          onClick={onClose}
+          onClick={handleClose}
           aria-label="Tutup informasi rumah sakit"
           title="Tutup"
           className="absolute right-0 top-1/2 -translate-y-1/2 z-10 flex h-full w-11 shrink-0 items-center justify-center bg-[#003f88] text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white cursor-pointer"
@@ -88,7 +149,7 @@ export const Announcement: React.FC<AnnouncementProps> = ({
           <X className="w-[22px] h-[22px]" strokeWidth={2} />
         </button>
 
-        {/* Gradient Fade di sebelah kiri tombol tutup */}
+        {/* Gradasi tombol tutup */}
         <span
           className="pointer-events-none absolute inset-y-0 right-11 z-[1] w-5 bg-gradient-to-l from-[#003f88] to-transparent"
           aria-hidden="true"
