@@ -6,7 +6,6 @@ import { HeroBanner } from "@/lib/types";
 import { ChevronRight } from "lucide-react";
 
 // Import komponen terpisah
-import { Announcement } from "./Announcement";
 import { DesktopSearchBar } from "./DesktopSearchBar";
 
 // Shimmer Animation & Circular Loader Keyframes
@@ -38,27 +37,6 @@ const customStyles = `
   .animate-circle-progress-mobile {
     animation: circleProgressMobile 5s linear infinite;
   }
-
-  @keyframes heroAnnouncementMarquee {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-  }
-
-  .hero-announcement-track {
-    display: flex;
-    width: max-content;
-    animation: heroAnnouncementMarquee 32s linear infinite;
-    will-change: transform;
-  }
-
-  .hero-announcement:hover .hero-announcement-track,
-  .hero-announcement:focus-within .hero-announcement-track {
-    animation-play-state: paused;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .hero-announcement-track { animation: none; transform: none; }
-  }
 `;
 
 if (typeof document !== "undefined") {
@@ -74,7 +52,6 @@ export const HeroSection = () => {
   const [slides, setSlides] = useState<HeroBanner[]>([]);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [isAnnouncementVisible, setIsAnnouncementVisible] = useState(true);
   const [currentDeviceType, setCurrentDeviceType] = useState<
     "desktop" | "mobile"
   >("desktop");
@@ -272,12 +249,6 @@ export const HeroSection = () => {
 
   return (
     <section className="relative isolate w-full bg-transparent mb-12 md:mb-24 z-30">
-      {/* Pengumuman informasi rumah sakit */}
-      <Announcement
-        isVisible={isAnnouncementVisible}
-        onClose={() => setIsAnnouncementVisible(false)}
-      />
-
       {/* Banner desktop */}
       <section
         aria-label="Hero banner carousel"

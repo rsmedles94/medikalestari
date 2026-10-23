@@ -462,20 +462,23 @@ const PromoKesehatan = () => {
               <h3 className="text-3xl md:text-4xl font-bold mb-6 leading-tight -mt-5">
                 Terhubung dengan Berbagai Mitra Layanan Kesehatan
               </h3>
+
               <p className="text-sm md:text-base text-white/90 font-normal mb-4 leading-normal text-justify">
-                RS Medika Lestari menjalin kerja sama dengan berbagai mitra
-                asuransi dan perusahaan untuk memperluas akses terhadap layanan
-                kesehatan bagi masyarakat. Kolaborasi ini merupakan bagian dari
-                upaya kami dalam mendukung pelayanan medis yang terintegrasi dan
-                sesuai dengan kebutuhan pasien.
+                RS Medika Lestari bekerja sama dengan sejumlah perusahaan dan
+                penyedia asuransi untuk memudahkan pasien mendapatkan layanan
+                kesehatan sesuai dengan kebutuhan mereka. Kerja sama ini juga
+                membantu pasien mengetahui pilihan layanan yang tersedia melalui
+                mitra yang telah bekerja sama dengan rumah sakit.
               </p>
+
               <p className="text-sm md:text-base text-white/90 font-normal leading-normal mb-8 text-justify">
-                Melalui jaringan kemitraan tersebut, pasien dapat memperoleh
-                informasi mengenai cakupan layanan, ketentuan penjaminan, serta
-                prosedur administrasi sesuai dengan kebijakan masing-masing
-                mitra. Kami berupaya memastikan setiap tahapan pelayanan
-                berlangsung secara jelas, tertib, transparn dan mudah dipahami.
+                Setiap mitra memiliki ketentuan terkait penjaminan biaya dan
+                administrasi yang perlu diperhatikan sebelum pasien menjalani
+                perawatan. Karena itu, pasien dapat memperoleh informasi
+                mengenai cakupan layanan dan persyaratan yang berlaku agar
+                proses pelayanan berjalan lebih lancar.
               </p>
+
               <Link href="/tentang-kami" passHref>
                 <button
                   type="button"
