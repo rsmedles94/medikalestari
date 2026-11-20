@@ -272,12 +272,12 @@ export default function BookingModalFloating({
               className="relative flex flex-col w-full max-w-xl max-h-[92dvh] sm:max-h-[92vh] bg-white rounded-sm shadow-2xl pointer-events-auto"
             >
               {/* Header modal */}
-              <header className="shrink-0 flex items-center justify-between px-4 sm:px-8 py-3 sm:py-5 border-b border-slate-200">
+              <header className="shrink-0 flex items-center justify-between px-4 sm:px-8 py-5 sm:py-5 border-b border-slate-200">
                 <h2
                   id="booking-title"
                   className="text-xl sm:text-2xl font-bold text-slate-900 leading-tight"
                 >
-                  Janji Temu
+                  Formulir Janji Temu Do
                 </h2>
 
                 {/* Tombol tutup */}

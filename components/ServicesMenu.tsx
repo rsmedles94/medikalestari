@@ -109,7 +109,7 @@ function ServiceCard({ service }: { service: ServiceItem }) {
     >
       <Link
         href={service.href}
-        className="group flex h-full min-h-[82px] items-center justify-between p-4 text-black transition-all duration-200 hover:bg-[#003f88] hover:text-white md:min-h-[92px] md:p-8"
+        className="group flex h-full min-h-[82px] items-center justify-between p-4 text-slate-900 transition-all duration-200 hover:bg-[#003f88] hover:text-white md:min-h-[92px] md:p-8"
       >
         <div className="flex items-center gap-3 pr-2 md:gap-5 md:pr-4">
           <div className="relative flex-shrink-0 transition-transform duration-200 group-hover:scale-105">

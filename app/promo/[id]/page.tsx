@@ -497,7 +497,7 @@ export default function PromoDetailPage() {
         {/* Content Detail */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           <section className="flex flex-col">
-            <div className="relative w-full aspect-square overflow-hidden shadow-lg bg-gray-100">
+            <div className="relative w-full aspect-square overflow-hidden bg-gray-100">
               <Image
                 src={promo.image}
                 alt={promo.title}
@@ -533,7 +533,7 @@ export default function PromoDetailPage() {
                   height={22}
                   className="invert"
                 />
-                <span>Booking</span>
+                <span>Booking Online</span>
               </button>
 
               <a
