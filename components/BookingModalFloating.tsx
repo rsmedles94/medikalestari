@@ -11,17 +11,21 @@ interface BookingModalFloatingProps {
   onClose: () => void;
 }
 
-// Kelas bersama supaya semua kolom konsisten
-const labelClass = "block mb-1.5 text-sm font-semibold text-slate-800";
-const fieldClass =
-  "w-full h-12 px-4 bg-white border border-slate-400 rounded-sm text-[15px] text-slate-900 placeholder:text-slate-400 outline-none transition-colors focus:border-[#003f88] focus:ring-1 focus:ring-[#003f88] disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-300 disabled:cursor-not-allowed";
-const selectClass = `${fieldClass} appearance-none pr-10 cursor-pointer`;
+// Kelas bersama supaya semua kolom konsisten.
+// Mobile dibuat lebih ringkas; mulai breakpoint sm tampilannya sama seperti semula.
+// text-base di mobile (16px) mencegah iOS memperbesar layar saat kolom difokuskan.
+const labelClass =
+  "block mb-1 sm:mb-1.5 text-[13px] sm:text-sm font-semibold text-slate-800";
+const fieldBase =
+  "w-full h-11 sm:h-12 bg-white border border-slate-400 rounded-sm text-base sm:text-[15px] text-slate-900 placeholder:text-slate-400 outline-none transition-colors focus:border-[#003f88] focus:ring-1 focus:ring-[#003f88] disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-300 disabled:cursor-not-allowed";
+const fieldClass = `${fieldBase} px-3 sm:px-4`;
+const selectClass = `${fieldBase} appearance-none pl-3 pr-9 sm:pl-4 sm:pr-10 cursor-pointer`;
 
 function Chevron() {
   return (
     <ChevronDown
       size={18}
-      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-600 pointer-events-none"
+      className="absolute right-3 sm:right-3.5 top-1/2 -translate-y-1/2 text-slate-600 pointer-events-none"
     />
   );
 }
@@ -259,19 +263,19 @@ export default function BookingModalFloating({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 12 }}
             transition={{ duration: 0.18 }}
-            className="fixed inset-0 z-70 flex items-center justify-center p-4 pointer-events-none"
+            className="fixed inset-0 z-70 flex items-center justify-center p-3 sm:p-4 pointer-events-none"
           >
             <section
               role="dialog"
               aria-modal="true"
               aria-labelledby="booking-title"
-              className="relative flex flex-col w-full max-w-xl max-h-[92vh] bg-white rounded-sm shadow-2xl pointer-events-auto"
+              className="relative flex flex-col w-full max-w-xl max-h-[92dvh] sm:max-h-[92vh] bg-white rounded-sm shadow-2xl pointer-events-auto"
             >
               {/* Header modal */}
-              <header className="shrink-0 flex items-center justify-between px-6 sm:px-8 py-5 border-b border-slate-200">
+              <header className="shrink-0 flex items-center justify-between px-4 sm:px-8 py-3 sm:py-5 border-b border-slate-200">
                 <h2
                   id="booking-title"
-                  className="text-2xl font-bold text-slate-900 leading-tight"
+                  className="text-xl sm:text-2xl font-bold text-slate-900 leading-tight"
                 >
                   Janji Temu
                 </h2>
@@ -281,14 +285,18 @@ export default function BookingModalFloating({
                   type="button"
                   onClick={onClose}
                   aria-label="Tutup"
-                  className="-mr-1 w-12 h-12 flex items-center justify-center text-slate-800 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#003f88]"
+                  className="-mr-1 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center text-slate-800 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#003f88]"
                 >
-                  <X size={40} strokeWidth={1.75} />
+                  <X
+                    size={40}
+                    strokeWidth={1.75}
+                    className="h-7 w-7 sm:h-10 sm:w-10"
+                  />
                 </button>
               </header>
 
               {/* Isi form */}
-              <main className="flex-1 overflow-y-auto px-6 sm:px-8 py-6">
+              <main className="flex-1 overflow-y-auto px-4 sm:px-8 py-4 sm:py-6">
                 <AnimatePresence mode="wait">
                   {submitted ? (
                     /* Pesan sukses */
@@ -296,7 +304,7 @@ export default function BookingModalFloating({
                       key="success"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      className="text-center py-10"
+                      className="text-center py-6 sm:py-10"
                     >
                       <div className="w-16 h-16 bg-green-600 text-white rounded-full flex items-center justify-center mx-auto mb-5">
                         <CheckCircle size={36} strokeWidth={1.75} />
@@ -313,19 +321,19 @@ export default function BookingModalFloating({
                     <form
                       key="form"
                       onSubmit={handleSubmit}
-                      className="space-y-5"
+                      className="space-y-4 sm:space-y-5"
                     >
                       {error && (
                         <div
                           role="alert"
-                          className="flex items-center gap-3 bg-red-50 border border-red-200 border-l-4 border-l-red-600 px-4 py-3 text-sm text-red-800"
+                          className="flex items-center gap-3 bg-red-50 border border-red-200 border-l-4 border-l-red-600 px-3 sm:px-4 py-2 sm:py-3 text-sm text-red-800"
                         >
                           <AlertCircle size={20} className="shrink-0" />
                           {error}
                         </div>
                       )}
 
-                      <div className="grid grid-cols-1 gap-5">
+                      <div className="grid grid-cols-1 gap-3 sm:gap-5">
                         {/* Nama pasien */}
                         <div>
                           <label htmlFor="patientName" className={labelClass}>
@@ -483,14 +491,14 @@ export default function BookingModalFloating({
                         <button
                           type="button"
                           onClick={onClose}
-                          className="flex-1 h-12 border border-slate-400 text-slate-800 font-semibold text-[15px] rounded-sm hover:bg-slate-50 transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#003f88]"
+                          className="flex-1 h-11 sm:h-12 border border-slate-400 text-slate-800 font-semibold text-[15px] rounded-sm hover:bg-slate-50 transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#003f88]"
                         >
                           Batal
                         </button>
                         <button
                           type="submit"
                           disabled={loading || doctorsData.length === 0}
-                          className="flex-1 h-12 bg-[#003f88] text-white font-semibold text-[15px] rounded-sm transition-colors flex items-center justify-center gap-3 cursor-pointer hover:bg-[#00306a] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#003f88] disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="flex-1 h-11 sm:h-12 bg-[#003f88] text-white font-semibold text-[15px] rounded-sm transition-colors flex items-center justify-center gap-3 cursor-pointer hover:bg-[#00306a] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#003f88] disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           {loading ? (
                             <div className="w-5 h-5 border-[3px] border-white/30 border-t-white rounded-full animate-spin" />
