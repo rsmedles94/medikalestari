@@ -1,193 +1,165 @@
 "use client";
 
-import React from "react";
 import Link from "next/link";
-import {
-  BedDouble,
-  BedSingle,
-  BellDot,
-  Book,
-  BookAIcon,
-  BookAlert,
-  ChevronRight,
-  CrossIcon,
-  HospitalIcon,
-  StethoscopeIcon,
-  TicketCheck,
-} from "lucide-react";
-import {
-  Ambulance,
-  Pill,
-  Activity,
-  Hotel,
-  Microscope,
-  Siren,
-  Heart,
-  Stethoscope,
-  Radio,
-  Bed,
-  Dumbbell,
-  Syringe,
-  LucideIcon,
-} from "lucide-react";
-import { motion, Variants } from "framer-motion";
+import type { CSSProperties } from "react";
+import { LazyMotion, MotionConfig, domAnimation, m } from "framer-motion";
+import type { Variants } from "framer-motion";
+
+const ICON_BASE = "/assets/service-icons";
 
 interface ServiceItem {
   label: string;
-  icon: LucideIcon;
+  /** nama file di public/assets/service-icons (tanpa .svg) */
+  icon: string;
   href: string;
+  /** sembunyikan di mobile */
+  hideOnMobile?: boolean;
 }
 
-const ServicesMenu: React.FC = () => {
-  const services: ServiceItem[] = [
-    {
-      label: "Medical Checkup",
-      icon: StethoscopeIcon,
-      href: "/services/medical-checkup",
-    },
-    {
-      label: "Kamar Perawatan",
-      icon: BedDouble,
-      href: "/services/kamar-perawatan",
-    },
-    {
-      label: "Layanan Gawat Darurat",
-      icon: CrossIcon,
-      href: "/services/emergency",
-    },
-    { label: "PoliKlinik", icon: HospitalIcon, href: "/services/poli-klinik" },
-    { label: "Tarif Kamar", icon: Bed, href: "/tarif-kamar" },
-    {
-      label: "Asuransi & Rekanan",
-      icon: Book,
-      href: "/asuransi-rekanan",
-    },
-    { label: "Paket Kesehatan", icon: TicketCheck, href: "/promo" },
-    {
-      label: "Ketersediaan Kamar",
-      icon: BedSingle,
-      href: "/ketersediaan-kamar",
-    },
-    { label: "Alur Pendaftaran", icon: BookAIcon, href: "/alur-pendaftaran" },
-  ];
+// Data statis di luar komponen: tidak dibuat ulang setiap render
+const SERVICES: readonly ServiceItem[] = [
+  {
+    label: "Medical Checkup",
+    icon: "medical-checkup",
+    href: "/services/medical-checkup",
+    hideOnMobile: true,
+  },
+  {
+    label: "Kamar Perawatan",
+    icon: "bed",
+    href: "/services/kamar-perawatan",
+  },
+  {
+    label: "Layanan Gawat Darurat",
+    icon: "gawat-darurat",
+    href: "/services/emergency",
+  },
+  {
+    label: "PoliKlinik",
+    icon: "poliklinik",
+    href: "/services/poli-klinik",
+  },
+  { label: "Tarif Kamar", icon: "bed", href: "/tarif-kamar" },
+  {
+    label: "Asuransi & Rekanan",
+    icon: "asuransi",
+    href: "/asuransi-rekanan",
+  },
+  { label: "Paket Kesehatan", icon: "promo-kesehatan", href: "/promo" },
+  { label: "Ketersediaan Kamar", icon: "bed", href: "/ketersediaan-kamar" },
+  {
+    label: "Alur Pendaftaran",
+    icon: "alur-pendaftaran",
+    href: "/alur-pendaftaran",
+  },
+];
 
-  // Filter untuk mobile: hide Medical Checkup
-  const mobileServices = services.filter(
-    (service) => service.label !== "Medical Checkup",
-  );
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.02 },
+  },
+};
 
-  const containerVariants: Variants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.02 },
-    },
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.3, ease: "easeOut" },
+  },
+};
+
+function iconMask(icon: string): CSSProperties {
+  const url = `url(${ICON_BASE}/${icon}.svg)`;
+  return {
+    maskImage: url,
+    WebkitMaskImage: url,
+    maskRepeat: "no-repeat",
+    WebkitMaskRepeat: "no-repeat",
+    maskPosition: "center",
+    WebkitMaskPosition: "center",
+    maskSize: "contain",
+    WebkitMaskSize: "contain",
   };
+}
 
-  const itemVariants: Variants = {
-    hidden: { opacity: 0, y: 10 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.3, ease: "easeOut" },
-    },
-  };
-
+function ChevronIcon() {
   return (
-    <section className="py-0 md:py-12 px-4">
-      <div className="max-w-[1106px] mx-auto my-6">
-        <nav aria-label="Layanan Utama">
-          {/* Desktop: tampilkan semua services, Mobile: sembunyikan Medical Checkup */}
-          <div className="block md:hidden">
-            <motion.ul
-              className="grid grid-cols-2 gap-3  list-none"
-              variants={containerVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-50px" }}
-            >
-              {mobileServices.map((service) => {
-                const Icon = service.icon;
-                return (
-                  <motion.li
-                    key={service.label}
-                    variants={itemVariants}
-                    className="bg-white border border-slate-200 overflow-hidden"
-                  >
-                    <Link
-                      href={service.href}
-                      className="group flex items-center justify-between p-4 h-full min-h-[82px] transition-all duration-200 text-[#003f88] hover:bg-[#003f88] hover:text-white"
-                    >
-                      <div className="flex items-center gap-3 pr-2">
-                        <div className="flex-shrink-0 relative group-hover:scale-105 transition-transform duration-200">
-                          <Icon
-                            size={22}
-                            strokeWidth={1.5}
-                            className="text-current"
-                          />
-                          <span className="absolute -bottom-1 -right-1 w-1.5 h-1.5 bg-orange-500 rounded-full border border-white" />
-                        </div>
-                        <span className="text-sm font-bold tracking-normal leading-snug text-current">
-                          {service.label}
-                        </span>
-                      </div>
-                      <div className="flex-shrink-0 opacity-80 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200 text-current">
-                        <ChevronRight size={14} strokeWidth={3} />
-                      </div>
-                    </Link>
-                  </motion.li>
-                );
-              })}
-            </motion.ul>
-          </div>
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={3}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-3.5 w-3.5 md:h-4 md:w-4"
+      aria-hidden="true"
+    >
+      <path d="m9 18 6-6-6-6" />
+    </svg>
+  );
+}
 
-          {/* Desktop */}
-          <div className="hidden md:block">
-            <motion.ul
-              className="grid grid-cols-3 gap-3 bg-white list-none p-0"
-              variants={containerVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-50px" }}
-            >
-              {services.map((service) => {
-                const Icon = service.icon;
-                return (
-                  <motion.li
-                    key={service.label}
-                    variants={itemVariants}
-                    className="bg-white border border-slate-200 overflow-hidden"
-                  >
-                    <Link
-                      href={service.href}
-                      className="group flex items-center justify-between p-6 md:p-8 h-full min-h-[92px] transition-all duration-200 text-[#003f88] hover:bg-[#003f88] hover:text-white"
-                    >
-                      <div className="flex items-center gap-5 pr-4">
-                        <div className="flex-shrink-0 relative group-hover:scale-105 transition-transform duration-200">
-                          <Icon
-                            size={32}
-                            strokeWidth={1.5}
-                            className="text-current"
-                          />
-                          <span className="absolute -bottom-1 -right-1 w-2 h-2 bg-orange-500 rounded-full border border-white" />
-                        </div>
-                        <span className="text-base md:text-[17px] font-bold tracking-normal leading-snug text-current">
-                          {service.label}
-                        </span>
-                      </div>
-                      <div className="flex-shrink-0 opacity-80 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200 text-current">
-                        <ChevronRight size={16} strokeWidth={3} />
-                      </div>
-                    </Link>
-                  </motion.li>
-                );
-              })}
-            </motion.ul>
+function ServiceCard({ service }: { service: ServiceItem }) {
+  return (
+    <m.li
+      variants={itemVariants}
+      className={`overflow-hidden border border-slate-200 bg-white ${
+        service.hideOnMobile ? "hidden md:block" : ""
+      }`}
+    >
+      <Link
+        href={service.href}
+        className="group flex h-full min-h-[82px] items-center justify-between p-4 text-[#003f88] transition-all duration-200 hover:bg-[#003f88] hover:text-white md:min-h-[92px] md:p-8"
+      >
+        <div className="flex items-center gap-3 pr-2 md:gap-5 md:pr-4">
+          <div className="relative flex-shrink-0 transition-transform duration-200 group-hover:scale-105">
+            {/* Ikon = mask SVG + bg-current, jadi warnanya ikut warna teks Link:
+                #003f88 normal, putih saat hover */}
+            <span
+              aria-hidden="true"
+              className="block h-8 w-8 bg-current md:h-11 md:w-11"
+              style={iconMask(service.icon)}
+            />
           </div>
+          <span className="text-sm font-bold leading-snug tracking-normal text-current md:text-[17px]">
+            {service.label}
+          </span>
+        </div>
+        <div className="flex-shrink-0 opacity-80 transition-all duration-200 group-hover:translate-x-1 group-hover:opacity-100">
+          <ChevronIcon />
+        </div>
+      </Link>
+    </m.li>
+  );
+}
+
+export default function ServicesMenu() {
+  return (
+    <section className="px-4 py-0 md:py-12">
+      <div className="mx-auto my-6 max-w-[1106px]">
+        <nav aria-label="Layanan Utama">
+          {/* LazyMotion: bundle framer-motion lebih kecil; reducedMotion mengikuti pengaturan OS */}
+          <MotionConfig reducedMotion="user">
+            <LazyMotion features={domAnimation}>
+              {/* Satu list responsif (bukan dua list mobile + desktop) */}
+              <m.ul
+                className="grid list-none grid-cols-2 gap-3 p-0 md:grid-cols-3"
+                variants={containerVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-50px" }}
+              >
+                {SERVICES.map((service) => (
+                  <ServiceCard key={service.label} service={service} />
+                ))}
+              </m.ul>
+            </LazyMotion>
+          </MotionConfig>
         </nav>
       </div>
     </section>
   );
-};
-
-export default ServicesMenu;
+}
