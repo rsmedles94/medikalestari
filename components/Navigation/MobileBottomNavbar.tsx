@@ -1,7 +1,6 @@
 "use client";
 
 import React, {
-  useMemo,
   useState,
   useEffect,
   useLayoutEffect,
@@ -10,8 +9,8 @@ import React, {
   useSyncExternalStore,
 } from "react";
 
+import Image from "next/image";
 import Link from "next/link";
-
 import { usePathname, useRouter } from "next/navigation";
 
 import {
@@ -19,84 +18,102 @@ import {
   animate,
   motion,
   useMotionValue,
+  useReducedMotion,
   useSpring,
   useTransform,
 } from "framer-motion";
 
-import { Home } from "lucide-react";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
-
-import {
-  faUserDoctor,
-  faPlus,
-  faCalendarDays,
-  faTicket,
-  faCalendarCheck,
-  faProcedures,
-  faBed,
-} from "@fortawesome/free-solid-svg-icons";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 import BookingModalFloating from "../BookingModalFloating";
 
-// Nav item interface
+// ---------------------------------------------------------------------------
+// Data menu (statis, di luar komponen)
+// ---------------------------------------------------------------------------
 
 interface NavItem {
   label: string;
-
   href: string;
-
-  icon?: IconDefinition;
-
-  isHome?: boolean;
-
+  /** nama file di public/assets/dockbar (tanpa .svg) */
+  icon?: string;
   isButton?: boolean;
 }
 
-// Layout & Animation Constants
+const ICON_DIR = "/assets/dockbar";
+
+const NAV_ITEMS: readonly NavItem[] = [
+  { label: "Beranda", href: "/", icon: "home" },
+  { label: "Dokter", href: "/dokter", icon: "dokter" },
+  { label: "Tambah", href: "#action-menu", isButton: true },
+  { label: "Jadwal", href: "/jadwal-dokter", icon: "jadwal-dokter" },
+  { label: "Promo", href: "/promo", icon: "promo-kesehatan" },
+];
+
+const ITEM_COUNT = NAV_ITEMS.length;
+
+// ---------------------------------------------------------------------------
+// Konstanta layout & animasi
+// ---------------------------------------------------------------------------
 
 const SHRINK_MS = 360;
-
 const SHRINK_EASE = "cubic-bezier(0.32, 0.72, 0, 1)";
 
 const DOCK_HEIGHT = 64;
-
 const DOCK_HEIGHT_SHRUNK = 56;
-
 const DOCK_WIDTH_SHRUNK = "88%";
 
+const PILL_WIDTH = 66;
+const PILL_WIDTH_SHRUNK = 58;
+const PILL_HEIGHT = 55;
+const PILL_HEIGHT_SHRUNK = 48;
+
 const ICON_PAD = 2;
-
 const DRAG_SCALE = 1.04;
-
 const INNER_MARGIN = 4;
 
 // Jari harus bergeser sejauh ini (px) sebelum gesture dianggap drag.
-// Ketukan biasa tidak membuat dock membesar atau pil melompat.
 const DRAG_START_DISTANCE = 6;
 
 // Scroll: jarak minimal (px) sebelum arah scroll dianggap berubah.
-// Mencegah dock bolak-balik mengecil/membesar karena getaran scroll.
 const SCROLL_THRESHOLD = 14;
 
 // Di area atas halaman dock selalu penuh
 const SCROLL_TOP_ZONE = 50;
 
-// White dock and action-menu styling
+// Ikon berubah putih saat pil berada < ICON_NEAR slot darinya,
+// dan kembali hitam saat pil lebih jauh dari ICON_FAR slot.
+const ICON_NEAR = 0.2;
+const ICON_FAR = 0.75;
+
+// Selisih (satuan slot) sebelum pil di awal drag dianggap sudah "menempel" jari
+const CATCHUP_EPS = 0.02;
+
 const DOCK_BACKGROUND = "#FFFFFF";
 const DOCK_BORDER = "1px solid rgba(0, 0, 0, 0.06)";
 const GLASS_SHADOW = "0 10px 26px -8px rgba(0, 0, 0, 0.14)";
 const PILL_COLOR = "rgb(0, 63, 136)";
 const MENU_GLASS_RADIUS = 24;
 
-// Spring pil saat pindah menu / dilepas setelah drag (sedikit membal)
+// Posisi pil dalam satuan "slot" (0 = menu pertama, 4 = menu terakhir).
+// Karena posisinya dihitung sebagai persen lebar dock di CSS, pil SELALU
+// menempel pada ikon walau dock sedang mengecil / membesar.
+const PILL_LEFT = `calc(${ICON_PAD}px + (100% - ${
+  ICON_PAD * 2
+}px) * ((var(--pill-pos, 0) + 0.5) / ${ITEM_COUNT}))`;
+
+// Ikon SVG dipaksa hitam, lalu diputihkan sesuai --a (0 = hitam, 1 = putih)
+const ICON_FILTER = "brightness(0) invert(var(--a, 0))";
+
+// Spring pil saat pindah menu / dilepas setelah drag
 const PILL_SPRING = {
   type: "spring",
-  stiffness: 450,
-  damping: 28,
+  stiffness: 420,
+  damping: 30,
   mass: 0.6,
+  restDelta: 0.0005,
+  restSpeed: 0.01,
 } as const;
 
 // Di awal drag pil meluncur cepat ke bawah jari (tidak melompat)
@@ -105,37 +122,83 @@ const DRAG_CATCHUP_SPRING = {
   stiffness: 700,
   damping: 45,
   mass: 0.5,
+  restDelta: 0.0005,
+  restSpeed: 0.01,
 } as const;
 
-// Menu aksi: naik dari bawah dengan halus (hanya transform + opacity, ringan)
 const MENU_EASE = [0.22, 1, 0.36, 1] as const;
 
-// useLayoutEffect aman untuk SSR
 const useIsoLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
-// Cocokkan route (mendukung rute turunan, mis. /promo/3 -> Promo)
+// ---------------------------------------------------------------------------
+// Helper murni
+// ---------------------------------------------------------------------------
+
 function isRouteActive(href: string, path: string | null) {
   if (!path) return false;
   if (href === "/") return path === "/";
   return path === href || path.startsWith(`${href}/`);
 }
 
+function clamp(value: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function getSlot(width: number) {
+  return (width - ICON_PAD * 2) / ITEM_COUNT;
+}
+
+function getIndexFromX(x: number, width: number) {
+  return clamp(Math.floor((x - ICON_PAD) / getSlot(width)), 0, ITEM_COUNT - 1);
+}
+
+// Batas gerak pusat pil (px) agar tidak menembus tepi dock
+function getBounds(width: number, dragging: boolean) {
+  const pillW = Math.min(PILL_WIDTH, getSlot(width) - 2);
+  const half = (pillW * (dragging ? DRAG_SCALE : 1)) / 2;
+
+  return {
+    minX: INNER_MARGIN + half,
+    maxX: width - INNER_MARGIN - half,
+  };
+}
+
+function clampX(x: number, width: number, dragging: boolean) {
+  const { minX, maxX } = getBounds(width, dragging);
+  return clamp(x, minX, maxX);
+}
+
+function getOverdragAmount(x: number, width: number, dragging: boolean) {
+  const { minX, maxX } = getBounds(width, dragging);
+  if (x < minX) return x - minX;
+  if (x > maxX) return x - maxX;
+  return 0;
+}
+
+// px (pusat pil) -> satuan slot
+function xToPos(x: number, width: number) {
+  return (x - ICON_PAD) / getSlot(width) - 0.5;
+}
+
+// ---------------------------------------------------------------------------
 // Mount hook
+// ---------------------------------------------------------------------------
 
 const emptySubscribe = () => () => {};
 
 function useIsMounted() {
   return useSyncExternalStore(
     emptySubscribe,
-
     () => true,
-
     () => false,
   );
 }
 
-// Solid white background layer shared by dock and action menu
+// ---------------------------------------------------------------------------
+// Sub-komponen
+// ---------------------------------------------------------------------------
+
 function GlassLayer({
   radius,
   radiusTransition,
@@ -159,147 +222,110 @@ function GlassLayer({
   );
 }
 
-// Home Icon
-
-function HomeOutlineNoDoor({
-  size = 26,
-
-  color = "#000000",
+function DockImage({
+  name,
+  style,
 }: {
-  size?: number;
-
-  color?: string;
+  name: string;
+  style?: React.CSSProperties;
 }) {
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke={color}
-      strokeWidth="2.2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+    <Image
+      src={`${ICON_DIR}/${name}.svg`}
+      alt=""
+      width={28}
+      height={28}
+      unoptimized
+      loading="eager"
+      draggable={false}
       aria-hidden="true"
-    >
-      <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" opacity="0" />
-
-      <path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-    </svg>
+      className="pointer-events-none absolute inset-0 h-full w-full select-none object-contain"
+      style={{ filter: ICON_FILTER, ...style }}
+    />
   );
 }
 
-// Nav Icon
+// Warna ikon dikendalikan variabel CSS --a (0..1) pada <li> induknya,
+// yang diperbarui langsung dari posisi pil (lihat applyPos).
+function NavIcon({ item }: { item: NavItem }) {
+  if (!item.icon) return null;
 
-function NavIcon({ item, isActive }: { item: NavItem; isActive: boolean }) {
-  // Ikon aktif putih di atas pil biru; ikon nonaktif tetap hitam.
-  const iconColor = isActive ? "#FFFFFF" : "#000000";
-
-  if (item.isHome) {
-    if (isActive) {
-      return (
-        <Home
-          className="h-[26px] w-[26px]"
-          style={{ color: iconColor }}
-          fill={iconColor}
-          stroke={iconColor}
-          strokeWidth={2.2}
-          aria-hidden="true"
-        />
-      );
-    }
-
-    return <HomeOutlineNoDoor size={26} color={iconColor} />;
-  }
-
-  if (item.icon) {
-    return (
-      <FontAwesomeIcon
-        icon={item.icon}
-        className="text-[24px]"
-        style={{
-          color: iconColor,
-
-          opacity: isActive ? 1 : 0.65,
-        }}
-      />
-    );
-  }
-
-  return null;
+  return (
+    <span className="relative block h-7 w-7">
+      <DockImage name={item.icon} />
+    </span>
+  );
 }
 
-// Component
+// Ikon di menu aksi (hitam, mengikuti teks tombol)
+function MenuIcon({ name }: { name: string }) {
+  return (
+    <Image
+      src={`${ICON_DIR}/${name}.svg`}
+      alt=""
+      width={20}
+      height={20}
+      unoptimized
+      loading="eager"
+      draggable={false}
+      aria-hidden="true"
+      className="h-[20px] w-[20px] shrink-0 select-none object-contain"
+      style={{ filter: "brightness(0)" }}
+    />
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Komponen utama
+// ---------------------------------------------------------------------------
 
 export default function MobileBottomNavbar() {
   const pathname = usePathname();
-
   const router = useRouter();
-
   const isMounted = useIsMounted();
+  const reduceMotion = useReducedMotion();
 
   // State
 
   const [isBookingOpen, setIsBookingOpen] = useState(false);
-
   const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
-
-  const actionMenuRef = useRef<HTMLDivElement>(null);
-
-  const plusButtonRef = useRef<HTMLButtonElement>(null);
-
-  const dockRef = useRef<HTMLDivElement>(null);
-
   const [isDragging, setIsDragging] = useState(false);
-
   const [isScrolledDown, setIsScrolledDown] = useState(false);
 
-  // Menu yang baru saja diketuk / dilepas (supaya pil langsung pindah sebelum
-  // navigasi selesai). Dibersihkan otomatis saat pathname berubah.
-  const [lock, setLock] = useState<{ index: number; path: string } | null>(
-    null,
-  );
-
-  // Lepas lock begitu navigasi selesai (pathname berubah). Dilakukan saat
-  // render (bukan di effect) supaya tidak memicu render berantai.
+  // Menu yang baru diketuk / dilepas (supaya menu langsung "aktif" sebelum
+  // navigasi selesai). Dilepas otomatis saat pathname berubah.
+  const [lock, setLock] = useState<number | null>(null);
   const [prevPathname, setPrevPathname] = useState(pathname);
 
   if (prevPathname !== pathname) {
     setPrevPathname(pathname);
-
     setLock(null);
+    setIsActionMenuOpen(false);
   }
 
-  // Indeks ikon yang sedang dilalui pil ketika drag berlangsung.
-  const [dragVisualIndex, setDragVisualIndex] = useState<number | null>(null);
+  // Refs
 
-  // Tracking refs
+  const actionMenuRef = useRef<HTMLDivElement>(null);
+  const plusButtonRef = useRef<HTMLButtonElement>(null);
+  const dockRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const itemRefs = useRef<(HTMLLIElement | null)[]>([]);
 
   const dragStartPos = useRef<{ x: number; y: number; time: number } | null>(
     null,
   );
-
-  const suppressNextClickRef = useRef(false);
-
   const plusPointerRef = useRef(false);
-
   const pointerXRef = useRef<number | null>(null);
-
   const lastSyncKeyRef = useRef<string | null>(null);
-
   const shrunkRef = useRef(false);
-
-  const offsetAnimRef = useRef<{ stop: () => void } | null>(null);
-
-  const shownRef = useRef(false);
-
-  // true setelah jari bergeser melewati DRAG_START_DISTANCE
   const isDraggingRef = useRef(false);
-
-  // true di awal drag: pil menyusul jari dengan spring, baru kemudian menempel
   const catchUpRef = useRef(false);
 
-  // Scroll listener (dengan hysteresis + throttle rAF)
+  const animRef = useRef<{ stop: () => void } | null>(null);
+  const targetRef = useRef(0);
+  const initializedRef = useRef(false);
+
+  // Scroll listener (hysteresis + throttle rAF)
 
   useEffect(() => {
     if (!isMounted) return;
@@ -318,7 +344,6 @@ export default function MobileBottomNavbar() {
     const update = () => {
       ticking = false;
 
-      // abaikan overscroll bounce (iOS) di atas / bawah halaman
       const maxY = Math.max(
         0,
         document.documentElement.scrollHeight - window.innerHeight,
@@ -332,7 +357,6 @@ export default function MobileBottomNavbar() {
       }
 
       if (shrunkRef.current) {
-        // sedang mengecil: ikuti titik terbawah, baru membesar jika naik cukup jauh
         if (y > anchorY) {
           anchorY = y;
         } else if (anchorY - y > SCROLL_THRESHOLD) {
@@ -340,7 +364,6 @@ export default function MobileBottomNavbar() {
           applyShrink(false);
         }
       } else if (y < anchorY) {
-        // sedang penuh: ikuti titik tertinggi, baru mengecil jika turun cukup jauh
         anchorY = y;
       } else if (y - anchorY > SCROLL_THRESHOLD) {
         anchorY = y;
@@ -364,227 +387,127 @@ export default function MobileBottomNavbar() {
 
   // Motion values
 
-  // Offset pil (px) dari posisi menu aktifnya. Posisi dasar pil dihitung CSS
-  // (persen dari lebar dock) sehingga selalu menempel pada ikon saat dock
-  // mengecil / membesar. Offset hanya dipakai untuk drag & animasi pindah menu.
-  const pillOffset = useMotionValue(0);
+  // Satu-satunya sumber posisi pil (satuan slot, bisa pecahan saat drag).
+  const pos = useMotionValue(0);
 
   const overdragVal = useMotionValue(0);
 
-  // Spring elastisitas dockbar saat ditarik melebihi batas
-
   const springOverdrag = useSpring(overdragVal, {
     stiffness: 320,
-
     damping: 20,
-
     mass: 0.8,
   });
 
-  // Translasi geser elastis dockbar saat pil ditarik melewati batas
-
   const dockTranslateX = useTransform(
     springOverdrag,
-
     [-100, 0, 100],
-
     [-2, 0, 2],
   );
-
-  // Skala peregangan dockbar saat ditarik
-
   const dockScaleX = useTransform(
     springOverdrag,
-
     [-100, 0, 100],
-
     [1.04, 1, 1.04],
   );
-
   const dockSkewX = useTransform(springOverdrag, [-100, 0, 100], [-2, 0, 2]);
 
-  // Navigation menu items
+  // Menu aktif
 
-  const navItems = useMemo<NavItem[]>(
-    () => [
-      { label: "Beranda", href: "/", isHome: true },
-
-      { label: "Dokter", href: "/dokter", icon: faUserDoctor },
-
-      {
-        label: "Tambah",
-
-        href: "#action-menu",
-
-        icon: faPlus,
-
-        isButton: true,
-      },
-
-      { label: "Jadwal", href: "/jadwal-dokter", icon: faCalendarDays },
-
-      { label: "Promo", href: "/promo", icon: faTicket },
-    ],
-
-    [],
-  );
-
-  const itemCount = navItems.length;
-
-  const activeIndex = useMemo(() => {
-    if (!isMounted) return 0;
-
-    const idx = navItems.findIndex(
+  const activeIndex = (() => {
+    const idx = NAV_ITEMS.findIndex(
       (item) => !item.isButton && isRouteActive(item.href, pathname),
     );
-
     return idx !== -1 ? idx : 0;
-  }, [pathname, navItems, isMounted]);
+  })();
 
-  // Menu yang sedang ditempati pil
-  const committedIndex = lock ? lock.index : activeIndex;
+  const committedIndex = lock ?? activeIndex;
 
   const shouldShrink = isScrolledDown && !isDragging;
-
-  const basePilWidth = shouldShrink ? 58 : 66;
-
-  const basePilHeight = shouldShrink ? 48 : 55;
-
+  const pillW = shouldShrink ? PILL_WIDTH_SHRUNK : PILL_WIDTH;
+  const pillH = shouldShrink ? PILL_HEIGHT_SHRUNK : PILL_HEIGHT;
   const dockHeight = shouldShrink ? DOCK_HEIGHT_SHRUNK : DOCK_HEIGHT;
-
   const dockRadius = dockHeight / 2;
 
-  // Posisi pil dihitung CSS: sama persis dengan rumus layout ikon
-  // (padding ICON_PAD + itemCount kolom sama lebar), jadi tidak ada lag
-  // saat lebar dock bertransisi.
-  const pillLeft = `calc(${ICON_PAD}px + (100% - ${ICON_PAD * 2}px) * ${
-    (committedIndex + 0.5) / itemCount
-  })`;
-
   // Di layar sempit pil tidak boleh lebih lebar dari kolomnya
-  const pillWidth = `min(${basePilWidth}px, calc((100% - ${
+  const pillWidth = `min(${pillW}px, calc((100% - ${
     ICON_PAD * 2
-  }px) / ${itemCount} - 2px))`;
+  }px) / ${ITEM_COUNT} - 2px))`;
 
-  // Helper geometri (satuan px, dihitung saat dibutuhkan saja)
+  // Terapkan posisi pil ke DOM: posisi pil + warna/skala tiap ikon.
+  // Dipanggil setiap nilai `pos` berubah (tanpa re-render React).
+  const applyPos = useCallback((raw: number) => {
+    const root = contentRef.current;
+    if (!root) return;
 
-  const getCenterX = useCallback(
-    (index: number, width: number) => {
-      const itemWidth = (width - ICON_PAD * 2) / itemCount;
+    // Klem agar overshoot spring tidak pernah keluar dari dock
+    const p = clamp(raw, 0, ITEM_COUNT - 1);
 
-      return ICON_PAD + index * itemWidth + itemWidth / 2;
-    },
+    root.style.setProperty("--pill-pos", p.toFixed(4));
 
-    [itemCount],
-  );
+    const items = itemRefs.current;
 
-  const getIndexFromX = useCallback(
-    (x: number, width: number) => {
-      const itemWidth = (width - ICON_PAD * 2) / itemCount;
+    for (let i = 0; i < items.length; i++) {
+      const el = items[i];
+      if (!el) continue;
 
-      return Math.max(
+      const a = clamp(
+        (ICON_FAR - Math.abs(p - i)) / (ICON_FAR - ICON_NEAR),
         0,
-
-        Math.min(itemCount - 1, Math.floor((x - ICON_PAD) / itemWidth)),
+        1,
       );
-    },
 
-    [itemCount],
-  );
-
-  const getBounds = useCallback(
-    (width: number, dragging: boolean) => {
-      const slot = (width - ICON_PAD * 2) / itemCount;
-
-      const pillW = Math.min(basePilWidth, slot - 2);
-
-      const effectiveHalfPil = (pillW * (dragging ? DRAG_SCALE : 1)) / 2;
-
-      return {
-        minX: INNER_MARGIN + effectiveHalfPil,
-
-        maxX: width - INNER_MARGIN - effectiveHalfPil,
-      };
-    },
-
-    [basePilWidth, itemCount],
-  );
-
-  // Klem presisi agar pil tidak menembus batas dockbar
-
-  const clampX = useCallback(
-    (x: number, width: number, dragging: boolean) => {
-      const { minX, maxX } = getBounds(width, dragging);
-
-      return Math.max(minX, Math.min(maxX, x));
-    },
-
-    [getBounds],
-  );
-
-  // Perhitungan overdrag untuk menggerakkan elastisitas dockbar
-
-  const getOverdragAmount = useCallback(
-    (x: number, width: number, dragging: boolean) => {
-      const { minX, maxX } = getBounds(width, dragging);
-
-      if (x < minX) return x - minX;
-
-      if (x > maxX) return x - maxX;
-
-      return 0;
-    },
-
-    [getBounds],
-  );
-
-  // Kembalikan pil (offset -> 0) ke menu yang sedang aktif
-  const springPillHome = useCallback(() => {
-    offsetAnimRef.current?.stop();
-
-    offsetAnimRef.current = animate(pillOffset, 0, PILL_SPRING);
-  }, [pillOffset]);
-
-  // Saat menu aktif berpindah (ketuk, lepas drag, atau route berubah):
-  // posisi dasar pil langsung pindah lewat CSS, offset di-rebase supaya pil
-  // tetap terlihat di tempat semula lalu meluncur membal ke posisi baru.
-  const committedIndexRef = useRef(committedIndex);
+      el.style.setProperty("--a", a.toFixed(3));
+      el.style.transform = `scale(${(1 - 0.08 * a).toFixed(3)})`;
+    }
+  }, []);
 
   useIsoLayoutEffect(() => {
-    const dock = dockRef.current;
+    if (!isMounted) return;
 
-    const prev = committedIndexRef.current;
+    applyPos(pos.get());
 
-    committedIndexRef.current = committedIndex;
+    return pos.on("change", applyPos);
+  }, [isMounted, pos, applyPos]);
 
-    // belum tampil -> tidak ada animasi awal
-    if (!dock) return;
+  // Animasikan pil ke menu tertentu dari posisinya saat ini
+  const moveTo = useCallback(
+    (index: number) => {
+      targetRef.current = index;
 
-    if (!shownRef.current) {
-      shownRef.current = true;
+      animRef.current?.stop();
 
+      if (reduceMotion) {
+        animRef.current = null;
+        pos.set(index);
+        return;
+      }
+
+      animRef.current = animate(pos, index, PILL_SPRING);
+    },
+    [pos, reduceMotion],
+  );
+
+  // Menu aktif berubah karena alasan lain (tombol back, link lain, dll.)
+  useIsoLayoutEffect(() => {
+    if (!isMounted) return;
+
+    // Tampil pertama kali: langsung di posisi aktif, tanpa animasi
+    if (!initializedRef.current) {
+      initializedRef.current = true;
+      targetRef.current = committedIndex;
+      pos.set(committedIndex);
       return;
     }
 
-    if (prev === committedIndex) return;
+    if (isDraggingRef.current) return;
 
-    const width = dock.offsetWidth;
+    if (targetRef.current !== committedIndex) {
+      moveTo(committedIndex);
+    }
+  }, [isMounted, committedIndex, moveTo, pos]);
 
-    if (!width) return;
-
-    offsetAnimRef.current?.stop();
-
-    const visualX = getCenterX(prev, width) + pillOffset.get();
-
-    pillOffset.set(visualX - getCenterX(committedIndex, width));
-
-    offsetAnimRef.current = animate(pillOffset, 0, PILL_SPRING);
-  }, [isMounted, committedIndex, getCenterX, pillOffset]);
-
-  // Hentikan animasi saat unmount
   useEffect(() => {
     return () => {
-      offsetAnimRef.current?.stop();
+      animRef.current?.stop();
     };
   }, []);
 
@@ -593,62 +516,38 @@ export default function MobileBottomNavbar() {
   // sedang membesar karena transisi lebar).
   const syncDragPill = useCallback(() => {
     const dock = dockRef.current;
-
     const pointerX = pointerXRef.current;
 
     if (!dock || pointerX === null) return;
 
     const rect = dock.getBoundingClientRect();
-
     const key = `${pointerX}|${rect.left}|${rect.width}`;
 
     if (key === lastSyncKeyRef.current) return;
-
     lastSyncKeyRef.current = key;
 
     const realWidth = dock.offsetWidth || rect.width;
-
     if (!realWidth) return;
 
     const scaleFactor = rect.width / realWidth || 1;
-
     const mouseX = (pointerX - rect.left) / scaleFactor;
 
-    // Klem posisi pil dalam batas piksel riil
+    const target = xToPos(clampX(mouseX, realWidth, true), realWidth);
 
-    const target =
-      clampX(mouseX, realWidth, true) -
-      getCenterX(committedIndexRef.current, realWidth);
-
-    if (catchUpRef.current && Math.abs(target - pillOffset.get()) > 1.5) {
+    if (catchUpRef.current && Math.abs(target - pos.get()) > CATCHUP_EPS) {
       // awal drag: pil meluncur cepat ke bawah jari (tidak melompat)
-      offsetAnimRef.current?.stop();
-
-      offsetAnimRef.current = animate(pillOffset, target, DRAG_CATCHUP_SPRING);
+      animRef.current?.stop();
+      animRef.current = animate(pos, target, DRAG_CATCHUP_SPRING);
     } else {
       catchUpRef.current = false;
-
-      offsetAnimRef.current?.stop();
-
-      offsetAnimRef.current = null;
-
-      pillOffset.set(target);
+      animRef.current?.stop();
+      animRef.current = null;
+      pos.set(target);
     }
 
     // Tarik dockbar secara elastis saat melebihi batas
-
     overdragVal.set(getOverdragAmount(mouseX, realWidth, true));
-
-    // Perbarui warna ikon secara realtime mengikuti posisi pil.
-    setDragVisualIndex(getIndexFromX(mouseX, realWidth));
-  }, [
-    clampX,
-    getCenterX,
-    getIndexFromX,
-    getOverdragAmount,
-    overdragVal,
-    pillOffset,
-  ]);
+  }, [overdragVal, pos]);
 
   useEffect(() => {
     if (!isDragging) return;
@@ -657,7 +556,6 @@ export default function MobileBottomNavbar() {
 
     const tick = () => {
       syncDragPill();
-
       rafId = window.requestAnimationFrame(tick);
     };
 
@@ -668,41 +566,54 @@ export default function MobileBottomNavbar() {
     };
   }, [isDragging, syncDragPill]);
 
-  // Drag baru dimulai setelah jari bergeser cukup jauh, bukan saat menyentuh
   const startDrag = () => {
     isDraggingRef.current = true;
-
     catchUpRef.current = true;
-
     lastSyncKeyRef.current = null;
 
-    offsetAnimRef.current?.stop();
-
-    offsetAnimRef.current = null;
+    animRef.current?.stop();
+    animRef.current = null;
 
     setIsDragging(true);
   };
 
   const endDrag = () => {
     isDraggingRef.current = false;
-
     catchUpRef.current = false;
-
     pointerXRef.current = null;
 
     setIsDragging(false);
-
-    setDragVisualIndex(null);
   };
 
-  // Pointer event handlers dengan elastisitas drag
+  // Navigasi ke menu (satu pintu untuk ketuk, lepas drag, dan keyboard)
+  const goTo = (index: number, scrollIfSame: boolean) => {
+    const item = NAV_ITEMS[index];
 
-  const handlePointerDown = (e: React.PointerEvent) => {
-    const target = e.target as HTMLElement;
+    if (item.isButton) return;
 
-    if (target.closest("[data-plus-button]")) {
+    if (item.href === pathname) {
+      // Halaman yang sama: pil kembali ke menu aktif, ketuk cepat -> ke atas
+      setLock(null);
+      moveTo(index);
+
+      if (scrollIfSame) {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
       return;
     }
+
+    setLock(index);
+    moveTo(index);
+    router.push(item.href);
+  };
+
+  // Pointer handlers
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement;
+
+    if (target.closest("[data-plus-button]")) return;
 
     if (dockRef.current) {
       e.currentTarget.setPointerCapture(e.pointerId);
@@ -710,20 +621,18 @@ export default function MobileBottomNavbar() {
 
     dragStartPos.current = {
       x: e.clientX,
-
       y: e.clientY,
-
       time: Date.now(),
     };
 
     pointerXRef.current = e.clientX;
-
     isDraggingRef.current = false;
   };
 
-  const handlePointerMove = (e: React.PointerEvent) => {
-    if (plusPointerRef.current || !dragStartPos.current || !dockRef.current)
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (plusPointerRef.current || !dragStartPos.current || !dockRef.current) {
       return;
+    }
 
     pointerXRef.current = e.clientX;
 
@@ -739,85 +648,51 @@ export default function MobileBottomNavbar() {
     syncDragPill();
   };
 
-  const handlePointerUp = (e: React.PointerEvent) => {
-    if (plusPointerRef.current) {
-      return;
-    }
+  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (plusPointerRef.current) return;
 
     if (e.currentTarget.hasPointerCapture(e.pointerId)) {
       e.currentTarget.releasePointerCapture(e.pointerId);
     }
 
-    endDrag();
-
-    if (!dockRef.current || !dragStartPos.current) {
-      dragStartPos.current = null;
-
-      return;
-    }
-
-    const duration = Date.now() - dragStartPos.current.time;
-
-    const deltaX = Math.abs(e.clientX - dragStartPos.current.x);
-
-    const deltaY = Math.abs(e.clientY - dragStartPos.current.y);
-
-    const isQuickTap = duration < 180 && deltaX < 8 && deltaY < 8;
+    const start = dragStartPos.current;
+    const dock = dockRef.current;
 
     dragStartPos.current = null;
 
-    const rect = dockRef.current.getBoundingClientRect();
-
-    const realWidth = dockRef.current.offsetWidth || rect.width;
-
-    const scaleFactor = rect.width / realWidth || 1;
-
-    const currentX = clampX(
-      (e.clientX - rect.left) / scaleFactor,
-
-      realWidth,
-
-      false,
-    );
-
-    const targetIndex = getIndexFromX(currentX, realWidth);
-
-    const item = navItems[targetIndex];
-
-    if (item.isButton) {
-      // Dilepas di atas tombol plus: buka/tutup menu, pil kembali ke menu aktif
-      springPillHome();
-
-      setIsActionMenuOpen((prev) => !prev);
-    } else if (item.href) {
-      setLock({ index: targetIndex, path: pathname });
-
-      // menu tidak berubah -> tidak ada rebase, cukup kembalikan pil ke tempatnya
-      if (targetIndex === committedIndex) {
-        springPillHome();
-      }
-
-      if (!isQuickTap) {
-        suppressNextClickRef.current = true;
-      }
-
-      router.push(item.href);
-    }
-
-    // Kembalikan efek overdrag elastis dockbar secara membal
-
+    endDrag();
     overdragVal.set(0);
 
-    window.setTimeout(() => {
-      suppressNextClickRef.current = false;
-    }, 50);
+    if (!dock || !start) {
+      moveTo(committedIndex);
+      return;
+    }
+
+    const rect = dock.getBoundingClientRect();
+    const realWidth = dock.offsetWidth || rect.width;
+    const scaleFactor = rect.width / realWidth || 1;
+
+    const x = clampX((e.clientX - rect.left) / scaleFactor, realWidth, false);
+    const targetIndex = getIndexFromX(x, realWidth);
+
+    const isQuickTap =
+      Date.now() - start.time < 180 &&
+      Math.abs(e.clientX - start.x) < 8 &&
+      Math.abs(e.clientY - start.y) < 8;
+
+    if (NAV_ITEMS[targetIndex].isButton) {
+      // Dilepas di atas tombol plus: buka/tutup menu, pil kembali ke menu aktif
+      moveTo(committedIndex);
+      setIsActionMenuOpen((prev) => !prev);
+      return;
+    }
+
+    goTo(targetIndex, isQuickTap);
   };
 
   // Gesture dibatalkan (mis. diambil alih browser): jangan navigasi
-  const handlePointerCancel = (e: React.PointerEvent) => {
-    if (plusPointerRef.current) {
-      return;
-    }
+  const handlePointerCancel = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (plusPointerRef.current) return;
 
     if (e.currentTarget.hasPointerCapture(e.pointerId)) {
       e.currentTarget.releasePointerCapture(e.pointerId);
@@ -826,30 +701,18 @@ export default function MobileBottomNavbar() {
     dragStartPos.current = null;
 
     endDrag();
-
     overdragVal.set(0);
-
-    springPillHome();
+    moveTo(committedIndex);
   };
 
-  // Indeks yang terlihat aktif (ikon putih + skala kecil)
-  const visualIndex =
-    isDragging && dragVisualIndex !== null ? dragVisualIndex : committedIndex;
+  // Tutup menu aksi saat klik di luar
 
-  // Outside click listener
+  const handleOutsideClick = useCallback((event: PointerEvent) => {
+    const target = event.target as Node;
 
-  const handleOutsideClick = useCallback((event: MouseEvent) => {
-    if (
-      plusButtonRef.current &&
-      plusButtonRef.current.contains(event.target as Node)
-    ) {
-      return;
-    }
+    if (plusButtonRef.current?.contains(target)) return;
 
-    if (
-      actionMenuRef.current &&
-      !actionMenuRef.current.contains(event.target as Node)
-    ) {
+    if (actionMenuRef.current && !actionMenuRef.current.contains(target)) {
       setIsActionMenuOpen(false);
     }
   }, []);
@@ -857,31 +720,32 @@ export default function MobileBottomNavbar() {
   useEffect(() => {
     if (!isActionMenuOpen) return;
 
-    document.addEventListener("mousedown", handleOutsideClick);
+    document.addEventListener("pointerdown", handleOutsideClick);
 
     return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
+      document.removeEventListener("pointerdown", handleOutsideClick);
     };
   }, [isActionMenuOpen, handleOutsideClick]);
 
   if (!isMounted) return null;
 
+  const menuButtonClass =
+    "flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-black outline-none transition-colors hover:bg-black/5 active:bg-black/10";
+
   return (
     <>
-      {/* Booking Modal */}
-
       <BookingModalFloating
         isOpen={isBookingOpen}
         onClose={() => setIsBookingOpen(false)}
       />
 
       <div className="relative min-h-0 w-full">
-        <div className="fixed inset-x-0 bottom-0 z-[99] flex flex-col items-center justify-end pb-6 pointer-events-none">
+        <div className="pointer-events-none fixed inset-x-0 bottom-0 z-[99] flex flex-col items-center justify-end pb-6">
           <nav
             aria-label="Navigasi Bawah Seluler"
-            className="flex w-full flex-col items-center px-4 select-none lg:hidden"
+            className="flex w-full select-none flex-col items-center px-4 lg:hidden"
           >
-            {/* Action Menu: naik dari bawah dengan halus (tanpa efek genie) */}
+            {/* Action menu: naik dari bawah dengan halus */}
 
             <AnimatePresence>
               {isActionMenuOpen && (
@@ -902,83 +766,55 @@ export default function MobileBottomNavbar() {
                   style={{ willChange: "transform, opacity" }}
                   className="pointer-events-auto relative mb-3.5 flex w-[230px] flex-col rounded-3xl p-2"
                 >
-                  {/* Menu shadow */}
-
                   <div
                     aria-hidden="true"
                     className="pointer-events-none absolute inset-0 z-0"
                     style={{
                       borderRadius: MENU_GLASS_RADIUS,
-
                       boxShadow: GLASS_SHADOW,
                     }}
                   />
 
-                  {/* Menu glass */}
-
                   <GlassLayer radius={MENU_GLASS_RADIUS} />
 
-                  {/* Menu content */}
-
                   <div className="relative z-10 flex w-full flex-col">
-                    {/* Button: Booking */}
-
                     <button
                       type="button"
                       onClick={() => {
                         setIsActionMenuOpen(false);
-
                         setIsBookingOpen(true);
                       }}
-                      className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-black outline-none transition-colors hover:bg-black/5 active:bg-black/10"
+                      className={menuButtonClass}
                     >
-                      <FontAwesomeIcon
-                        icon={faCalendarCheck}
-                        className="h-[20px] w-[20px]"
-                      />
-
+                      <MenuIcon name="note" />
                       <span>Buat Janji Temu</span>
                     </button>
 
                     <div className="my-1 h-px w-full bg-black/10" />
 
-                    {/* Button: Kamar Perawatan */}
-
                     <button
                       type="button"
                       onClick={() => {
                         setIsActionMenuOpen(false);
-
                         router.push("/services/kamar-perawatan");
                       }}
-                      className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-black outline-none transition-colors hover:bg-black/5 active:bg-black/10"
+                      className={menuButtonClass}
                     >
-                      <FontAwesomeIcon
-                        icon={faProcedures}
-                        className="h-[20px] w-[20px]"
-                      />
-
+                      <MenuIcon name="bed" />
                       <span>Kamar Perawatan</span>
                     </button>
 
                     <div className="my-1 h-px w-full bg-black/10" />
 
-                    {/* Button: Ketersediaan Kamar */}
-
                     <button
                       type="button"
                       onClick={() => {
                         setIsActionMenuOpen(false);
-
                         router.push("/ketersediaan-kamar");
                       }}
-                      className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-black outline-none transition-colors hover:bg-black/5 active:bg-black/10"
+                      className={menuButtonClass}
                     >
-                      <FontAwesomeIcon
-                        icon={faBed}
-                        className="h-[20px] w-[20px]"
-                      />
-
+                      <MenuIcon name="bed" />
                       <span>Ketersediaan Kamar</span>
                     </button>
                   </div>
@@ -986,7 +822,7 @@ export default function MobileBottomNavbar() {
               )}
             </AnimatePresence>
 
-            {/* Dock Container dengan animasi elastisitas saat overdrag */}
+            {/* Dock dengan elastisitas saat overdrag */}
 
             <motion.div
               ref={dockRef}
@@ -995,235 +831,161 @@ export default function MobileBottomNavbar() {
               onPointerUp={handlePointerUp}
               onPointerCancel={handlePointerCancel}
               onContextMenu={(e) => e.preventDefault()}
-              className="pointer-events-auto relative flex max-w-[390px] items-center touch-none cursor-grab active:cursor-grabbing select-none"
+              className="pointer-events-auto relative flex max-w-[390px] cursor-grab touch-none select-none items-center active:cursor-grabbing"
               style={{
                 width: shouldShrink ? DOCK_WIDTH_SHRUNK : "100%",
-
                 height: dockHeight,
-
                 borderRadius: dockRadius,
-
                 x: dockTranslateX,
-
                 scaleX: dockScaleX,
-
                 skewX: dockSkewX,
-
                 transition: `width ${SHRINK_MS}ms ${SHRINK_EASE}, height ${SHRINK_MS}ms ${SHRINK_EASE}, border-radius ${SHRINK_MS}ms ${SHRINK_EASE}`,
-
                 backgroundColor: "transparent",
-
                 border: "none",
-
                 boxShadow: "none",
-
                 WebkitTouchCallout: "none",
-
                 WebkitUserSelect: "none",
               }}
             >
-              {/* Dock shadow */}
-
               <div
                 aria-hidden="true"
                 className="pointer-events-none absolute inset-0 z-0"
                 style={{
                   borderRadius: dockRadius,
-
                   boxShadow: GLASS_SHADOW,
-
                   transition: `border-radius ${SHRINK_MS}ms ${SHRINK_EASE}`,
                 }}
               />
-
-              {/* Dock glass */}
 
               <GlassLayer
                 radius={dockRadius}
                 radiusTransition={`border-radius ${SHRINK_MS}ms ${SHRINK_EASE}`}
               />
 
-              {/* Dock content */}
+              {/* Konten dock. Variabel --pill-pos diisi dari `pos` (applyPos). */}
 
-              <div className="absolute inset-0 z-10">
-                {/* Active pill
-                    - luar (CSS murni): posisi persen + ukuran bertransisi dengan
-                      durasi & easing yang SAMA dengan dock -> menempel pada ikon
-                    - dalam (framer): offset drag / pindah menu + skala saat drag */}
+              <div ref={contentRef} className="absolute inset-0 z-10">
+                {/* Pil aktif: left = persen lebar dock (CSS), ukuran bertransisi
+                    dengan durasi & easing yang sama dengan dock. */}
 
                 <div
                   aria-hidden="true"
                   className="pointer-events-none absolute top-1/2 z-10"
                   style={{
-                    left: pillLeft,
-
+                    left: PILL_LEFT,
                     width: pillWidth,
-
-                    height: basePilHeight,
-
+                    height: pillH,
                     transform: "translate(-50%, -50%)",
-
                     transition: `width ${SHRINK_MS}ms ${SHRINK_EASE}, height ${SHRINK_MS}ms ${SHRINK_EASE}`,
                   }}
                 >
                   <motion.div
                     className="h-full w-full rounded-full"
                     animate={{ scale: isDragging ? DRAG_SCALE : 1 }}
-                    transition={{
-                      type: "spring",
-
-                      stiffness: 400,
-
-                      damping: 25,
-                    }}
-                    style={{
-                      x: pillOffset,
-
-                      backgroundColor: PILL_COLOR,
-                    }}
+                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                    style={{ backgroundColor: PILL_COLOR }}
                   />
                 </div>
-
-                {/* Nav items */}
 
                 <menu
                   className="relative z-20 m-0 box-border flex h-full w-full list-none items-center justify-between p-0"
                   style={{ paddingInline: ICON_PAD }}
                 >
-                  {navItems.map((item, i) => {
-                    const isActive = i === visualIndex;
+                  {NAV_ITEMS.map((item, i) => (
+                    <li
+                      key={item.href}
+                      ref={(el) => {
+                        itemRefs.current[i] = el;
+                      }}
+                      className="flex h-full flex-1 items-center justify-center"
+                    >
+                      {item.isButton ? (
+                        <button
+                          ref={plusButtonRef}
+                          type="button"
+                          aria-label={
+                            isActionMenuOpen
+                              ? "Tutup menu aksi tambahan"
+                              : "Buka menu aksi tambahan"
+                          }
+                          aria-expanded={isActionMenuOpen}
+                          data-no-drag
+                          data-plus-button
+                          onPointerDown={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            plusPointerRef.current = true;
+                            setIsActionMenuOpen((prev) => !prev);
+                          }}
+                          onPointerMove={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }}
+                          onPointerUp={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            plusPointerRef.current = false;
+                          }}
+                          onPointerCancel={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            plusPointerRef.current = false;
+                          }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }}
+                          className="flex h-12 w-12 select-none items-center justify-center rounded-full outline-none"
+                          style={{
+                            WebkitTapHighlightColor: "transparent",
+                            touchAction: "none",
+                            WebkitTouchCallout: "none",
+                          }}
+                        >
+                          <FontAwesomeIcon
+                            icon={faPlus}
+                            className="pointer-events-none text-[24px] text-black"
+                            style={{
+                              filter: ICON_FILTER,
+                              transform: isActionMenuOpen
+                                ? "rotate(45deg)"
+                                : "rotate(0deg)",
+                              transition: "transform 200ms ease",
+                            }}
+                          />
+                        </button>
+                      ) : (
+                        <Link
+                          href={item.href}
+                          aria-label={item.label}
+                          aria-current={
+                            i === committedIndex ? "page" : undefined
+                          }
+                          data-no-drag
+                          draggable={false}
+                          onContextMenu={(e) => e.preventDefault()}
+                          onClick={(e) => {
+                            // Navigasi pointer sudah ditangani handlePointerUp.
+                            // Klik dari keyboard (Enter/Spasi) punya detail === 0.
+                            e.preventDefault();
 
-                    const localScale = isActive ? 0.92 : 1;
-
-                    return (
-                      <li
-                        key={item.href || i}
-                        className="flex h-full flex-1 items-center justify-center transition-transform duration-100 ease-out"
-                        style={{
-                          transform: `scale(${localScale})`,
-                        }}
-                      >
-                        {item.isButton ? (
-                          /* Plus button */
-
-                          <button
-                            ref={plusButtonRef}
-                            type="button"
-                            aria-label={
-                              isActionMenuOpen
-                                ? "Tutup menu aksi tambahan"
-                                : "Buka menu aksi tambahan"
+                            if (e.detail === 0) {
+                              goTo(i, true);
                             }
-                            aria-expanded={isActionMenuOpen}
-                            data-no-drag
-                            data-plus-button
-                            onPointerDown={(e) => {
-                              e.preventDefault();
-
-                              e.stopPropagation();
-
-                              plusPointerRef.current = true;
-
-                              setIsActionMenuOpen((prev) => !prev);
-                            }}
-                            onPointerMove={(e) => {
-                              e.preventDefault();
-
-                              e.stopPropagation();
-                            }}
-                            onPointerUp={(e) => {
-                              e.preventDefault();
-
-                              e.stopPropagation();
-
-                              plusPointerRef.current = false;
-                            }}
-                            onPointerCancel={(e) => {
-                              e.preventDefault();
-
-                              e.stopPropagation();
-
-                              plusPointerRef.current = false;
-                            }}
-                            onClick={(e) => {
-                              e.preventDefault();
-
-                              e.stopPropagation();
-                            }}
-                            className="flex h-12 w-12 select-none items-center justify-center rounded-full outline-none"
-                            style={{
-                              WebkitTapHighlightColor: "transparent",
-
-                              touchAction: "none",
-
-                              WebkitTouchCallout: "none",
-                            }}
-                          >
-                            <FontAwesomeIcon
-                              icon={faPlus}
-                              className="pointer-events-none text-[24px]"
-                              style={{
-                                color: isActive ? "#FFFFFF" : "#000000",
-
-                                transform: isActionMenuOpen
-                                  ? "rotate(45deg)"
-                                  : "rotate(0deg)",
-
-                                transition:
-                                  "color 120ms linear, transform 200ms ease",
-                              }}
-                            />
-                          </button>
-                        ) : (
-                          /* Nav link */
-
-                          <Link
-                            href={item.href || "#"}
-                            aria-label={item.label}
-                            data-no-drag
-                            onContextMenu={(e) => e.preventDefault()}
-                            onClick={(e) => {
-                              e.preventDefault();
-
-                              if (suppressNextClickRef.current) {
-                                suppressNextClickRef.current = false;
-
-                                return;
-                              }
-
-                              if (pathname === item.href) {
-                                setLock(null);
-
-                                window.scrollTo({
-                                  top: 0,
-
-                                  behavior: "smooth",
-                                });
-                              } else if (item.href) {
-                                setLock({ index: i, path: pathname });
-
-                                router.push(item.href);
-                              }
-
-                              e.stopPropagation();
-                            }}
-                            className="flex h-12 w-12 select-none items-center justify-center rounded-full outline-none"
-                            style={{
-                              WebkitTapHighlightColor: "transparent",
-
-                              touchAction: "none",
-
-                              WebkitTouchCallout: "none",
-
-                              WebkitUserSelect: "none",
-                            }}
-                          >
-                            <NavIcon item={item} isActive={isActive} />
-                          </Link>
-                        )}
-                      </li>
-                    );
-                  })}
+                          }}
+                          className="flex h-12 w-12 select-none items-center justify-center rounded-full outline-none"
+                          style={{
+                            WebkitTapHighlightColor: "transparent",
+                            touchAction: "none",
+                            WebkitTouchCallout: "none",
+                            WebkitUserSelect: "none",
+                          }}
+                        >
+                          <NavIcon item={item} />
+                        </Link>
+                      )}
+                    </li>
+                  ))}
                 </menu>
               </div>
             </motion.div>
