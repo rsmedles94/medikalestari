@@ -14,6 +14,7 @@ import {
   animate,
   useInView,
   useReducedMotion,
+  type Variants,
 } from "framer-motion";
 
 interface KisahItem {
@@ -27,12 +28,26 @@ interface KisahItem {
   href: string;
 }
 
-// jeda antar kartu untuk animasi bintang (kartu sendiri tidak dianimasikan)
+// jeda antar kartu saat muncul (bintang menyusul setelah kartunya muncul)
 const CARD_STAGGER = 0.08;
 
 // warna bintang rating: kosong (abu-abu) dan terisi (oranye)
 const STAR_EMPTY = "#E2E8F0";
 const STAR_FILLED = "#F59E0B";
+
+const REVEAL_EASE = [0.22, 1, 0.36, 1] as const;
+const REVEAL_VIEWPORT = { once: true, margin: "-80px" } as const;
+
+// kartu naik sambil membesar tipis, berurutan dari kiri ke kanan
+const cardVariants: Variants = {
+  hidden: { opacity: 0, y: 40, scale: 0.96 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.7, delay: i * CARD_STAGGER, ease: REVEAL_EASE },
+  }),
+};
 
 // membaca ukuran layar (mobile < 768px) langsung dari browser lewat
 // useSyncExternalStore: server selalu memakai nilai awal desktop (false) sehingga
@@ -51,13 +66,21 @@ const ServiceSection = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
 
-  // animasi bintang dimulai saat slider terlihat di layar (sekali saja)
+  // kartu dan bintang mulai beranimasi saat slider terlihat di layar (sekali saja)
   const isInView = useInView(containerRef, {
     once: true,
     margin: "0px 0px -100px 0px",
   });
   const reduceMotion = useReducedMotion();
   const showStars = isInView || !!reduceMotion;
+
+  // animasi muncul untuk elemen di luar slider (header dan navigasi)
+  const reveal = (delay = 0, y = 28) => ({
+    initial: reduceMotion ? (false as const) : { opacity: 0, y },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: REVEAL_VIEWPORT,
+    transition: { duration: 0.7, delay, ease: REVEAL_EASE },
+  });
 
   const ulasanData: KisahItem[] = [
     {
@@ -217,10 +240,11 @@ const ServiceSection = () => {
     }
   };
 
-  // bintang rating: placeholder abu-abu lalu terisi oranye satu per satu
+  // bintang rating: placeholder abu-abu lalu terisi oranye satu per satu,
+  // dimulai setelah kartunya selesai muncul
   // (hanya bintang sesuai nilai rating yang berubah warna)
   const renderStars = (rating: number, cardIndex: number) => {
-    const starsBaseDelay = cardIndex * CARD_STAGGER + 0.2;
+    const starsBaseDelay = cardIndex * CARD_STAGGER + 0.5;
 
     return Array.from({ length: 5 }).map((_, index) => (
       <motion.svg
@@ -250,13 +274,19 @@ const ServiceSection = () => {
         {/* Header Seksi */}
         <header className="px-4 md:px-8 mb-12 flex items-end justify-center w-full gap-4">
           <div className="text-center min-w-0">
-            <h2 className="text-3xl md:text-4xl font-bold text-white tracking-wide mb-3">
+            <motion.h2
+              {...reveal(0)}
+              className="text-3xl md:text-4xl font-bold text-white tracking-wide mb-3"
+            >
               Ulasan Pasien
-            </h2>
-            <p className="text-sm md:text-base text-white leading-relaxed">
+            </motion.h2>
+            <motion.p
+              {...reveal(0.12)}
+              className="text-sm md:text-base text-white leading-relaxed"
+            >
               Apa kata mereka yang telah merasakan langsung pelayanan dan
               fasilitas medis di Rumah Sakit Medika Lestari?
-            </p>
+            </motion.p>
           </div>
         </header>
 
@@ -276,8 +306,12 @@ const ServiceSection = () => {
             onDragEnd={handleDragEnd}
           >
             {ulasanData.map((item, index) => (
-              <article
+              <motion.article
                 key={item.id}
+                variants={cardVariants}
+                custom={index}
+                initial={reduceMotion ? false : "hidden"}
+                animate={showStars ? "visible" : "hidden"}
                 onClick={() => handleCardClick(item.href)}
                 className="w-[280px] md:w-[360px] h-[380px] flex-shrink-0 flex flex-col justify-between bg-white rounded-md p-6 shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer text-left select-none"
               >
@@ -327,13 +361,16 @@ const ServiceSection = () => {
                     → Selengkapnya
                   </span>
                 </div>
-              </article>
+              </motion.article>
             ))}
           </motion.div>
         </div>
 
         {/* Navigasi / Kontrol */}
-        <footer className="px-4 md:px-8 mt-12 flex items-center justify-between md:justify-start md:gap-8">
+        <motion.footer
+          {...reveal(0.1, 20)}
+          className="px-4 md:px-8 mt-12 flex items-center justify-between md:justify-start md:gap-8"
+        >
           {/* Indikator Dot Navigasi */}
           <nav
             aria-label="Navigasi Ulasan"
@@ -391,7 +428,7 @@ const ServiceSection = () => {
           >
             <span className="text-base">→</span> Lihat ulasan lainnya
           </button>
-        </footer>
+        </motion.footer>
       </div>
     </section>
   );

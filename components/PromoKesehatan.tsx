@@ -2,7 +2,13 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { motion, animate, useInView, useReducedMotion } from "framer-motion";
+import {
+  motion,
+  animate,
+  useInView,
+  useReducedMotion,
+  type Variants,
+} from "framer-motion";
 import Link from "next/link";
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
@@ -277,6 +283,42 @@ const STATS_DATA = [
 const formatNumber = (n: number) =>
   n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
+const REVEAL_EASE = [0.22, 1, 0.36, 1] as const;
+const REVEAL_VIEWPORT = { once: true, margin: "-80px" } as const;
+
+// ==========================================
+// COMPONENT REVEAL (MUNCUL SAAT DI-SCROLL, SEKALI SAJA)
+// ==========================================
+interface RevealProps {
+  children: React.ReactNode;
+  className?: string;
+  delay?: number;
+  x?: number;
+  y?: number;
+}
+
+function Reveal({
+  children,
+  className,
+  delay = 0,
+  x = 0,
+  y = 28,
+}: RevealProps) {
+  const reduceMotion = useReducedMotion();
+
+  return (
+    <motion.div
+      className={className}
+      initial={reduceMotion ? false : { opacity: 0, x, y }}
+      whileInView={{ opacity: 1, x: 0, y: 0 }}
+      viewport={REVEAL_VIEWPORT}
+      transition={{ duration: 0.7, delay, ease: REVEAL_EASE }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
 // ==========================================
 // COMPONENT ANGKA MENGHITUNG (COUNT UP)
 // ==========================================
@@ -334,45 +376,93 @@ interface AwardLogoBoxProps {
   instant: boolean;
 }
 
-// tile putih terbuka dari kiri ke kanan (wipe), berurutan secara diagonal
-// per baris + kolom; logo muncul menyusul setelah tile terbuka
-const WIPE_CLOSED = "inset(0 100% 0 0)";
-const WIPE_OPEN = "inset(0 0% 0 0)";
-const WIPE_EASE = [0.22, 1, 0.36, 1] as const;
+// Kotak muncul berurutan secara diagonal (kiri atas ke kanan bawah):
+// naik dari bawah sambil membesar dengan pegas halus dan blur yang memudar,
+// lalu logo muncul menyusul dan kilau tipis menyapu kotak satu kali.
+const tileVariants: Variants = {
+  hidden: { opacity: 0, y: 32, scale: 0.8, filter: "blur(8px)" },
+  visible: (delay: number) => ({
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    filter: "blur(0px)",
+    transition: {
+      y: { type: "spring", stiffness: 200, damping: 18, mass: 0.9, delay },
+      scale: { type: "spring", stiffness: 200, damping: 18, mass: 0.9, delay },
+      opacity: { duration: 0.5, delay },
+      filter: { duration: 0.6, delay },
+    },
+  }),
+};
 
 function AwardLogoBox({ award, index, show, instant }: AwardLogoBoxProps) {
   // grid 3 kolom: gelombang bergerak diagonal dari kiri atas ke kanan bawah
   const row = Math.floor(index / 3);
   const col = index % 3;
-  const delay = (row + col) * 0.12;
+  const delay = (row + col) * 0.09;
 
   return (
-    // drop-shadow di pembungkus agar bayangan ikut area yang sudah terbuka
-    <div className="aspect-[4/3] drop-shadow-sm">
+    // drop-shadow di pembungkus agar bayangan ikut bentuk kotak yang sedang beranimasi
+    <div className="aspect-[4/3] drop-shadow-sm transition-[filter] duration-300 hover:drop-shadow-lg">
       <motion.div
-        className="bg-white p-2 w-full h-full flex items-center justify-center"
-        initial={instant ? false : { clipPath: WIPE_CLOSED }}
-        animate={{ clipPath: show ? WIPE_OPEN : WIPE_CLOSED }}
-        transition={{ duration: 1, delay, ease: WIPE_EASE }}
+        className="relative w-full h-full overflow-hidden bg-white p-2 flex items-center justify-center"
+        variants={tileVariants}
+        custom={delay}
+        initial={instant ? false : "hidden"}
+        animate={show ? "visible" : "hidden"}
+        whileHover={instant ? undefined : { y: -4, scale: 1.03 }}
       >
         <motion.div
           className="relative w-full h-full"
-          initial={instant ? false : { opacity: 0 }}
-          animate={{ opacity: show ? 1 : 0 }}
-          transition={{ duration: 0.7, delay: delay + 0.5, ease: "easeOut" }}
+          initial={instant ? false : { opacity: 0, scale: 0.85 }}
+          animate={
+            show ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.85 }
+          }
+          transition={{
+            duration: 0.6,
+            delay: delay + 0.25,
+            ease: REVEAL_EASE,
+          }}
         >
           <Image
             src={award.src}
             alt={award.alt}
             fill
-            sizes="100vw"
+            sizes="(min-width: 1024px) 15vw, 30vw"
             className="object-contain"
           />
         </motion.div>
+
+        {!instant && (
+          <motion.span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 -skew-x-12 bg-gradient-to-r from-transparent via-[#3D8ECB]/25 to-transparent"
+            initial={{ x: "0%" }}
+            animate={{ x: show ? "400%" : "0%" }}
+            transition={{
+              duration: 1.1,
+              delay: show ? delay + 0.4 : 0,
+              ease: "easeInOut",
+            }}
+          />
+        )}
       </motion.div>
     </div>
   );
 }
+
+// ==========================================
+// VARIAN KARTU PROMO (MUNCUL BERURUTAN)
+// ==========================================
+const promoCardVariants: Variants = {
+  hidden: { opacity: 0, y: 36, scale: 0.96 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.7, delay: (i % 4) * 0.1, ease: REVEAL_EASE },
+  }),
+};
 
 // ==========================================
 // HITUNG DOT LANGSUNG DARI SLIDER (NATIVE)
@@ -417,6 +507,14 @@ const PromoKesehatan = () => {
   const [seenAwardPages, setSeenAwardPages] = useState<number[]>([0]);
   const showAwardPage = (page: number) =>
     !!reduceMotion || (isAwardsInView && seenAwardPages.includes(page));
+
+  // Animasi muncul kartu promo: mulai saat area slider terlihat di layar
+  // dan slider sudah siap
+  const promoWrapperRef = useRef<HTMLDivElement>(null);
+  const isPromoInView = useInView(promoWrapperRef, {
+    once: true,
+    margin: "0px 0px -80px 0px",
+  });
 
   // 1. REKANAN SLIDER (3x3 grid per halaman)
   const [awardSliderRef, awardSliderInstance] = useKeenSlider<HTMLDivElement>({
@@ -486,6 +584,9 @@ const PromoKesehatan = () => {
   // Hanya ada SATU skeleton (PromoCardSkeleton), tidak ada skeleton di dalam slider.
   const showPromoSkeleton = isLoading || !promoReady;
 
+  // Kartu promo muncul setelah slider siap DAN area slider terlihat di layar
+  const showPromoCards = !!reduceMotion || (promoReady && isPromoInView);
+
   // Handler Navigasi Klik Dot
   const handleDotClick = (index: number) => {
     if (promoSliderInstance.current) {
@@ -522,20 +623,28 @@ const PromoKesehatan = () => {
         <div className="max-w-[1180px] mx-auto md:px-8">
           {/* header */}
           <div className="text-center mb-16">
-            <img
-              src="/medikalestari.png"
-              alt="Logo Medika Lestari"
-              className="h-20 w-auto mx-auto mb-6 object-contain"
-            />
+            <Reveal y={20}>
+              <img
+                src="/medikalestari.png"
+                alt="Logo Medika Lestari"
+                className="h-20 w-auto mx-auto mb-6 object-contain"
+              />
+            </Reveal>
 
-            <h2 className="text-2xl md:text-[45px] font-bold mb-4">
-              Selamat Datang di Rumah Sakit Medika Lestari
-            </h2>
-            <p className="max-w-4xl mx-auto text-sm md:text-base text-white/90 mb-4 leading-normal">
-              Kami hadir sebagai rumah sakit umum modern di Kota Tangerang yang
-              berkomitmen memberikan pelayanan kesehatan terpadu, profesional,
-              dan penuh kepedulian demi kenyamanan Anda dan keluarga.
-            </p>
+            <Reveal delay={0.1}>
+              <h2 className="text-2xl md:text-[45px] font-bold mb-4">
+                Selamat Datang di Rumah Sakit Medika Lestari
+              </h2>
+            </Reveal>
+
+            <Reveal delay={0.2}>
+              <p className="max-w-4xl mx-auto text-sm md:text-base text-white/90 mb-4 leading-normal">
+                Kami hadir sebagai rumah sakit umum modern di Kota Tangerang
+                yang berkomitmen memberikan pelayanan kesehatan terpadu,
+                profesional, dan penuh kepedulian demi kenyamanan Anda dan
+                keluarga.
+              </p>
+            </Reveal>
           </div>
 
           {/* data statistik medika lestari */}
@@ -546,7 +655,7 @@ const PromoKesehatan = () => {
                 className="flex flex-col items-center"
                 initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-80px" }}
+                viewport={REVEAL_VIEWPORT}
                 transition={{
                   duration: 0.6,
                   delay: index * 0.12,
@@ -580,40 +689,54 @@ const PromoKesehatan = () => {
             ))}
           </div>
 
-          <hr className="border-white/10 my-16" />
+          <motion.hr
+            className="border-white/10 my-16"
+            initial={reduceMotion ? false : { scaleX: 0, opacity: 0 }}
+            whileInView={{ scaleX: 1, opacity: 1 }}
+            viewport={REVEAL_VIEWPORT}
+            transition={{ duration: 0.9, ease: REVEAL_EASE }}
+          />
 
           {/* SLIDER LOGO REKANAN */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mb-12">
             {/* Sisi Kiri: Deskripsi Wilayah */}
             <div className="lg:col-span-6 text-left">
-              <h3 className="text-3xl md:text-4xl font-bold mb-6 leading-tight -mt-5">
-                Terhubung dengan Berbagai Mitra Layanan Kesehatan
-              </h3>
+              <Reveal x={-32} y={0} className="-mt-5">
+                <h3 className="text-3xl md:text-4xl font-bold mb-6 leading-tight">
+                  Terhubung dengan Berbagai Mitra Layanan Kesehatan
+                </h3>
+              </Reveal>
 
-              <p className="text-sm md:text-base text-white/90 font-normal mb-4 leading-normal text-justify">
-                RS Medika Lestari bekerja sama dengan sejumlah perusahaan dan
-                penyedia asuransi untuk memudahkan pasien mendapatkan layanan
-                kesehatan sesuai dengan kebutuhan mereka. Kerja sama ini juga
-                membantu pasien mengetahui pilihan layanan yang tersedia melalui
-                mitra yang telah bekerja sama dengan rumah sakit.
-              </p>
+              <Reveal x={-32} y={0} delay={0.1}>
+                <p className="text-sm md:text-base text-white/90 font-normal mb-4 leading-normal text-justify">
+                  RS Medika Lestari bekerja sama dengan sejumlah perusahaan dan
+                  penyedia asuransi untuk memudahkan pasien mendapatkan layanan
+                  kesehatan sesuai dengan kebutuhan mereka. Kerja sama ini juga
+                  membantu pasien mengetahui pilihan layanan yang tersedia
+                  melalui mitra yang telah bekerja sama dengan rumah sakit.
+                </p>
+              </Reveal>
 
-              <p className="text-sm md:text-base text-white/90 font-normal leading-normal mb-8 text-justify">
-                Setiap mitra memiliki ketentuan terkait penjaminan biaya dan
-                administrasi yang perlu diperhatikan sebelum pasien menjalani
-                perawatan. Karena itu, pasien dapat memperoleh informasi
-                mengenai cakupan layanan dan persyaratan yang berlaku agar
-                proses pelayanan berjalan lebih lancar.
-              </p>
+              <Reveal x={-32} y={0} delay={0.2}>
+                <p className="text-sm md:text-base text-white/90 font-normal leading-normal mb-8 text-justify">
+                  Setiap mitra memiliki ketentuan terkait penjaminan biaya dan
+                  administrasi yang perlu diperhatikan sebelum pasien menjalani
+                  perawatan. Karena itu, pasien dapat memperoleh informasi
+                  mengenai cakupan layanan dan persyaratan yang berlaku agar
+                  proses pelayanan berjalan lebih lancar.
+                </p>
+              </Reveal>
 
-              <Link href="/tentang-kami" passHref>
-                <button
-                  type="button"
-                  className="px-5 py-2.5 bg-[#e67e22] hover:bg-[#3D8ECB] text-white text-xs font-semibold transition-colors duration-700 inline-flex items-center gap-2 cursor-pointer"
-                >
-                  Kenali Kami Lebih Dekat
-                </button>
-              </Link>
+              <Reveal x={-32} y={0} delay={0.3}>
+                <Link href="/tentang-kami" passHref>
+                  <button
+                    type="button"
+                    className="px-5 py-2.5 bg-[#e67e22] hover:bg-[#3D8ECB] text-white text-xs font-semibold transition-colors duration-700 inline-flex items-center gap-2 cursor-pointer"
+                  >
+                    Kenali Kami Lebih Dekat
+                  </button>
+                </Link>
+              </Reveal>
             </div>
 
             {/* Sisi Kanan: Slider Bungkus Kotak Putih Logo Penghargaan */}
@@ -666,44 +789,46 @@ const PromoKesehatan = () => {
               </div>
 
               {/* Indikator Dot Rekanan */}
-              <div className="mt-12 flex items-center justify-center gap-4">
-                {awardDots.map((index) => {
-                  const isAwardActive = index === activeAwardIndex;
-                  return (
-                    <button
-                      key={index}
-                      type="button"
-                      onClick={() => handleAwardDotClick(index)}
-                      className="focus:outline-none flex items-center justify-center h-8 w-8 relative"
-                      aria-label={`Go to award page ${index + 1}`}
-                    >
-                      <motion.div
-                        animate={{
-                          backgroundColor: isAwardActive
-                            ? "#e67e22"
-                            : "#ffffff",
-                        }}
-                        transition={{ duration: 0.2 }}
-                        className="absolute w-5 h-5 rounded-full z-10 pointer-events-none"
-                      />
+              <Reveal delay={0.5}>
+                <div className="mt-12 flex items-center justify-center gap-4">
+                  {awardDots.map((index) => {
+                    const isAwardActive = index === activeAwardIndex;
+                    return (
+                      <button
+                        key={index}
+                        type="button"
+                        onClick={() => handleAwardDotClick(index)}
+                        className="focus:outline-none flex items-center justify-center h-8 w-8 relative"
+                        aria-label={`Go to award page ${index + 1}`}
+                      >
+                        <motion.div
+                          animate={{
+                            backgroundColor: isAwardActive
+                              ? "#e67e22"
+                              : "#ffffff",
+                          }}
+                          transition={{ duration: 0.2 }}
+                          className="absolute w-5 h-5 rounded-full z-10 pointer-events-none"
+                        />
 
-                      <motion.div
-                        initial={{ scale: 0.4, opacity: 0 }}
-                        animate={{
-                          scale: isAwardActive ? 1 : 0.4,
-                          opacity: isAwardActive ? 1 : 0,
-                        }}
-                        transition={{
-                          type: "spring",
-                          stiffness: 280,
-                          damping: 22,
-                        }}
-                        className="absolute w-8 h-8 rounded-full border-[5px] border-white bg-white z-0 origin-center pointer-events-none "
-                      />
-                    </button>
-                  );
-                })}
-              </div>
+                        <motion.div
+                          initial={{ scale: 0.4, opacity: 0 }}
+                          animate={{
+                            scale: isAwardActive ? 1 : 0.4,
+                            opacity: isAwardActive ? 1 : 0,
+                          }}
+                          transition={{
+                            type: "spring",
+                            stiffness: 280,
+                            damping: 22,
+                          }}
+                          className="absolute w-8 h-8 rounded-full border-[5px] border-white bg-white z-0 origin-center pointer-events-none "
+                        />
+                      </button>
+                    );
+                  })}
+                </div>
+              </Reveal>
             </div>
           </div>
         </div>
@@ -714,12 +839,14 @@ const PromoKesehatan = () => {
         <div className="absolute inset-x-0 bottom-0 top-1/3 bg-white z-0" />
 
         <div className="relative z-10 max-w-[1190px] mx-auto md:px-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-8 -mt-10 text-center">
-            Penawaran promo spesial paket kesehatan
-          </h2>
+          <Reveal className="-mt-10 mb-8">
+            <h2 className="text-3xl md:text-4xl font-bold text-white text-center">
+              Penawaran promo spesial paket kesehatan
+            </h2>
+          </Reveal>
 
           {/* Pembungkus: skeleton (alur normal) + slider (overlay transparan sampai siap) */}
-          <div className="relative w-full">
+          <div ref={promoWrapperRef} className="relative w-full">
             {/* SATU-SATUNYA skeleton promo card */}
             {showPromoSkeleton && <PromoCardSkeleton count={4} />}
 
@@ -736,51 +863,59 @@ const PromoKesehatan = () => {
                     : "absolute inset-x-0 top-0 opacity-0 pointer-events-none"
                 }`}
               >
-                {PROMO_DATA.slice(0, 8).map((item) => (
+                {PROMO_DATA.slice(0, 8).map((item, index) => (
                   <div key={item.id} className="keen-slider__slide p-2 md:p-3">
-                    <article
-                      className="bg-white border border-gray-300 flex flex-col h-full overflow-hidden transition-shadow duration-300 group"
-                      onMouseEnter={() => setHoveredPromoId(item.id)}
-                      onMouseLeave={() => setHoveredPromoId(null)}
+                    <motion.div
+                      className="h-full"
+                      variants={promoCardVariants}
+                      custom={index}
+                      initial={reduceMotion ? false : "hidden"}
+                      animate={showPromoCards ? "visible" : "hidden"}
                     >
-                      <div className="relative aspect-square w-full overflow-hidden bg-gray-50 cursor-pointer">
-                        <div className="w-full h-full">
-                          <Image
-                            src={item.image}
-                            alt={`Promo ${item.title}`}
-                            width={500}
-                            height={500}
-                            className="object-cover w-full h-full"
-                            priority={item.id <= 4}
-                          />
+                      <article
+                        className="bg-white border border-gray-300 flex flex-col h-full overflow-hidden transition-shadow duration-300 group"
+                        onMouseEnter={() => setHoveredPromoId(item.id)}
+                        onMouseLeave={() => setHoveredPromoId(null)}
+                      >
+                        <div className="relative aspect-square w-full overflow-hidden bg-gray-50 cursor-pointer">
+                          <div className="w-full h-full">
+                            <Image
+                              src={item.image}
+                              alt={`Promo ${item.title}`}
+                              width={500}
+                              height={500}
+                              className="object-cover w-full h-full"
+                              priority={item.id <= 4}
+                            />
+                          </div>
                         </div>
-                      </div>
 
-                      <div className="p-4 md:p-10 flex flex-col grow text-center bg-white">
-                        <Link href={`/promo/${item.id}`} passHref>
-                          <h3 className="text-xl md:text-xl font-bold text-[#003f88] mb-2 min-h-12 flex items-center justify-center leading-normal cursor-pointer hover:text-[#e67e22] transition-colors duration-300">
-                            {item.title}
-                          </h3>
-                        </Link>
-                        <p className="text-[10px] md:text-xs text-gray-500 leading-normal mb-5 line-clamp-3 md:line-clamp-4 cursor-default mt-10">
-                          {item.description}
-                        </p>
-                        <div className="mt-auto">
+                        <div className="p-4 md:p-10 flex flex-col grow text-center bg-white">
                           <Link href={`/promo/${item.id}`} passHref>
-                            <button
-                              type="button"
-                              className={`w-full py-2 text-white text-[10px] md:text-xs font-semibold transition-all duration-700 cursor-pointer ${
-                                hoveredPromoId === item.id
-                                  ? "bg-[#e67e22]"
-                                  : "bg-[#003f88] hover:bg-[#e67e22]"
-                              }`}
-                            >
-                              → Selengkapnya
-                            </button>
+                            <h3 className="text-xl md:text-xl font-bold text-[#003f88] mb-2 min-h-12 flex items-center justify-center leading-normal cursor-pointer hover:text-[#e67e22] transition-colors duration-300">
+                              {item.title}
+                            </h3>
                           </Link>
+                          <p className="text-[10px] md:text-xs text-gray-500 leading-normal mb-5 line-clamp-3 md:line-clamp-4 cursor-default mt-10">
+                            {item.description}
+                          </p>
+                          <div className="mt-auto">
+                            <Link href={`/promo/${item.id}`} passHref>
+                              <button
+                                type="button"
+                                className={`w-full py-2 text-white text-[10px] md:text-xs font-semibold transition-all duration-700 cursor-pointer ${
+                                  hoveredPromoId === item.id
+                                    ? "bg-[#e67e22]"
+                                    : "bg-[#003f88] hover:bg-[#e67e22]"
+                                }`}
+                              >
+                                → Selengkapnya
+                              </button>
+                            </Link>
+                          </div>
                         </div>
-                      </div>
-                    </article>
+                      </article>
+                    </motion.div>
                   </div>
                 ))}
               </div>
@@ -788,52 +923,54 @@ const PromoKesehatan = () => {
           </div>
 
           {/* dot card promo (min-h-8 menjaga tinggi supaya tidak loncat saat dot muncul) */}
-          <div className="mt-8 flex min-h-8 items-center justify-center gap-4">
-            {promoReady &&
-              promoDots.map((index) => {
-                const isActive = index === activeIndex;
-                return (
-                  <button
-                    key={index}
-                    type="button"
-                    onClick={() => handleDotClick(index)}
-                    className="focus:outline-none flex items-center justify-center h-8 w-8 relative"
-                    aria-label={`Go to slide ${index + 1}`}
-                  >
-                    <motion.div
-                      animate={{
-                        backgroundColor: isActive ? "#ffffff" : "#3D8ECB",
-                      }}
-                      transition={{ duration: 0.2 }}
-                      className="absolute w-5 h-5 rounded-full z-10 pointer-events-none"
-                    />
+          <Reveal delay={0.1}>
+            <div className="mt-8 flex min-h-8 items-center justify-center gap-4">
+              {promoReady &&
+                promoDots.map((index) => {
+                  const isActive = index === activeIndex;
+                  return (
+                    <button
+                      key={index}
+                      type="button"
+                      onClick={() => handleDotClick(index)}
+                      className="focus:outline-none flex items-center justify-center h-8 w-8 relative"
+                      aria-label={`Go to slide ${index + 1}`}
+                    >
+                      <motion.div
+                        animate={{
+                          backgroundColor: isActive ? "#ffffff" : "#3D8ECB",
+                        }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute w-5 h-5 rounded-full z-10 pointer-events-none"
+                      />
 
-                    <motion.div
-                      initial={{ scale: 0.4, opacity: 0 }}
-                      animate={{
-                        scale: isActive ? 1 : 0.4,
-                        opacity: isActive ? 1 : 0,
-                      }}
-                      transition={{
-                        type: "spring",
-                        stiffness: 280,
-                        damping: 22,
-                      }}
-                      className="absolute w-9 h-9 rounded-full border-[5px] border-[#3D8ECB] bg-[#3D8ECB] z-0 origin-center pointer-events-none"
-                    />
-                  </button>
-                );
-              })}
-          </div>
+                      <motion.div
+                        initial={{ scale: 0.4, opacity: 0 }}
+                        animate={{
+                          scale: isActive ? 1 : 0.4,
+                          opacity: isActive ? 1 : 0,
+                        }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 280,
+                          damping: 22,
+                        }}
+                        className="absolute w-9 h-9 rounded-full border-[5px] border-[#3D8ECB] bg-[#3D8ECB] z-0 origin-center pointer-events-none"
+                      />
+                    </button>
+                  );
+                })}
+            </div>
+          </Reveal>
 
           {/* Lihat Semua Promo Link */}
-          <div className="mt-12 text-center">
+          <Reveal delay={0.15} className="mt-12 text-center">
             <Link href="/promo" passHref>
               <span className="text-sm md:text-base font-semibold text-[#3D8ECB] hover:text-[#e67e22] hover:underline transition-all duration-700 cursor-pointer inline-block">
                 Lihat Semua Promo <span className="text-base">→</span>
               </span>
             </Link>
-          </div>
+          </Reveal>
         </div>
       </section>
     </div>

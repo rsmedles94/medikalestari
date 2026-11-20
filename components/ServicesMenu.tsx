@@ -9,14 +9,11 @@ const ICON_BASE = "/assets/service-icons";
 
 interface ServiceItem {
   label: string;
-  /** nama file di public/assets/service-icons (tanpa .svg) */
   icon: string;
   href: string;
-  /** sembunyikan di mobile */
   hideOnMobile?: boolean;
 }
 
-// Data statis di luar komponen: tidak dibuat ulang setiap render
 const SERVICES: readonly ServiceItem[] = [
   {
     label: "Medical Checkup",
@@ -112,12 +109,10 @@ function ServiceCard({ service }: { service: ServiceItem }) {
     >
       <Link
         href={service.href}
-        className="group flex h-full min-h-[82px] items-center justify-between p-4 text-[#003f88] transition-all duration-200 hover:bg-[#003f88] hover:text-white md:min-h-[92px] md:p-8"
+        className="group flex h-full min-h-[82px] items-center justify-between p-4 text-black transition-all duration-200 hover:bg-[#003f88] hover:text-white md:min-h-[92px] md:p-8"
       >
         <div className="flex items-center gap-3 pr-2 md:gap-5 md:pr-4">
           <div className="relative flex-shrink-0 transition-transform duration-200 group-hover:scale-105">
-            {/* Ikon = mask SVG + bg-current, jadi warnanya ikut warna teks Link:
-                #003f88 normal, putih saat hover */}
             <span
               aria-hidden="true"
               className="block h-8 w-8 bg-current md:h-11 md:w-11"
@@ -141,10 +136,8 @@ export default function ServicesMenu() {
     <section className="px-4 py-0 md:py-12">
       <div className="mx-auto my-6 max-w-[1106px]">
         <nav aria-label="Layanan Utama">
-          {/* LazyMotion: bundle framer-motion lebih kecil; reducedMotion mengikuti pengaturan OS */}
           <MotionConfig reducedMotion="user">
             <LazyMotion features={domAnimation}>
-              {/* Satu list responsif (bukan dua list mobile + desktop) */}
               <m.ul
                 className="grid list-none grid-cols-2 gap-3 p-0 md:grid-cols-3"
                 variants={containerVariants}
