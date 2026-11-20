@@ -9,6 +9,7 @@ import React, {
   useSyncExternalStore,
 } from "react";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -102,16 +103,8 @@ const PILL_LEFT = `calc(${ICON_PAD}px + (100% - ${
   ICON_PAD * 2
 }px) * ((var(--pill-pos, 0) + 0.5) / ${ITEM_COUNT}))`;
 
-// Warna ikon: biru (sama dengan pil) saat tidak aktif -> putih saat pil
-// menutupinya. Nilai antaranya dihitung di applyPos.
-const ICON_REST_RGB = [0, 63, 136] as const;
-
-// Semua SVG yang dimuat di awal, supaya mask tidak sempat tampil sebagai kotak
-const ICON_URLS: readonly string[] = [
-  ...NAV_ITEMS.flatMap((item) => (item.icon ? [item.icon] : [])),
-  "bed",
-  "note",
-].map((name) => `${ICON_DIR}/${name}.svg`);
+// Ikon SVG dipaksa hitam, lalu diputihkan sesuai --a (0 = hitam, 1 = putih)
+const ICON_FILTER = "brightness(0) invert(var(--a, 0))";
 
 // Spring pil saat pindah menu / dilepas setelah drag
 const PILL_SPRING = {
@@ -229,89 +222,57 @@ function GlassLayer({
   );
 }
 
-// Muat semua SVG lebih dulu. Selama belum siap, ikon disembunyikan karena
-// elemen ber-mask yang gambarnya belum termuat tampil sebagai kotak penuh.
-function useIconsReady(urls: readonly string[]) {
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    const done = () => {
-      if (!cancelled) setReady(true);
-    };
-
-    const timer = window.setTimeout(done, 1500);
-
-    Promise.all(
-      urls.map(
-        (src) =>
-          new Promise<void>((resolve) => {
-            const img = new window.Image();
-            img.onload = () => resolve();
-            img.onerror = () => resolve();
-            img.src = src;
-          }),
-      ),
-    ).then(() => {
-      window.clearTimeout(timer);
-      done();
-    });
-
-    return () => {
-      cancelled = true;
-      window.clearTimeout(timer);
-    };
-  }, [urls]);
-
-  return ready;
-}
-
-// Ikon = SVG sebagai mask + background-color. Warna diambil dari variabel
-// --icon-color pada <li> induknya (diperbarui dari posisi pil di applyPos);
-// di luar dock (menu aksi) otomatis memakai warna dasar.
-function MaskIcon({
+function DockImage({
   name,
-  size,
-  ready,
+  style,
 }: {
   name: string;
-  size: number;
-  ready: boolean;
+  style?: React.CSSProperties;
 }) {
-  const url = `url(${ICON_DIR}/${name}.svg)`;
-
   return (
-    <span
+    <Image
+      src={`${ICON_DIR}/${name}.svg`}
+      alt=""
+      width={28}
+      height={28}
+      unoptimized
+      loading="eager"
+      draggable={false}
       aria-hidden="true"
-      className="pointer-events-none block shrink-0 select-none"
-      style={{
-        width: size,
-        height: size,
-        backgroundColor: `var(--icon-color, ${PILL_COLOR})`,
-        opacity: ready ? 1 : 0,
-        transition: "opacity 150ms ease",
-        maskImage: url,
-        WebkitMaskImage: url,
-        maskRepeat: "no-repeat",
-        WebkitMaskRepeat: "no-repeat",
-        maskPosition: "center",
-        WebkitMaskPosition: "center",
-        maskSize: "contain",
-        WebkitMaskSize: "contain",
-      }}
+      className="pointer-events-none absolute inset-0 h-full w-full select-none object-contain"
+      style={{ filter: ICON_FILTER, ...style }}
     />
   );
 }
 
-function NavIcon({ item, ready }: { item: NavItem; ready: boolean }) {
+// Warna ikon dikendalikan variabel CSS --a (0..1) pada <li> induknya,
+// yang diperbarui langsung dari posisi pil (lihat applyPos).
+function NavIcon({ item }: { item: NavItem }) {
   if (!item.icon) return null;
 
-  return <MaskIcon name={item.icon} size={28} ready={ready} />;
+  return (
+    <span className="relative block h-7 w-7">
+      <DockImage name={item.icon} />
+    </span>
+  );
 }
 
-function MenuIcon({ name, ready }: { name: string; ready: boolean }) {
-  return <MaskIcon name={name} size={20} ready={ready} />;
+// Ikon di menu aksi (hitam, mengikuti teks tombol)
+function MenuIcon({ name }: { name: string }) {
+  return (
+    <Image
+      src={`${ICON_DIR}/${name}.svg`}
+      alt=""
+      width={20}
+      height={20}
+      unoptimized
+      loading="eager"
+      draggable={false}
+      aria-hidden="true"
+      className="h-[20px] w-[20px] shrink-0 select-none object-contain"
+      style={{ filter: "brightness(0)" }}
+    />
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -323,7 +284,6 @@ export default function MobileBottomNavbar() {
   const router = useRouter();
   const isMounted = useIsMounted();
   const reduceMotion = useReducedMotion();
-  const iconsReady = useIconsReady(ICON_URLS);
 
   // State
 
@@ -495,12 +455,7 @@ export default function MobileBottomNavbar() {
         1,
       );
 
-      const [r0, g0, b0] = ICON_REST_RGB;
-      const r = Math.round(r0 + (255 - r0) * a);
-      const g = Math.round(g0 + (255 - g0) * a);
-      const b = Math.round(b0 + (255 - b0) * a);
-
-      el.style.setProperty("--icon-color", `rgb(${r}, ${g}, ${b})`);
+      el.style.setProperty("--a", a.toFixed(3));
       el.style.transform = `scale(${(1 - 0.08 * a).toFixed(3)})`;
     }
   }, []);
@@ -831,7 +786,7 @@ export default function MobileBottomNavbar() {
                       }}
                       className={menuButtonClass}
                     >
-                      <MenuIcon name="note" ready={iconsReady} />
+                      <MenuIcon name="note" />
                       <span>Buat Janji Temu</span>
                     </button>
 
@@ -845,7 +800,7 @@ export default function MobileBottomNavbar() {
                       }}
                       className={menuButtonClass}
                     >
-                      <MenuIcon name="bed" ready={iconsReady} />
+                      <MenuIcon name="bed" />
                       <span>Kamar Perawatan</span>
                     </button>
 
@@ -859,7 +814,7 @@ export default function MobileBottomNavbar() {
                       }}
                       className={menuButtonClass}
                     >
-                      <MenuIcon name="bed" ready={iconsReady} />
+                      <MenuIcon name="bed" />
                       <span>Ketersediaan Kamar</span>
                     </button>
                   </div>
@@ -989,9 +944,9 @@ export default function MobileBottomNavbar() {
                         >
                           <FontAwesomeIcon
                             icon={faPlus}
-                            className="pointer-events-none text-[24px]"
+                            className="pointer-events-none text-[24px] text-black"
                             style={{
-                              color: `var(--icon-color, ${PILL_COLOR})`,
+                              filter: ICON_FILTER,
                               transform: isActionMenuOpen
                                 ? "rotate(45deg)"
                                 : "rotate(0deg)",
@@ -1026,7 +981,7 @@ export default function MobileBottomNavbar() {
                             WebkitUserSelect: "none",
                           }}
                         >
-                          <NavIcon item={item} ready={iconsReady} />
+                          <NavIcon item={item} />
                         </Link>
                       )}
                     </li>
