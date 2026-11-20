@@ -7,7 +7,6 @@ import React, {
   useCallback,
   useSyncExternalStore,
 } from "react";
-import Image from "next/image";
 import {
   motion,
   useMotionValue,
@@ -20,25 +19,30 @@ import {
 interface KisahItem {
   id: number;
   author: string;
-  avatar: string;
   rating: number;
   date: string;
-  isLocalGuide?: boolean;
   reviewText: string;
   href: string;
 }
 
-// jeda antar kartu saat muncul (bintang menyusul setelah kartunya muncul)
+// jeda muncul antar kartu
 const CARD_STAGGER = 0.08;
 
-// warna bintang rating: kosong (abu-abu) dan terisi (oranye)
+// warna bintang
 const STAR_EMPTY = "#E2E8F0";
 const STAR_FILLED = "#F59E0B";
+
+// warna avatar
+const AVATAR = "#003f88";
+
+// ukuran kartu (samakan dengan class Tailwind: w-[320px] md:w-[420px], gap-6)
+const CARD_WIDTH_MOBILE = 320;
+const CARD_WIDTH_DESKTOP = 420;
+const CARD_GAP = 24;
 
 const REVEAL_EASE = [0.22, 1, 0.36, 1] as const;
 const REVEAL_VIEWPORT = { once: true, margin: "-80px" } as const;
 
-// kartu naik sambil membesar tipis, berurutan dari kiri ke kanan
 const cardVariants: Variants = {
   hidden: { opacity: 0, y: 40, scale: 0.96 },
   visible: (i: number) => ({
@@ -49,9 +53,7 @@ const cardVariants: Variants = {
   }),
 };
 
-// membaca ukuran layar (mobile < 768px) langsung dari browser lewat
-// useSyncExternalStore: server selalu memakai nilai awal desktop (false) sehingga
-// tidak terjadi hydration mismatch, dan tidak perlu setState di dalam useEffect
+// deteksi mobile (< 768px) tanpa hydration mismatch
 const MOBILE_QUERY = "(max-width: 767px)";
 
 const subscribeMobile = (onChange: () => void) => {
@@ -66,7 +68,7 @@ const ServiceSection = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
 
-  // kartu dan bintang mulai beranimasi saat slider terlihat di layar (sekali saja)
+  // animasi mulai saat slider terlihat
   const isInView = useInView(containerRef, {
     once: true,
     margin: "0px 0px -100px 0px",
@@ -74,7 +76,7 @@ const ServiceSection = () => {
   const reduceMotion = useReducedMotion();
   const showStars = isInView || !!reduceMotion;
 
-  // animasi muncul untuk elemen di luar slider (header dan navigasi)
+  // animasi muncul untuk header dan navigasi
   const reveal = (delay = 0, y = 28) => ({
     initial: reduceMotion ? (false as const) : { opacity: 0, y },
     whileInView: { opacity: 1, y: 0 },
@@ -86,7 +88,6 @@ const ServiceSection = () => {
     {
       id: 1,
       author: "Diah Delina",
-      avatar: "https://lh3.googleusercontent.com/a/default-user=s40-c",
       rating: 5,
       date: "3 bulan lalu",
       reviewText:
@@ -96,7 +97,6 @@ const ServiceSection = () => {
     {
       id: 2,
       author: "Veren Salsa",
-      avatar: "https://lh3.googleusercontent.com/a/default-user=s40-c",
       rating: 5,
       date: "7 bulan lalu",
       reviewText:
@@ -106,7 +106,6 @@ const ServiceSection = () => {
     {
       id: 3,
       author: "Friska Junita",
-      avatar: "https://lh3.googleusercontent.com/a/default-user=s40-c",
       rating: 5,
       date: "7 bulan lalu",
       reviewText:
@@ -116,7 +115,6 @@ const ServiceSection = () => {
     {
       id: 4,
       author: "ADI ANTO",
-      avatar: "https://lh3.googleusercontent.com/a/default-user=s40-c",
       rating: 5,
       date: "4 bulan lalu",
       reviewText:
@@ -126,7 +124,6 @@ const ServiceSection = () => {
     {
       id: 5,
       author: "anas tasya",
-      avatar: "https://lh3.googleusercontent.com/a/default-user=s40-c",
       rating: 5,
       date: "8 bulan lalu",
       reviewText:
@@ -136,7 +133,6 @@ const ServiceSection = () => {
     {
       id: 6,
       author: "Dhea Aryanti",
-      avatar: "https://lh3.googleusercontent.com/a/default-user=s40-c",
       rating: 5,
       date: "10 bulan lalu",
       reviewText:
@@ -147,21 +143,26 @@ const ServiceSection = () => {
 
   const [activeIndex, setActiveIndex] = useState(0);
 
-  // Status mobile dibaca dari browser tanpa memicu hydration mismatch
   const isMobile = useSyncExternalStore(
     subscribeMobile,
     getMobileSnapshot,
     getMobileServerSnapshot,
   );
 
-  // Jumlah dot diturunkan langsung dari isMobile (tidak perlu state terpisah)
-  const totalDots = isMobile ? ulasanData.length - 1 : ulasanData.length - 2; // 5 dot di mobile, 4 dot di desktop
-
   const [dragConstraints, setDragConstraints] = useState({ left: 0, right: 0 });
+
+  // jumlah dot dihitung dari jarak geser slider
+  const totalDots = Math.max(
+    1,
+    Math.ceil(
+      Math.abs(dragConstraints.left) /
+        ((isMobile ? CARD_WIDTH_MOBILE : CARD_WIDTH_DESKTOP) + CARD_GAP),
+    ) + 1,
+  );
+
   const x = useMotionValue(0);
   const isDragging = useRef(false);
 
-  // Fungsi pengukur batas slider yang aman
   const calculateConstraints = useCallback(() => {
     if (containerRef.current && trackRef.current) {
       const containerWidth = containerRef.current.offsetWidth;
@@ -173,9 +174,7 @@ const ServiceSection = () => {
     }
   }, []);
 
-  // Update batas drag setiap kali ukuran kontainer / track berubah (resize,
-  // pindah mobile <-> desktop). Pengukuran awal juga dijalankan oleh ResizeObserver
-  // di dalam callback, bukan langsung di badan effect
+  // ukur ulang batas drag saat ukuran berubah
   useEffect(() => {
     const container = containerRef.current;
     const track = trackRef.current;
@@ -189,7 +188,7 @@ const ServiceSection = () => {
   }, [calculateConstraints]);
 
   const getItemWidth = () => {
-    return isMobile ? 280 + 24 : 360 + 24;
+    return (isMobile ? CARD_WIDTH_MOBILE : CARD_WIDTH_DESKTOP) + CARD_GAP;
   };
 
   const handleDotClick = (index: number) => {
@@ -240,9 +239,7 @@ const ServiceSection = () => {
     }
   };
 
-  // bintang rating: placeholder abu-abu lalu terisi oranye satu per satu,
-  // dimulai setelah kartunya selesai muncul
-  // (hanya bintang sesuai nilai rating yang berubah warna)
+  // bintang terisi satu per satu setelah kartu muncul
   const renderStars = (rating: number, cardIndex: number) => {
     const starsBaseDelay = cardIndex * CARD_STAGGER + 0.5;
 
@@ -251,7 +248,7 @@ const ServiceSection = () => {
         key={index}
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
-        className="w-4 h-4"
+        className="w-5 h-5 md:w-6 md:h-6"
         aria-hidden="true"
         initial={reduceMotion ? false : { fill: STAR_EMPTY }}
         animate={{
@@ -271,7 +268,7 @@ const ServiceSection = () => {
   return (
     <section className="w-full bg-[#3D8ECB] py-16 md:py-20 font-sans overflow-hidden">
       <div className="max-w-[1180px] mx-auto">
-        {/* Header Seksi */}
+        {/* Header */}
         <header className="px-4 md:px-8 mb-12 flex items-end justify-center w-full gap-4">
           <div className="text-center min-w-0">
             <motion.h2
@@ -290,14 +287,14 @@ const ServiceSection = () => {
           </div>
         </header>
 
-        {/* Kontainer Slider Fluid */}
+        {/* Slider */}
         <div
           ref={containerRef}
           className="w-full px-4 md:px-8 overflow-visible"
         >
           <motion.div
             ref={trackRef}
-            className="flex gap-6 cursor-grab active:cursor-grabbing w-max"
+            className="flex gap-6 pb-6 cursor-grab active:cursor-grabbing w-max"
             style={{ x }}
             drag="x"
             dragConstraints={dragConstraints}
@@ -313,65 +310,58 @@ const ServiceSection = () => {
                 initial={reduceMotion ? false : "hidden"}
                 animate={showStars ? "visible" : "hidden"}
                 onClick={() => handleCardClick(item.href)}
-                className="w-[280px] md:w-[360px] h-[380px] flex-shrink-0 flex flex-col justify-between bg-white rounded-md p-6 shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer text-left select-none"
+                className="w-[320px] md:w-[420px] h-[310px] md:h-[340px] flex-shrink-0 flex flex-col justify-between bg-white rounded-md p-6 md:p-7 shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer text-left select-none"
               >
-                <div>
-                  {/* Profil Penulis Ulasan */}
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="relative w-11 h-11 rounded-full overflow-hidden bg-slate-100 flex-shrink-0">
-                      <Image
-                        src={item.avatar}
-                        alt={item.author}
-                        fill
-                        sizes="44px"
-                        className="object-cover"
-                      />
-                    </div>
-                    <div className="flex flex-col min-w-0">
-                      <span className="text-sm font-bold text-slate-800 truncate">
-                        {item.author}
-                      </span>
-                      <div className="flex items-center gap-1 mt-0.5">
-                        {item.isLocalGuide && (
-                          <span className="text-[10px] bg-orange-50 text-orange-600 px-1 rounded font-medium">
-                            LG
-                          </span>
-                        )}
-                        <span className="text-xs text-slate-400">
-                          {item.date}
-                        </span>
-                      </div>
-                    </div>
+                {/* Isi ulasan (maks 7 baris, tinggi kartu tetap sama) */}
+                <p className="text-sm md:text-base text-slate-700 leading-relaxed font-normal line-clamp-7 break-words">
+                  &quot;{item.reviewText}&quot;
+                </p>
+
+                {/* Footer: avatar kiri, nama + bintang kanan */}
+                <div className="flex items-center justify-between gap-4">
+                  <div
+                    className="flex items-center justify-center flex-shrink-0 w-14 h-14 md:w-16 md:h-16 rounded-full"
+                    style={{ backgroundColor: AVATAR }}
+                    aria-hidden="true"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      className="w-7 h-7 md:w-8 md:h-8"
+                      fill="#FFFFFF"
+                    >
+                      <circle cx="12" cy="8" r="4.2" />
+                      <path d="M4 20.5c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5z" />
+                    </svg>
                   </div>
 
-                  {/* Rating Bintang */}
-                  <div className="flex items-center gap-0.5 mb-3">
-                    {renderStars(item.rating, index)}
+                  <div className="flex flex-col items-end gap-2 min-w-0">
+                    <span
+                      className="max-w-full text-right text-base md:text-lg font-bold text-slate-800 truncate leading-tight"
+                      title={item.author}
+                    >
+                      {item.author}
+                    </span>
+                    <div
+                      className="flex items-center gap-1"
+                      role="img"
+                      aria-label={`Rating ${item.rating} dari 5`}
+                    >
+                      {renderStars(item.rating, index)}
+                    </div>
                   </div>
-
-                  {/* Isi Ulasan */}
-                  <p className="text-sm text-slate-600 leading-relaxed font-normal line-clamp-6 break-words">
-                    &quot;{item.reviewText}&quot;
-                  </p>
-                </div>
-
-                {/* Tautan Selengkapnya */}
-                <div className="font-semibold text-xs flex items-center gap-1 mt-2">
-                  <span className="text-[#3D8ECB] hover:text-[#e67e22] hover:underline transition-colors duration-700">
-                    → Selengkapnya
-                  </span>
                 </div>
               </motion.article>
             ))}
           </motion.div>
         </div>
 
-        {/* Navigasi / Kontrol */}
+        {/* Navigasi */}
         <motion.footer
           {...reveal(0.1, 20)}
-          className="px-4 md:px-8 mt-12 flex items-center justify-between md:justify-start md:gap-8"
+          className="px-4 md:px-8 mt-10 flex items-center justify-between md:justify-start md:gap-8"
         >
-          {/* Indikator Dot Navigasi */}
+          {/* Dot */}
           <nav
             aria-label="Navigasi Ulasan"
             className="flex items-center justify-start gap-4"
@@ -414,7 +404,7 @@ const ServiceSection = () => {
             })}
           </nav>
 
-          {/* Tombol Tautan Ulasan Eksternal */}
+          {/* Link ulasan lainnya */}
           <button
             type="button"
             onClick={() =>

@@ -103,14 +103,17 @@ const MEGA_MENUS: MegaMenu[] = [
   },
 ];
 
+// ukuran teks menyesuaikan layar: tablet 15px, laptop 17px, desktop 20px
 const MENU_ITEM_CLASS =
-  "cursor-pointer text-left text-[20px] font-light leading-snug text-black";
+  "cursor-pointer text-left text-[15px] font-light leading-snug text-black lg:text-[17px] xl:text-[20px]";
 
-// lebar kolom seragam di semua menu, jumlah kolom berbeda tetap di tengah panel
+// tablet (md): kolom dibuat 2 / 3 per baris agar teks tidak sempit;
+// laptop ke atas (lg+): semua kolom sejajar dengan lebar maksimal 300px
+// dan jumlah kolom berbeda tetap di tengah panel
 const COLUMN_GRID_CLASS: Record<number, string> = {
-  2: "grid-cols-[repeat(2,minmax(0,300px))]",
-  3: "grid-cols-[repeat(3,minmax(0,300px))]",
-  4: "grid-cols-[repeat(4,minmax(0,300px))]",
+  2: "grid-cols-2 lg:grid-cols-[repeat(2,minmax(0,300px))]",
+  3: "grid-cols-3 lg:grid-cols-[repeat(3,minmax(0,300px))]",
+  4: "grid-cols-2 lg:grid-cols-[repeat(4,minmax(0,300px))]",
 };
 
 /* ---------- search spesialisasi ---------- */
@@ -291,19 +294,19 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
       {/* mobile (< md): menu, search, scroll lock ada di NavbarMobile */}
       <NavbarMobile logoNode={logoNode} />
 
-      {/* desktop (>= md) */}
+      {/* tablet & desktop (>= md): ukuran menyesuaikan md / lg / xl */}
       <div className="hidden md:block">
         {/* utility bar */}
         <div className="bg-[#003f88] text-[12px] font-normal text-white">
-          <div className="mx-auto flex h-7 max-w-[1280px] items-stretch justify-between pl-6">
+          <div className="mx-auto flex h-7 max-w-[1280px] items-stretch justify-between pl-4 lg:pl-6">
             {/* quick links */}
             <nav aria-label="Tautan cepat">
-              <ul className="flex h-full items-center gap-6">
+              <ul className="flex h-full items-center gap-4 lg:gap-6">
                 {UTILITY_LINKS.map((link) => (
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="hover:underline hover:opacity-100"
+                      className="whitespace-nowrap hover:underline hover:opacity-100"
                     >
                       {link.label}
                     </Link>
@@ -322,7 +325,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                     ? "Bahasa saat ini Indonesia. Klik untuk beralih ke English"
                     : "Current language English. Click to switch to Indonesian"
                 }
-                className="px-4 font-semibold hover:underline inline-flex items-center gap-2"
+                className="inline-flex items-center gap-2 px-3 font-semibold hover:underline lg:px-4"
               >
                 <span
                   aria-hidden="true"
@@ -353,7 +356,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               {/* admin */}
               <Link
                 href={adminHref}
-                className="flex h-full items-center gap-2 bg-[#003f88] px-4 font-bold text-white"
+                className="flex h-full items-center gap-2 bg-[#003f88] px-3 font-bold text-white lg:px-4"
               >
                 <UserRound size={14} aria-hidden="true" />
                 <span>{adminLabel}</span>
@@ -364,8 +367,8 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
 
         {/* main bar */}
         <div className="relative bg-white">
-          <div className="mx-auto flex min-h-[96px] max-w-[1310px] items-center justify-between gap-6 px-6 py-5">
-            {/* logo */}
+          <div className="mx-auto flex min-h-[96px] max-w-[1310px] items-center justify-between gap-4 px-4 py-5 lg:gap-6 lg:px-6">
+            {/* logo: skala 100% di tablet, 110% di laptop, 120% di desktop */}
             <Link
               href="/"
               onClick={handleLogoClick}
@@ -377,46 +380,45 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                   isMenuOpen
                     ? "duration-150 ease-out"
                     : "duration-500 ease-in-out"
-                } ${isCompact ? "scale-100" : "scale-120"} ${
-                  isMenuOpen && !isScrolled ? "-translate-y-6" : ""
-                }`}
+                } ${
+                  isCompact
+                    ? "scale-100"
+                    : "scale-100 lg:scale-110 xl:scale-120"
+                } ${isMenuOpen && !isScrolled ? "-translate-y-6" : ""}`}
               >
                 {logoNode}
               </div>
             </Link>
 
             {/* menu & search */}
-            <div className="relative ml-auto flex flex-1 flex-col items-end justify-center gap-2.5">
-              {/* menu */}
+            <div className="relative ml-auto flex min-w-0 flex-1 flex-col items-end justify-center gap-2.5">
+              {/* menu: teks, jarak, dan panah mengecil di tablet; tidak pernah turun baris */}
               <nav aria-label="Menu utama">
-                <ul className="flex items-center justify-end gap-9 text-[18px] font-medium text-black">
+                <ul className="flex items-center justify-end gap-4 text-[14px] font-medium text-black lg:gap-6 lg:text-[16px] xl:gap-9 xl:text-[18px]">
                   {MEGA_MENUS.map((menu) => {
                     const isOpen = activeMenu === menu.key;
                     return (
-                      <li key={menu.key}>
+                      <li key={menu.key} className="shrink-0">
                         <button
                           type="button"
                           onClick={() => handleMenuClick(menu.key)}
                           aria-expanded={isOpen}
                           aria-controls="mega-menu-panel"
-                          className={`flex items-center gap-2 py-1 cursor-pointer transition-colors hover:text-[#003f88] ${
+                          className={`flex cursor-pointer items-center gap-1.5 whitespace-nowrap py-1 transition-colors hover:text-[#003f88] lg:gap-2 ${
                             isOpen ? "text-[#003f88]" : ""
                           }`}
                         >
                           <span>{menu.label}</span>
-                          {isOpen ? (
-                            <ChevronUp
-                              size={30}
-                              className="stroke-[2]"
-                              aria-hidden="true"
-                            />
-                          ) : (
-                            <ChevronDown
-                              size={30}
-                              className="stroke-[2]"
-                              aria-hidden="true"
-                            />
-                          )}
+                          <span
+                            aria-hidden="true"
+                            className="block h-5 w-5 shrink-0 lg:h-6 lg:w-6 xl:h-[30px] xl:w-[30px]"
+                          >
+                            {isOpen ? (
+                              <ChevronUp size="100%" className="stroke-[2]" />
+                            ) : (
+                              <ChevronDown size="100%" className="stroke-[2]" />
+                            )}
+                          </span>
                         </button>
                       </li>
                     );
@@ -465,7 +467,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                         }
                         placeholder="Nama Dokter atau Spesialisasi"
                         autoComplete="off"
-                        className="w-full px-3 py-2 text-sm font-normal text-neutral-700 placeholder-gray-400 focus:outline-none [&::-webkit-search-cancel-button]:appearance-none"
+                        className="w-full min-w-0 px-3 py-2 text-sm font-normal text-neutral-700 placeholder-gray-400 focus:outline-none [&::-webkit-search-cancel-button]:appearance-none"
                       />
                       {searchQuery && (
                         <button
@@ -479,7 +481,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                       )}
                       <button
                         type="submit"
-                        className="shrink-0 cursor-pointer bg-[#003f88] px-5 py-2 text-sm font-bold text-white transition-colors duration-700 hover:bg-[#002f66]"
+                        className="shrink-0 cursor-pointer bg-[#003f88] px-4 py-2 text-sm font-bold text-white transition-colors duration-700 hover:bg-[#002f66] lg:px-5"
                       >
                         Temukan
                       </button>
@@ -519,7 +521,7 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
             </div>
           </div>
 
-          {/* mega menu */}
+          {/* mega menu: padding, jarak, dan tinggi menyesuaikan md / lg / xl */}
           {activeMenuData && (
             <div
               id="mega-menu-panel"
@@ -529,20 +531,25 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                 isScrolled ? "top-[calc(100%-14px)]" : "top-[calc(100%-46px)]"
               }`}
             >
-              <div className="pointer-events-auto relative mx-auto flex h-[300px] max-h-[80vh] w-full max-w-[1600px] overflow-y-auto border border-gray-200 bg-white px-12 py-12 antialiased shadow-2xl 2xl:px-[100px]">
+              <div className="pointer-events-auto relative mx-auto flex h-auto min-h-[240px] max-h-[80vh] w-full max-w-[1600px] overflow-y-auto border border-gray-200 bg-white px-6 py-8 antialiased shadow-2xl lg:px-10 lg:py-10 xl:h-[300px] xl:px-12 xl:py-12 2xl:px-[100px]">
                 {/* close */}
                 <button
                   type="button"
                   onClick={closeMenu}
-                  className="absolute right-12 top-12 -mr-1 -mt-1 p-1 text-black 2xl:right-[100px] cursor-pointer"
+                  className="absolute right-6 top-6 -mr-1 -mt-1 cursor-pointer p-1 text-black lg:right-10 lg:top-10 xl:right-12 xl:top-12 2xl:right-[100px]"
                   aria-label="Tutup Menu"
                 >
-                  <X size={45} strokeWidth={1} aria-hidden="true" />
+                  <span
+                    aria-hidden="true"
+                    className="block h-8 w-8 lg:h-10 lg:w-10 xl:h-[45px] xl:w-[45px]"
+                  >
+                    <X size="100%" strokeWidth={1} />
+                  </span>
                 </button>
 
-                {/* columns */}
+                {/* columns: ruang kanan disisakan agar tidak tertutup tombol close */}
                 <div
-                  className={`my-auto grid w-full justify-center gap-10 ${
+                  className={`my-auto grid w-full justify-center gap-x-6 gap-y-6 pr-10 lg:gap-8 lg:pr-12 xl:gap-10 xl:pr-0 ${
                     COLUMN_GRID_CLASS[activeMenuData.columns.length] ??
                     COLUMN_GRID_CLASS[4]
                   }`}
@@ -550,10 +557,10 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                   {activeMenuData.columns.map((column, columnIndex) => (
                     <ul
                       key={column[0].label}
-                      className={`space-y-2 ${
+                      className={`space-y-1.5 lg:space-y-2 ${
                         activeMenuData.key === "Cari Dokter" &&
                         columnIndex === 0
-                          ? "border-r border-gray-300"
+                          ? "lg:border-r lg:border-gray-300"
                           : ""
                       }`}
                     >
