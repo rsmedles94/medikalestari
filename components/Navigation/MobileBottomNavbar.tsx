@@ -43,7 +43,7 @@ interface NavItem {
 const ICON_DIR = "/assets/dockbar";
 
 const NAV_ITEMS: readonly NavItem[] = [
-  { label: "Beranda", href: "/", icon: "home-fill" },
+  { label: "Beranda", href: "/", icon: "home" },
   { label: "Dokter", href: "/dokter", icon: "dokter" },
   { label: "Tambah", href: "#action-menu", isButton: true },
   { label: "Jadwal", href: "/jadwal-dokter", icon: "jadwal-dokter" },
