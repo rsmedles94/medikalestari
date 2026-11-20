@@ -11,7 +11,9 @@ import {
   Send,
   Bookmark,
 } from "lucide-react";
-import { motion, useAnimationControls } from "framer-motion";
+import { motion } from "framer-motion";
+import { useKeenSlider } from "keen-slider/react";
+import "keen-slider/keen-slider.min.css";
 import { fetchMadingContent } from "@/lib/api";
 import { useCachedFetch } from "@/lib/hooks/useCachedFetch";
 import { useEffect } from "react";
@@ -21,7 +23,6 @@ const MadingSection = memo(() => {
   const [likedItems, setLikedItems] = useState<Record<string, boolean>>({});
   const [activeIndex, setActiveIndex] = useState(0);
   const [itemsPerGroup, setItemsPerGroup] = useState(4);
-  const controls = useAnimationControls();
 
   // Wrap fetchMadingContent dengan useCallback untuk stable reference
   const fetchMadingCallback = useCallback(() => fetchMadingContent(), []);
@@ -45,8 +46,6 @@ const MadingSection = memo(() => {
       } else {
         setItemsPerGroup(2); // Mobile: 2 items
       }
-      setActiveIndex(0);
-      void controls.start({ x: "0%" });
     };
 
     handleResize();
@@ -55,7 +54,7 @@ const MadingSection = memo(() => {
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, [controls]);
+  }, []);
 
   const filteredData = useMemo(
     () =>
@@ -72,33 +71,39 @@ const MadingSection = memo(() => {
     [filteredData.length, itemsPerGroup],
   );
 
-  // Handler ketika tab berubah
-  const handleTabChange = useCallback(
-    (tab: string) => {
-      setActiveTab(tab);
-      setActiveIndex(0);
-      void controls.start({ x: "0%" });
+  // Jumlah halaman yang dirender ke slider (minimal 1 agar KeenSlider tidak error saat data kosong)
+  const totalPages = Math.max(totalDots, 1);
+
+  // KeenSlider: tiap halaman (grup 4 / 2 item) = 1 slide, sehingga drag, swipe,
+  // momentum, dan snap selalu berhenti tepat di halaman yang sesuai dengan dot
+  const [sliderRef, sliderInstance] = useKeenSlider<HTMLDivElement>({
+    initial: 0,
+    slides: { perView: 1 },
+    slideChanged(slider) {
+      setActiveIndex(slider.track.details.rel);
     },
-    [controls],
-  );
+  });
+
+  // Reset posisi ke halaman pertama & baca ulang dimensi slider setiap kali
+  // isi slider berubah (data selesai load, ganti tab, atau ganti jumlah item per grup)
+  useEffect(() => {
+    setActiveIndex(0);
+    sliderInstance.current?.update(undefined, 0);
+  }, [loading, activeTab, itemsPerGroup, totalDots, sliderInstance]);
+
+  // Handler ketika tab berubah
+  const handleTabChange = useCallback((tab: string) => {
+    setActiveTab(tab);
+    setActiveIndex(0);
+  }, []);
 
   // Handler untuk navigasi dot
   const handleDotClick = useCallback(
     (index: number) => {
       setActiveIndex(index);
-      const targetTranslateX = -(index * 100);
-
-      controls.start({
-        x: `${targetTranslateX}%`,
-        transition: {
-          type: "spring",
-          stiffness: 180,
-          damping: 24,
-          mass: 0.8,
-        },
-      });
+      sliderInstance.current?.moveToIdx(index);
     },
-    [controls],
+    [sliderInstance],
   );
 
   return (
@@ -134,275 +139,270 @@ const MadingSection = memo(() => {
           </div>
         </div>
 
-        {/* Carousel Container */}
-        <div className="w-full overflow-hidden mb-6">
-          <motion.div
-            animate={controls}
-            initial={{ x: "0%" }}
-            className="flex w-full"
-          >
-            {loading
-              ? /* SOLUSI: Menggunakan 4 total skeleton, tapi indeks ke-3 & 4 langsung disembunyikan di mobile lewat CSS Tailwind */
-                Array.from({ length: 1 }).map((_, pageIndex) => (
-                  <div
-                    key={`skeleton-page-${pageIndex}`}
-                    className="shrink-0 w-full flex gap-3 md:gap-5"
-                  >
-                    {[...new Array(4)].map((_, i) => (
+        {/* Carousel Container (bisa di-drag / swipe) */}
+        <div ref={sliderRef} className="keen-slider w-full mb-6 cursor-grab">
+          {loading
+            ? /* SOLUSI: Menggunakan 4 total skeleton, tapi indeks ke-3 & 4 langsung disembunyikan di mobile lewat CSS Tailwind */
+              Array.from({ length: 1 }).map((_, pageIndex) => (
+                <div
+                  key={`skeleton-page-${pageIndex}`}
+                  className="keen-slider__slide shrink-0 w-full flex gap-3 md:gap-5"
+                >
+                  {[...new Array(4)].map((_, i) => (
+                    <div
+                      key={`skeleton-card-${i}`}
+                      className={`shrink-0 animate-pulse w-[calc(50%-6px)] lg:w-[calc(25%-15px)] min-w-0 ${
+                        i >= 2 ? "hidden lg:block" : "block"
+                      }`}
+                    >
+                      {activeTab === "Informasi" ? (
+                        /* --- Skeleton Informasi --- */
+                        <div className="bg-white border border-gray-200 flex flex-col overflow-hidden shadow-sm h-[550px] relative">
+                          {/* Header Nickname & Tanggal */}
+                          <div className="p-2 md:p-3 flex items-center justify-between shrink-0">
+                            <div className="flex items-center gap-2 min-w-0 w-full">
+                              <div className="w-7 h-7 md:w-9 md:h-9 rounded-full bg-slate-200 shrink-0" />
+                              <div className="flex flex-col gap-1 w-24">
+                                <div className="h-3 bg-slate-200 rounded w-full" />
+                                <div className="h-2 bg-slate-200 rounded w-2/3" />
+                              </div>
+                            </div>
+                            <div className="w-4 h-4 bg-slate-200 rounded-full shrink-0" />
+                          </div>
+
+                          {/* Image Body */}
+                          <div className="aspect-square bg-slate-100 shrink-0" />
+
+                          {/* Interaction Bar */}
+                          <div className="p-2 md:p-3 pb-1 flex items-center justify-between shrink-0">
+                            <div className="flex gap-3 md:gap-4">
+                              <div className="w-5 h-5 bg-slate-200 rounded-full" />
+                              <div className="w-5 h-5 bg-slate-200 rounded-full" />
+                              <div className="w-5 h-5 bg-slate-200 rounded-full" />
+                            </div>
+                            <div className="w-5 h-5 bg-slate-200 rounded" />
+                          </div>
+
+                          {/* Caption Section */}
+                          <div className="px-2 md:px-3 pb-14 flex flex-col gap-2 flex-1 mt-2">
+                            <div className="h-3 bg-slate-200 rounded w-16" />
+                            <div className="h-4 bg-slate-200 rounded w-3/4 mt-1" />
+                            <div className="space-y-1.5">
+                              <div className="h-3 bg-slate-200 rounded w-full" />
+                              <div className="h-3 bg-slate-200 rounded w-5/6" />
+                            </div>
+                          </div>
+
+                          {/* Link Fixed di Bottom */}
+                          <div className="absolute bottom-0 left-0 right-0 p-2 md:p-3 bg-white border-t border-slate-50">
+                            <div className="h-4 bg-slate-200 rounded w-24" />
+                          </div>
+                        </div>
+                      ) : (
+                        /* --- Skeleton Event --- */
+                        <div className="bg-white overflow-hidden border border-gray-100 flex flex-col shadow-sm h-[550px] relative">
+                          {/* Image Body */}
+                          <div className="h-48 md:h-56 bg-slate-100 shrink-0" />
+
+                          {/* Content Area */}
+                          <div className="p-3 md:p-4 pt-5 pb-14 flex flex-col gap-2 flex-1">
+                            <div className="h-3 bg-slate-200 rounded w-12 tracking-widest" />
+                            <div className="space-y-1.5 mt-1">
+                              <div className="h-4 bg-slate-200 rounded w-full" />
+                              <div className="h-4 bg-slate-200 rounded w-4/5" />
+                            </div>
+                            <div className="space-y-1.5 mt-2">
+                              <div className="h-3 bg-slate-200 rounded w-full" />
+                              <div className="h-3 bg-slate-200 rounded w-5/6" />
+                            </div>
+                            <div className="h-3 bg-slate-200 rounded w-20 mt-4" />
+                          </div>
+
+                          {/* Link Fixed di Bottom */}
+                          <div className="absolute bottom-0 left-0 right-0 p-3 md:p-4 bg-white border-t border-slate-50">
+                            <div className="h-4 bg-slate-200 rounded w-28" />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ))
+            : // Render halaman/grup items saat data berhasil di-load
+              Array.from({ length: totalPages }).map((_, pageIndex) => (
+                <div
+                  key={`page-${pageIndex}`}
+                  className="keen-slider__slide shrink-0 w-full flex"
+                  style={{
+                    display: "flex",
+                    gap: itemsPerGroup === 4 ? "20px" : "12px",
+                  }}
+                >
+                  {filteredData
+                    .slice(
+                      pageIndex * itemsPerGroup,
+                      (pageIndex + 1) * itemsPerGroup,
+                    )
+                    .map((item) => (
                       <div
-                        key={`skeleton-card-${i}`}
-                        className={`shrink-0 animate-pulse w-[calc(50%-6px)] lg:w-[calc(25%-15px)] min-w-0 ${
-                          i >= 2 ? "hidden lg:block" : "block"
-                        }`}
+                        key={item.id}
+                        className="shrink-0"
+                        style={{
+                          width:
+                            itemsPerGroup === 4
+                              ? "calc(25% - 15px)"
+                              : "calc(50% - 6px)",
+                          minWidth: 0,
+                        }}
                       >
                         {activeTab === "Informasi" ? (
-                          /* --- Skeleton Informasi --- */
-                          <div className="bg-white border border-gray-200 flex flex-col overflow-hidden shadow-sm h-[550px] relative">
+                          /* --- Informasi --- */
+                          <div className="bg-white border border-gray-200 flex flex-col overflow-hidden shadow-sm h-[550px] relative group">
                             {/* Header Nickname & Tanggal */}
                             <div className="p-2 md:p-3 flex items-center justify-between shrink-0">
-                              <div className="flex items-center gap-2 min-w-0 w-full">
-                                <div className="w-7 h-7 md:w-9 md:h-9 rounded-full bg-slate-200 shrink-0" />
-                                <div className="flex flex-col gap-1 w-24">
-                                  <div className="h-3 bg-slate-200 rounded w-full" />
-                                  <div className="h-2 bg-slate-200 rounded w-2/3" />
+                              <div className="flex items-center gap-2 min-w-0">
+                                <div className="w-7 h-7 md:w-9 md:h-9 rounded-full bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600 p-[1.5px] shrink-0">
+                                  <div className="w-full h-full rounded-full bg-white p-[1px] md:p-[1.5px]">
+                                    <img
+                                      src="/instagram.png"
+                                      alt="Profile"
+                                      draggable={false}
+                                      className="w-full h-full rounded-full object-cover"
+                                    />
+                                  </div>
+                                </div>
+                                <div className="flex flex-col min-w-0">
+                                  <span className="text-[11px] md:text-[13px] font-bold text-slate-900 leading-tight truncate">
+                                    rsmedikalestari
+                                  </span>
+                                  <span className="text-[9px] md:text-[10px] text-slate-500 leading-tight">
+                                    {item.date}
+                                  </span>
                                 </div>
                               </div>
-                              <div className="w-4 h-4 bg-slate-200 rounded-full shrink-0" />
+                              <MoreHorizontal
+                                size={14}
+                                className="text-gray-500 shrink-0"
+                              />
                             </div>
 
                             {/* Image Body */}
-                            <div className="aspect-square bg-slate-100 shrink-0" />
+                            <a
+                              href={item.link || "#"}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              draggable={false}
+                              className="aspect-square overflow-hidden bg-gray-100 block shrink-0"
+                            >
+                              <img
+                                src={item.image_url}
+                                alt=""
+                                draggable={false}
+                                className="w-full h-full object-cover"
+                              />
+                            </a>
 
                             {/* Interaction Bar */}
                             <div className="p-2 md:p-3 pb-1 flex items-center justify-between shrink-0">
-                              <div className="flex gap-3 md:gap-4">
-                                <div className="w-5 h-5 bg-slate-200 rounded-full" />
-                                <div className="w-5 h-5 bg-slate-200 rounded-full" />
-                                <div className="w-5 h-5 bg-slate-200 rounded-full" />
+                              <div className="flex items-center gap-3 md:gap-4">
+                                <Heart
+                                  size={20}
+                                  onClick={() => toggleLike(item.id.toString())}
+                                  className={`cursor-pointer transition-all active:scale-125 ${likedItems[item.id] ? "fill-red-500 text-red-500" : "text-slate-800"}`}
+                                />
+                                <MessageCircle
+                                  size={20}
+                                  className="text-slate-800"
+                                />
+                                <Send size={20} className="text-slate-800" />
                               </div>
-                              <div className="w-5 h-5 bg-slate-200 rounded" />
+                              <Bookmark size={20} className="text-slate-800" />
                             </div>
 
                             {/* Caption Section */}
-                            <div className="px-2 md:px-3 pb-14 flex flex-col gap-2 flex-1 mt-2">
-                              <div className="h-3 bg-slate-200 rounded w-16" />
-                              <div className="h-4 bg-slate-200 rounded w-3/4 mt-1" />
-                              <div className="space-y-1.5">
-                                <div className="h-3 bg-slate-200 rounded w-full" />
-                                <div className="h-3 bg-slate-200 rounded w-5/6" />
+                            <div className="px-2 md:px-3 pb-14 flex flex-col font-sans overflow-y-auto flex-1">
+                              <span className="text-[11px] md:text-[13px] font-bold text-slate-900 mb-1 shrink-0">
+                                {likedItems[item.id]
+                                  ? "1,001 likes"
+                                  : "1,000 likes"}
+                              </span>
+
+                              <div className="text-[11px] md:text-[13px] leading-snug mb-2">
+                                <span className="font-bold text-slate-900 mr-2">
+                                  rsmedikalestari
+                                </span>
+                                <span className="font-bold text-slate-900 block mb-1">
+                                  {item.title}
+                                </span>
+                                <span className="text-slate-800 line-clamp-2">
+                                  {item.description}
+                                </span>
                               </div>
                             </div>
 
                             {/* Link Fixed di Bottom */}
-                            <div className="absolute bottom-0 left-0 right-0 p-2 md:p-3 bg-white border-t border-slate-50">
-                              <div className="h-4 bg-slate-200 rounded w-24" />
+                            <div className="absolute bottom-0 left-0 right-0 p-2 md:p-3 bg-white">
+                              <a
+                                href={item.link || "#"}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                draggable={false}
+                                className="text-[11px] md:text-[13px] font-semibold text-[#003f88] group-hover:text-[#e67e22] group-hover:underline transition-colors duration-700 block"
+                              >
+                                → Selengkapnya
+                              </a>
                             </div>
                           </div>
                         ) : (
-                          /* --- Skeleton Event --- */
-                          <div className="bg-white overflow-hidden border border-gray-100 flex flex-col shadow-sm h-[550px] relative">
-                            {/* Image Body */}
-                            <div className="h-48 md:h-56 bg-slate-100 shrink-0" />
+                          /* --- Event --- */
+                          <div className="bg-white overflow-hidden border border-gray-100 flex flex-col group transition-all hover:shadow-md h-[550px] relative">
+                            <a
+                              href={item.link || "#"}
+                              target="_blank"
+                              draggable={false}
+                              className="block overflow-hidden bg-gray-100 shrink-0"
+                            >
+                              <img
+                                src={item.image_url}
+                                alt=""
+                                draggable={false}
+                                className="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105"
+                              />
+                            </a>
 
-                            {/* Content Area */}
-                            <div className="p-3 md:p-4 pt-5 pb-14 flex flex-col gap-2 flex-1">
-                              <div className="h-3 bg-slate-200 rounded w-12 tracking-widest" />
-                              <div className="space-y-1.5 mt-1">
-                                <div className="h-4 bg-slate-200 rounded w-full" />
-                                <div className="h-4 bg-slate-200 rounded w-4/5" />
+                            <div className="p-3 md:p-4 pt-5 pb-14 flex flex-col overflow-y-auto flex-1">
+                              <span className="text-slate-500 text-[8px] md:text-[9px] font-bold uppercase mb-1 md:mb-2 tracking-widest shrink-0">
+                                EVENT
+                              </span>
+                              <h3 className="text-xs md:text-sm font-bold text-slate-900 mb-2 md:mb-3 leading-snug group-hover:text-[#003f88] transition-colors line-clamp-2 shrink-0">
+                                {item.title}
+                              </h3>
+                              <p className="text-[9px] md:text-[10px] text-slate-500 mb-4 md:mb-5 leading-relaxed line-clamp-2">
+                                {item.description}
+                              </p>
+                              <div className="flex items-center gap-1 md:gap-2 text-gray-500 font-bold text-[8px] md:text-[9px] mb-3 md:mb-4 uppercase shrink-0">
+                                <Calendar size={10} />{" "}
+                                {item.start_date || item.date}
                               </div>
-                              <div className="space-y-1.5 mt-2">
-                                <div className="h-3 bg-slate-200 rounded w-full" />
-                                <div className="h-3 bg-slate-200 rounded w-5/6" />
-                              </div>
-                              <div className="h-3 bg-slate-200 rounded w-20 mt-4" />
                             </div>
 
                             {/* Link Fixed di Bottom */}
-                            <div className="absolute bottom-0 left-0 right-0 p-3 md:p-4 bg-white border-t border-slate-50">
-                              <div className="h-4 bg-slate-200 rounded w-28" />
+                            <div className="absolute bottom-0 left-0 right-0 p-3 md:p-4 bg-white">
+                              <a
+                                href={item.link || "#"}
+                                target="_blank"
+                                draggable={false}
+                                className="flex items-center gap-1 md:gap-2 text-[#003f88] font-bold text-[11px] md:text-[13px] group-hover:text-[#e67e22] transition-colors duration-700"
+                              >
+                                <span> ⭢ Selengkapnya</span>
+                              </a>
                             </div>
                           </div>
                         )}
                       </div>
                     ))}
-                  </div>
-                ))
-              : // Render halaman/grup items saat data berhasil di-load
-                Array.from({ length: totalDots }).map((_, pageIndex) => (
-                  <div
-                    key={`page-${pageIndex}`}
-                    className="shrink-0 w-full flex"
-                    style={{
-                      display: "flex",
-                      gap: itemsPerGroup === 4 ? "20px" : "12px",
-                    }}
-                  >
-                    {filteredData
-                      .slice(
-                        pageIndex * itemsPerGroup,
-                        (pageIndex + 1) * itemsPerGroup,
-                      )
-                      .map((item) => (
-                        <div
-                          key={item.id}
-                          className="shrink-0"
-                          style={{
-                            width:
-                              itemsPerGroup === 4
-                                ? "calc(25% - 15px)"
-                                : "calc(50% - 6px)",
-                            minWidth: 0,
-                          }}
-                        >
-                          {activeTab === "Informasi" ? (
-                            /* --- Informasi --- */
-                            <div className="bg-white border border-gray-200 flex flex-col overflow-hidden shadow-sm h-[550px] relative group">
-                              {/* Header Nickname & Tanggal */}
-                              <div className="p-2 md:p-3 flex items-center justify-between shrink-0">
-                                <div className="flex items-center gap-2 min-w-0">
-                                  <div className="w-7 h-7 md:w-9 md:h-9 rounded-full bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600 p-[1.5px] shrink-0">
-                                    <div className="w-full h-full rounded-full bg-white p-[1px] md:p-[1.5px]">
-                                      <img
-                                        src="/instagram.png"
-                                        alt="Profile"
-                                        className="w-full h-full rounded-full object-cover"
-                                      />
-                                    </div>
-                                  </div>
-                                  <div className="flex flex-col min-w-0">
-                                    <span className="text-[11px] md:text-[13px] font-bold text-slate-900 leading-tight truncate">
-                                      rsmedikalestari
-                                    </span>
-                                    <span className="text-[9px] md:text-[10px] text-slate-500 leading-tight">
-                                      {item.date}
-                                    </span>
-                                  </div>
-                                </div>
-                                <MoreHorizontal
-                                  size={14}
-                                  className="text-gray-500 shrink-0"
-                                />
-                              </div>
-
-                              {/* Image Body */}
-                              <a
-                                href={item.link || "#"}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="aspect-square overflow-hidden bg-gray-100 block shrink-0"
-                              >
-                                <img
-                                  src={item.image_url}
-                                  alt=""
-                                  className="w-full h-full object-cover"
-                                />
-                              </a>
-
-                              {/* Interaction Bar */}
-                              <div className="p-2 md:p-3 pb-1 flex items-center justify-between shrink-0">
-                                <div className="flex items-center gap-3 md:gap-4">
-                                  <Heart
-                                    size={20}
-                                    onClick={() =>
-                                      toggleLike(item.id.toString())
-                                    }
-                                    className={`cursor-pointer transition-all active:scale-125 ${likedItems[item.id] ? "fill-red-500 text-red-500" : "text-slate-800"}`}
-                                  />
-                                  <MessageCircle
-                                    size={20}
-                                    className="text-slate-800"
-                                  />
-                                  <Send size={20} className="text-slate-800" />
-                                </div>
-                                <Bookmark
-                                  size={20}
-                                  className="text-slate-800"
-                                />
-                              </div>
-
-                              {/* Caption Section */}
-                              <div className="px-2 md:px-3 pb-14 flex flex-col font-sans overflow-y-auto flex-1">
-                                <span className="text-[11px] md:text-[13px] font-bold text-slate-900 mb-1 shrink-0">
-                                  {likedItems[item.id]
-                                    ? "1,001 likes"
-                                    : "1,000 likes"}
-                                </span>
-
-                                <div className="text-[11px] md:text-[13px] leading-snug mb-2">
-                                  <span className="font-bold text-slate-900 mr-2">
-                                    rsmedikalestari
-                                  </span>
-                                  <span className="font-bold text-slate-900 block mb-1">
-                                    {item.title}
-                                  </span>
-                                  <span className="text-slate-800 line-clamp-2">
-                                    {item.description}
-                                  </span>
-                                </div>
-                              </div>
-
-                              {/* Link Fixed di Bottom */}
-                              <div className="absolute bottom-0 left-0 right-0 p-2 md:p-3 bg-white">
-                                <a
-                                  href={item.link || "#"}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-[11px] md:text-[13px] font-semibold text-[#003f88] group-hover:text-[#e67e22] group-hover:underline transition-colors duration-700 block"
-                                >
-                                  → Selengkapnya
-                                </a>
-                              </div>
-                            </div>
-                          ) : (
-                            /* --- Event --- */
-                            <div className="bg-white overflow-hidden border border-gray-100 flex flex-col group transition-all hover:shadow-md h-[550px] relative">
-                              <a
-                                href={item.link || "#"}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="block overflow-hidden bg-gray-100 shrink-0"
-                              >
-                                <img
-                                  src={item.image_url}
-                                  alt=""
-                                  className="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105"
-                                />
-                              </a>
-
-                              <div className="p-3 md:p-4 pt-5 pb-14 flex flex-col overflow-y-auto flex-1">
-                                <span className="text-slate-500 text-[8px] md:text-[9px] font-bold uppercase mb-1 md:mb-2 tracking-widest shrink-0">
-                                  EVENT
-                                </span>
-                                <h3 className="text-xs md:text-sm font-bold text-slate-900 mb-2 md:mb-3 leading-snug group-hover:text-[#003f88] transition-colors line-clamp-2 shrink-0">
-                                  {item.title}
-                                </h3>
-                                <p className="text-[9px] md:text-[10px] text-slate-500 mb-4 md:mb-5 leading-relaxed line-clamp-2">
-                                  {item.description}
-                                </p>
-                                <div className="flex items-center gap-1 md:gap-2 text-gray-500 font-bold text-[8px] md:text-[9px] mb-3 md:mb-4 uppercase shrink-0">
-                                  <Calendar size={10} />{" "}
-                                  {item.start_date || item.date}
-                                </div>
-                              </div>
-
-                              {/* Link Fixed di Bottom */}
-                              <div className="absolute bottom-0 left-0 right-0 p-3 md:p-4 bg-white">
-                                <a
-                                  href={item.link || "#"}
-                                  target="_blank"
-                                  className="flex items-center gap-1 md:gap-2 text-[#003f88] font-bold text-[11px] md:text-[13px] group-hover:text-[#e67e22] transition-colors duration-700"
-                                >
-                                  <span> ⭢ Selengkapnya</span>
-                                </a>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                  </div>
-                ))}
-          </motion.div>
+                </div>
+              ))}
         </div>
 
         {/* Indikator Dot Bulat Navigasi */}

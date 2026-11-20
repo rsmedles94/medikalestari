@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, ChangeEvent, FormEvent } from "react";
+import React, { useState, Suspense, ChangeEvent, FormEvent } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 import { ChevronRight, Send } from "lucide-react";
 
 const FEATURES_DATA = [
@@ -38,10 +39,15 @@ const FEATURES_DATA = [
   },
 ];
 
-const KontakKami = () => {
+interface KontakKamiContentProps {
+  // email awal untuk mengisi formulir otomatis (dari ?email=... di URL)
+  initialEmail: string;
+}
+
+const KontakKamiContent = ({ initialEmail }: KontakKamiContentProps) => {
   const [formData, setFormData] = useState({
     nama: "",
-    email: "",
+    email: initialEmail,
     subjek: "",
     pesan: "",
   });
@@ -162,9 +168,9 @@ const KontakKami = () => {
                   <div className="pt-2">
                     <button
                       type="submit"
-                      className="bg-[#003f88] hover:bg-[#002b5c] text-white px-4 py-2 rounded-full text-xs font-semibold transition-colors inline-flex items-center justify-center gap-1.5 cursor-pointer"
+                      className="bg-[#003f88] hover:bg-[#002b5c] text-white px-4 py-2 rounded-md text-xs font-semibold transition-colors inline-flex items-center justify-center gap-1.5 cursor-pointer"
                     >
-                      Kirim Pesan <Send size={12} />
+                      Kirim Pesan
                     </button>
                   </div>
                 </form>
@@ -250,5 +256,24 @@ const KontakKami = () => {
     </main>
   );
 };
+
+// membaca ?email=... dari URL (dikirim dari form newsletter di footer);
+// key memastikan formulir terisi ulang jika email di URL berubah
+const KontakKamiWithQuery = () => {
+  const searchParams = useSearchParams();
+  const emailFromQuery = searchParams.get("email") ?? "";
+
+  return (
+    <KontakKamiContent key={emailFromQuery} initialEmail={emailFromQuery} />
+  );
+};
+
+// useSearchParams wajib dibungkus Suspense; fallback memakai halaman yang sama
+// (tanpa email) supaya konten tetap ada di HTML awal
+const KontakKami = () => (
+  <Suspense fallback={<KontakKamiContent initialEmail="" />}>
+    <KontakKamiWithQuery />
+  </Suspense>
+);
 
 export default KontakKami;

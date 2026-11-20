@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, animate, useInView, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
@@ -241,28 +241,136 @@ const AWARDS_DATA = [
 // ==========================================
 // DATA COUNTER STATISTIK
 // ==========================================
+// value: angka tujuan animasi hitung, suffix: tambahan di belakang angka
 const STATS_DATA = [
   {
     icon: "/images/icons/doctor.svg",
-    number: "47",
+    value: 47,
+    suffix: "",
     text: "Tenaga Medis Profesional",
   },
   {
     icon: "/images/icons/poly.svg",
-    number: "8K+",
+    value: 8000,
+    suffix: "+",
     text: "Pasien Poliklinik pernah ditangani",
   },
   {
     icon: "/images/icons/patient.svg",
-    number: "2k+",
+    value: 2500,
+    suffix: "+",
     text: "Pasien Rawat Inap pernah ditangani",
   },
   {
     icon: "/images/icons/bed.svg",
-    number: "100+",
+    value: 100,
+    suffix: "+",
     text: "Kamar Perawatan Modern",
   },
 ];
+
+// ==========================================
+// FORMAT ANGKA (pemisah ribuan titik, contoh 8.000)
+// ==========================================
+const formatNumber = (n: number) =>
+  n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+// ==========================================
+// COMPONENT ANGKA MENGHITUNG (COUNT UP)
+// ==========================================
+interface CountUpProps {
+  value: number;
+  suffix?: string;
+  duration?: number;
+}
+
+function CountUp({ value, suffix = "", duration = 2.2 }: CountUpProps) {
+  const ref = useRef<HTMLSpanElement>(null);
+  // mulai menghitung saat angka terlihat di layar (sekali saja)
+  const isInView = useInView(ref, { once: true, margin: "0px 0px -80px 0px" });
+  const reduceMotion = useReducedMotion();
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (!isInView || reduceMotion) return;
+
+    const controls = animate(0, value, {
+      duration,
+      ease: "easeOut",
+      onUpdate: (latest) => setCount(Math.round(latest)),
+    });
+
+    return () => controls.stop();
+  }, [isInView, reduceMotion, value, duration]);
+
+  // pengguna dengan reduced motion langsung melihat angka akhir
+  const current = reduceMotion ? value : count;
+  const finalText = `${formatNumber(value)}${suffix}`;
+
+  return (
+    <span ref={ref} className="relative inline-block tabular-nums">
+      {/* lebar tetap sesuai angka akhir supaya layout tidak bergeser saat menghitung */}
+      <span className="invisible" aria-hidden="true">
+        {finalText}
+      </span>
+      <span className="absolute inset-0 text-center" aria-hidden="true">
+        {formatNumber(current)}
+        {suffix}
+      </span>
+      <span className="sr-only">{finalText}</span>
+    </span>
+  );
+}
+
+// ==========================================
+// COMPONENT KOTAK LOGO REKANAN (ANIMASI MUNCUL)
+// ==========================================
+interface AwardLogoBoxProps {
+  award: (typeof AWARDS_DATA)[number];
+  index: number;
+  show: boolean;
+  instant: boolean;
+}
+
+// tile putih terbuka dari kiri ke kanan (wipe), berurutan secara diagonal
+// per baris + kolom; logo muncul menyusul setelah tile terbuka
+const WIPE_CLOSED = "inset(0 100% 0 0)";
+const WIPE_OPEN = "inset(0 0% 0 0)";
+const WIPE_EASE = [0.22, 1, 0.36, 1] as const;
+
+function AwardLogoBox({ award, index, show, instant }: AwardLogoBoxProps) {
+  // grid 3 kolom: gelombang bergerak diagonal dari kiri atas ke kanan bawah
+  const row = Math.floor(index / 3);
+  const col = index % 3;
+  const delay = (row + col) * 0.12;
+
+  return (
+    // drop-shadow di pembungkus agar bayangan ikut area yang sudah terbuka
+    <div className="aspect-[4/3] drop-shadow-sm">
+      <motion.div
+        className="bg-white p-2 w-full h-full flex items-center justify-center"
+        initial={instant ? false : { clipPath: WIPE_CLOSED }}
+        animate={{ clipPath: show ? WIPE_OPEN : WIPE_CLOSED }}
+        transition={{ duration: 1, delay, ease: WIPE_EASE }}
+      >
+        <motion.div
+          className="relative w-full h-full"
+          initial={instant ? false : { opacity: 0 }}
+          animate={{ opacity: show ? 1 : 0 }}
+          transition={{ duration: 0.7, delay: delay + 0.5, ease: "easeOut" }}
+        >
+          <Image
+            src={award.src}
+            alt={award.alt}
+            fill
+            sizes="100vw"
+            className="object-contain"
+          />
+        </motion.div>
+      </motion.div>
+    </div>
+  );
+}
 
 // ==========================================
 // COMPONENT SKELETON LOADING
@@ -289,6 +397,18 @@ function SkeletonCard() {
 }
 
 // ==========================================
+// HITUNG DOT LANGSUNG DARI SLIDER (NATIVE)
+// ==========================================
+// jumlah dot selalu dibaca dari kondisi slider yang sedang aktif (perView
+// mobile / desktop dan jumlah card yang benar-benar dirender), bukan angka manual
+const getDotsFromSlider = (slider: {
+  track: { details: { maxIdx: number } | null };
+}) => {
+  const maxIdx = slider.track.details?.maxIdx ?? 0;
+  return Array.from(Array(maxIdx + 1).keys());
+};
+
+// ==========================================
 // COMPONENT UTAMA
 // ==========================================
 const PromoKesehatan = () => {
@@ -305,12 +425,26 @@ const PromoKesehatan = () => {
   // State untuk track card promo mana yang di-hover
   const [hoveredPromoId, setHoveredPromoId] = useState<number | null>(null);
 
+  // Animasi muncul kotak rekanan: mulai saat terlihat di layar, tiap halaman
+  // slider dianimasikan saat pertama kali dibuka
+  const awardsWrapperRef = useRef<HTMLDivElement>(null);
+  const isAwardsInView = useInView(awardsWrapperRef, {
+    once: true,
+    margin: "0px 0px -80px 0px",
+  });
+  const reduceMotion = useReducedMotion();
+  const [seenAwardPages, setSeenAwardPages] = useState<number[]>([0]);
+  const showAwardPage = (page: number) =>
+    !!reduceMotion || (isAwardsInView && seenAwardPages.includes(page));
+
   // 1. REKANAN SLIDER (3x3 grid per halaman)
   const [awardSliderRef, awardSliderInstance] = useKeenSlider<HTMLDivElement>({
     initial: 0,
     slides: { perView: 1 },
     slideChanged(slider) {
-      setActiveAwardIndex(slider.track.details.rel);
+      const rel = slider.track.details.rel;
+      setActiveAwardIndex(rel);
+      setSeenAwardPages((prev) => (prev.includes(rel) ? prev : [...prev, rel]));
     },
     created(slider) {
       if (slider.track.details?.slides) {
@@ -348,12 +482,12 @@ const PromoKesehatan = () => {
     },
     created(slider) {
       // Menghitung jumlah dot yang benar berdasarkan total pergeseran maksimum yang valid
-      const maxIdx = slider.track.details.maxIdx;
-      setPromoDots(Array.from(Array(maxIdx + 1).keys()));
+      setPromoDots(getDotsFromSlider(slider));
     },
     updated(slider) {
-      const maxIdx = slider.track.details.maxIdx;
-      setPromoDots(Array.from(Array(maxIdx + 1).keys()));
+      // dipanggil juga saat breakpoint mobile <-> desktop berganti
+      setPromoDots(getDotsFromSlider(slider));
+      setActiveIndex(slider.track.details.rel);
     },
   });
 
@@ -362,7 +496,11 @@ const PromoKesehatan = () => {
       setIsLoading(false);
       // Memaksa KeenSlider membaca ulang dimensi kontainer setelah skeleton hilang
       setTimeout(() => {
-        if (promoSliderInstance.current) promoSliderInstance.current.update();
+        if (promoSliderInstance.current) {
+          promoSliderInstance.current.update();
+          // sinkronkan dot dengan card yang sudah dirender (bukan skeleton)
+          setPromoDots(getDotsFromSlider(promoSliderInstance.current));
+        }
         if (awardSliderInstance.current) awardSliderInstance.current.update();
       }, 50);
     }, 700);
@@ -425,7 +563,18 @@ const PromoKesehatan = () => {
           {/* data statistik medika lestari */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12 text-center items-start mb-20">
             {STATS_DATA.map((stat, index) => (
-              <div key={index} className="flex flex-col items-center">
+              <motion.div
+                key={index}
+                className="flex flex-col items-center"
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{
+                  duration: 0.6,
+                  delay: index * 0.12,
+                  ease: "easeOut",
+                }}
+              >
                 {/* Image */}
                 <div className="mb-3 w-15 h-15 flex items-center justify-center relative">
                   <Image
@@ -438,18 +587,18 @@ const PromoKesehatan = () => {
                 </div>
 
                 {/* Pembungkus Angka dan Teks  */}
-                <div className="flex flex-col md:flex-row items-center justify-center gap-y-2 md:gap-x-3 text-center md:text-left">
+                <div className="flex flex-col items-center justify-center gap-y-3 text-center">
                   {/* Number */}
                   <div className="text-4xl md:text-[50px] font-bold leading-none text-white flex-shrink-0">
-                    {stat.number}
+                    <CountUp value={stat.value} suffix={stat.suffix} />
                   </div>
 
                   {/* Teks  */}
-                  <p className="text-xs uppercase font-bold text-white/90 max-w-[120px] leading-tight">
+                  <p className="text-xs uppercase font-bold text-white/90 max-w-[160px] leading-tight">
                     {stat.text}
                   </p>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
 
@@ -490,68 +639,50 @@ const PromoKesehatan = () => {
             </div>
 
             {/* Sisi Kanan: Slider Bungkus Kotak Putih Logo Penghargaan */}
-            <div className="lg:col-span-6 w-full overflow-hidden flex flex-col">
+            <div
+              ref={awardsWrapperRef}
+              className="lg:col-span-6 w-full overflow-hidden flex flex-col"
+            >
               <div
                 ref={awardSliderRef}
                 className="keen-slider w-full overflow-hidden"
               >
                 {/* Halaman/Grup Pertama (Logo 1-9) */}
                 <div className="keen-slider__slide w-full shrink-0 grid grid-cols-3 gap-2 pr-1">
-                  {AWARDS_DATA.slice(0, 9).map((award) => (
-                    <div
+                  {AWARDS_DATA.slice(0, 9).map((award, index) => (
+                    <AwardLogoBox
                       key={award.id}
-                      className="bg-white p-2 aspect-[4/3] flex items-center justify-center shadow transition-all duration-300"
-                    >
-                      <div className="relative w-full h-full">
-                        <Image
-                          src={award.src}
-                          alt={award.alt}
-                          fill
-                          sizes="100vw"
-                          className="object-contain"
-                        />
-                      </div>
-                    </div>
+                      award={award}
+                      index={index}
+                      show={showAwardPage(0)}
+                      instant={!!reduceMotion}
+                    />
                   ))}
                 </div>
 
                 {/* Halaman/Grup Kedua (Logo 10-18) */}
                 <div className="keen-slider__slide w-full shrink-0 grid grid-cols-3 gap-2 pl-1">
-                  {AWARDS_DATA.slice(9, 18).map((award) => (
-                    <div
+                  {AWARDS_DATA.slice(9, 18).map((award, index) => (
+                    <AwardLogoBox
                       key={award.id}
-                      className="bg-white p-2 aspect-[4/3] flex items-center justify-center shadow transition-all duration-300"
-                    >
-                      <div className="relative w-full h-full">
-                        <Image
-                          src={award.src}
-                          alt={award.alt}
-                          fill
-                          sizes="100vw"
-                          className="object-contain"
-                        />
-                      </div>
-                    </div>
+                      award={award}
+                      index={index}
+                      show={showAwardPage(1)}
+                      instant={!!reduceMotion}
+                    />
                   ))}
                 </div>
 
                 {/* Halaman/Grup Kedua (Logo 18-27) */}
                 <div className="keen-slider__slide w-full shrink-0 grid grid-cols-3 gap-2 pl-1">
-                  {AWARDS_DATA.slice(18, 27).map((award) => (
-                    <div
+                  {AWARDS_DATA.slice(18, 27).map((award, index) => (
+                    <AwardLogoBox
                       key={award.id}
-                      className="bg-white p-2 aspect-[4/3] flex items-center justify-center shadow transition-all duration-300"
-                    >
-                      <div className="relative w-full h-full">
-                        <Image
-                          src={award.src}
-                          alt={award.alt}
-                          fill
-                          sizes="100vw"
-                          className="object-contain"
-                        />
-                      </div>
-                    </div>
+                      award={award}
+                      index={index}
+                      show={showAwardPage(2)}
+                      instant={!!reduceMotion}
+                    />
                   ))}
                 </div>
               </div>
@@ -628,22 +759,12 @@ const PromoKesehatan = () => {
                     className="keen-slider__slide w-1/2 lg:w-1/4 shrink-0 p-2 md:p-3"
                   >
                     <article
-                      className="bg-white border border-gray-300 flex flex-col h-full -lg overflow-hidden transition-all duration-300 group"
+                      className="bg-white border border-gray-300 flex flex-col h-full -lg overflow-hidden transition-shadow duration-300 group"
                       onMouseEnter={() => setHoveredPromoId(item.id)}
                       onMouseLeave={() => setHoveredPromoId(null)}
                     >
                       <div className="relative aspect-square w-full overflow-hidden bg-gray-50 cursor-pointer">
-                        <motion.div
-                          className="w-full h-full"
-                          animate={{
-                            scale: hoveredPromoId === item.id ? 1.1 : 1,
-                          }}
-                          transition={{
-                            type: "tween",
-                            duration: 0.6,
-                            ease: "easeInOut",
-                          }}
-                        >
+                        <div className="w-full h-full">
                           <Image
                             src={item.image}
                             alt={`Promo ${item.title}`}
@@ -652,7 +773,7 @@ const PromoKesehatan = () => {
                             className="object-cover w-full h-full"
                             priority={item.id <= 4}
                           />
-                        </motion.div>
+                        </div>
                       </div>
 
                       <div className="p-4 md:p-10 flex flex-col grow text-center bg-white">
@@ -726,7 +847,7 @@ const PromoKesehatan = () => {
           <div className="mt-12 text-center">
             <Link href="/promo" passHref>
               <span className="text-sm md:text-base font-semibold text-[#3D8ECB] hover:text-[#e67e22] hover:underline transition-all duration-700 cursor-pointer inline-block">
-                Lihat Semua Promo →
+                Lihat Semua Promo <span className="text-base">→</span>
               </span>
             </Link>
           </div>

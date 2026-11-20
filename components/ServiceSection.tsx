@@ -1,8 +1,21 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useSyncExternalStore,
+} from "react";
 import Image from "next/image";
-import { motion, useMotionValue, animate } from "framer-motion";
+import {
+  motion,
+  useMotionValue,
+  animate,
+  useInView,
+  useReducedMotion,
+  type Variants,
+} from "framer-motion";
 
 interface KisahItem {
   id: number;
@@ -15,9 +28,49 @@ interface KisahItem {
   href: string;
 }
 
+// animasi kartu ulasan: fade-in halus dengan geser naik tipis, jeda antar kartu singkat
+const CARD_STAGGER = 0.08;
+const cardVariants: Variants = {
+  hidden: { opacity: 0, y: 12 },
+  visible: (index: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      delay: index * CARD_STAGGER,
+      ease: [0.25, 0.1, 0.25, 1],
+    },
+  }),
+};
+
+// warna bintang rating: kosong (abu-abu) dan terisi (oranye)
+const STAR_EMPTY = "#E2E8F0";
+const STAR_FILLED = "#F59E0B";
+
+// membaca ukuran layar (mobile < 768px) langsung dari browser lewat
+// useSyncExternalStore: server selalu memakai nilai awal desktop (false) sehingga
+// tidak terjadi hydration mismatch, dan tidak perlu setState di dalam useEffect
+const MOBILE_QUERY = "(max-width: 767px)";
+
+const subscribeMobile = (onChange: () => void) => {
+  const mql = window.matchMedia(MOBILE_QUERY);
+  mql.addEventListener("change", onChange);
+  return () => mql.removeEventListener("change", onChange);
+};
+const getMobileSnapshot = () => window.matchMedia(MOBILE_QUERY).matches;
+const getMobileServerSnapshot = () => false;
+
 const ServiceSection = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
+
+  // animasi muncul dimulai saat slider terlihat di layar (sekali saja)
+  const isInView = useInView(containerRef, {
+    once: true,
+    margin: "0px 0px -100px 0px",
+  });
+  const reduceMotion = useReducedMotion();
+  const showCards = isInView || !!reduceMotion;
 
   const ulasanData: KisahItem[] = [
     {
@@ -84,20 +137,15 @@ const ServiceSection = () => {
 
   const [activeIndex, setActiveIndex] = useState(0);
 
-  // Inisialisasi awal tanpa memicu cascading render
-  const [isMobile, setIsMobile] = useState(() => {
-    if (typeof window !== "undefined") {
-      return window.innerWidth < 768;
-    }
-    return false;
-  });
+  // Status mobile dibaca dari browser tanpa memicu hydration mismatch
+  const isMobile = useSyncExternalStore(
+    subscribeMobile,
+    getMobileSnapshot,
+    getMobileServerSnapshot,
+  );
 
-  const [totalDots, setTotalDots] = useState(() => {
-    if (typeof window !== "undefined" && window.innerWidth < 768) {
-      return ulasanData.length - 1; // 5 dot di mobile
-    }
-    return ulasanData.length - 2; // 4 dot di desktop
-  });
+  // Jumlah dot diturunkan langsung dari isMobile (tidak perlu state terpisah)
+  const totalDots = isMobile ? ulasanData.length - 1 : ulasanData.length - 2; // 5 dot di mobile, 4 dot di desktop
 
   const [dragConstraints, setDragConstraints] = useState({ left: 0, right: 0 });
   const x = useMotionValue(0);
@@ -115,26 +163,20 @@ const ServiceSection = () => {
     }
   }, []);
 
-  // Update layout khusus saat terjadi perubahan ukuran layar (resize)
-  const handleResize = useCallback(() => {
-    if (typeof window === "undefined") return;
-
-    const mobileState = window.innerWidth < 768;
-    setIsMobile(mobileState);
-
-    const dotsCount = mobileState
-      ? ulasanData.length - 1
-      : ulasanData.length - 2;
-    setTotalDots(dotsCount);
-
-    calculateConstraints();
-  }, [ulasanData.length, calculateConstraints]);
-
+  // Update batas drag setiap kali ukuran kontainer / track berubah (resize,
+  // pindah mobile <-> desktop). Pengukuran awal juga dijalankan oleh ResizeObserver
+  // di dalam callback, bukan langsung di badan effect
   useEffect(() => {
-    calculateConstraints();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [calculateConstraints, handleResize]);
+    const container = containerRef.current;
+    const track = trackRef.current;
+    if (!container || !track) return;
+
+    const observer = new ResizeObserver(() => calculateConstraints());
+    observer.observe(container);
+    observer.observe(track);
+
+    return () => observer.disconnect();
+  }, [calculateConstraints]);
 
   const getItemWidth = () => {
     return isMobile ? 280 + 24 : 360 + 24;
@@ -188,17 +230,30 @@ const ServiceSection = () => {
     }
   };
 
-  const renderStars = (rating: number) => {
+  // bintang rating: abu-abu lalu terisi oranye satu per satu setelah kartunya tampil
+  // (hanya bintang sesuai nilai rating yang berubah warna)
+  const renderStars = (rating: number, cardIndex: number) => {
+    const starsBaseDelay = cardIndex * CARD_STAGGER + 0.6;
+
     return Array.from({ length: 5 }).map((_, index) => (
-      <svg
+      <motion.svg
         key={index}
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
-        fill={index < rating ? "#F4B400" : "#E2E8F0"}
         className="w-4 h-4"
+        aria-hidden="true"
+        initial={reduceMotion ? false : { fill: STAR_EMPTY }}
+        animate={{
+          fill: showCards && index < rating ? STAR_FILLED : STAR_EMPTY,
+        }}
+        transition={{
+          duration: 0.8,
+          ease: "easeInOut",
+          delay: starsBaseDelay + index * 0.25,
+        }}
       >
         <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-      </svg>
+      </motion.svg>
     ));
   };
 
@@ -233,11 +288,15 @@ const ServiceSection = () => {
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
           >
-            {ulasanData.map((item) => (
-              <article
+            {ulasanData.map((item, index) => (
+              <motion.article
                 key={item.id}
                 onClick={() => handleCardClick(item.href)}
-                className="w-[280px] md:w-[360px] h-[380px] flex-shrink-0 flex flex-col justify-between bg-white rounded-[12px] p-6 shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer text-left select-none"
+                variants={cardVariants}
+                custom={index}
+                initial={reduceMotion ? false : "hidden"}
+                animate={showCards ? "visible" : "hidden"}
+                className="w-[280px] md:w-[360px] h-[380px] flex-shrink-0 flex flex-col justify-between bg-white rounded-md p-6 shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer text-left select-none"
               >
                 <div>
                   {/* Profil Penulis Ulasan */}
@@ -270,7 +329,7 @@ const ServiceSection = () => {
 
                   {/* Rating Bintang */}
                   <div className="flex items-center gap-0.5 mb-3">
-                    {renderStars(item.rating)}
+                    {renderStars(item.rating, index)}
                   </div>
 
                   {/* Isi Ulasan */}
@@ -285,7 +344,7 @@ const ServiceSection = () => {
                     → Selengkapnya
                   </span>
                 </div>
-              </article>
+              </motion.article>
             ))}
           </motion.div>
         </div>
@@ -347,7 +406,7 @@ const ServiceSection = () => {
             }
             className="text-white font-semibold text-[10px] md:text-sm flex items-center gap-1 transition-all duration-700 hover:text-[#e67e22] hover:underline cursor-pointer"
           >
-            Lihat ulasan lainnya <span className="text-base">→</span>
+            <span className="text-base">→</span> Lihat ulasan lainnya
           </button>
         </footer>
       </div>

@@ -23,8 +23,6 @@ type MenuItem =
 interface MegaMenu {
   key: string;
   label: string;
-  heading: string;
-  headingHref: string;
   columns: MenuItem[][];
 }
 
@@ -44,9 +42,11 @@ const MEGA_MENUS: MegaMenu[] = [
   {
     key: "Cari Dokter",
     label: "Temukan Dokter",
-    heading: "Semua Dokter",
-    headingHref: "/dokter",
     columns: [
+      [
+        { label: "Semua Dokter", href: "/dokter" },
+        { label: "Jadwal Dokter", href: "/jadwal-dokter" },
+      ],
       [
         specialty("Spesialis Penyakit Dalam"),
         specialty("Spesialis Bedah Umum"),
@@ -70,8 +70,6 @@ const MEGA_MENUS: MegaMenu[] = [
   {
     key: "Fasilitas & Layanan",
     label: "Fasilitas & Layanan",
-    heading: "Lihat Semua Layanan Medis",
-    headingHref: "/services/poli-klinik",
     columns: [
       [
         { label: "Medical Checkup", href: "/services/medical-checkup" },
@@ -92,12 +90,9 @@ const MEGA_MENUS: MegaMenu[] = [
   {
     key: "Profil",
     label: "Informasi",
-    heading: "Tentang RS Medika Lestari",
-    headingHref: "/tentang-kami",
     columns: [
       [
-        { label: "Profil Rumah Sakit", href: "/tentang-kami" },
-        { label: "Jadwal Dokter", href: "/jadwal-dokter" },
+        { label: "Tentang Kami", href: "/tentang-kami" },
         { label: "Karir & Kesempatan Kerja", href: "/careers" },
       ],
       [
@@ -109,7 +104,14 @@ const MEGA_MENUS: MegaMenu[] = [
 ];
 
 const MENU_ITEM_CLASS =
-  "cursor-pointer text-left text-[20px] font-light leading-snug text-[#003f88] hover:text-[#e67e22] duration-700 ease-in-out";
+  "cursor-pointer text-left text-[20px] font-light leading-snug text-black";
+
+// lebar kolom seragam di semua menu, jumlah kolom berbeda tetap di tengah panel
+const COLUMN_GRID_CLASS: Record<number, string> = {
+  2: "grid-cols-[repeat(2,minmax(0,300px))]",
+  3: "grid-cols-[repeat(3,minmax(0,300px))]",
+  4: "grid-cols-[repeat(4,minmax(0,300px))]",
+};
 
 /* ---------- search spesialisasi ---------- */
 
@@ -371,11 +373,13 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               className="my-auto flex shrink-0 items-center"
             >
               <div
-                className={`flex origin-left items-center ${
+                className={`flex origin-left items-center transition-transform ${
                   isMenuOpen
-                    ? ""
-                    : "transition-transform duration-300 ease-in-out"
-                } ${isCompact ? "scale-100" : "scale-120"}`}
+                    ? "duration-150 ease-out"
+                    : "duration-500 ease-in-out"
+                } ${isCompact ? "scale-100" : "scale-120"} ${
+                  isMenuOpen && !isScrolled ? "-translate-y-6" : ""
+                }`}
               >
                 {logoNode}
               </div>
@@ -459,9 +463,9 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                             ? `navbar-search-option-${activeSuggestion}`
                             : undefined
                         }
-                        placeholder="Cari Dokter / Spesialisasi"
+                        placeholder="Nama Dokter atau Spesialisasi"
                         autoComplete="off"
-                        className="w-full px-3 py-2 text-sm font-light text-neutral-700 placeholder-gray-400 focus:outline-none [&::-webkit-search-cancel-button]:appearance-none"
+                        className="w-full px-3 py-2 text-sm font-normal text-neutral-700 placeholder-gray-400 focus:outline-none [&::-webkit-search-cancel-button]:appearance-none"
                       />
                       {searchQuery && (
                         <button
@@ -475,9 +479,9 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                       )}
                       <button
                         type="submit"
-                        className="shrink-0 cursor-pointer bg-[#003f88] px-5 py-2 text-sm font-bold text-white transition-colors duration-700 hover:bg-[#001c3b]"
+                        className="shrink-0 cursor-pointer bg-[#003f88] px-5 py-2 text-sm font-bold text-white transition-colors duration-700 hover:bg-[#002f66]"
                       >
-                        Search
+                        Temukan
                       </button>
                     </form>
                   </motion.div>
@@ -521,9 +525,11 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
               id="mega-menu-panel"
               role="region"
               aria-label={activeMenuData.label}
-              className="pointer-events-none absolute inset-x-0 top-full z-50 px-4"
+              className={`pointer-events-none absolute inset-x-0 z-50 px-4 ${
+                isScrolled ? "top-[calc(100%-14px)]" : "top-[calc(100%-46px)]"
+              }`}
             >
-              <div className="pointer-events-auto relative mx-auto max-h-[80vh] max-w-[1600px] overflow-y-auto bg-[#eef4fa] px-12 py-12 antialiased shadow-2xl 2xl:px-[100px]">
+              <div className="pointer-events-auto relative mx-auto flex h-[300px] max-h-[80vh] w-full max-w-[1600px] overflow-y-auto border border-gray-200 bg-white px-12 py-12 antialiased shadow-2xl 2xl:px-[100px]">
                 {/* close */}
                 <button
                   type="button"
@@ -534,36 +540,23 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ logoNode }) => {
                   <X size={45} strokeWidth={1} aria-hidden="true" />
                 </button>
 
-                {/* heading */}
-                <div className="mb-8 border-b border-gray-200 pb-6">
-                  <h2>
-                    <Link
-                      href={activeMenuData.headingHref}
-                      onClick={closeMenu}
-                      className={MENU_ITEM_CLASS}
-                    >
-                      {activeMenuData.heading}
-                    </Link>
-                  </h2>
-
-                  {/* link Jadwal Dokter  */}
-                  {activeMenuData.key === "Cari Dokter" && (
-                    <p className="mt-2">
-                      <Link
-                        href="/jadwal-dokter"
-                        onClick={closeMenu}
-                        className={MENU_ITEM_CLASS}
-                      >
-                        Jadwal Dokter
-                      </Link>
-                    </p>
-                  )}
-                </div>
-
                 {/* columns */}
-                <div className="grid grid-cols-3 gap-10">
-                  {activeMenuData.columns.map((column) => (
-                    <ul key={column[0].label} className="space-y-2">
+                <div
+                  className={`my-auto grid w-full justify-center gap-10 ${
+                    COLUMN_GRID_CLASS[activeMenuData.columns.length] ??
+                    COLUMN_GRID_CLASS[4]
+                  }`}
+                >
+                  {activeMenuData.columns.map((column, columnIndex) => (
+                    <ul
+                      key={column[0].label}
+                      className={`space-y-2 ${
+                        activeMenuData.key === "Cari Dokter" &&
+                        columnIndex === 0
+                          ? "border-r border-gray-300"
+                          : ""
+                      }`}
+                    >
                       {column.map((item) => (
                         <li key={item.label}>
                           {"href" in item ? (

@@ -1,9 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import BookingModalFloating from "./BookingModalFloating";
+
+// --- Kontak ---
+const PHONE_DISPLAY = "+62 857-1702-8133";
 
 // --- Sosial Media ---
 const socialMedia = [
@@ -18,14 +22,7 @@ const socialMedia = [
     name: "TikTok",
     href: "https://www.tiktok.com/@rsmedikalestariciledug",
     icon: (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="currentColor"
-        className="w-5 h-5"
-      >
-        <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25h-3.13v12.98a2.8 2.8 0 1 1-2.8-2.8c.31 0 .61.05.89.15V9.59a6.03 6.03 0 0 0-.89-.07A5.94 5.94 0 1 0 15.82 15V8.39a8.03 8.03 0 0 0 4.69 1.5V6.69h-.92z" />
-      </svg>
+      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25h-3.13v12.98a2.8 2.8 0 1 1-2.8-2.8c.31 0 .61.05.89.15V9.59a6.03 6.03 0 0 0-.89-.07A5.94 5.94 0 1 0 15.82 15V8.39a8.03 8.03 0 0 0 4.69 1.5V6.69h-.92z" />
     ),
   },
   {
@@ -56,84 +53,196 @@ const menuItems = [
   { name: "Kontak Kami", href: "/kontak-kami" },
 ];
 
-const FooterContent = () => (
+// Daftar spesialis (sama persis dengan menu "Temukan Dokter" di Navbar)
+const specialtyItems = [
+  "Spesialis Anak",
+  "Spesialis Bedah Umum",
+  "Spesialis Saraf",
+  "Spesialis Orthopedi",
+  "Spesialis Paru",
+  "Spesialis Jantung & Pembuluh Darah",
+  "Spesialis THT",
+  "Spesialis Penyakit Dalam",
+  "Spesialis Mata",
+  "Spesialis Obgyn",
+  "Spesialis Gigi",
+  "Spesialis Fisioterapi",
+];
+
+const LINK_CLASS =
+  "text-base font-normal hover:text-[#e67e22] hover:underline transition-colors duration-700";
+
+// Form newsletter: saat Subscribe ditekan, pengunjung diarahkan ke halaman
+// Kontak Kami dan kolom email di formulir terisi otomatis (?email=...)
+const NewsletterForm = () => {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const subscriberEmail = email.trim();
+    if (!subscriberEmail) return;
+
+    router.push(`/kontak-kami?email=${encodeURIComponent(subscriberEmail)}`);
+    setEmail("");
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="w-full max-w-[460px]">
+      <label htmlFor="footer-newsletter" className="block text-base mb-2">
+        Kritik & saran :
+      </label>
+      <div className="flex w-full overflow-hidden rounded-md">
+        <input
+          id="footer-newsletter"
+          type="email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Alamat Email"
+          autoComplete="email"
+          className="w-full min-w-0 bg-white px-4 py-3 text-sm font-normal text-neutral-700 placeholder-gray-400 focus:outline-none"
+        />
+        <button
+          type="submit"
+          className="shrink-0 cursor-pointer bg-[#e67e22] px-6 py-3 text-sm font-bold text-white transition-colors duration-700 hover:bg-[#3D8ECB]"
+        >
+          Kirim
+        </button>
+      </div>
+    </form>
+  );
+};
+
+interface FooterContentProps {
+  // membuka modal form janji temu
+  onOpenBooking: () => void;
+}
+
+const FooterContent = ({ onOpenBooking }: FooterContentProps) => (
   <div className="bg-[#003f88] text-white">
     {/*  Kontainer Utama  */}
-    <div className="max-w-[1200px] mx-auto px-8 md:px-16 py-16 md:py-24">
-      <div className="flex flex-col lg:flex-row justify-between items-start gap-12 mb-20">
-        {/* Logo */}
-        <div className="shrink-0">
+    <div className="max-w-[1310px] mx-auto px-8 md:px-16 py-16 md:py-24">
+      {/* Menu: Logo, Tautan Cepat, Spesialis */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-12 pb-12">
+        {/* Logo & Deskripsi */}
+        <div className="lg:col-span-4 flex flex-col items-start gap-6">
           <Image
             src="/logofooter.webp"
             alt="Logo RS Medika Lestari"
             width={400}
             height={400}
-            className="brightness-0 invert object-contain"
+            className="brightness-0 invert object-contain w-[260px] h-auto"
           />
-        </div>
-        {/* Deskripsi */}
-        <div className="max-w-2xl text-lg md:text-xl leading-relaxed font-light opacity-90 text-justify">
-          <p className="mb-4">
+          <p className="text-sm font-light leading-relaxed opacity-90 max-w-[360px]">
             RS Medika Lestari bermula dari sebuah klinik pada tahun 1994, kini
             telah berkembang menjadi fasilitas kesehatan terakreditasi Paripurna
             (KARS) yang menyediakan layanan medis lengkap dan modern.
           </p>
-          <p>
-            Berlokasi di Jl. HOS Cokroaminoto No.56, RT.001/RW.012, Kec. Karang
-            Tengah, Kota Tangerang, Banten 15151
-          </p>
+        </div>
+
+        {/* Tautan Cepat */}
+        <div className="lg:col-span-3">
+          <h3 className="text-xl font-bold mb-4">Tautan Cepat</h3>
+          <ul className="flex flex-col gap-3">
+            {menuItems.map((item) => (
+              <li key={item.name}>
+                <Link href={item.href} className={LINK_CLASS}>
+                  {item.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Spesialis (diambil dari Navbar) */}
+        <div className="lg:col-span-5">
+          <h3 className="text-xl font-bold mb-4">Dokter Spesialis</h3>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
+            {specialtyItems.map((name) => (
+              <li key={name}>
+                <Link
+                  href={`/dokter?specialty=${encodeURIComponent(name)}`}
+                  className={LINK_CLASS}
+                >
+                  {name}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
 
-      {/* Menu Menu */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-8 gap-x-12">
-        {menuItems.map((item) => (
-          <Link
-            key={item.name}
-            href={item.href}
-            className="text-lg md:text-xl font-semibold hover:text-[#e67e22] hover:underline transition-colors duration-700"
+      {/* Janji Temu, Sosial Media, Newsletter */}
+      <div className="border-t border-white/60 py-10 grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-10 items-center">
+        {/* Nomor Telepon */}
+        <div className="lg:col-span-3">
+          <p className="text-xl font-semibold">Janji Temu:</p>
+          <button
+            type="button"
+            onClick={onOpenBooking}
+            aria-label="Buat janji temu"
+            className="text-xl font-light hover:text-[#e67e22] transition-colors duration-700 cursor-pointer text-left hover:underline"
           >
-            {item.name}
-          </Link>
-        ))}
-      </div>
-    </div>
-
-    {/* Konten Bawah */}
-    <div className="bg-white text-[#003f88] py-6 border-t">
-      <div className="max-w-[1200px] mx-auto px-8 md:px-16 flex flex-col md:flex-row justify-between items-center gap-8">
-        {/* Copyright */}
-        <div className="text-sm font-normal opacity-80 text-black">
-          ©1994-{new Date().getFullYear()} RS Medika Lestari. All rights
-          reserved.
-        </div>
-
-        {/* Link Privacy dan Term */}
-        <div className="flex gap-6 text-sm font-normal opacity-80 text-black">
-          <Link href="/privacy" className="hover:underline">
-            Privacy Policy
-          </Link>
-          <Link href="/terms" className="hover:underline">
-            Terms of Use
-          </Link>
+            {PHONE_DISPLAY}
+          </button>
         </div>
 
         {/* Social Media */}
-        <div className="flex items-center gap-8 mb-20 md:mb-0">
+        <div className="lg:col-span-5 flex items-center gap-5 flex-wrap">
           {socialMedia.map((item) => (
             <Link
               key={item.name}
               href={item.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:opacity-60 transition-opacity"
+              aria-label={item.name}
+              className="group relative inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#003f88] focus:outline-none"
             >
-              <svg viewBox="0 0 24 24" className="w-6 h-6 fill-current">
+              {/* ring yang membesar saat hover / fokus */}
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 rounded-full border-2 border-white opacity-0 scale-100 transition-all duration-500 ease-out group-hover:scale-[1.35] group-hover:opacity-100 group-focus-visible:scale-[1.35] group-focus-visible:opacity-100"
+              />
+              <svg
+                viewBox="0 0 24 24"
+                className="relative w-5 h-5 fill-current"
+                aria-hidden="true"
+              >
                 {item.icon}
               </svg>
             </Link>
           ))}
         </div>
+
+        {/* Newsletter */}
+        <div className="lg:col-span-4 lg:flex lg:justify-end">
+          <NewsletterForm />
+        </div>
+      </div>
+
+      {/* Alamat */}
+      <div className="border-t border-white/60 pt-10 text-center">
+        <p className="text-xl font-bold">RS Medika Lestari Ciledug</p>
+        <p className="text-base font-normal mt-1">
+          Jl. HOS Cokroaminoto No.56, RT.001/RW.012, Kec. Karang Tengah, Kota
+          Tangerang, Banten 15151
+        </p>
+      </div>
+
+      {/* Link Privacy dan Term */}
+      <div className="mt-10 flex flex-wrap justify-center gap-x-8 gap-y-3 text-base font-normal">
+        <Link href="/privacy" className="hover:underline">
+          Privacy Policy
+        </Link>
+        <Link href="/terms" className="hover:underline">
+          Terms of Use
+        </Link>
+      </div>
+
+      {/* Copyright */}
+      <div className="mt-8 text-center text-sm font-normal opacity-90 mb-20 md:mb-0">
+        ©1994-{new Date().getFullYear()} RS Medika Lestari. All rights reserved.
       </div>
     </div>
   </div>
@@ -142,19 +251,34 @@ const FooterContent = () => (
 const Footer = () => {
   const pathname = usePathname();
   const isHomePage = pathname === "/";
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
+
+  // modal diletakkan di luar <footer> agar tetap tampil walau footer disembunyikan
+  const bookingModal = (
+    <BookingModalFloating
+      isOpen={isBookingOpen}
+      onClose={() => setIsBookingOpen(false)}
+    />
+  );
 
   if (!isHomePage) {
     return (
-      <footer className="hidden lg:block w-full font-sans">
-        <FooterContent />
-      </footer>
+      <>
+        <footer className="hidden lg:block w-full font-sans">
+          <FooterContent onOpenBooking={() => setIsBookingOpen(true)} />
+        </footer>
+        {bookingModal}
+      </>
     );
   }
 
   return (
-    <footer className="w-full font-sans">
-      <FooterContent />
-    </footer>
+    <>
+      <footer className="w-full font-sans">
+        <FooterContent onOpenBooking={() => setIsBookingOpen(true)} />
+      </footer>
+      {bookingModal}
+    </>
   );
 };
 
