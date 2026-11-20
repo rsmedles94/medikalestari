@@ -1,42 +1,23 @@
 import { NextResponse } from "next/server";
+import { isValidSubscription, saveSubscription } from "@/lib/push-store";
 
-export interface PushSubscriptionData {
-  endpoint: string;
-  expirationTime?: number | null;
-  keys: {
-    p256dh: string;
-    auth: string;
-  };
-}
-
-const subscriptionsDB: PushSubscriptionData[] = [];
+export const runtime = "nodejs";
 
 export async function POST(request: Request) {
+  let body: unknown;
   try {
-    const subscription: PushSubscriptionData = await request.json();
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Body harus JSON" }, { status: 400 });
+  }
 
-    if (!subscription || !subscription.endpoint || !subscription.keys) {
-      return NextResponse.json(
-        { error: "Data subscription tidak valid" },
-        { status: 400 },
-      );
-    }
-
-    const exists = subscriptionsDB.some(
-      (sub) => sub.endpoint === subscription.endpoint,
-    );
-    if (!exists) {
-      subscriptionsDB.push(subscription);
-    }
-
+  if (!isValidSubscription(body)) {
     return NextResponse.json(
-      { message: "Subscription berhasil disimpan." },
-      { status: 201 },
-    );
-  } catch (error) {
-    return NextResponse.json(
-      { error: "Gagal memproses subscription" },
-      { status: 500 },
+      { error: "Subscription tidak valid" },
+      { status: 400 },
     );
   }
+
+  await saveSubscription(body);
+  return NextResponse.json({ success: true });
 }

@@ -1,81 +1,78 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
+import { isPushSupported, subscribeToPush } from "@/lib/push-client";
 
-// Fungsi helper untuk VAPID key frontend
-function urlBase64ToUint8Array(base64String: string) {
-  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
-  const rawData = window.atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
-  for (let i = 0; i < rawData.length; ++i) {
-    outputArray[i] = rawData.charCodeAt(i);
-  }
-  return outputArray;
-}
+type PermissionValue = NotificationPermission | "unsupported";
+
+// Status izin dibaca langsung dari browser lewat useSyncExternalStore:
+// server selalu "unsupported" sehingga tidak ada hydration mismatch.
+const subscribePermission = (onChange: () => void) => {
+  let cancelled = false;
+  let status: PermissionStatus | undefined;
+
+  // event "change" ikut memperbarui banner kalau izin diubah lewat ikon gembok
+  navigator.permissions
+    ?.query({ name: "notifications" })
+    .then((s) => {
+      if (cancelled) return;
+      status = s;
+      s.addEventListener("change", onChange);
+    })
+    .catch(() => {});
+
+  return () => {
+    cancelled = true;
+    status?.removeEventListener("change", onChange);
+  };
+};
+const getPermissionSnapshot = (): PermissionValue =>
+  isPushSupported() ? Notification.permission : "unsupported";
+const getPermissionServerSnapshot = (): PermissionValue => "unsupported";
 
 export function NotificationPrompt() {
-  // Perbaikan: Inisialisasi status langsung di useState tanpa useEffect
-  const [permissionStatus, setPermissionStatus] = useState<
-    NotificationPermission | "loading"
-  >(() => {
-    if (typeof window !== "undefined" && "Notification" in window) {
-      return Notification.permission;
-    }
-    return "denied";
-  });
+  const permission = useSyncExternalStore(
+    subscribePermission,
+    getPermissionSnapshot,
+    getPermissionServerSnapshot,
+  );
+  const [state, setState] = useState<"idle" | "loading" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleEnableNotification = async () => {
+    setState("loading");
+    setErrorMessage("");
+
     try {
-      // 1. Minta izin ke browser
-      const permission = await Notification.requestPermission();
-      setPermissionStatus(permission);
-
-      if (permission === "granted") {
-        // 2. Pastikan Service Worker aktif
-        const registration = await navigator.serviceWorker.ready;
-
-        // 3. Ambil VAPID Public Key dari Environment Variables
-        const publicVapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
-        if (!publicVapidKey) {
-          console.error("VAPID Public Key belum diset di .env.local");
-          return;
-        }
-
-        // 4. Lakukan Push Subscription
-        const subscription = await registration.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
-        });
-
-        // 5. Kirim data subscription ke backend API
-        await fetch("/api/save-subscription", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(subscription),
-        });
-
-        alert(
-          "Berhasil! Anda sekarang akan menerima pengingat kesehatan harian.",
-        );
-      } else {
-        alert(
-          "Izin notifikasi ditolak. Anda bisa mengubahnya kapan saja melalui ikon gembok di samping URL browser.",
-        );
+      // 1. Minta izin (harus dari klik user)
+      const result = await Notification.requestPermission();
+      if (result !== "granted") {
+        setState("idle");
+        return;
       }
+
+      // 2. Subscribe ke push dan simpan ke server
+      const registration = await subscribeToPush();
+
+      // 3. Notifikasi langsung sebagai bukti notifikasi sudah aktif
+      await registration.showNotification("Notifikasi aktif", {
+        body: "Terima kasih! Anda akan menerima pengingat kesehatan dari RS Medika Lestari.",
+        icon: "/medikalestari.png",
+        badge: "/medikalestari.png",
+        tag: "welcome",
+      });
+
+      setState("idle");
     } catch (error) {
       console.error("Gagal mengaktifkan notifikasi:", error);
+      setErrorMessage((error as Error).message || "Terjadi kesalahan.");
+      setState("error");
     }
   };
 
-  // Jika izin sudah diberikan atau browser tidak mendukung, sembunyikan banner
-  if (
-    permissionStatus === "granted" ||
-    permissionStatus === "loading" ||
-    permissionStatus === "denied"
-  ) {
-    return null;
-  }
+  // Tampil saat izin belum ditentukan, atau saat izin sudah diberikan tapi pendaftarannya gagal
+  const visible = permission === "default" || state === "error";
+  if (!visible) return null;
 
   return (
     <div className="fixed bottom-4 right-4 z-50 max-w-sm rounded-xl bg-white p-4 shadow-2xl border border-gray-100 dark:bg-zinc-900 dark:border-zinc-800">
@@ -91,12 +88,23 @@ export function NotificationPrompt() {
             Dapatkan tips medis harian dan info jadwal dokter langsung di
             perangkat Anda.
           </p>
+          {state === "error" && (
+            <p className="mt-2 text-xs text-red-600">
+              Gagal mengaktifkan: {errorMessage}
+            </p>
+          )}
           <div className="mt-3 flex gap-2">
             <button
+              type="button"
               onClick={handleEnableNotification}
-              className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700 transition"
+              disabled={state === "loading"}
+              className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700 transition disabled:opacity-60"
             >
-              Izinkan Notifikasi
+              {state === "loading"
+                ? "Mengaktifkan..."
+                : state === "error"
+                  ? "Coba Lagi"
+                  : "Izinkan Notifikasi"}
             </button>
           </div>
         </div>
