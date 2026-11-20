@@ -648,7 +648,7 @@ const PromoKesehatan = () => {
           </div>
 
           {/* data statistik medika lestari */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12 text-center items-start mb-20">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 sm:gap-x-6 lg:gap-x-8 gap-y-10 md:gap-y-12 text-center items-start mb-20">
             {STATS_DATA.map((stat, index) => (
               <motion.div
                 key={index}
@@ -662,26 +662,26 @@ const PromoKesehatan = () => {
                   ease: "easeOut",
                 }}
               >
-                {/* Image */}
-                <div className="mb-3 w-15 h-15 flex items-center justify-center relative">
+                {/* Icon */}
+                <div className="relative mb-3 md:mb-4 w-12 h-12 sm:w-14 sm:h-14 md:w-12 md:h-12 lg:w-16 lg:h-16 xl:w-20 xl:h-20">
                   <Image
                     src={stat.icon}
                     alt={stat.text}
-                    width={70}
-                    height={70}
+                    fill
+                    sizes="(min-width: 1280px) 80px, (min-width: 1024px) 64px, 56px"
                     className="object-contain brightness-0 invert"
                   />
                 </div>
 
-                {/* Pembungkus Angka dan Teks  */}
-                <div className="flex flex-col items-center justify-center gap-y-3 text-center">
-                  {/* Number */}
-                  <div className="text-4xl md:text-[50px] font-bold leading-none text-white flex-shrink-0">
+                {/* Angka dan teks */}
+                <div className="flex flex-col items-center justify-center gap-y-2 md:gap-y-3 text-center">
+                  {/* Angka */}
+                  <div className="text-2xl sm:text-3xl md:text-2xl lg:text-3xl xl:text-4xl font-bold leading-none text-white flex-shrink-0">
                     <CountUp value={stat.value} suffix={stat.suffix} />
                   </div>
 
-                  {/* Teks  */}
-                  <p className="text-xs uppercase font-bold text-white/90 max-w-[160px] leading-tight">
+                  {/* Teks */}
+                  <p className="text-sm md:text-xs lg:text-sm xl:text-base uppercase font-bold text-white/90 max-w-[220px] md:max-w-[150px] lg:max-w-[210px] xl:max-w-[250px] leading-tight">
                     {stat.text}
                   </p>
                 </div>

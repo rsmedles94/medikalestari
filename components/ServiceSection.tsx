@@ -7,6 +7,7 @@ import React, {
   useCallback,
   useSyncExternalStore,
 } from "react";
+import Image from "next/image";
 import {
   motion,
   useMotionValue,
@@ -266,7 +267,21 @@ const ServiceSection = () => {
   };
 
   return (
-    <section className="w-full bg-[#3D8ECB] py-16 md:py-20 font-sans overflow-hidden">
+    <section className="relative isolate w-full py-16 md:py-20 font-sans overflow-hidden">
+      {/* Gambar latar + lapisan biru 90% */}
+      <Image
+        src="/informasi.jpg"
+        alt=""
+        fill
+        sizes="100vw"
+        className="object-cover -z-20"
+        aria-hidden="true"
+      />
+      <div
+        className="absolute inset-0 -z-10 bg-[#3D8ECB]/90"
+        aria-hidden="true"
+      />
+
       <div className="max-w-[1180px] mx-auto">
         {/* Header */}
         <header className="px-4 md:px-8 mb-12 flex items-end justify-center w-full gap-4">
@@ -416,7 +431,9 @@ const ServiceSection = () => {
             }
             className="text-white font-semibold text-[10px] md:text-sm flex items-center gap-1 transition-all duration-700 hover:text-[#e67e22] hover:underline cursor-pointer"
           >
-            <span className="text-base">→</span> Lihat ulasan lainnya
+            <span className="text-base">→</span>
+            <span className="md:hidden">Lainnya</span>
+            <span className="hidden md:inline">Lihat ulasan lainnya</span>
           </button>
         </motion.footer>
       </div>
