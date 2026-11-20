@@ -30,7 +30,7 @@ const SERVICES: readonly ServiceItem[] = [
     href: "/services/kamar-perawatan",
   },
   {
-    label: "Layanan Gawat Darurat",
+    label: "Bantuan Darurat",
     icon: "gawat-darurat",
     href: "/services/emergency",
   },
