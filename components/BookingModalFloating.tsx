@@ -285,13 +285,9 @@ export default function BookingModalFloating({
                   type="button"
                   onClick={onClose}
                   aria-label="Tutup"
-                  className="-mr-1 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center text-slate-800 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#003f88]"
+                  className="hidden sm:flex -mr-1 w-12 h-12 items-center justify-center text-slate-800 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#003f88]"
                 >
-                  <X
-                    size={40}
-                    strokeWidth={1.75}
-                    className="h-7 w-7 sm:h-10 sm:w-10"
-                  />
+                  <X size={40} strokeWidth={1.75} />
                 </button>
               </header>
 
