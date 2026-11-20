@@ -429,7 +429,7 @@ const ServiceSection = () => {
                 "noopener,noreferrer",
               )
             }
-            className="text-white font-semibold text-[10px] md:text-sm flex items-center gap-1 transition-all duration-700 hover:text-[#e67e22] hover:underline cursor-pointer"
+            className="text-white font-semibold text-sm md:text-sm flex items-center gap-1 transition-all duration-700 hover:text-[#e67e22] hover:underline cursor-pointer"
           >
             <span className="text-base">→</span>
             <span className="md:hidden">Lainnya</span>
