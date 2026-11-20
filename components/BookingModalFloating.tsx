@@ -277,7 +277,7 @@ export default function BookingModalFloating({
                   id="booking-title"
                   className="text-xl sm:text-2xl font-bold text-slate-900 leading-tight"
                 >
-                  Formulir Janji Temu Do
+                  Formulir Janji Temu
                 </h2>
 
                 {/* Tombol tutup */}
