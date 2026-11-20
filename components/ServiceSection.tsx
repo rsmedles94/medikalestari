@@ -14,7 +14,6 @@ import {
   animate,
   useInView,
   useReducedMotion,
-  type Variants,
 } from "framer-motion";
 
 interface KisahItem {
@@ -28,20 +27,8 @@ interface KisahItem {
   href: string;
 }
 
-// animasi kartu ulasan: fade-in halus dengan geser naik tipis, jeda antar kartu singkat
+// jeda antar kartu untuk animasi bintang (kartu sendiri tidak dianimasikan)
 const CARD_STAGGER = 0.08;
-const cardVariants: Variants = {
-  hidden: { opacity: 0, y: 12 },
-  visible: (index: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.5,
-      delay: index * CARD_STAGGER,
-      ease: [0.25, 0.1, 0.25, 1],
-    },
-  }),
-};
 
 // warna bintang rating: kosong (abu-abu) dan terisi (oranye)
 const STAR_EMPTY = "#E2E8F0";
@@ -64,13 +51,13 @@ const ServiceSection = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
 
-  // animasi muncul dimulai saat slider terlihat di layar (sekali saja)
+  // animasi bintang dimulai saat slider terlihat di layar (sekali saja)
   const isInView = useInView(containerRef, {
     once: true,
     margin: "0px 0px -100px 0px",
   });
   const reduceMotion = useReducedMotion();
-  const showCards = isInView || !!reduceMotion;
+  const showStars = isInView || !!reduceMotion;
 
   const ulasanData: KisahItem[] = [
     {
@@ -230,10 +217,10 @@ const ServiceSection = () => {
     }
   };
 
-  // bintang rating: abu-abu lalu terisi oranye satu per satu setelah kartunya tampil
+  // bintang rating: placeholder abu-abu lalu terisi oranye satu per satu
   // (hanya bintang sesuai nilai rating yang berubah warna)
   const renderStars = (rating: number, cardIndex: number) => {
-    const starsBaseDelay = cardIndex * CARD_STAGGER + 0.6;
+    const starsBaseDelay = cardIndex * CARD_STAGGER + 0.2;
 
     return Array.from({ length: 5 }).map((_, index) => (
       <motion.svg
@@ -244,7 +231,7 @@ const ServiceSection = () => {
         aria-hidden="true"
         initial={reduceMotion ? false : { fill: STAR_EMPTY }}
         animate={{
-          fill: showCards && index < rating ? STAR_FILLED : STAR_EMPTY,
+          fill: showStars && index < rating ? STAR_FILLED : STAR_EMPTY,
         }}
         transition={{
           duration: 0.8,
@@ -289,13 +276,9 @@ const ServiceSection = () => {
             onDragEnd={handleDragEnd}
           >
             {ulasanData.map((item, index) => (
-              <motion.article
+              <article
                 key={item.id}
                 onClick={() => handleCardClick(item.href)}
-                variants={cardVariants}
-                custom={index}
-                initial={reduceMotion ? false : "hidden"}
-                animate={showCards ? "visible" : "hidden"}
                 className="w-[280px] md:w-[360px] h-[380px] flex-shrink-0 flex flex-col justify-between bg-white rounded-md p-6 shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer text-left select-none"
               >
                 <div>
@@ -344,7 +327,7 @@ const ServiceSection = () => {
                     → Selengkapnya
                   </span>
                 </div>
-              </motion.article>
+              </article>
             ))}
           </motion.div>
         </div>

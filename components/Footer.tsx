@@ -132,15 +132,7 @@ const FooterContent = ({ onOpenBooking }: FooterContentProps) => (
             alt="Logo RS Medika Lestari"
             width={400}
             height={400}
-            className="brightness-0 invert object-contain w-[260px] h-auto"
-          />
-          {/* Logo KARS (akreditasi) di bawah logo RS */}
-          <Image
-            src="/kars/logo-kars.webp"
-            alt="Logo KARS - Akreditasi Paripurna"
-            width={400}
-            height={400}
-            className="object-contain w-[220px] h-auto"
+            className="brightness-0 invert object-contain w-[280px] h-auto"
           />
           <p className="text-sm font-light leading-relaxed opacity-90 max-w-[360px]">
             RS Medika Lestari bermula dari sebuah klinik pada tahun 1994, kini

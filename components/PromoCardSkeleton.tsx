@@ -2,16 +2,24 @@
 
 import React from "react";
 
-const PromoCardSkeleton = ({ count = 4 }) => {
+interface PromoCardSkeletonProps {
+  count?: number;
+}
 
-  const skeletonKeys = Array.from({ length: count }).map(
+// Struktur & ukuran sengaja SAMA dengan slide card promo asli di PromoKesehatan:
+// - pembungkus  : w-1/2 lg:w-1/4 + p-2 md:p-3
+// - card        : border-gray-300, p-4 md:p-10, judul min-h-12, deskripsi mt-10
+// Dengan begitu saat skeleton diganti card asli, tidak ada layout shift.
+const PromoCardSkeleton = ({ count = 4 }: PromoCardSkeletonProps) => {
+  const skeletonKeys = Array.from(
+    { length: count },
     (_, idx) => `skeleton-card-${idx}`,
   );
 
   return (
     <>
       <style>{`
-        @keyframes shimmer-animation {
+        @keyframes promo-skeleton-shimmer {
           0% {
             background-position: -1200px 0;
           }
@@ -28,55 +36,59 @@ const PromoCardSkeleton = ({ count = 4 }) => {
             #f1f5f9 100%
           );
           background-size: 1200px 100%;
-          animation: shimmer-animation 2s infinite;
+          animation: promo-skeleton-shimmer 2s infinite;
         }
 
         .skeleton-rounded {
           border-radius: 0.375rem;
         }
+
+        @media (prefers-reduced-motion: reduce) {
+          .skeleton-shimmer {
+            animation: none;
+          }
+        }
       `}</style>
 
-      <div className="w-full overflow-hidden p-1">
-        <div className="flex w-full gap-4 lg:gap-6 justify-start">
-          {skeletonKeys.map((skeletonKey) => (
-            <div
-              key={skeletonKey}
-              className="w-[calc(50%-8px)] lg:w-[calc(25%-18px)] shrink-0"
-            >
-              <article
-                className="bg-white border border-slate-100 flex flex-col h-full shadow-md rounded-none overflow-hidden"
-                aria-busy="true"
-                aria-hidden="true"
-              >
-                {/* Image skeleton */}
-                <div className="relative aspect-square w-full overflow-hidden bg-gray-50">
-                  <div className="w-full h-full skeleton-shimmer" />
+      {/* di mobile hanya 2 card terlihat (sisanya terpotong overflow-hidden) */}
+      <div className="flex w-full overflow-hidden" aria-busy="true">
+        <span className="sr-only">Memuat promo...</span>
+
+        {skeletonKeys.map((skeletonKey) => (
+          <div
+            key={skeletonKey}
+            className="w-1/2 lg:w-1/4 shrink-0 p-2 md:p-3"
+            aria-hidden="true"
+          >
+            <article className="bg-white border border-gray-300 flex flex-col h-full overflow-hidden">
+              {/* Image skeleton */}
+              <div className="relative aspect-square w-full overflow-hidden bg-gray-50">
+                <div className="w-full h-full skeleton-shimmer" />
+              </div>
+
+              {/* Content area */}
+              <div className="p-4 md:p-10 flex flex-col grow text-center bg-white">
+                {/* Title skeleton (min-h-12 seperti judul asli) */}
+                <div className="min-h-12 mb-2 flex flex-col items-center justify-center gap-2">
+                  <div className="h-4 w-3/4 skeleton-shimmer skeleton-rounded" />
+                  <div className="h-4 w-1/2 skeleton-shimmer skeleton-rounded" />
                 </div>
 
-                {/* Content Area */}
-                <div className="p-4 md:p-5 flex flex-col grow text-center bg-white gap-3">
-                  {/* Title skeleton */}
-                  <div className="space-y-2">
-                    <div className="h-4 skeleton-shimmer skeleton-rounded mx-auto w-3/4" />
-                    <div className="h-4 skeleton-shimmer skeleton-rounded mx-auto w-2/3" />
-                  </div>
-
-                  {/* Description skeleton */}
-                  <div className="space-y-2 mt-2">
-                    <div className="h-3 skeleton-shimmer skeleton-rounded" />
-                    <div className="h-3 skeleton-shimmer skeleton-rounded" />
-                    <div className="h-3 skeleton-shimmer skeleton-rounded w-4/5 mx-auto" />
-                  </div>
-
-                  {/* Button skeleton */}
-                  <div className="mt-auto pt-2">
-                    <div className="h-10 skeleton-shimmer skeleton-rounded w-full" />
-                  </div>
+                {/* Description skeleton (mt-10 seperti deskripsi asli) */}
+                <div className="mt-10 mb-5 space-y-2">
+                  <div className="h-3 w-full skeleton-shimmer skeleton-rounded" />
+                  <div className="h-3 w-full skeleton-shimmer skeleton-rounded" />
+                  <div className="h-3 w-4/5 mx-auto skeleton-shimmer skeleton-rounded" />
                 </div>
-              </article>
-            </div>
-          ))}
-        </div>
+
+                {/* Button skeleton */}
+                <div className="mt-auto">
+                  <div className="h-8 w-full skeleton-shimmer skeleton-rounded" />
+                </div>
+              </div>
+            </article>
+          </div>
+        ))}
       </div>
     </>
   );

@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight, Link as LinkIcon } from "lucide-react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { fetchRoomTypes } from "@/lib/api";
+import FormKamar from "@/components/FormKamar";
 
 interface RoomImage {
   id: string;
@@ -41,6 +42,7 @@ export default function KamarPerawatan() {
   const [loading, setLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [direction, setDirection] = useState(0);
+  const [showFormKamar, setShowFormKamar] = useState(false);
 
   useEffect(() => {
     const loadRooms = async () => {
@@ -194,6 +196,23 @@ export default function KamarPerawatan() {
                       ))}
                     </div>
                   </div>
+                </div>
+
+                {/* Skeleton Tombol Aksi (Ketersediaan Kamar & Tanya Kamar) */}
+                <div className="mt-auto pt-4 flex flex-row gap-2 w-full">
+                  {[...Array(2)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="flex-1 h-11 bg-gradient-to-r from-gray-100 via-gray-50 to-gray-100 rounded relative overflow-hidden"
+                    >
+                      <div
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent"
+                        style={{
+                          animation: "shimmer 2s infinite",
+                        }}
+                      />
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -396,24 +415,40 @@ export default function KamarPerawatan() {
                 </div>
               </div>
 
-              {/* Tambahan: Button Ketersediaan Kamar di luar div atas agar terdorong mentok ke bawah */}
-              <div className="mt-auto pt-4">
+              {/* Tombol aksi: ketersediaan kamar & tanya kamar via WhatsApp */}
+              <div className="mt-auto pt-4 flex flex-row gap-2 w-full">
                 <Link
                   href="/ketersediaan-kamar"
-                  className="w-full inline-block"
+                  className="flex-1 px-4 py-3 bg-[#003f88] hover:bg-[#e67e22] active:bg-[#cf6f1c] text-white text-sm font-semibold text-center rounded transition-colors duration-700 flex items-center justify-center cursor-pointer"
                 >
-                  <button
-                    type="button"
-                    className="flex-1  text-[#003f88] hover:text-[#e67e22] font-semibold py-3 text-sm text-center transition-all duration-700 cursor-pointer rounded-[25px]"
-                  >
-                    Lihat Ketersediaan Kamar
-                  </button>
+                  Lihat Ketersediaan Kamar
                 </Link>
+                <button
+                  type="button"
+                  onClick={() => setShowFormKamar(true)}
+                  className="flex-1 px-4 py-3 bg-green-500 hover:bg-green-600 active:bg-green-700 text-white text-sm font-semibold rounded transition-colors duration-700 flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <Image
+                    src="/images/icons/whatsapp-fill.svg"
+                    alt="WhatsApp"
+                    width={20}
+                    height={20}
+                    className="invert"
+                  />
+                  <span>Tanya Kamar</span>
+                </button>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Form Tanya Kamar via WhatsApp */}
+      <FormKamar
+        isOpen={showFormKamar}
+        onClose={() => setShowFormKamar(false)}
+        roomName={currentKamar.name}
+      />
     </div>
   );
 }

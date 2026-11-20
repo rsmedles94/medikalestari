@@ -6,6 +6,8 @@ import { motion, animate, useInView, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
+// sesuaikan path import ini dengan lokasi file PromoCardSkeleton kamu
+import PromoCardSkeleton from "./PromoCardSkeleton";
 
 // ==========================================
 // DATA DEMO PROMO KESEHATAN (Total 12 Item)
@@ -98,7 +100,7 @@ const PROMO_DATA = [
 ];
 
 // ==========================================
-// DATA LOGO REKANAN / PENGHARGAAN (Total 17 Item)
+// DATA LOGO REKANAN / PENGHARGAAN (Total 27 Item)
 // ==========================================
 const AWARDS_DATA = [
   {
@@ -373,30 +375,6 @@ function AwardLogoBox({ award, index, show, instant }: AwardLogoBoxProps) {
 }
 
 // ==========================================
-// COMPONENT SKELETON LOADING
-// ==========================================
-function SkeletonCard() {
-  return (
-    <div
-      className="bg-white border border-gray-100 flex flex-col h-full shadow-sm overflow-hidden"
-      aria-hidden="true"
-    >
-      <div className="relative aspect-square w-full bg-gray-100 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 animate-[shimmer_1.2s_infinite]" />
-      </div>
-      <div className="p-4 md:p-5 flex flex-col grow text-center">
-        <div className="h-5 bg-gray-200 rounded w-3/4 mx-auto mb-3 animate-pulse" />
-        <div className="h-3 bg-gray-200 rounded w-11/12 mx-auto mb-2 animate-pulse" />
-        <div className="h-3 bg-gray-200 rounded w-10/12 mx-auto mb-2 animate-pulse" />
-        <div className="mt-auto">
-          <div className="h-8 bg-gray-200 rounded w-full animate-pulse" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ==========================================
 // HITUNG DOT LANGSUNG DARI SLIDER (NATIVE)
 // ==========================================
 // jumlah dot selalu dibaca dari kondisi slider yang sedang aktif (perView
@@ -412,7 +390,10 @@ const getDotsFromSlider = (slider: {
 // COMPONENT UTAMA
 // ==========================================
 const PromoKesehatan = () => {
+  // true selama "data" promo belum siap (skeleton tampil)
   const [isLoading, setIsLoading] = useState(true);
+  // true setelah keen-slider promo benar-benar terbentuk (lebar slide sudah dihitung)
+  const [promoReady, setPromoReady] = useState(false);
 
   // Indeks aktif untuk dot slider
   const [activeIndex, setActiveIndex] = useState(0);
@@ -462,7 +443,10 @@ const PromoKesehatan = () => {
     },
   });
 
-  // 2. PROMO CARD SLIDER (Akurat mendeteksi batas slide perView agar dot tidak kelebihan)
+  // 2. PROMO CARD SLIDER
+  // Container slider ini BARU dirender setelah isLoading selesai (lihat JSX),
+  // jadi keen-slider langsung dibuat dengan card asli (bukan skeleton).
+  // Tidak perlu lagi update() manual / setTimeout.
   const [promoSliderRef, promoSliderInstance] = useKeenSlider<HTMLDivElement>({
     initial: 0,
     slides: {
@@ -481,8 +465,9 @@ const PromoKesehatan = () => {
       setActiveIndex(slider.track.details.rel);
     },
     created(slider) {
-      // Menghitung jumlah dot yang benar berdasarkan total pergeseran maksimum yang valid
+      // lebar slide sudah dihitung keen-slider -> aman untuk menampilkan slider
       setPromoDots(getDotsFromSlider(slider));
+      setPromoReady(true);
     },
     updated(slider) {
       // dipanggil juga saat breakpoint mobile <-> desktop berganti
@@ -492,21 +477,14 @@ const PromoKesehatan = () => {
   });
 
   useEffect(() => {
-    const t = setTimeout(() => {
-      setIsLoading(false);
-      // Memaksa KeenSlider membaca ulang dimensi kontainer setelah skeleton hilang
-      setTimeout(() => {
-        if (promoSliderInstance.current) {
-          promoSliderInstance.current.update();
-          // sinkronkan dot dengan card yang sudah dirender (bukan skeleton)
-          setPromoDots(getDotsFromSlider(promoSliderInstance.current));
-        }
-        if (awardSliderInstance.current) awardSliderInstance.current.update();
-      }, 50);
-    }, 700);
-
+    // simulasi loading data promo (hapus timeout ini kalau data sudah statis)
+    const t = setTimeout(() => setIsLoading(false), 700);
     return () => clearTimeout(t);
-  }, [promoSliderInstance, awardSliderInstance]);
+  }, []);
+
+  // Skeleton tampil selama data loading ATAU slider belum siap.
+  // Hanya ada SATU skeleton (PromoCardSkeleton), tidak ada skeleton di dalam slider.
+  const showPromoSkeleton = isLoading || !promoReady;
 
   // Handler Navigasi Klik Dot
   const handleDotClick = (index: number) => {
@@ -604,7 +582,7 @@ const PromoKesehatan = () => {
 
           <hr className="border-white/10 my-16" />
 
-          {/* SLIDER 18 LOGO REKANAN */}
+          {/* SLIDER LOGO REKANAN */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mb-12">
             {/* Sisi Kiri: Deskripsi Wilayah */}
             <div className="lg:col-span-6 text-left">
@@ -673,7 +651,7 @@ const PromoKesehatan = () => {
                   ))}
                 </div>
 
-                {/* Halaman/Grup Kedua (Logo 18-27) */}
+                {/* Halaman/Grup Ketiga (Logo 19-27) */}
                 <div className="keen-slider__slide w-full shrink-0 grid grid-cols-3 gap-2 pl-1">
                   {AWARDS_DATA.slice(18, 27).map((award, index) => (
                     <AwardLogoBox
@@ -740,26 +718,28 @@ const PromoKesehatan = () => {
             Penawaran promo spesial paket kesehatan
           </h2>
 
-          <div
-            ref={promoSliderRef}
-            className="keen-slider w-full overflow-hidden"
-          >
-            {isLoading
-              ? Array.from({ length: 4 }).map((_, idx) => (
-                  <div
-                    key={"skeleton-" + idx}
-                    className="keen-slider__slide w-1/2 lg:w-1/4 shrink-0 p-2 md:p-3"
-                  >
-                    <SkeletonCard />
-                  </div>
-                ))
-              : PROMO_DATA.slice(0, 8).map((item) => (
-                  <div
-                    key={item.id}
-                    className="keen-slider__slide w-1/2 lg:w-1/4 shrink-0 p-2 md:p-3"
-                  >
+          {/* Pembungkus: skeleton (alur normal) + slider (overlay transparan sampai siap) */}
+          <div className="relative w-full">
+            {/* SATU-SATUNYA skeleton promo card */}
+            {showPromoSkeleton && <PromoCardSkeleton count={4} />}
+
+            {/* Slider hanya dirender setelah loading selesai.
+                Selama belum siap, ia ditaruh absolut + transparan: lebarnya tetap
+                terukur benar oleh keen-slider, tapi tidak terlihat (tidak ada
+                kotak besar), sementara skeleton menjaga tinggi area. */}
+            {!isLoading && (
+              <div
+                ref={promoSliderRef}
+                className={`keen-slider w-full overflow-hidden ${
+                  promoReady
+                    ? ""
+                    : "absolute inset-x-0 top-0 opacity-0 pointer-events-none"
+                }`}
+              >
+                {PROMO_DATA.slice(0, 8).map((item) => (
+                  <div key={item.id} className="keen-slider__slide p-2 md:p-3">
                     <article
-                      className="bg-white border border-gray-300 flex flex-col h-full -lg overflow-hidden transition-shadow duration-300 group"
+                      className="bg-white border border-gray-300 flex flex-col h-full overflow-hidden transition-shadow duration-300 group"
                       onMouseEnter={() => setHoveredPromoId(item.id)}
                       onMouseLeave={() => setHoveredPromoId(null)}
                     >
@@ -789,7 +769,7 @@ const PromoKesehatan = () => {
                           <Link href={`/promo/${item.id}`} passHref>
                             <button
                               type="button"
-                              className={`w-full py-2  text-white text-[10px] md:text-xs font-semibold transition-all duration-700 cursor-pointer ${
+                              className={`w-full py-2 text-white text-[10px] md:text-xs font-semibold transition-all duration-700 cursor-pointer ${
                                 hoveredPromoId === item.id
                                   ? "bg-[#e67e22]"
                                   : "bg-[#003f88] hover:bg-[#e67e22]"
@@ -803,44 +783,47 @@ const PromoKesehatan = () => {
                     </article>
                   </div>
                 ))}
+              </div>
+            )}
           </div>
 
-          {/* dot card promo */}
-          <div className="mt-8 flex items-center justify-center gap-4">
-            {promoDots.map((index) => {
-              const isActive = index === activeIndex;
-              return (
-                <button
-                  key={index}
-                  type="button"
-                  onClick={() => handleDotClick(index)}
-                  className="focus:outline-none flex items-center justify-center h-8 w-8 relative"
-                  aria-label={`Go to slide ${index + 1}`}
-                >
-                  <motion.div
-                    animate={{
-                      backgroundColor: isActive ? "#ffffff" : "#3D8ECB",
-                    }}
-                    transition={{ duration: 0.2 }}
-                    className="absolute w-5 h-5 rounded-full z-10 pointer-events-none"
-                  />
+          {/* dot card promo (min-h-8 menjaga tinggi supaya tidak loncat saat dot muncul) */}
+          <div className="mt-8 flex min-h-8 items-center justify-center gap-4">
+            {promoReady &&
+              promoDots.map((index) => {
+                const isActive = index === activeIndex;
+                return (
+                  <button
+                    key={index}
+                    type="button"
+                    onClick={() => handleDotClick(index)}
+                    className="focus:outline-none flex items-center justify-center h-8 w-8 relative"
+                    aria-label={`Go to slide ${index + 1}`}
+                  >
+                    <motion.div
+                      animate={{
+                        backgroundColor: isActive ? "#ffffff" : "#3D8ECB",
+                      }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute w-5 h-5 rounded-full z-10 pointer-events-none"
+                    />
 
-                  <motion.div
-                    initial={{ scale: 0.4, opacity: 0 }}
-                    animate={{
-                      scale: isActive ? 1 : 0.4,
-                      opacity: isActive ? 1 : 0,
-                    }}
-                    transition={{
-                      type: "spring",
-                      stiffness: 280,
-                      damping: 22,
-                    }}
-                    className="absolute w-9 h-9 rounded-full border-[5px] border-[#3D8ECB] bg-[#3D8ECB] z-0 origin-center pointer-events-none"
-                  />
-                </button>
-              );
-            })}
+                    <motion.div
+                      initial={{ scale: 0.4, opacity: 0 }}
+                      animate={{
+                        scale: isActive ? 1 : 0.4,
+                        opacity: isActive ? 1 : 0,
+                      }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 280,
+                        damping: 22,
+                      }}
+                      className="absolute w-9 h-9 rounded-full border-[5px] border-[#3D8ECB] bg-[#3D8ECB] z-0 origin-center pointer-events-none"
+                    />
+                  </button>
+                );
+              })}
           </div>
 
           {/* Lihat Semua Promo Link */}

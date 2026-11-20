@@ -4,6 +4,7 @@ import React, {
   useMemo,
   useState,
   useEffect,
+  useLayoutEffect,
   useCallback,
   useRef,
   useSyncExternalStore,
@@ -15,13 +16,12 @@ import { usePathname, useRouter } from "next/navigation";
 
 import {
   AnimatePresence,
+  animate,
   motion,
   useMotionValue,
   useSpring,
   useTransform,
 } from "framer-motion";
-
-import type { TargetAndTransition } from "framer-motion";
 
 import { Home } from "lucide-react";
 
@@ -69,6 +69,21 @@ const DOCK_WIDTH_SHRUNK = "88%";
 
 const ICON_PAD = 2;
 
+const DRAG_SCALE = 1.04;
+
+const INNER_MARGIN = 4;
+
+// Jari harus bergeser sejauh ini (px) sebelum gesture dianggap drag.
+// Ketukan biasa tidak membuat dock membesar atau pil melompat.
+const DRAG_START_DISTANCE = 6;
+
+// Scroll: jarak minimal (px) sebelum arah scroll dianggap berubah.
+// Mencegah dock bolak-balik mengecil/membesar karena getaran scroll.
+const SCROLL_THRESHOLD = 14;
+
+// Di area atas halaman dock selalu penuh
+const SCROLL_TOP_ZONE = 50;
+
 // White dock and action-menu styling
 const DOCK_BACKGROUND = "#FFFFFF";
 const DOCK_BORDER = "1px solid rgba(0, 0, 0, 0.06)";
@@ -76,55 +91,35 @@ const GLASS_SHADOW = "0 10px 26px -8px rgba(0, 0, 0, 0.14)";
 const PILL_COLOR = "rgb(0, 63, 136)";
 const MENU_GLASS_RADIUS = 24;
 
-// Genie motion 
+// Spring pil saat pindah menu / dilepas setelah drag (sedikit membal)
+const PILL_SPRING = {
+  type: "spring",
+  stiffness: 450,
+  damping: 28,
+  mass: 0.6,
+} as const;
 
-const GENIE_HIDDEN = { scaleX: 0.08, scaleY: 0.025, y: 30 };
+// Di awal drag pil meluncur cepat ke bawah jari (tidak melompat)
+const DRAG_CATCHUP_SPRING = {
+  type: "spring",
+  stiffness: 700,
+  damping: 45,
+  mass: 0.5,
+} as const;
 
-// Genie show 
+// Menu aksi: naik dari bawah dengan halus (hanya transform + opacity, ringan)
+const MENU_EASE = [0.22, 1, 0.36, 1] as const;
 
-const GENIE_SHOW: TargetAndTransition = {
-  scaleX: 1,
+// useLayoutEffect aman untuk SSR
+const useIsoLayoutEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
-  scaleY: 1,
-
-  y: 0,
-
-  transition: {
-    y: { type: "spring", stiffness: 360, damping: 28, mass: 0.82 },
-
-    scaleY: { type: "spring", stiffness: 320, damping: 25, mass: 0.82 },
-
-    scaleX: { type: "spring", stiffness: 220, damping: 27, mass: 0.82 },
-  },
-};
-
-// Genie hide 
-
-const GENIE_HIDE: TargetAndTransition = {
-  ...GENIE_HIDDEN,
-
-  transition: {
-    scaleX: { duration: 0.24, ease: [0.5, 0, 0.75, 0] },
-
-    scaleY: { duration: 0.32, ease: [0.5, 0, 0.75, 0] },
-
-    y: { duration: 0.32, ease: [0.5, 0, 0.75, 0] },
-  },
-};
-
-// Genie content 
-
-const GENIE_CONTENT_SHOW: TargetAndTransition = {
-  opacity: 1,
-
-  transition: { delay: 0.08, duration: 0.18, ease: "easeOut" },
-};
-
-const GENIE_CONTENT_HIDE: TargetAndTransition = {
-  opacity: 0,
-
-  transition: { duration: 0.1, ease: "easeIn" },
-};
+// Cocokkan route (mendukung rute turunan, mis. /promo/3 -> Promo)
+function isRouteActive(href: string, path: string | null) {
+  if (!path) return false;
+  if (href === "/") return path === "/";
+  return path === href || path.startsWith(`${href}/`);
+}
 
 // Mount hook
 
@@ -197,7 +192,7 @@ function HomeOutlineNoDoor({
 // Nav Icon
 
 function NavIcon({ item, isActive }: { item: NavItem; isActive: boolean }) {
-  // Ikon aktif putih di atas pil hitam; ikon nonaktif tetap hitam.
+  // Ikon aktif putih di atas pil biru; ikon nonaktif tetap hitam.
   const iconColor = isActive ? "#FFFFFF" : "#000000";
 
   if (item.isHome) {
@@ -259,7 +254,24 @@ export default function MobileBottomNavbar() {
 
   const [isScrolledDown, setIsScrolledDown] = useState(false);
 
-  const lastScrollY = useRef(0);
+  // Menu yang baru saja diketuk / dilepas (supaya pil langsung pindah sebelum
+  // navigasi selesai). Dibersihkan otomatis saat pathname berubah.
+  const [lock, setLock] = useState<{ index: number; path: string } | null>(
+    null,
+  );
+
+  // Lepas lock begitu navigasi selesai (pathname berubah). Dilakukan saat
+  // render (bukan di effect) supaya tidak memicu render berantai.
+  const [prevPathname, setPrevPathname] = useState(pathname);
+
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
+
+    setLock(null);
+  }
+
+  // Indeks ikon yang sedang dilalui pil ketika drag berlangsung.
+  const [dragVisualIndex, setDragVisualIndex] = useState<number | null>(null);
 
   // Tracking refs
 
@@ -271,51 +283,93 @@ export default function MobileBottomNavbar() {
 
   const plusPointerRef = useRef(false);
 
-  const lockedIndexRef = useRef<number | null>(null);
+  const pointerXRef = useRef<number | null>(null);
 
-  const [lockedIndex, setLockedIndex] = useState<number | null>(null);
-  // Indeks ikon yang sedang dilalui pil ketika drag berlangsung.
-  const [dragVisualIndex, setDragVisualIndex] = useState<number | null>(null);
+  const lastSyncKeyRef = useRef<string | null>(null);
 
-  // Scroll listener
+  const shrunkRef = useRef(false);
+
+  const offsetAnimRef = useRef<{ stop: () => void } | null>(null);
+
+  const shownRef = useRef(false);
+
+  // true setelah jari bergeser melewati DRAG_START_DISTANCE
+  const isDraggingRef = useRef(false);
+
+  // true di awal drag: pil menyusul jari dengan spring, baru kemudian menempel
+  const catchUpRef = useRef(false);
+
+  // Scroll listener (dengan hysteresis + throttle rAF)
 
   useEffect(() => {
     if (!isMounted) return;
 
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
+    let anchorY = window.scrollY;
+    let rafId = 0;
+    let ticking = false;
 
-      if (currentScrollY > lastScrollY.current && currentScrollY > 50) {
-        setIsScrolledDown(true);
-      } else {
-        setIsScrolledDown(false);
+    const applyShrink = (value: boolean) => {
+      if (shrunkRef.current !== value) {
+        shrunkRef.current = value;
+        setIsScrolledDown(value);
+      }
+    };
+
+    const update = () => {
+      ticking = false;
+
+      // abaikan overscroll bounce (iOS) di atas / bawah halaman
+      const maxY = Math.max(
+        0,
+        document.documentElement.scrollHeight - window.innerHeight,
+      );
+      const y = Math.min(Math.max(window.scrollY, 0), maxY);
+
+      if (y <= SCROLL_TOP_ZONE) {
+        anchorY = y;
+        applyShrink(false);
+        return;
       }
 
-      lastScrollY.current = currentScrollY;
+      if (shrunkRef.current) {
+        // sedang mengecil: ikuti titik terbawah, baru membesar jika naik cukup jauh
+        if (y > anchorY) {
+          anchorY = y;
+        } else if (anchorY - y > SCROLL_THRESHOLD) {
+          anchorY = y;
+          applyShrink(false);
+        }
+      } else if (y < anchorY) {
+        // sedang penuh: ikuti titik tertinggi, baru mengecil jika turun cukup jauh
+        anchorY = y;
+      } else if (y - anchorY > SCROLL_THRESHOLD) {
+        anchorY = y;
+        applyShrink(true);
+      }
+    };
+
+    const handleScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      rafId = window.requestAnimationFrame(update);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
+      window.cancelAnimationFrame(rafId);
     };
   }, [isMounted]);
 
-  // Motion values & membal / rubberbanding springs
+  // Motion values
 
-  const rawX = useMotionValue(0);
+  // Offset pil (px) dari posisi menu aktifnya. Posisi dasar pil dihitung CSS
+  // (persen dari lebar dock) sehingga selalu menempel pada ikon saat dock
+  // mengecil / membesar. Offset hanya dipakai untuk drag & animasi pindah menu.
+  const pillOffset = useMotionValue(0);
 
   const overdragVal = useMotionValue(0);
-
-  // Spring pil membal saat dilepas
-
-  const springX = useSpring(rawX, {
-    stiffness: 450,
-
-    damping: 28,
-
-    mass: 0.6,
-  });
 
   // Spring elastisitas dockbar saat ditarik melebihi batas
 
@@ -375,15 +429,20 @@ export default function MobileBottomNavbar() {
     [],
   );
 
+  const itemCount = navItems.length;
+
   const activeIndex = useMemo(() => {
     if (!isMounted) return 0;
 
     const idx = navItems.findIndex(
-      (item) => !item.isButton && item.href === pathname,
+      (item) => !item.isButton && isRouteActive(item.href, pathname),
     );
 
     return idx !== -1 ? idx : 0;
   }, [pathname, navItems, isMounted]);
+
+  // Menu yang sedang ditempati pil
+  const committedIndex = lock ? lock.index : activeIndex;
 
   const shouldShrink = isScrolledDown && !isDragging;
 
@@ -395,39 +454,79 @@ export default function MobileBottomNavbar() {
 
   const dockRadius = dockHeight / 2;
 
-  const DRAG_SCALE = 1.04;
+  // Posisi pil dihitung CSS: sama persis dengan rumus layout ikon
+  // (padding ICON_PAD + itemCount kolom sama lebar), jadi tidak ada lag
+  // saat lebar dock bertransisi.
+  const pillLeft = `calc(${ICON_PAD}px + (100% - ${ICON_PAD * 2}px) * ${
+    (committedIndex + 0.5) / itemCount
+  })`;
 
-  const INNER_MARGIN = 4;
+  // Di layar sempit pil tidak boleh lebih lebar dari kolomnya
+  const pillWidth = `min(${basePilWidth}px, calc((100% - ${
+    ICON_PAD * 2
+  }px) / ${itemCount} - 2px))`;
+
+  // Helper geometri (satuan px, dihitung saat dibutuhkan saja)
+
+  const getCenterX = useCallback(
+    (index: number, width: number) => {
+      const itemWidth = (width - ICON_PAD * 2) / itemCount;
+
+      return ICON_PAD + index * itemWidth + itemWidth / 2;
+    },
+
+    [itemCount],
+  );
+
+  const getIndexFromX = useCallback(
+    (x: number, width: number) => {
+      const itemWidth = (width - ICON_PAD * 2) / itemCount;
+
+      return Math.max(
+        0,
+
+        Math.min(itemCount - 1, Math.floor((x - ICON_PAD) / itemWidth)),
+      );
+    },
+
+    [itemCount],
+  );
+
+  const getBounds = useCallback(
+    (width: number, dragging: boolean) => {
+      const slot = (width - ICON_PAD * 2) / itemCount;
+
+      const pillW = Math.min(basePilWidth, slot - 2);
+
+      const effectiveHalfPil = (pillW * (dragging ? DRAG_SCALE : 1)) / 2;
+
+      return {
+        minX: INNER_MARGIN + effectiveHalfPil,
+
+        maxX: width - INNER_MARGIN - effectiveHalfPil,
+      };
+    },
+
+    [basePilWidth, itemCount],
+  );
 
   // Klem presisi agar pil tidak menembus batas dockbar
 
   const clampX = useCallback(
     (x: number, width: number, dragging: boolean) => {
-      const currentScale = dragging ? DRAG_SCALE : 1;
-
-      const effectiveHalfPil = (basePilWidth * currentScale) / 2;
-
-      const minX = INNER_MARGIN + effectiveHalfPil;
-
-      const maxX = width - INNER_MARGIN - effectiveHalfPil;
+      const { minX, maxX } = getBounds(width, dragging);
 
       return Math.max(minX, Math.min(maxX, x));
     },
 
-    [basePilWidth],
+    [getBounds],
   );
 
   // Perhitungan overdrag untuk menggerakkan elastisitas dockbar
 
   const getOverdragAmount = useCallback(
     (x: number, width: number, dragging: boolean) => {
-      const currentScale = dragging ? DRAG_SCALE : 1;
-
-      const effectiveHalfPil = (basePilWidth * currentScale) / 2;
-
-      const minX = INNER_MARGIN + effectiveHalfPil;
-
-      const maxX = width - INNER_MARGIN - effectiveHalfPil;
+      const { minX, maxX } = getBounds(width, dragging);
 
       if (x < minX) return x - minX;
 
@@ -436,120 +535,165 @@ export default function MobileBottomNavbar() {
       return 0;
     },
 
-    [basePilWidth],
+    [getBounds],
   );
 
-  const getCenterXForIndex = useCallback(
-    (index: number, width: number) => {
-      const itemWidth = (width - ICON_PAD * 2) / navItems.length;
+  // Kembalikan pil (offset -> 0) ke menu yang sedang aktif
+  const springPillHome = useCallback(() => {
+    offsetAnimRef.current?.stop();
 
-      return ICON_PAD + index * itemWidth + itemWidth / 2;
-    },
+    offsetAnimRef.current = animate(pillOffset, 0, PILL_SPRING);
+  }, [pillOffset]);
 
-    [navItems.length],
-  );
+  // Saat menu aktif berpindah (ketuk, lepas drag, atau route berubah):
+  // posisi dasar pil langsung pindah lewat CSS, offset di-rebase supaya pil
+  // tetap terlihat di tempat semula lalu meluncur membal ke posisi baru.
+  const committedIndexRef = useRef(committedIndex);
 
-  const movePillToIndex = useCallback(
-    (index: number, width?: number) => {
-      if (!dockRef.current) return;
+  useIsoLayoutEffect(() => {
+    const dock = dockRef.current;
 
-      const rect = dockRef.current.getBoundingClientRect();
+    const prev = committedIndexRef.current;
 
-      const realWidth = width || dockRef.current.offsetWidth || rect.width;
+    committedIndexRef.current = committedIndex;
 
-      if (!realWidth) return;
+    // belum tampil -> tidak ada animasi awal
+    if (!dock) return;
 
-      const center = getCenterXForIndex(index, realWidth);
-
-      const targetX = clampX(center, realWidth, false);
-
-      rawX.set(targetX);
-
-      overdragVal.set(0);
-    },
-
-    [getCenterXForIndex, clampX, rawX, overdragVal],
-  );
-
-  const updateTargetPos = useCallback(() => {
-    if (!dockRef.current) return;
-
-    const rect = dockRef.current.getBoundingClientRect();
-
-    const realWidth = dockRef.current.offsetWidth || rect.width;
-
-    const lockedIndex = lockedIndexRef.current;
-
-    if (lockedIndex !== null) {
-      movePillToIndex(lockedIndex, realWidth);
+    if (!shownRef.current) {
+      shownRef.current = true;
 
       return;
     }
 
-    movePillToIndex(activeIndex, realWidth);
-  }, [activeIndex, movePillToIndex]);
+    if (prev === committedIndex) return;
 
-  // Route sync
+    const width = dock.offsetWidth;
 
+    if (!width) return;
+
+    offsetAnimRef.current?.stop();
+
+    const visualX = getCenterX(prev, width) + pillOffset.get();
+
+    pillOffset.set(visualX - getCenterX(committedIndex, width));
+
+    offsetAnimRef.current = animate(pillOffset, 0, PILL_SPRING);
+  }, [isMounted, committedIndex, getCenterX, pillOffset]);
+
+  // Hentikan animasi saat unmount
   useEffect(() => {
-    if (!isMounted) return;
+    return () => {
+      offsetAnimRef.current?.stop();
+    };
+  }, []);
 
-    const lockedIndex = lockedIndexRef.current;
+  // Sinkronkan pil dengan posisi jari saat drag. Dipanggil dari pointer event
+  // dan dari loop rAF selama drag (supaya pil tetap di bawah jari walau dock
+  // sedang membesar karena transisi lebar).
+  const syncDragPill = useCallback(() => {
+    const dock = dockRef.current;
 
-    if (lockedIndex !== null) {
-      const targetItem = navItems[lockedIndex];
+    const pointerX = pointerXRef.current;
 
-      if (targetItem && !targetItem.isButton && targetItem.href === pathname) {
-        lockedIndexRef.current = null;
+    if (!dock || pointerX === null) return;
 
-        setLockedIndex(null);
-      } else {
-        movePillToIndex(lockedIndex);
+    const rect = dock.getBoundingClientRect();
 
-        return;
-      }
+    const key = `${pointerX}|${rect.left}|${rect.width}`;
+
+    if (key === lastSyncKeyRef.current) return;
+
+    lastSyncKeyRef.current = key;
+
+    const realWidth = dock.offsetWidth || rect.width;
+
+    if (!realWidth) return;
+
+    const scaleFactor = rect.width / realWidth || 1;
+
+    const mouseX = (pointerX - rect.left) / scaleFactor;
+
+    // Klem posisi pil dalam batas piksel riil
+
+    const target =
+      clampX(mouseX, realWidth, true) -
+      getCenterX(committedIndexRef.current, realWidth);
+
+    if (catchUpRef.current && Math.abs(target - pillOffset.get()) > 1.5) {
+      // awal drag: pil meluncur cepat ke bawah jari (tidak melompat)
+      offsetAnimRef.current?.stop();
+
+      offsetAnimRef.current = animate(pillOffset, target, DRAG_CATCHUP_SPRING);
+    } else {
+      catchUpRef.current = false;
+
+      offsetAnimRef.current?.stop();
+
+      offsetAnimRef.current = null;
+
+      pillOffset.set(target);
     }
 
-    movePillToIndex(activeIndex);
-  }, [pathname, activeIndex, navItems, isMounted, movePillToIndex]);
+    // Tarik dockbar secara elastis saat melebihi batas
 
-  // Resize listener
+    overdragVal.set(getOverdragAmount(mouseX, realWidth, true));
 
-  useEffect(() => {
-    if (!isMounted) return;
-
-    updateTargetPos();
-
-    const handleResize = () => {
-      updateTargetPos();
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, [updateTargetPos, isMounted]);
-
-  // ResizeObserver for shrink transition
+    // Perbarui warna ikon secara realtime mengikuti posisi pil.
+    setDragVisualIndex(getIndexFromX(mouseX, realWidth));
+  }, [
+    clampX,
+    getCenterX,
+    getIndexFromX,
+    getOverdragAmount,
+    overdragVal,
+    pillOffset,
+  ]);
 
   useEffect(() => {
-    if (!isMounted || !dockRef.current) return;
+    if (!isDragging) return;
 
-    if (typeof ResizeObserver === "undefined") return;
+    let rafId = 0;
 
-    const observer = new ResizeObserver(() => {
-      if (dragStartPos.current) return;
+    const tick = () => {
+      syncDragPill();
 
-      updateTargetPos();
-    });
+      rafId = window.requestAnimationFrame(tick);
+    };
 
-    observer.observe(dockRef.current);
+    rafId = window.requestAnimationFrame(tick);
 
     return () => {
-      observer.disconnect();
+      window.cancelAnimationFrame(rafId);
     };
-  }, [updateTargetPos, isMounted]);
+  }, [isDragging, syncDragPill]);
+
+  // Drag baru dimulai setelah jari bergeser cukup jauh, bukan saat menyentuh
+  const startDrag = () => {
+    isDraggingRef.current = true;
+
+    catchUpRef.current = true;
+
+    lastSyncKeyRef.current = null;
+
+    offsetAnimRef.current?.stop();
+
+    offsetAnimRef.current = null;
+
+    setIsDragging(true);
+  };
+
+  const endDrag = () => {
+    isDraggingRef.current = false;
+
+    catchUpRef.current = false;
+
+    pointerXRef.current = null;
+
+    setIsDragging(false);
+
+    setDragVisualIndex(null);
+  };
 
   // Pointer event handlers dengan elastisitas drag
 
@@ -572,70 +716,27 @@ export default function MobileBottomNavbar() {
       time: Date.now(),
     };
 
-    setIsDragging(true);
+    pointerXRef.current = e.clientX;
 
-    lockedIndexRef.current = null;
-
-    setLockedIndex(null);
-
-    if (dockRef.current) {
-      const rect = dockRef.current.getBoundingClientRect();
-
-      const realWidth = dockRef.current.offsetWidth || rect.width;
-
-      const scaleFactor = rect.width / realWidth;
-
-      const mouseX = (e.clientX - rect.left) / scaleFactor;
-
-      rawX.set(clampX(mouseX, realWidth, true));
-
-      overdragVal.set(getOverdragAmount(mouseX, realWidth, true));
-      const itemWidth = (realWidth - ICON_PAD * 2) / navItems.length;
-      const nextIndex = Math.max(
-        0,
-        Math.min(
-          navItems.length - 1,
-          Math.floor((mouseX - ICON_PAD) / itemWidth),
-        ),
-      );
-      setDragVisualIndex(nextIndex);
-    }
+    isDraggingRef.current = false;
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
-    if (
-      plusPointerRef.current ||
-      !dragStartPos.current ||
-      !isDragging ||
-      !dockRef.current
-    )
+    if (plusPointerRef.current || !dragStartPos.current || !dockRef.current)
       return;
 
-    const rect = dockRef.current.getBoundingClientRect();
+    pointerXRef.current = e.clientX;
 
-    const realWidth = dockRef.current.offsetWidth || rect.width;
+    if (!isDraggingRef.current) {
+      // masih ketukan biasa: abaikan sampai jari bergeser cukup jauh
+      if (Math.abs(e.clientX - dragStartPos.current.x) < DRAG_START_DISTANCE) {
+        return;
+      }
 
-    const scaleFactor = rect.width / realWidth;
+      startDrag();
+    }
 
-    const mouseX = (e.clientX - rect.left) / scaleFactor;
-
-    // Klem posisi pil dalam batas piksel riil
-
-    rawX.set(clampX(mouseX, realWidth, true));
-
-    // Tarik dockbar secara elastis saat melebihi batas
-
-    overdragVal.set(getOverdragAmount(mouseX, realWidth, true));
-    // Perbarui warna ikon secara realtime mengikuti posisi pil.
-    const itemWidth = (realWidth - ICON_PAD * 2) / navItems.length;
-    const nextIndex = Math.max(
-      0,
-      Math.min(
-        navItems.length - 1,
-        Math.floor((mouseX - ICON_PAD) / itemWidth),
-      ),
-    );
-    setDragVisualIndex(nextIndex);
+    syncDragPill();
   };
 
   const handlePointerUp = (e: React.PointerEvent) => {
@@ -647,8 +748,7 @@ export default function MobileBottomNavbar() {
       e.currentTarget.releasePointerCapture(e.pointerId);
     }
 
-    setIsDragging(false);
-    setDragVisualIndex(null);
+    endDrag();
 
     if (!dockRef.current || !dragStartPos.current) {
       dragStartPos.current = null;
@@ -670,7 +770,7 @@ export default function MobileBottomNavbar() {
 
     const realWidth = dockRef.current.offsetWidth || rect.width;
 
-    const scaleFactor = rect.width / realWidth;
+    const scaleFactor = rect.width / realWidth || 1;
 
     const currentX = clampX(
       (e.clientX - rect.left) / scaleFactor,
@@ -680,33 +780,23 @@ export default function MobileBottomNavbar() {
       false,
     );
 
-    const itemWidth = (realWidth - ICON_PAD * 2) / navItems.length;
-
-    const targetIndex = Math.max(
-      0,
-
-      Math.min(
-        navItems.length - 1,
-
-        Math.floor((currentX - ICON_PAD) / itemWidth),
-      ),
-    );
+    const targetIndex = getIndexFromX(currentX, realWidth);
 
     const item = navItems[targetIndex];
 
-    lockedIndexRef.current = targetIndex;
-
-    setLockedIndex(targetIndex);
-
-    movePillToIndex(targetIndex, realWidth);
-
     if (item.isButton) {
-      lockedIndexRef.current = null;
-
-      setLockedIndex(null);
+      // Dilepas di atas tombol plus: buka/tutup menu, pil kembali ke menu aktif
+      springPillHome();
 
       setIsActionMenuOpen((prev) => !prev);
     } else if (item.href) {
+      setLock({ index: targetIndex, path: pathname });
+
+      // menu tidak berubah -> tidak ada rebase, cukup kembalikan pil ke tempatnya
+      if (targetIndex === committedIndex) {
+        springPillHome();
+      }
+
       if (!isQuickTap) {
         suppressNextClickRef.current = true;
       }
@@ -723,20 +813,28 @@ export default function MobileBottomNavbar() {
     }, 50);
   };
 
-  const getItemScale = useCallback(
-    (itemIndex: number) => {
-      const visualIndex =
-        isDragging && dragVisualIndex !== null
-          ? dragVisualIndex
-          : lockedIndex !== null
-            ? lockedIndex
-            : activeIndex;
+  // Gesture dibatalkan (mis. diambil alih browser): jangan navigasi
+  const handlePointerCancel = (e: React.PointerEvent) => {
+    if (plusPointerRef.current) {
+      return;
+    }
 
-      return itemIndex === visualIndex ? 0.92 : 1;
-    },
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
 
-    [lockedIndex, activeIndex],
-  );
+    dragStartPos.current = null;
+
+    endDrag();
+
+    overdragVal.set(0);
+
+    springPillHome();
+  };
+
+  // Indeks yang terlihat aktif (ikon putih + skala kecil)
+  const visualIndex =
+    isDragging && dragVisualIndex !== null ? dragVisualIndex : committedIndex;
 
   // Outside click listener
 
@@ -783,17 +881,25 @@ export default function MobileBottomNavbar() {
             aria-label="Navigasi Bawah Seluler"
             className="flex w-full flex-col items-center px-4 select-none lg:hidden"
           >
-            {/* Action Menu (genie, tanpa opacity di parent glass agar tidak glitch) */}
+            {/* Action Menu: naik dari bawah dengan halus (tanpa efek genie) */}
 
-            <AnimatePresence mode="wait">
+            <AnimatePresence>
               {isActionMenuOpen && (
                 <motion.aside
                   key="action-menu"
                   ref={actionMenuRef}
-                  initial={GENIE_HIDDEN}
-                  animate={GENIE_SHOW}
-                  exit={GENIE_HIDE}
-                  style={{ originX: 0.5, originY: 1 }}
+                  initial={{ opacity: 0, y: 28 }}
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                    transition: { duration: 0.26, ease: MENU_EASE },
+                  }}
+                  exit={{
+                    opacity: 0,
+                    y: 20,
+                    transition: { duration: 0.16, ease: "easeIn" },
+                  }}
+                  style={{ willChange: "transform, opacity" }}
                   className="pointer-events-auto relative mb-3.5 flex w-[230px] flex-col rounded-3xl p-2"
                 >
                   {/* Menu shadow */}
@@ -812,14 +918,9 @@ export default function MobileBottomNavbar() {
 
                   <GlassLayer radius={MENU_GLASS_RADIUS} />
 
-                  {/* Menu content (fade di sini saja) */}
+                  {/* Menu content */}
 
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={GENIE_CONTENT_SHOW}
-                    exit={GENIE_CONTENT_HIDE}
-                    className="relative z-10 flex w-full flex-col"
-                  >
+                  <div className="relative z-10 flex w-full flex-col">
                     {/* Button: Booking */}
 
                     <button
@@ -880,7 +981,7 @@ export default function MobileBottomNavbar() {
 
                       <span>Ketersediaan Kamar</span>
                     </button>
-                  </motion.div>
+                  </div>
                 </motion.aside>
               )}
             </AnimatePresence>
@@ -892,7 +993,7 @@ export default function MobileBottomNavbar() {
               onPointerDown={handlePointerDown}
               onPointerMove={handlePointerMove}
               onPointerUp={handlePointerUp}
-              onPointerCancel={handlePointerUp}
+              onPointerCancel={handlePointerCancel}
               onContextMenu={(e) => e.preventDefault()}
               className="pointer-events-auto relative flex max-w-[390px] items-center touch-none cursor-grab active:cursor-grabbing select-none"
               style={{
@@ -945,36 +1046,43 @@ export default function MobileBottomNavbar() {
               {/* Dock content */}
 
               <div className="absolute inset-0 z-10">
-                {/* Active pill */}
+                {/* Active pill
+                    - luar (CSS murni): posisi persen + ukuran bertransisi dengan
+                      durasi & easing yang SAMA dengan dock -> menempel pada ikon
+                    - dalam (framer): offset drag / pindah menu + skala saat drag */}
 
-                <motion.div
-                  className="pointer-events-none absolute top-1/2 z-10 rounded-full"
-                  animate={{
-                    width: `${basePilWidth}px`,
-
-                    height: `${basePilHeight}px`,
-
-                    scale: isDragging ? DRAG_SCALE : 1,
-
-                    backgroundColor: PILL_COLOR,
-                  }}
-                  transition={{
-                    type: "spring",
-
-                    stiffness: 400,
-
-                    damping: 25,
-                  }}
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute top-1/2 z-10"
                   style={{
-                    x: springX,
+                    left: pillLeft,
 
-                    y: "-50%",
+                    width: pillWidth,
 
-                    left: 0,
+                    height: basePilHeight,
 
-                    translateX: "-50%",
+                    transform: "translate(-50%, -50%)",
+
+                    transition: `width ${SHRINK_MS}ms ${SHRINK_EASE}, height ${SHRINK_MS}ms ${SHRINK_EASE}`,
                   }}
-                />
+                >
+                  <motion.div
+                    className="h-full w-full rounded-full"
+                    animate={{ scale: isDragging ? DRAG_SCALE : 1 }}
+                    transition={{
+                      type: "spring",
+
+                      stiffness: 400,
+
+                      damping: 25,
+                    }}
+                    style={{
+                      x: pillOffset,
+
+                      backgroundColor: PILL_COLOR,
+                    }}
+                  />
+                </div>
 
                 {/* Nav items */}
 
@@ -983,16 +1091,9 @@ export default function MobileBottomNavbar() {
                   style={{ paddingInline: ICON_PAD }}
                 >
                   {navItems.map((item, i) => {
-                    const visualActiveIndex =
-                      isDragging && dragVisualIndex !== null
-                        ? dragVisualIndex
-                        : lockedIndex !== null
-                          ? lockedIndex
-                          : activeIndex;
+                    const isActive = i === visualIndex;
 
-                    const isActive = i === visualActiveIndex;
-
-                    const localScale = getItemScale(i);
+                    const localScale = isActive ? 0.92 : 1;
 
                     return (
                       <li
@@ -1090,16 +1191,8 @@ export default function MobileBottomNavbar() {
                                 return;
                               }
 
-                              lockedIndexRef.current = i;
-
-                              setLockedIndex(i);
-
-                              movePillToIndex(i);
-
                               if (pathname === item.href) {
-                                lockedIndexRef.current = null;
-
-                                setLockedIndex(null);
+                                setLock(null);
 
                                 window.scrollTo({
                                   top: 0,
@@ -1107,6 +1200,8 @@ export default function MobileBottomNavbar() {
                                   behavior: "smooth",
                                 });
                               } else if (item.href) {
+                                setLock({ index: i, path: pathname });
+
                                 router.push(item.href);
                               }
 

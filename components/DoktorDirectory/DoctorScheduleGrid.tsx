@@ -554,7 +554,7 @@ export default function DoctorScheduleGrid({
                 onClick={handleSearch}
                 className="px-6 h-11 bg-[#003f88] text-white font-semibold transition-all flex items-center justify-center text-base cursor-pointer rounded-lg active:scale-95"
               >
-                Search
+                Cari
               </button>
             </div>
           </div>

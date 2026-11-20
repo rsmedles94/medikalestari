@@ -2,13 +2,28 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, CheckCircle, AlertCircle } from "lucide-react";
+import { X, CheckCircle, AlertCircle, ChevronDown } from "lucide-react";
 import { fetchAllDoctorsWithSchedules } from "@/lib/api";
 import { Doctor, Schedule } from "@/lib/types";
 
 interface BookingModalFloatingProps {
   isOpen: boolean;
   onClose: () => void;
+}
+
+// Kelas bersama supaya semua kolom konsisten
+const labelClass = "block mb-1.5 text-sm font-semibold text-slate-800";
+const fieldClass =
+  "w-full h-12 px-4 bg-white border border-slate-400 rounded-sm text-[15px] text-slate-900 placeholder:text-slate-400 outline-none transition-colors focus:border-[#003f88] focus:ring-1 focus:ring-[#003f88] disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-300 disabled:cursor-not-allowed";
+const selectClass = `${fieldClass} appearance-none pr-10 cursor-pointer`;
+
+function Chevron() {
+  return (
+    <ChevronDown
+      size={18}
+      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-600 pointer-events-none"
+    />
+  );
 }
 
 export default function BookingModalFloating({
@@ -215,12 +230,12 @@ export default function BookingModalFloating({
 
   const getTimeSlotLabel = () => {
     if (!formData.doctor) {
-      return "Jam Praktik";
+      return "Pilih dokter";
     }
     if (!formData.dayOfWeek) {
-      return "Pilih hari dulu";
+      return "Pilih hari";
     }
-    return timeSlots.length === 0 ? "Tidak ada jadwal tersedia" : "Pilih Jam";
+    return timeSlots.length === 0 ? "Tidak ada jadwal tersedia" : "Pilih jam";
   };
 
   return (
@@ -234,179 +249,251 @@ export default function BookingModalFloating({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/40 backdrop-blur-[2px] z-60"
+            className="fixed inset-0 bg-black/60 z-60"
           />
 
           {/* Container modal */}
           <motion.div
             key="booking-modal"
-            initial={{ opacity: 0, scale: 0.98, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.98, y: 10 }}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 12 }}
+            transition={{ duration: 0.18 }}
             className="fixed inset-0 z-70 flex items-center justify-center p-4 pointer-events-none"
           >
-            <section className="bg-white rounded shadow-[0_10px_40px_rgba(0,0,0,0.1)] w-full max-w-sm overflow-hidden pointer-events-auto border border-slate-100 max-h-[90vh] overflow-y-auto">
+            <section
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="booking-title"
+              className="relative flex flex-col w-full max-w-xl max-h-[92vh] bg-white rounded-sm shadow-2xl pointer-events-auto"
+            >
               {/* Header modal */}
-              <header className="p-7 pb-2 flex items-start justify-between">
-                <div className="pr-4">
-                  <h2 className="text-xl font-bold text-slate-900 leading-tight">
-                    Janji Temu
-                  </h2>
-                  <p className="text-slate-400 text-xs mt-1 font-medium">
-                    Reservasi layanan kesehatan
-                  </p>
-                </div>
-                <button
-                  onClick={onClose}
-                  className="p-2 hover:bg-slate-50 rounded-full transition-colors text-slate-400 cursor-pointer"
+              <header className="shrink-0 flex items-center justify-between px-6 sm:px-8 py-5 border-b border-slate-200">
+                <h2
+                  id="booking-title"
+                  className="text-2xl font-bold text-slate-900 leading-tight"
                 >
-                  <X size={20} />
+                  Janji Temu
+                </h2>
+
+                {/* Tombol tutup */}
+                <button
+                  type="button"
+                  onClick={onClose}
+                  aria-label="Tutup"
+                  className="-mr-1 w-12 h-12 flex items-center justify-center text-slate-800 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#003f88]"
+                >
+                  <X size={40} strokeWidth={1.75} />
                 </button>
               </header>
 
               {/* Isi form */}
-              <main className="p-7">
+              <main className="flex-1 overflow-y-auto px-6 sm:px-8 py-6">
                 <AnimatePresence mode="wait">
                   {submitted ? (
                     /* Pesan sukses */
                     <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="text-center py-8"
+                      key="success"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="text-center py-10"
                     >
-                      <div className="w-16 h-16 bg-green-50 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <CheckCircle size={32} />
+                      <div className="w-16 h-16 bg-green-600 text-white rounded-full flex items-center justify-center mx-auto mb-5">
+                        <CheckCircle size={36} strokeWidth={1.75} />
                       </div>
-                      <h3 className="text-lg font-bold text-slate-800">
+                      <h3 className="text-xl font-bold text-slate-900">
                         Data Terkirim
                       </h3>
-                      <p className="text-sm text-slate-500 px-4 mt-1 leading-relaxed">
+                      <p className="text-sm text-slate-600 mt-2 max-w-sm mx-auto leading-relaxed">
                         Admin akan segera menghubungi Anda melalui WhatsApp.
                       </p>
                     </motion.div>
                   ) : (
                     /* Form input */
-                    <form onSubmit={handleSubmit} className="space-y-3">
+                    <form
+                      key="form"
+                      onSubmit={handleSubmit}
+                      className="space-y-5"
+                    >
                       {error && (
-                        <div className="bg-red-50 text-red-600 p-3 text-[11px] font-bold flex gap-2 items-center border border-red-100">
-                          <AlertCircle size={14} /> {error}
+                        <div
+                          role="alert"
+                          className="flex items-center gap-3 bg-red-50 border border-red-200 border-l-4 border-l-red-600 px-4 py-3 text-sm text-red-800"
+                        >
+                          <AlertCircle size={20} className="shrink-0" />
+                          {error}
                         </div>
                       )}
 
-                      <div className="space-y-3">
+                      <div className="grid grid-cols-1 gap-5">
                         {/* Nama pasien */}
-                        <input
-                          type="text"
-                          name="patientName"
-                          value={formData.patientName}
-                          onChange={handleChange}
-                          placeholder="Nama Lengkap Pasien"
-                          className="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 focus:bg-white focus:ring-2 focus:ring-blue-500/10 transition-all text-sm outline-none rounded-xl"
-                        />
-
-                        {/* No. Telepon & Hari */}
-                        <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label htmlFor="patientName" className={labelClass}>
+                            Nama pasien
+                          </label>
                           <input
+                            id="patientName"
+                            type="text"
+                            name="patientName"
+                            value={formData.patientName}
+                            onChange={handleChange}
+                            className={fieldClass}
+                            placeholder="Masukkan nama pasien"
+                          />
+                        </div>
+
+                        {/* No. Telepon */}
+                        <div>
+                          <label htmlFor="patientPhone" className={labelClass}>
+                            Nomor telepon
+                          </label>
+                          <input
+                            id="patientPhone"
                             type="tel"
                             name="patientPhone"
                             value={formData.patientPhone}
                             onChange={handleChange}
-                            placeholder="No. Telepon"
-                            className="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 focus:bg-white focus:ring-2 focus:ring-blue-500/10 transition-all text-sm outline-none rounded-xl"
+                            className={fieldClass}
+                            placeholder="Masukkan nomor telepon"
                           />
-                          <select
-                            name="dayOfWeek"
-                            value={formData.dayOfWeek}
-                            onChange={handleChange}
-                            disabled={availableDays.length === 0}
-                            className="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 focus:bg-white focus:ring-2 focus:ring-blue-500/10 transition-all text-sm outline-none rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
-                          >
-                            <option value="">
-                              {availableDays.length === 0
-                                ? "Pilih dokter dulu"
-                                : "Pilih Hari"}
-                            </option>
-                            {availableDays.map((day) => (
-                              <option key={day} value={day}>
-                                {day}
-                              </option>
-                            ))}
-                          </select>
                         </div>
 
                         {/* Spesialis */}
-                        <select
-                          name="specialty"
-                          value={formData.specialty}
-                          onChange={handleSpecialtyChange}
-                          disabled={doctorsData.length === 0}
-                          className="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 focus:bg-white focus:ring-2 focus:ring-blue-500/10 transition-all text-sm outline-none rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          <option value="">
-                            {doctorsData.length === 0
-                              ? "Memuat spesialis..."
-                              : "Pilih Spesialis"}
-                          </option>
-                          {specialties.map((s) => (
-                            <option key={s} value={s}>
-                              {s}
-                            </option>
-                          ))}
-                        </select>
+                        <div>
+                          <label htmlFor="specialty" className={labelClass}>
+                            Spesialis
+                          </label>
+                          <div className="relative">
+                            <select
+                              id="specialty"
+                              name="specialty"
+                              value={formData.specialty}
+                              onChange={handleSpecialtyChange}
+                              disabled={doctorsData.length === 0}
+                              className={selectClass}
+                            >
+                              <option value="">
+                                {doctorsData.length === 0
+                                  ? "Memuat spesialis..."
+                                  : "Pilih spesialis"}
+                              </option>
+                              {specialties.map((s) => (
+                                <option key={s} value={s}>
+                                  {s}
+                                </option>
+                              ))}
+                            </select>
+                            <Chevron />
+                          </div>
+                        </div>
 
                         {/* Dokter */}
-                        <select
-                          name="doctor"
-                          value={formData.doctor}
-                          onChange={handleDoctorChange}
-                          disabled={formData.specialty === ""}
-                          className="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 focus:bg-white focus:ring-2 focus:ring-blue-500/10 transition-all text-sm outline-none rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          <option value="">
-                            {formData.specialty
-                              ? "Pilih Dokter"
-                              : "Pilih spesialis dulu"}
-                          </option>
-                          {availableDoctors.map((doctor) => (
-                            <option key={doctor.id} value={doctor.name}>
-                              {doctor.name}
-                            </option>
-                          ))}
-                        </select>
+                        <div>
+                          <label htmlFor="doctor" className={labelClass}>
+                            Dokter
+                          </label>
+                          <div className="relative">
+                            <select
+                              id="doctor"
+                              name="doctor"
+                              value={formData.doctor}
+                              onChange={handleDoctorChange}
+                              disabled={formData.specialty === ""}
+                              className={selectClass}
+                            >
+                              <option value="">
+                                {formData.specialty
+                                  ? "Pilih dokter"
+                                  : "Pilih spesialis"}
+                              </option>
+                              {availableDoctors.map((doctor) => (
+                                <option key={doctor.id} value={doctor.name}>
+                                  {doctor.name}
+                                </option>
+                              ))}
+                            </select>
+                            <Chevron />
+                          </div>
+                        </div>
+
+                        {/* Hari */}
+                        <div>
+                          <label htmlFor="dayOfWeek" className={labelClass}>
+                            Hari
+                          </label>
+                          <div className="relative">
+                            <select
+                              id="dayOfWeek"
+                              name="dayOfWeek"
+                              value={formData.dayOfWeek}
+                              onChange={handleChange}
+                              disabled={availableDays.length === 0}
+                              className={selectClass}
+                            >
+                              <option value="">
+                                {availableDays.length === 0
+                                  ? "Pilih dokter"
+                                  : "Pilih hari"}
+                              </option>
+                              {availableDays.map((day) => (
+                                <option key={day} value={day}>
+                                  {day}
+                                </option>
+                              ))}
+                            </select>
+                            <Chevron />
+                          </div>
+                        </div>
 
                         {/* Jam */}
-                        <select
-                          name="timeSlot"
-                          value={formData.timeSlot}
-                          onChange={handleChange}
-                          disabled={
-                            formData.doctor === "" ||
-                            formData.dayOfWeek === "" ||
-                            timeSlots.length === 0
-                          }
-                          className="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 focus:bg-white focus:ring-2 focus:ring-blue-500/10 transition-all text-sm outline-none rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          <option value="">{getTimeSlotLabel()}</option>
-                          {timeSlots.map((time) => (
-                            <option
-                              key={`${time.start}-${time.end}`}
-                              value={`${time.start} - ${time.end}`}
+                        <div>
+                          <label htmlFor="timeSlot" className={labelClass}>
+                            Jam praktik
+                          </label>
+                          <div className="relative">
+                            <select
+                              id="timeSlot"
+                              name="timeSlot"
+                              value={formData.timeSlot}
+                              onChange={handleChange}
+                              disabled={
+                                formData.doctor === "" ||
+                                formData.dayOfWeek === "" ||
+                                timeSlots.length === 0
+                              }
+                              className={selectClass}
                             >
-                              {time.start} - {time.end}
-                            </option>
-                          ))}
-                        </select>
+                              <option value="">{getTimeSlotLabel()}</option>
+                              {timeSlots.map((time) => (
+                                <option
+                                  key={`${time.start}-${time.end}`}
+                                  value={`${time.start} - ${time.end}`}
+                                >
+                                  {time.start} - {time.end}
+                                </option>
+                              ))}
+                            </select>
+                            <Chevron />
+                          </div>
+                        </div>
                       </div>
 
-                      {/* Tombol kirim */}
-                      <div className="pt-6">
+                      {/* Tombol aksi */}
+                      <div className="flex gap-3">
+                        <button
+                          type="button"
+                          onClick={onClose}
+                          className="flex-1 h-12 border border-slate-400 text-slate-800 font-semibold text-[15px] rounded-sm hover:bg-slate-50 transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#003f88]"
+                        >
+                          Batal
+                        </button>
                         <button
                           type="submit"
                           disabled={loading || doctorsData.length === 0}
-                          className="w-full py-4 bg-[#003f88] text-white font-bold rounded transition-all duration-300 active:scale-95 flex items-center justify-center gap-3 text-sm cursor-pointer hover:bg-[#003f88]/90 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="flex-1 h-12 bg-[#003f88] text-white font-semibold text-[15px] rounded-sm transition-colors flex items-center justify-center gap-3 cursor-pointer hover:bg-[#00306a] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#003f88] disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           {loading ? (
-                            <div className="w-5 h-5 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+                            <div className="w-5 h-5 border-[3px] border-white/30 border-t-white rounded-full animate-spin" />
                           ) : (
                             "Kirim"
                           )}
