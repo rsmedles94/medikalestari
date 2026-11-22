@@ -310,22 +310,22 @@ export default function NotFound() {
       {/* Teks & tombol */}
       <div className="relative z-10 text-center mt-6">
         <h1
-          className="nf-fade-up text-3xl md:text-[50px] font-bold text-gray-400 mb-2"
+          className="nf-fade-up text-[50px] md:text-[90px] font-bold text-gray-300 mb-2"
           style={{ animationDelay: "0.5s" }}
         >
           Oops,
         </h1>
         <p
-          className="nf-fade-up text-gray-400 text-sm mb-6"
+          className="nf-fade-up text-gray-400 text-xl mb-6"
           style={{ animationDelay: "0.65s" }}
         >
-          Halaman sedang dalam pemulihan. Silakan akses layanan kami yang lain.
+          Halaman sedang dalam pemeliharaan
         </p>
 
         <div className="nf-fade-up" style={{ animationDelay: "0.8s" }}>
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-gray-400 hover:underline underline-offset-4 px-4 py-2 active:scale-95 transition-all font-medium"
+            className="inline-flex items-center gap-2 text-black hover:underline underline-offset-4 px-4 py-2 active:scale-95 transition-all font-medium"
           >
             Kembali ke Beranda
           </Link>
