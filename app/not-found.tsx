@@ -1,320 +1,335 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
+import { useEffect, useState, useSyncExternalStore } from "react";
 
-export default function NotFound() {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const gameContainerRef = useRef<HTMLDivElement | null>(null);
-  const [gameOver, setGameOver] = useState(false);
-  const [score, setScore] = useState(0);
-  const [highScore, setHighScore] = useState(0);
-  const [gameStarted, setGameStarted] = useState(false);
+const css = `
+  .nf-stage {
+    font-size: clamp(7rem, 28vw, 17rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.02em;
+    line-height: 1;
+  }
 
-  // Game Variables Ref
-  const gameStateRef = useRef({
-    currentScore: 0,
-    isJumping: false,
-    jumpVelocity: 0,
-    gravity: 0.6,
-    //  BOLA (radius, rotasi, dll)
-    ball: { x: 70, y: 240, radius: 18, color: "#003f88", rotation: 0 },
-    obstacles: [] as Array<{
-      x: number;
-      y: number;
-      width: number;
-      height: number;
-      speed: number;
-    }>,
-    spawnTimer: 0,
-    gameSpeed: 5,
-  });
+  .nf-digit {
+    display: block;
+    font-weight: 900;
+    line-height: 0.85;
+    letter-spacing: -0.05em;
+    color: #d1d5db; /* abu muda */
+    user-select: none;
+    animation: nf-rise 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+  .nf-digit-right { animation-delay: 0.15s; }
 
-  // Reset data permainan ketika restart
-  const resetGameData = useCallback(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+  /* Kolom tengah: jam sebagai angka 0 */
+  .nf-clock-col {
+    width: 0.78em;
+    height: 0.85em;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: nf-rise 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) 0.08s both;
+  }
+  .nf-clock {
+    width: 0.74em;
+    height: 0.74em;
+    display: block;
+    filter: drop-shadow(0 0.03em 0.05em rgba(0, 0, 0, 0.12));
+    overflow: visible;
+  }
 
-    gameStateRef.current = {
-      currentScore: 0,
-      isJumping: false,
-      jumpVelocity: 0,
-      gravity: 0.6,
-      ball: {
-        x: 70,
-        y: canvas.height - 28,
-        radius: 18,
-        color: "#003f88",
-        rotation: 0,
-      },
-      obstacles: [],
-      spawnTimer: 0,
-      gameSpeed: 5,
-    };
-    setScore(0);
+  /* Blob latar belakang */
+  .nf-blob {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(60px);
+    opacity: 0.55;
+    pointer-events: none;
+  }
+  .nf-blob-1 { width: 18rem; height: 18rem; top: -4rem; left: -5rem; background: #e5e7eb; animation: nf-drift 9s ease-in-out infinite alternate; }
+  .nf-blob-2 { width: 20rem; height: 20rem; bottom: -6rem; right: -6rem; background: #d1d5db; animation: nf-drift 11s ease-in-out infinite alternate-reverse; }
+  .nf-blob-3 { width: 12rem; height: 12rem; top: 45%; right: 18%; background: #e5e7eb; animation: nf-drift 8s ease-in-out infinite alternate; }
+
+  /* Titik-titik melayang */
+  .nf-dot {
+    position: absolute;
+    border-radius: 9999px;
+    background: #9ca3af;
+    opacity: 0.25;
+    pointer-events: none;
+    animation: nf-float 6s ease-in-out infinite;
+  }
+
+  .nf-fade-up {
+    animation: nf-fade-up 0.8s ease-out both;
+  }
+
+  @keyframes nf-rise {
+    from { opacity: 0; transform: translateY(1.2em); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes nf-drift {
+    from { transform: translate(0, 0) scale(1); }
+    to   { transform: translate(40px, 30px) scale(1.15); }
+  }
+
+  @keyframes nf-float {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-18px); }
+  }
+
+  @keyframes nf-fade-up {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nf-digit, .nf-clock-col, .nf-blob, .nf-dot, .nf-fade-up {
+      animation: none !important;
+    }
+  }
+`;
+
+// Sumber waktu eksternal untuk useSyncExternalStore:
+// React hanya re-render saat nilai detik berubah (cek tiap 200ms).
+function subscribeClock(onChange: () => void) {
+  const id = setInterval(onChange, 200);
+  return () => clearInterval(id);
+}
+const getClockSnapshot = () => Math.floor(Date.now() / 1000);
+const getClockServerSnapshot = () => 0;
+
+// Jam real-time: jarum detik berdetak per detik, menit & jam ikut bergerak.
+// Sudut dihitung dari detik sejak tengah malam (kontinu, tidak pernah
+// "mundur" saat melewati 360°, jadi transisinya selalu mulus).
+function useTickingClock() {
+  const nowSec = useSyncExternalStore(
+    subscribeClock,
+    getClockSnapshot,
+    getClockServerSnapshot,
+  );
+
+  // Transisi baru diaktifkan sesaat setelah mount, supaya jarum tidak
+  // "berputar" dari 0° ke posisi waktu sekarang saat pertama muncul.
+  const [armed, setArmed] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setArmed(true), 150);
+    return () => clearTimeout(t);
   }, []);
 
-  // Logika aksi melompat (Bisa ditrigger Keyboard / Sentuhan HP)
-  const triggerJump = useCallback(() => {
-    const gs = gameStateRef.current;
-    if (!gs.isJumping && !gameOver) {
-      if (!gameStarted) {
-        setGameStarted(true);
-      }
-      gs.isJumping = true;
-      gs.jumpVelocity = -12.5; // Kekuatan lompatan bola
-    }
-  }, [gameOver, gameStarted]);
+  if (nowSec === 0) {
+    return { started: false, secondAngle: 0, minuteAngle: 0, hourAngle: 0 };
+  }
 
-  const restartGame = () => {
-    setGameOver(false);
-    setGameStarted(false);
-    resetGameData();
+  const d = new Date(nowSec * 1000);
+  const secs = d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();
+
+  return {
+    started: armed,
+    secondAngle: secs * 6,
+    minuteAngle: secs * 0.1,
+    hourAngle: secs / 120,
   };
+}
 
-  // Main Effect: Loop Menggambar Game Canvas
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const container = gameContainerRef.current;
-    if (!canvas || !container) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+function ClockZero() {
+  const { started, secondAngle, minuteAngle, hourAngle } = useTickingClock();
 
-    let animationFrameId: number;
-
-    const setCanvasSize = () => {
-      canvas.width = container.clientWidth - 32; // Responsive terpotong padding
-      canvas.height = 260; // Arena yang proporsional di desktop & mobile
-      gameStateRef.current.ball.y = canvas.height - 28;
-    };
-
-    setCanvasSize();
-    window.addEventListener("resize", setCanvasSize);
-    resetGameData();
-
-    // --- LOOP UTAMA GAME ---
-    const update = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const gs = gameStateRef.current;
-      const ball = gs.ball;
-
-      // 1. Gambar Garis Tanah
-      ctx.beginPath();
-      ctx.moveTo(0, canvas.height - 10);
-      ctx.lineTo(canvas.width, canvas.height - 10);
-      ctx.strokeStyle = "#E5E7EB"; // Gray-200
-      ctx.lineWidth = 3;
-      ctx.stroke();
-
-      // 2. Fisika & Efek Rotasi Bola
-      if (gs.isJumping) {
-        ball.y += gs.jumpVelocity;
-        gs.jumpVelocity += gs.gravity;
-
-        // Bola berputar lebih cepat saat melompat
-        ball.rotation += 0.1;
-
-        const groundY = canvas.height - 10 - ball.radius;
-        if (ball.y >= groundY) {
-          ball.y = groundY;
-          gs.isJumping = false;
-        }
-      } else if (gameStarted && !gameOver) {
-        // Efek menggelinding di tanah
-        ball.rotation += 0.05;
-      }
-
-      // 3. Gambar Karakter BOLA yang Menggelinding
-      ctx.save();
-      ctx.translate(ball.x, ball.y);
-      ctx.rotate(ball.rotation);
-
-      // Lingkaran luar bola
-      ctx.beginPath();
-      ctx.arc(0, 0, ball.radius, 0, Math.PI * 2);
-      ctx.fillStyle = ball.color;
-      ctx.fill();
-      ctx.closePath();
-
-      // Corak/Garis di dalam bola agar terlihat menggelinding
-      ctx.beginPath();
-      ctx.moveTo(-ball.radius, 0);
-      ctx.lineTo(ball.radius, 0);
-      ctx.moveTo(0, -ball.radius);
-      ctx.lineTo(0, ball.radius);
-      ctx.strokeStyle = "#FFFFFF";
-      ctx.lineWidth = 3;
-      ctx.stroke();
-      ctx.closePath();
-
-      ctx.restore();
-
-      // Jalankan logika rintangan jika game sedang berjalan
-      if (gameStarted && !gameOver) {
-        gs.currentScore++;
-        if (gs.currentScore % 5 === 0) {
-          setScore(Math.floor(gs.currentScore / 5));
-        }
-
-        // Tambah kecepatan perlahan biar menantang
-        if (gs.currentScore % 1500 === 0) gs.gameSpeed += 0.8;
-
-        // Munculkan rintangan buntu (Kaktus/Balok Merah)
-        gs.spawnTimer--;
-        if (gs.spawnTimer <= 0) {
-          const height = Math.random() * 30 + 25; // Tinggi acak 25px - 55px
-          gs.obstacles.push({
-            x: canvas.width,
-            y: canvas.height - 10 - height,
-            width: 16,
-            height: height,
-            speed: gs.gameSpeed,
-          });
-          gs.spawnTimer = (Math.random() * 50 + 70) * (5 / gs.gameSpeed);
-        }
-      }
-
-      // 4. Update & Deteksi Tabrakan Rintangan
-      ctx.fillStyle = "#EF4444";
-
-      for (let i = gs.obstacles.length - 1; i >= 0; i--) {
-        const obs = gs.obstacles[i];
-
-        if (gameStarted && !gameOver) {
-          obs.x -= obs.speed;
-        }
-
-        // Menggambar rintangan kotak tajam
-        ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
-
-        // --- Deteksi Tabrakan Lingkaran (Bola) dan Kotak (Rintangan) ---
-        const closestX = Math.max(obs.x, Math.min(ball.x, obs.x + obs.width));
-        const closestY = Math.max(obs.y, Math.min(ball.y, obs.y + obs.height));
-
-        const distanceX = ball.x - closestX;
-        const distanceY = ball.y - closestY;
-        const distanceSquared = distanceX * distanceX + distanceY * distanceY;
-
-        // Toleransi hitbox
-        const hitRadius = ball.radius - 2;
-
-        if (distanceSquared < hitRadius * hitRadius) {
-          setGameOver(true);
-          const finalScore = Math.floor(gs.currentScore / 5);
-          setHighScore((prev) => Math.max(prev, finalScore));
-        }
-
-        // Bersihkan rintangan di luar layar kiri
-        if (obs.x + obs.width < 0) {
-          gs.obstacles.splice(i, 1);
-        }
-      }
-
-      animationFrameId = requestAnimationFrame(update);
-    };
-
-    update();
-
-    return () => {
-      window.removeEventListener("resize", setCanvasSize);
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, [gameOver, gameStarted, resetGameData]);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    // Handler Keyboard Desktop
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.code === "Space" || e.code === "ArrowUp") {
-        if (document.activeElement === document.body) {
-          e.preventDefault();
-        }
-        triggerJump();
-      }
-    };
-
-    // Handler Sentuh Layar Mobile HP/Tablet
-    const handleTouchStart = (e: TouchEvent) => {
-      if (e.target === canvas) {
-        triggerJump();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    canvas.addEventListener("touchstart", handleTouchStart, { passive: true });
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      canvas.removeEventListener("touchstart", handleTouchStart);
-    };
-  }, [triggerJump]);
+  const handStyle = (angle: number, transition: string) => ({
+    transform: `rotate(${angle}deg)`,
+    transformOrigin: "50px 50px",
+    transition: started ? transition : "none",
+  });
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-4 select-none overflow-x-hidden">
-      {/* Arena Game Canvas */}
-      <div
-        ref={gameContainerRef}
-        className="relative bg-white border border-gray-200 rounded-2xl shadow-md p-4 w-full max-w-[1000px] overflow-hidden"
+    <svg className="nf-clock" viewBox="0 0 100 100" aria-hidden="true">
+      {/* Bingkai jam (membentuk angka 0) */}
+      <circle
+        cx="50"
+        cy="50"
+        r="45"
+        fill="#ffffff"
+        stroke="#d1d5db"
+        strokeWidth="9"
+      />
+      <circle
+        cx="50"
+        cy="50"
+        r="40.5"
+        fill="none"
+        stroke="#e5e7eb"
+        strokeWidth="1"
+      />
+
+      {/* Garis penanda menit & jam */}
+      {Array.from({ length: 60 }).map((_, i) => {
+        const isHour = i % 5 === 0;
+        return (
+          <line
+            key={i}
+            x1="50"
+            x2="50"
+            y1={isHour ? 13 : 13}
+            y2={isHour ? 20 : 16}
+            stroke={isHour ? "#9ca3af" : "#d1d5db"}
+            strokeWidth={isHour ? 2.4 : 1.1}
+            strokeLinecap="round"
+            transform={`rotate(${i * 6} 50 50)`}
+          />
+        );
+      })}
+
+      {/* Jarum jam */}
+      <g style={handStyle(hourAngle, "transform 0.6s ease-out")}>
+        <line
+          x1="50"
+          y1="54"
+          x2="50"
+          y2="30"
+          stroke="#4b5563"
+          strokeWidth="4.5"
+          strokeLinecap="round"
+        />
+      </g>
+
+      {/* Jarum menit */}
+      <g style={handStyle(minuteAngle, "transform 0.6s ease-out")}>
+        <line
+          x1="50"
+          y1="54"
+          x2="50"
+          y2="21"
+          stroke="#6b7280"
+          strokeWidth="3.2"
+          strokeLinecap="round"
+        />
+      </g>
+
+      {/* Jarum detik (berdetak dengan sedikit memantul) */}
+      <g
+        style={handStyle(
+          secondAngle,
+          "transform 0.35s cubic-bezier(0.34, 1.8, 0.5, 1)",
+        )}
       >
-        {/* Papan Skor Akurat */}
-        <div className="absolute top-4 right-4 flex space-x-5 text-xs md:text-sm font-mono font-bold text-gray-500 bg-gray-100/80 px-3 py-1.5 rounded-full z-20">
-          <div>HI {highScore.toString().padStart(5, "0")}</div>
-          <div className="text-blue-600">
-            SCORE {score.toString().padStart(5, "0")}
-          </div>
+        <line
+          x1="50"
+          y1="60"
+          x2="50"
+          y2="15"
+          stroke="#000000"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+        />
+      </g>
+
+      {/* Poros tengah */}
+      <circle cx="50" cy="50" r="3.6" fill="#000000" />
+      <circle cx="50" cy="50" r="1.4" fill="#ffffff" />
+    </svg>
+  );
+}
+
+export default function NotFound() {
+  return (
+    <div className="relative min-h-screen flex flex-col items-center justify-center bg-gray-50 p-4 select-none overflow-hidden">
+      <style>{css}</style>
+
+      {/* Latar belakang animasi */}
+      <div className="nf-blob nf-blob-1" />
+      <div className="nf-blob nf-blob-2" />
+      <div className="nf-blob nf-blob-3" />
+
+      <span
+        className="nf-dot"
+        style={{
+          width: 10,
+          height: 10,
+          top: "18%",
+          left: "14%",
+          animationDelay: "0s",
+        }}
+      />
+      <span
+        className="nf-dot"
+        style={{
+          width: 14,
+          height: 14,
+          top: "28%",
+          right: "12%",
+          animationDelay: "1.2s",
+        }}
+      />
+      <span
+        className="nf-dot"
+        style={{
+          width: 8,
+          height: 8,
+          bottom: "22%",
+          left: "22%",
+          animationDelay: "2.1s",
+        }}
+      />
+      <span
+        className="nf-dot"
+        style={{
+          width: 12,
+          height: 12,
+          bottom: "16%",
+          right: "26%",
+          animationDelay: "0.6s",
+        }}
+      />
+      <span
+        className="nf-dot"
+        style={{
+          width: 6,
+          height: 6,
+          top: "60%",
+          left: "8%",
+          animationDelay: "3s",
+        }}
+      />
+
+      {/* 404 besar: angka 0 diganti jam yang berdetak */}
+      <div className="relative z-10 nf-stage" role="img" aria-label="404">
+        <span className="nf-digit">4</span>
+
+        <div className="nf-clock-col">
+          <ClockZero />
         </div>
 
-        {/* Layar Start Awal */}
-        {!gameStarted && !gameOver && (
-          <div className="absolute inset-0 flex items-center justify-center bg-gray-900/5 backdrop-blur-[1px] z-10">
-            <p className="text-xs md:text-sm font-semibold text-gray-700 bg-white px-5 py-2.5 rounded-full shadow-md animate-pulse border">
-              Tap Layar atau Tekan{" "}
-              <span className="font-mono font-bold bg-gray-100 px-1.5 py-0.5 rounded border">
-                Space
-              </span>{" "}
-              untuk Melompat
-            </p>
-          </div>
-        )}
-
-        {/* Layar Game Over */}
-        {gameOver && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/90 backdrop-blur-sm z-10 transition-all">
-            <p className="text-2xl font-black text-red-500 mb-1 tracking-wider">
-              GAME OVER
-            </p>
-            <p className="text-gray-500 text-xs mb-4">
-              Skor Anda berhasil diselamatkan!
-            </p>
-            <button
-              onClick={restartGame}
-              className="bg-gray-800 hover:bg-gray-900 text-white font-medium px-6 py-2 rounded-full text-sm active:scale-95 transition-all shadow-md"
-            >
-              Main Lagi
-            </button>
-          </div>
-        )}
-
-        {/* Elemen Canvas Utama */}
-        <canvas
-          ref={canvasRef}
-          className="w-full block cursor-pointer touch-none"
-        />
+        <span className="nf-digit nf-digit-right">4</span>
       </div>
 
-      {/* Footer Navigasi */}
-      <div className="text-center mt-6">
-        <p className="text-gray-400 text-sm mb-4">
-          Sedang dalam pemulihan. Silakan akses layanan kami yang lain.
-        </p>
-        <Link
-          href="/"
-          className="inline-block bg-[#003f88] hover:bg-[#002f66] rounded-md text-white px-8 py-3 active:scale-95 transition-all font-medium "
+      {/* Teks & tombol */}
+      <div className="relative z-10 text-center mt-6">
+        <h1
+          className="nf-fade-up text-3xl md:text-[50px] font-bold text-gray-400 mb-2"
+          style={{ animationDelay: "0.5s" }}
         >
-          Kembali ke Beranda
-        </Link>
+          Oops,
+        </h1>
+        <p
+          className="nf-fade-up text-gray-400 text-sm mb-6"
+          style={{ animationDelay: "0.65s" }}
+        >
+          Halaman sedang dalam pemulihan. Silakan akses layanan kami yang lain.
+        </p>
+
+        <div className="nf-fade-up" style={{ animationDelay: "0.8s" }}>
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-gray-400 hover:underline underline-offset-4 px-4 py-2 active:scale-95 transition-all font-medium"
+          >
+            Kembali ke Beranda
+          </Link>
+        </div>
       </div>
     </div>
   );

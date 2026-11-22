@@ -251,7 +251,7 @@ const STATS_DATA = [
   },
   {
     icon: "/images/icons/poly.svg",
-    value: 8000,
+    value: 8500,
     suffix: "+",
     text: "Pasien Poliklinik pernah ditangani",
   },
