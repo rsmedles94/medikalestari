@@ -262,11 +262,13 @@ const PopupDisplay = memo(() => {
       />
 
       <div className="relative flex flex-col items-center animate-in fade-in zoom-in duration-300 max-w-[85%] md:max-w-[500px]">
+        {/* X mark menyatu di pojok kanan atas panel, sudut kiri bawah rounded */}
         <button
           onClick={handleXAction}
-          className="absolute -top-10 -right-4 bg-white rounded-full text-black p-1 z-10"
+          aria-label="Tutup popup"
+          className="absolute top-0 right-0 z-10 flex items-center justify-center bg-white text-black p-2 rounded-bl-2xl"
         >
-          <X size={18} strokeWidth={3} />
+          <X size={20} strokeWidth={3} />
         </button>
 
         <div

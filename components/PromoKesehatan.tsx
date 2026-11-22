@@ -12,12 +12,9 @@ import {
 import Link from "next/link";
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
-// sesuaikan path import ini dengan lokasi file PromoCardSkeleton kamu
 import PromoCardSkeleton from "./PromoCardSkeleton";
 
-// ==========================================
-// DATA DEMO PROMO KESEHATAN (Total 12 Item)
-// ==========================================
+//data promo kesehatan
 const PROMO_DATA = [
   {
     id: 1,
@@ -105,9 +102,7 @@ const PROMO_DATA = [
   },
 ];
 
-// ==========================================
-// DATA LOGO REKANAN / PENGHARGAAN (Total 27 Item)
-// ==========================================
+//logo rekanan
 const AWARDS_DATA = [
   {
     id: 1,
@@ -246,10 +241,7 @@ const AWARDS_DATA = [
   },
 ];
 
-// ==========================================
-// DATA COUNTER STATISTIK
-// ==========================================
-// value: angka tujuan animasi hitung, suffix: tambahan di belakang angka
+//data statistik
 const STATS_DATA = [
   {
     icon: "/images/icons/doctor.svg",
@@ -277,18 +269,14 @@ const STATS_DATA = [
   },
 ];
 
-// ==========================================
-// FORMAT ANGKA (pemisah ribuan titik, contoh 8.000)
-// ==========================================
+//format data
 const formatNumber = (n: number) =>
   n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
 const REVEAL_EASE = [0.22, 1, 0.36, 1] as const;
 const REVEAL_VIEWPORT = { once: true, margin: "-80px" } as const;
 
-// ==========================================
-// COMPONENT REVEAL (MUNCUL SAAT DI-SCROLL, SEKALI SAJA)
-// ==========================================
+//komponen reveal animasi muncul
 interface RevealProps {
   children: React.ReactNode;
   className?: string;
@@ -319,9 +307,7 @@ function Reveal({
   );
 }
 
-// ==========================================
-// COMPONENT ANGKA MENGHITUNG (COUNT UP)
-// ==========================================
+//komponen count up
 interface CountUpProps {
   value: number;
   suffix?: string;
