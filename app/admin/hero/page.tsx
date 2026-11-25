@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { AdminPageSkeleton } from "@/components/AdminSkeleton";
 import {
   fetchAllHeroBannersForAdmin,
@@ -14,6 +14,102 @@ import { useAuth } from "@/context/AuthProvider";
 import { Plus, Edit2, Trash2, X, Upload } from "lucide-react";
 import Image from "next/image";
 
+type DeviceType = "desktop" | "mobile";
+
+const INITIAL_FORM_DATA = {
+  image_url: "",
+  order: 0,
+  is_active: true,
+  device_type: "desktop" as DeviceType,
+};
+
+type BannerForm = typeof INITIAL_FORM_DATA;
+
+const TABLE_HEADERS = ["Gambar", "Device", "Urutan", "Status", "Aksi"];
+
+const DEVICE_OPTIONS: { value: DeviceType; label: string; size: string }[] = [
+  { value: "desktop", label: "Desktop", size: "1900 x 780 px" },
+  { value: "mobile", label: "Mobile", size: "220 x 2760 px" },
+];
+
+// Mengembalikan null jika gagal, agar data yang sudah tampil tidak tertimpa
+const getBanners = async (): Promise<HeroBanner[] | null> => {
+  try {
+    return await fetchAllHeroBannersForAdmin();
+  } catch (error) {
+    console.error("Error fetching hero banners:", error);
+    alert("Gagal memuat data banner");
+    return null;
+  }
+};
+
+const getErrorMessage = (error: unknown): string => {
+  if (error instanceof Error) return error.message;
+  if (typeof error === "object" && error !== null) {
+    const { message } = error as { message?: string };
+    return message || JSON.stringify(error);
+  }
+  return String(error);
+};
+
+// Mengunci scroll di belakang modal, hanya isi modal yang bisa di-scroll
+const useScrollLock = (
+  isLocked: boolean,
+  modalRef: React.RefObject<HTMLDivElement | null>,
+) => {
+  useEffect(() => {
+    const modal = modalRef.current;
+    if (!isLocked || !modal) return;
+
+    // Kunci html, body, dan semua container pembungkus yang bisa di-scroll
+    const lockedElements = [document.documentElement, document.body];
+    let parent = modal.parentElement;
+    while (parent) {
+      const { overflowY } = getComputedStyle(parent);
+      if (overflowY === "auto" || overflowY === "scroll") {
+        lockedElements.push(parent);
+      }
+      parent = parent.parentElement;
+    }
+
+    const previousOverflows = lockedElements.map(
+      (element) => element.style.overflowY,
+    );
+    const previousPaddingRight = document.body.style.paddingRight;
+    const scrollbarWidth =
+      globalThis.innerWidth - document.documentElement.clientWidth;
+
+    for (const element of lockedElements) {
+      element.style.overflowY = "hidden";
+    }
+    // Mengganti lebar scrollbar yang hilang agar tampilan tidak bergeser
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    }
+
+    // Blokir scroll mouse dan sentuhan di luar modal
+    const handleScroll = (event: Event) => {
+      // Mencegah library smooth scroll ikut menggeser halaman
+      event.stopPropagation();
+      if (!modal.contains(event.target as Node)) {
+        event.preventDefault();
+      }
+    };
+    const options = { capture: true, passive: false };
+    globalThis.addEventListener("wheel", handleScroll, options);
+    globalThis.addEventListener("touchmove", handleScroll, options);
+
+    return () => {
+      globalThis.removeEventListener("wheel", handleScroll, options);
+      globalThis.removeEventListener("touchmove", handleScroll, options);
+      lockedElements.forEach((element, index) => {
+        element.style.overflowY = previousOverflows[index];
+      });
+      document.body.style.paddingRight = previousPaddingRight;
+    };
+  }, [isLocked, modalRef]);
+};
+
 const AdminHeroBannersPage = () => {
   const [banners, setBanners] = useState<HeroBanner[]>([]);
   const [loading, setLoading] = useState(true);
@@ -21,62 +117,82 @@ const AdminHeroBannersPage = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
-  const [formData, setFormData] = useState({
-    image_url: "",
-    order: 0,
-    is_active: true,
-    device_type: "desktop" as "desktop" | "mobile",
-  });
+  const [formData, setFormData] = useState(INITIAL_FORM_DATA);
   const [submitting, setSubmitting] = useState(false);
   const [uploading, setUploading] = useState(false);
   const router = useRouter();
   const { loading: authLoading, isAuthenticated } = useAuth();
+  const modalRef = useRef<HTMLDivElement>(null);
 
-  const fetchBanners = useCallback(async () => {
-    try {
-      const data = await fetchAllHeroBannersForAdmin();
-      setBanners(data);
-    } catch (error) {
-      console.error("Error fetching hero banners:", error);
-      alert("Gagal memuat data banner");
-    } finally {
-      setLoading(false);
-    }
+  useScrollLock(showModal, modalRef);
+
+  const applyBanners = useCallback((data: HeroBanner[] | null) => {
+    if (data) setBanners(data);
+    setLoading(false);
   }, []);
 
   useEffect(() => {
-    let mounted = true;
-    const init = async () => {
-      if (!mounted) return;
-      if (authLoading) return;
-      if (!isAuthenticated) {
-        router.push("/admin/login");
-        return;
-      }
-      fetchBanners();
-    };
-    init();
+    if (authLoading) return;
+    if (!isAuthenticated) {
+      router.push("/admin/login");
+      return;
+    }
+
+    let ignore = false;
+
+    void getBanners().then((data) => {
+      if (!ignore) applyBanners(data);
+    });
+
     return () => {
-      mounted = false;
+      ignore = true;
     };
-  }, [authLoading, isAuthenticated, router, fetchBanners]);
+  }, [authLoading, isAuthenticated, router, applyBanners]);
+
+  const refreshBanners = async () => {
+    applyBanners(await getBanners());
+  };
+
+  const resetForm = () => {
+    setFormData(INITIAL_FORM_DATA);
+    setImageFile(null);
+    setImagePreview("");
+    setEditingId(null);
+  };
+
+  const openAddModal = () => {
+    resetForm();
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    resetForm();
+  };
+
+  const updateField = <K extends keyof BannerForm>(
+    field: K,
+    value: BannerForm[K],
+  ) => {
+    setFormData((previous) => ({ ...previous, [field]: value }));
+  };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setUploading(true);
-      setImageFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-        setUploading(false);
-      };
-      reader.onerror = () => {
-        setUploading(false);
-        alert("Gagal membaca file gambar");
-      };
-      reader.readAsDataURL(file);
-    }
+    if (!file) return;
+
+    setUploading(true);
+    setImageFile(file);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string);
+      setUploading(false);
+    };
+    reader.onerror = () => {
+      setUploading(false);
+      alert("Gagal membaca file gambar");
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
@@ -84,56 +200,31 @@ const AdminHeroBannersPage = () => {
     setSubmitting(true);
 
     try {
-      let imageUrl = formData.image_url;
-
-      if (imageFile) {
-        imageUrl = await uploadContentImage(imageFile, "hero-banners");
-      }
+      const imageUrl = imageFile
+        ? await uploadContentImage(imageFile, "hero-banners")
+        : formData.image_url;
 
       if (!imageUrl) {
         alert("Gambar harus dipilih");
-        setSubmitting(false);
         return;
       }
 
-      const bannerData = {
-        image_url: imageUrl,
-        order: formData.order,
-        is_active: formData.is_active,
-        device_type: formData.device_type,
-      };
-
-      console.log("Submitting banner data:", bannerData);
-      console.log("Edit mode:", !!editingId, "ID:", editingId);
+      const bannerData = { ...formData, image_url: imageUrl };
 
       if (editingId) {
-        console.log("Updating banner...");
         await updateHeroBanner(editingId, bannerData);
       } else {
-        console.log("Creating new banner...");
         await createHeroBanner(bannerData);
       }
 
-      // Fetch banners BEFORE resetting form so loading state is clear
-      await fetchBanners();
+      // Muat ulang data dulu sebelum form direset
+      await refreshBanners();
 
-      resetForm();
-      setShowModal(false);
+      closeModal();
       alert("Banner berhasil disimpan!");
     } catch (error) {
       console.error("Error saving banner:", error);
-      let errorMsg = "Terjadi kesalahan saat menyimpan data";
-
-      if (error instanceof Error) {
-        errorMsg = error.message;
-      } else if (typeof error === "object" && error !== null) {
-        const errObj = error as Record<string, unknown>;
-        errorMsg = (errObj.message as string) || JSON.stringify(error);
-      } else {
-        errorMsg = String(error);
-      }
-
-      alert(`Error: ${errorMsg}`);
+      alert(`Error: ${getErrorMessage(error)}`);
     } finally {
       setSubmitting(false);
     }
@@ -152,40 +243,20 @@ const AdminHeroBannersPage = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm("Apakah Anda yakin ingin menghapus banner ini?")) {
-      try {
-        await deleteHeroBanner(id);
-        fetchBanners();
-        alert("Banner berhasil dihapus!");
-      } catch (error) {
-        console.error("Error deleting banner:", error);
-        let errorMsg = "Terjadi kesalahan saat menghapus data";
+    if (!confirm("Apakah Anda yakin ingin menghapus banner ini?")) return;
 
-        if (error instanceof Error) {
-          errorMsg = error.message;
-        } else if (typeof error === "object" && error !== null) {
-          const errObj = error as Record<string, unknown>;
-          errorMsg = (errObj.message as string) || JSON.stringify(error);
-        } else {
-          errorMsg = String(error);
-        }
-
-        alert(`Error: ${errorMsg}`);
-      }
+    try {
+      await deleteHeroBanner(id);
+      void refreshBanners();
+      alert("Banner berhasil dihapus!");
+    } catch (error) {
+      console.error("Error deleting banner:", error);
+      alert(`Error: ${getErrorMessage(error)}`);
     }
   };
 
-  const resetForm = () => {
-    setFormData({
-      image_url: "",
-      order: 0,
-      is_active: true,
-      device_type: "desktop",
-    });
-    setImageFile(null);
-    setImagePreview("");
-    setEditingId(null);
-  };
+  const isBusy = submitting || uploading;
+  const submitLabel = editingId ? "Perbarui Banner" : "Tambah Banner";
 
   if (loading) {
     return <AdminPageSkeleton title="Hero Banner" />;
@@ -199,10 +270,8 @@ const AdminHeroBannersPage = () => {
             Kelola Hero Banner
           </h1>
           <button
-            onClick={() => {
-              resetForm();
-              setShowModal(true);
-            }}
+            type="button"
+            onClick={openAddModal}
             className="flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors"
           >
             <Plus size={20} />
@@ -216,21 +285,14 @@ const AdminHeroBannersPage = () => {
             <table className="w-full">
               <thead className="bg-gray-50 border-b">
                 <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
-                    Gambar
-                  </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
-                    Device
-                  </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
-                    Urutan
-                  </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
-                    Status
-                  </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
-                    Aksi
-                  </th>
+                  {TABLE_HEADERS.map((header) => (
+                    <th
+                      key={header}
+                      className="px-6 py-4 text-left text-sm font-semibold text-gray-700"
+                    >
+                      {header}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
@@ -277,13 +339,15 @@ const AdminHeroBannersPage = () => {
                     </td>
                     <td className="px-6 py-4 flex gap-2">
                       <button
+                        type="button"
                         onClick={() => handleEdit(banner)}
                         className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                       >
                         <Edit2 size={18} />
                       </button>
                       <button
-                        onClick={() => handleDelete(banner.id)}
+                        type="button"
+                        onClick={() => void handleDelete(banner.id)}
                         className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                       >
                         <Trash2 size={18} />
@@ -299,24 +363,28 @@ const AdminHeroBannersPage = () => {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <div className="bg-white rounded-lg shadow-lg max-w-2xl w-full my-8">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div
+            ref={modalRef}
+            className="bg-white rounded-lg shadow-lg max-w-2xl w-full max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain"
+          >
             <div className="flex justify-between items-center p-6 border-b sticky top-0 bg-white z-10">
               <h2 className="text-2xl font-bold text-gray-800">
                 {editingId ? "Edit Banner" : "Tambah Banner Baru"}
               </h2>
               <button
-                onClick={() => {
-                  setShowModal(false);
-                  resetForm();
-                }}
+                type="button"
+                onClick={closeModal}
                 className="text-gray-500 hover:text-gray-700"
               >
                 <X size={24} />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            <form
+              onSubmit={(e) => void handleSubmit(e)}
+              className="p-6 space-y-4"
+            >
               {/* Image Upload */}
               <div>
                 <label
@@ -382,10 +450,10 @@ const AdminHeroBannersPage = () => {
                   type="number"
                   value={formData.order}
                   onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      order: Number.parseInt(e.target.value) || 0,
-                    })
+                    updateField(
+                      "order",
+                      Number.parseInt(e.target.value, 10) || 0,
+                    )
                   }
                   placeholder="0"
                   min="0"
@@ -399,54 +467,30 @@ const AdminHeroBannersPage = () => {
                   Jenis Perangkat
                 </legend>
                 <div className="grid grid-cols-2 gap-4">
-                  <label
-                    htmlFor="device-desktop"
-                    className="flex items-center border border-gray-300 rounded-lg p-4 cursor-pointer hover:bg-gray-50 transition-colors"
-                  >
-                    <input
-                      id="device-desktop"
-                      type="radio"
-                      name="device_type"
-                      value="desktop"
-                      checked={formData.device_type === "desktop"}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          device_type: e.target.value as "desktop" | "mobile",
-                        })
-                      }
-                      className="w-4 h-4 text-blue-600"
-                      aria-label="Desktop - 1900 x 780 px"
-                    />
-                    <span className="ml-2">
-                      <span className="font-medium">Desktop</span>
-                      <p className="text-xs text-gray-500">1900 x 780 px</p>
-                    </span>
-                  </label>
-                  <label
-                    htmlFor="device-mobile"
-                    className="flex items-center border border-gray-300 rounded-lg p-4 cursor-pointer hover:bg-gray-50 transition-colors"
-                  >
-                    <input
-                      id="device-mobile"
-                      type="radio"
-                      name="device_type"
-                      value="mobile"
-                      checked={formData.device_type === "mobile"}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          device_type: e.target.value as "desktop" | "mobile",
-                        })
-                      }
-                      className="w-4 h-4 text-blue-600"
-                      aria-label="Mobile - 2208 x 2760 px"
-                    />
-                    <span className="ml-2">
-                      <span className="font-medium">Mobile</span>
-                      <p className="text-xs text-gray-500">2208 x 2760 px</p>
-                    </span>
-                  </label>
+                  {DEVICE_OPTIONS.map(({ value, label, size }) => (
+                    <label
+                      key={value}
+                      htmlFor={`device-${value}`}
+                      className="flex items-center border border-gray-300 rounded-lg p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+                    >
+                      <input
+                        id={`device-${value}`}
+                        type="radio"
+                        name="device_type"
+                        value={value}
+                        checked={formData.device_type === value}
+                        onChange={() => updateField("device_type", value)}
+                        className="w-4 h-4 text-blue-600"
+                        aria-label={`${label} - ${size}`}
+                      />
+                      <span className="ml-2">
+                        <span className="font-medium">{label}</span>
+                        <span className="block text-xs text-gray-500">
+                          {size}
+                        </span>
+                      </span>
+                    </label>
+                  ))}
                 </div>
               </fieldset>
 
@@ -456,9 +500,7 @@ const AdminHeroBannersPage = () => {
                   id="is_active"
                   type="checkbox"
                   checked={formData.is_active}
-                  onChange={(e) =>
-                    setFormData({ ...formData, is_active: e.target.checked })
-                  }
+                  onChange={(e) => updateField("is_active", e.target.checked)}
                   className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
                 />
                 <label
@@ -472,18 +514,14 @@ const AdminHeroBannersPage = () => {
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={submitting || uploading}
+                disabled={isBusy}
                 className={`w-full py-3 rounded-lg transition-colors font-semibold mt-6 ${
-                  submitting || uploading
+                  isBusy
                     ? "bg-gray-400 text-gray-200 cursor-not-allowed"
                     : "bg-blue-600 text-white hover:bg-blue-700"
                 }`}
               >
-                {submitting
-                  ? "⏳ Sedang menyimpan..."
-                  : editingId
-                    ? "Perbarui Banner"
-                    : "Tambah Banner"}
+                {submitting ? "⏳ Sedang menyimpan..." : submitLabel}
               </button>
             </form>
           </div>

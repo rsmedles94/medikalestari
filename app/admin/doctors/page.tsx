@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { AdminPageSkeleton } from "@/components/AdminSkeleton";
 import {
@@ -14,6 +14,108 @@ import { useAuth } from "@/context/AuthProvider";
 import { Plus, Edit2, Trash2, X, Upload } from "lucide-react";
 import Image from "next/image";
 
+const INITIAL_FORM_DATA = {
+  name: "",
+  specialty: "",
+  image_url: "",
+  phone: "",
+  email: "",
+  // Diubah di halaman jadwal, di sini hanya dipertahankan saat menyimpan
+  status: "hadir",
+};
+
+const SPECIALTIES = [
+  "Spesialis Penyakit Dalam",
+  "Spesialis Bedah Umum",
+  "Spesialis Saraf",
+  "Spesialis Orthopedi",
+  "Spesialis Paru",
+  "Spesialis Jantung & Pembuluh Darah",
+  "Spesialis THT",
+  "Spesialis Anak",
+  "Spesialis Mata",
+  "Spesialis Obgyn",
+  "Spesialis Gigi",
+  "Spesialis Fisioterapi",
+];
+
+const TABLE_HEADERS = ["Foto", "Nama", "Spesialisasi", "Aksi"];
+
+// Mengembalikan null jika gagal, agar data yang sudah tampil tidak tertimpa
+const getDoctors = async (): Promise<Doctor[] | null> => {
+  try {
+    const { data, error } = await supabase.from("doctors").select("*");
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error("Error fetching doctors:", error);
+    return null;
+  }
+};
+
+const getErrorMessage = (error: unknown): string =>
+  (error as Error | undefined)?.message ||
+  String(error) ||
+  "Terjadi kesalahan saat menyimpan data";
+
+// Mengunci scroll di belakang modal, hanya isi modal yang bisa di-scroll
+const useScrollLock = (
+  isLocked: boolean,
+  modalRef: React.RefObject<HTMLDivElement | null>,
+) => {
+  useEffect(() => {
+    const modal = modalRef.current;
+    if (!isLocked || !modal) return;
+
+    // Kunci html, body, dan semua container pembungkus yang bisa di-scroll
+    const lockedElements = [document.documentElement, document.body];
+    let parent = modal.parentElement;
+    while (parent) {
+      const { overflowY } = getComputedStyle(parent);
+      if (overflowY === "auto" || overflowY === "scroll") {
+        lockedElements.push(parent);
+      }
+      parent = parent.parentElement;
+    }
+
+    const previousOverflows = lockedElements.map(
+      (element) => element.style.overflowY,
+    );
+    const previousPaddingRight = document.body.style.paddingRight;
+    const scrollbarWidth =
+      globalThis.innerWidth - document.documentElement.clientWidth;
+
+    for (const element of lockedElements) {
+      element.style.overflowY = "hidden";
+    }
+    // Mengganti lebar scrollbar yang hilang agar tampilan tidak bergeser
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    }
+
+    // Blokir scroll mouse dan sentuhan di luar modal
+    const handleScroll = (event: Event) => {
+      // Mencegah library smooth scroll ikut menggeser halaman
+      event.stopPropagation();
+      if (!modal.contains(event.target as Node)) {
+        event.preventDefault();
+      }
+    };
+    const options = { capture: true, passive: false };
+    globalThis.addEventListener("wheel", handleScroll, options);
+    globalThis.addEventListener("touchmove", handleScroll, options);
+
+    return () => {
+      globalThis.removeEventListener("wheel", handleScroll, options);
+      globalThis.removeEventListener("touchmove", handleScroll, options);
+      lockedElements.forEach((element, index) => {
+        element.style.overflowY = previousOverflows[index];
+      });
+      document.body.style.paddingRight = previousPaddingRight;
+    };
+  }, [isLocked, modalRef]);
+};
+
 const AdminDoctorsPage = () => {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(true);
@@ -21,67 +123,79 @@ const AdminDoctorsPage = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
-  const [formData, setFormData] = useState({
-    name: "",
-    specialty: "",
-    image_url: "",
-    phone: "",
-    email: "",
-    status: "hadir",
-  });
+  const [formData, setFormData] = useState(INITIAL_FORM_DATA);
   const router = useRouter();
   const { loading: authLoading, isAuthenticated } = useAuth();
 
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useScrollLock(showModal, modalRef);
+
   useEffect(() => {
-    let mounted = true;
-    const init = async () => {
-      if (!mounted) return;
-      if (authLoading) return;
-      if (!isAuthenticated) {
-        router.push("/admin/login");
-        return;
-      }
-      fetchDoctors();
-    };
-    init();
+    if (authLoading) return;
+    if (!isAuthenticated) {
+      router.push("/admin/login");
+      return;
+    }
+
+    let ignore = false;
+
+    void getDoctors().then((data) => {
+      if (ignore) return;
+      if (data) setDoctors(data);
+      setLoading(false);
+    });
+
     return () => {
-      mounted = false;
+      ignore = true;
     };
   }, [authLoading, isAuthenticated, router]);
 
-  const fetchDoctors = async () => {
-    try {
-      const { data, error } = await supabase.from("doctors").select("*");
-      if (error) throw error;
-      setDoctors(data || []);
-    } catch (error) {
-      console.error("Error fetching doctors:", error);
-    } finally {
-      setLoading(false);
-    }
+  const refreshDoctors = async () => {
+    const data = await getDoctors();
+    if (data) setDoctors(data);
+  };
+
+  const resetForm = () => {
+    setFormData(INITIAL_FORM_DATA);
+    setImageFile(null);
+    setImagePreview("");
+    setEditingId(null);
+  };
+
+  const openAddModal = () => {
+    resetForm();
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    resetForm();
+  };
+
+  const updateField = (field: keyof typeof INITIAL_FORM_DATA, value: string) => {
+    setFormData((previous) => ({ ...previous, [field]: value }));
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
+    if (!file) return;
+
+    setImageFile(file);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
-      let imageUrl = formData.image_url;
-
-      if (imageFile) {
-        imageUrl = await uploadDoctorImage(imageFile);
-      }
+      const imageUrl = imageFile
+        ? await uploadDoctorImage(imageFile)
+        : formData.image_url;
 
       const doctorData = {
         ...formData,
@@ -96,16 +210,11 @@ const AdminDoctorsPage = () => {
         await createDoctor(doctorData);
       }
 
-      resetForm();
-      fetchDoctors();
-      setShowModal(false);
+      closeModal();
+      void refreshDoctors();
     } catch (error) {
       console.error("Error saving doctor:", error);
-      const message =
-        (error && (error as Error).message) ||
-        String(error) ||
-        "Terjadi kesalahan saat menyimpan data";
-      alert(message);
+      alert(getErrorMessage(error));
     }
   };
 
@@ -124,29 +233,15 @@ const AdminDoctorsPage = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm("Apakah Anda yakin ingin menghapus dokter ini?")) {
-      try {
-        await deleteDoctor(id);
-        fetchDoctors();
-      } catch (error) {
-        console.error("Error deleting doctor:", error);
-        alert("Terjadi kesalahan saat menghapus data");
-      }
-    }
-  };
+    if (!confirm("Apakah Anda yakin ingin menghapus dokter ini?")) return;
 
-  const resetForm = () => {
-    setFormData({
-      name: "",
-      specialty: "",
-      image_url: "",
-      phone: "",
-      email: "",
-      status: "hadir",
-    });
-    setImageFile(null);
-    setImagePreview("");
-    setEditingId(null);
+    try {
+      await deleteDoctor(id);
+      void refreshDoctors();
+    } catch (error) {
+      console.error("Error deleting doctor:", error);
+      alert("Terjadi kesalahan saat menghapus data");
+    }
   };
 
   if (loading) {
@@ -159,10 +254,8 @@ const AdminDoctorsPage = () => {
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl font-bold text-gray-800">Kelola Dokter</h1>
           <button
-            onClick={() => {
-              resetForm();
-              setShowModal(true);
-            }}
+            type="button"
+            onClick={openAddModal}
             className="flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-lg hover:[#003f88] transition-colors cursor-pointer"
           >
             <Plus size={20} />
@@ -176,21 +269,14 @@ const AdminDoctorsPage = () => {
             <table className="w-full">
               <thead className="bg-gray-50 border-b">
                 <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
-                    Foto
-                  </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
-                    Nama
-                  </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
-                    Spesialisasi
-                  </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
-                    Status
-                  </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
-                    Aksi
-                  </th>
+                  {TABLE_HEADERS.map((header) => (
+                    <th
+                      key={header}
+                      className="px-6 py-4 text-left text-sm font-semibold text-gray-700"
+                    >
+                      {header}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
@@ -214,26 +300,17 @@ const AdminDoctorsPage = () => {
                     <td className="px-6 py-4 text-gray-600">
                       {doctor.specialty}
                     </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`px-3 py-1 rounded-full text-sm font-medium ${
-                          doctor.status === "cuti"
-                            ? "bg-red-100 text-red-700 italic"
-                            : "bg-green-100 text-green-700"
-                        }`}
-                      >
-                        {doctor.status === "cuti" ? "cuti" : "Hadir"}
-                      </span>
-                    </td>
                     <td className="px-6 py-4 flex gap-2">
                       <button
+                        type="button"
                         onClick={() => handleEdit(doctor)}
                         className="p-2 text-[#003f88] hover:bg-blue-50 rounded-lg transition-colors"
                       >
                         <Edit2 size={18} />
                       </button>
                       <button
-                        onClick={() => handleDelete(doctor.id)}
+                        type="button"
+                        onClick={() => void handleDelete(doctor.id)}
                         className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                       >
                         <Trash2 size={18} />
@@ -249,24 +326,28 @@ const AdminDoctorsPage = () => {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-lg max-w-2xl w-full max-h-96 overflow-y-auto">
-            <div className="flex justify-between items-center p-6 border-b sticky top-0 bg-white">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div
+            ref={modalRef}
+            className="bg-white rounded-lg shadow-lg max-w-2xl w-full max-h-96 overflow-y-auto overscroll-contain"
+          >
+            <div className="flex justify-between items-center p-6 border-b sticky top-0 z-10 bg-white">
               <h2 className="text-2xl font-bold text-gray-800">
                 {editingId ? "Edit Dokter" : "Tambah Dokter Baru"}
               </h2>
               <button
-                onClick={() => {
-                  setShowModal(false);
-                  resetForm();
-                }}
+                type="button"
+                onClick={closeModal}
                 className="text-gray-500 hover:text-gray-700"
               >
                 <X size={24} />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            <form
+              onSubmit={(e) => void handleSubmit(e)}
+              className="p-6 space-y-4"
+            >
               {/* Image Upload */}
               <div>
                 <label
@@ -323,9 +404,7 @@ const AdminDoctorsPage = () => {
                   id="name"
                   type="text"
                   value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
+                  onChange={(e) => updateField("name", e.target.value)}
                   placeholder="dr. Nama Dokter"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003f88] outline-none"
                   required
@@ -343,63 +422,23 @@ const AdminDoctorsPage = () => {
                 <select
                   id="specialty"
                   value={formData.specialty}
-                  onChange={(e) =>
-                    setFormData({ ...formData, specialty: e.target.value })
-                  }
+                  onChange={(e) => updateField("specialty", e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003f88] outline-none"
                   required
                 >
                   <option value="">Pilih Spesialisasi</option>
-                  <option value="Spesialis Penyakit Dalam">
-                    Spesialis Penyakit Dalam
-                  </option>
-                  <option value="Spesialis Bedah Umum">
-                    Spesialis Bedah Umum
-                  </option>
-                  <option value="Spesialis Saraf">Spesialis Saraf</option>
-                  <option value="Spesialis Orthopedi">
-                    Spesialis Orthopedi
-                  </option>
-                  <option value="Spesialis Paru">Spesialis Paru</option>
-                  <option value="Spesialis Jantung & Pembuluh Darah">
-                    Spesialis Jantung & Pembuluh Darah
-                  </option>
-                  <option value="Spesialis THT">Spesialis THT</option>
-                  <option value="Spesialis Anak">Spesialis Anak</option>
-                  <option value="Spesialis Mata">Spesialis Mata</option>
-                  <option value="Spesialis Obgyn">Spesialis Obgyn</option>
-                  <option value="Spesialis Gigi">Spesialis Gigi</option>
-                  <option value="Spesialis Fisioterapi">
-                    Spesialis Fisioterapi
-                  </option>
-                </select>
-              </div>
-
-              {/* Status */}
-              <div>
-                <label
-                  htmlFor="status"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Status Dokter
-                </label>
-                <select
-                  id="status"
-                  value={formData.status}
-                  onChange={(e) =>
-                    setFormData({ ...formData, status: e.target.value })
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003f88] outline-none"
-                >
-                  <option value="hadir">Hadir</option>
-                  <option value="cuti">cuti</option>
+                  {SPECIALTIES.map((specialty) => (
+                    <option key={specialty} value={specialty}>
+                      {specialty}
+                    </option>
+                  ))}
                 </select>
               </div>
 
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full bg-[#003f88] text-white py-3 rounded-lg hover:bg-[#003f88] transition-colors font-semibold mt-6"
+                className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold mt-6"
               >
                 {editingId ? "Perbarui Dokter" : "Tambah Dokter"}
               </button>
