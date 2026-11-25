@@ -140,11 +140,11 @@ export default function AlurPendaftaran() {
   };
 
   return (
-    <main className="min-h-screen bg-white text-slate-800">
+    <main className="min-h-screen bg-white text-white">
       {/* HEADER — dipertahankan */}
-      <section className="w-full border-b border-slate-200 bg-white pb-4 pt-8 md:pb-6 md:pt-15">
+      <section className="w-full border-b border-slate-200 bg-gradient-to-r from-[#003f88] to-[#003f88] pb-4 pt-8 md:pb-6 md:pt-15">
         <div className="mx-auto max-w-[1172px] px-4 py-0 md:px-8 md:py-2">
-          {/* BREADCRUMB — dipertahankan */}
+          
           <motion.nav
             className="mb-6"
             aria-label="Breadcrumb"
@@ -155,23 +155,23 @@ export default function AlurPendaftaran() {
             <div className="flex items-center gap-1 text-[14px] font-normal">
               <Link
                 href="/"
-                className="text-slate-500 transition-colors hover:text-slate-900"
+                className="text-slate-400 transition-colors hover:text-white"
               >
                 Beranda
               </Link>
               <ChevronRight
                 size={12}
-                className="text-slate-400"
+                className="text-slate-200"
                 aria-hidden="true"
               />
-              <span className="font-normal text-slate-900">
+              <span className="font-normal text-white">
                 Alur Pendaftaran
               </span>
             </div>
           </motion.nav>
 
           <motion.h1
-            className="text-4xl font-bold tracking-[-0.02em] text-slate-900 md:text-4xl"
+            className="text-4xl font-bold tracking-[-0.02em] text-white md:text-4xl"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.48, delay: 0.06, ease: EASE_SMOOTH }}
@@ -179,7 +179,7 @@ export default function AlurPendaftaran() {
             Alur Pendaftaran
           </motion.h1>
           <motion.p
-            className="mt-3 max-w-2xl text-[15px] font-normal leading-relaxed text-slate-600 md:text-base"
+            className="mt-3 max-w-2xl text-[15px] font-normal leading-relaxed text-white md:text-base"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.48, delay: 0.1, ease: EASE_SMOOTH }}
@@ -225,13 +225,13 @@ export default function AlurPendaftaran() {
                     viewport={{ once: true, margin: "-30px" }}
                     className="grid grid-cols-[42px_minmax(0,1fr)] gap-4 border border-slate-200 bg-white p-5 md:grid-cols-[52px_minmax(0,1fr)] md:gap-5 md:p-6"
                   >
-                    <div className="flex h-10 w-10 items-center justify-center border border-[#d8e4eb] bg-[#f3f7f9] text-[#003f88] md:h-12 md:w-12 rounded-full">
-                      <StepIcon size={20} strokeWidth={1.7} />
+                    <div className="flex h-10 w-10 items-center justify-center border border-[#d8e4eb] bg-[#003f88] text-white md:h-12 md:w-12 rounded-full">
+                      <StepIcon size={20} strokeWidth={2.5} />
                     </div>
 
                     <div className="min-w-0">
                       <div className="mb-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
-                        <span className="text-[11px] font-semibold tracking-[0.12em] text-[#003f88]">
+                        <span className="text-[11px] font-bold text-[#003f88]">
                           TAHAP {step.number}
                         </span>
                       </div>
