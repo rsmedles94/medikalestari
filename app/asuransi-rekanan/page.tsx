@@ -248,7 +248,7 @@ export default function AsuransiRekanPage() {
                       key={index}
                       type="button"
                       onClick={() => handleAwardDotClick(index)}
-                      className="focus:outline-none flex items-center justify-center h-8 w-8 relative cursor-pointer"
+                      className="focus:outline-none flex items-center justify-center h-8 w-8 relative cursor-pointer mb-5 md:mb-none"
                       aria-label={`Go to award page ${index + 1}`}
                     >
                       <motion.div
