@@ -184,7 +184,7 @@ const AdminLoginPage = () => {
               {loading ? (
                 <Loader2 size={18} className="animate-spin text-white" />
               ) : (
-                "Lanjutkan"
+                "Masuk"
               )}
             </button>
           </form>
