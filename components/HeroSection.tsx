@@ -1,12 +1,52 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import Image from "next/image";
 import { fetchHeroBanners } from "@/lib/api";
 import { HeroBanner } from "@/lib/types";
 import { ChevronRight } from "lucide-react";
 
 // Import komponen terpisah
 import { DesktopSearchBar } from "./DesktopSearchBar";
+
+type DeviceType = "desktop" | "mobile";
+type SlideId = string | number;
+
+const MOBILE_BREAKPOINT = 768;
+const SLIDE_INTERVAL_MS = 5000;
+const RESIZE_DEBOUNCE_MS = 300;
+
+const DESKTOP_RING_RADIUS = 26;
+const DESKTOP_RING_CIRCUMFERENCE = 2 * Math.PI * DESKTOP_RING_RADIUS;
+const MOBILE_RING_RADIUS = 18;
+const MOBILE_RING_CIRCUMFERENCE = 113.1;
+
+const SPECIALTY_CATEGORIES = [
+  "Semua Spesialis",
+  "Spesialis Penyakit Dalam",
+  "Spesialis Bedah Umum",
+  "Spesialis Saraf",
+  "Spesialis Orthopedi",
+  "Spesialis Paru",
+  "Spesialis Jantung & Pembuluh Darah",
+  "Spesialis THT",
+  "Spesialis Anak",
+  "Spesialis Mata",
+  "Spesialis Obgyn",
+  "Spesialis Gigi",
+  "Spesialis Fisioterapi",
+];
+
+const DAYS = [
+  "Semua Hari",
+  "Senin",
+  "Selasa",
+  "Rabu",
+  "Kamis",
+  "Jumat",
+  "Sabtu",
+  "Minggu",
+];
 
 // Shimmer Animation & Circular Loader Keyframes
 const customStyles = `
@@ -39,26 +79,32 @@ const customStyles = `
   }
 `;
 
-if (typeof document !== "undefined") {
+if (
+  typeof document !== "undefined" &&
+  !document.head.querySelector("style[data-custom-hero]")
+) {
   const style = document.createElement("style");
   style.textContent = customStyles;
-  if (!document.head.querySelector("style[data-custom-hero]")) {
-    style.dataset.customHero = "true";
-    document.head.appendChild(style);
-  }
+  style.dataset.customHero = "true";
+  document.head.appendChild(style);
 }
+
+const getDeviceType = (): DeviceType =>
+  window.innerWidth <= MOBILE_BREAKPOINT ? "mobile" : "desktop";
+
+// Mencegah menu klik kanan (Save image as...) pada area banner
+const preventContextMenu = (event: React.MouseEvent) => event.preventDefault();
 
 export const HeroSection = () => {
   const [slides, setSlides] = useState<HeroBanner[]>([]);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [currentDeviceType, setCurrentDeviceType] = useState<
-    "desktop" | "mobile"
-  >("desktop");
+  const [currentDeviceType, setCurrentDeviceType] =
+    useState<DeviceType>("desktop");
   const [loadedSlides, setLoadedSlides] = useState<Record<string, boolean>>({});
 
   const prevSlidesRef = useRef<string>("");
-  const deviceTypeRef = useRef<"desktop" | "mobile">("desktop");
+  const deviceTypeRef = useRef<DeviceType>("desktop");
 
   // Search state
   const [search, setSearch] = useState("");
@@ -72,43 +118,15 @@ export const HeroSection = () => {
   const specialtyRef = useRef<HTMLDivElement>(null);
   const dayRef = useRef<HTMLDivElement>(null);
 
-  const SPECIALTY_CATEGORIES = [
-    "Semua Spesialis",
-    "Spesialis Penyakit Dalam",
-    "Spesialis Bedah Umum",
-    "Spesialis Saraf",
-    "Spesialis Orthopedi",
-    "Spesialis Paru",
-    "Spesialis Jantung & Pembuluh Darah",
-    "Spesialis THT",
-    "Spesialis Anak",
-    "Spesialis Mata",
-    "Spesialis Obgyn",
-    "Spesialis Gigi",
-    "Spesialis Fisioterapi",
-  ];
-
-  const DAYS = [
-    "Semua Hari",
-    "Senin",
-    "Selasa",
-    "Rabu",
-    "Kamis",
-    "Jumat",
-    "Sabtu",
-    "Minggu",
-  ];
-
   // Click outside listener
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        specialtyRef.current &&
-        !specialtyRef.current.contains(event.target as Node)
-      ) {
+      const target = event.target as Node;
+
+      if (specialtyRef.current && !specialtyRef.current.contains(target)) {
         setIsSpecialtyOpen(false);
       }
-      if (dayRef.current && !dayRef.current.contains(event.target as Node)) {
+      if (dayRef.current && !dayRef.current.contains(target)) {
         setIsDayOpen(false);
       }
     };
@@ -119,23 +137,18 @@ export const HeroSection = () => {
 
   // Fetch Banners
   useEffect(() => {
+    let resizeTimeout: ReturnType<typeof setTimeout> | null = null;
+
     const loadBanners = async () => {
       try {
         setLoading(true);
-        const isMobileDevice =
-          typeof globalThis !== "undefined" &&
-          globalThis.window?.innerWidth !== undefined &&
-          globalThis.window.innerWidth <= 768;
 
-        const deviceType = isMobileDevice ? "mobile" : "desktop";
+        const deviceType = getDeviceType();
+        deviceTypeRef.current = deviceType;
         setCurrentDeviceType(deviceType);
 
         const banners = await fetchHeroBanners(deviceType);
-        if (banners && banners.length > 0) {
-          setSlides(banners);
-        } else {
-          setSlides([]);
-        }
+        setSlides(banners && banners.length > 0 ? banners : []);
       } catch (error) {
         console.error("[HeroSection] Error loading hero banners:", error);
         setSlides([]);
@@ -144,40 +157,20 @@ export const HeroSection = () => {
       }
     };
 
-    let resizeTimeout: NodeJS.Timeout | null = null;
-    let isFirstLoad = true;
-
-    const loadWithDebounce = () => {
-      if (isFirstLoad) {
-        loadBanners();
-        isFirstLoad = false;
-      } else {
-        if (resizeTimeout) clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-          loadBanners();
-        }, 300);
-      }
-    };
-
-    loadWithDebounce();
-
     const handleResize = () => {
-      const nextDeviceType =
-        globalThis.window?.innerWidth !== undefined &&
-        globalThis.window.innerWidth <= 768
-          ? "mobile"
-          : "desktop";
+      // Banner hanya perlu dimuat ulang saat tipe perangkat berubah
+      if (getDeviceType() === deviceTypeRef.current) return;
 
-      if (nextDeviceType !== deviceTypeRef.current) {
-        setLoading(true);
-      }
-      loadWithDebounce();
+      setLoading(true);
+      if (resizeTimeout) clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(loadBanners, RESIZE_DEBOUNCE_MS);
     };
 
-    globalThis.window?.addEventListener("resize", handleResize);
+    loadBanners();
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      globalThis.window?.removeEventListener("resize", handleResize);
+      window.removeEventListener("resize", handleResize);
       if (resizeTimeout) clearTimeout(resizeTimeout);
     };
   }, []);
@@ -201,6 +194,7 @@ export const HeroSection = () => {
   }, [slides]);
 
   const activeSlides = slides;
+  const hasMultipleSlides = activeSlides.length > 1;
   const validSlideCount = activeSlides.length > 0 ? activeSlides.length : 1;
   const currentSlide = Math.abs(page) % validSlideCount;
 
@@ -215,18 +209,13 @@ export const HeroSection = () => {
 
     const timer = setInterval(() => {
       paginate(1);
-    }, 5000);
+    }, SLIDE_INTERVAL_MS);
 
     return () => clearInterval(timer);
   }, [paginate, activeSlides.length]);
 
-  const handleImageLoaded = (id?: string | number) => {
-    if (id === undefined || id === null) return;
-    setLoadedSlides((prev) => ({ ...prev, [String(id)]: true }));
-  };
-
-  const handleImageError = (id?: string | number) => {
-    if (id === undefined || id === null) return;
+  // Dipanggil saat gambar selesai dimuat maupun gagal dimuat
+  const handleSlideLoaded = (id: SlideId) => {
     setLoadedSlides((prev) => ({ ...prev, [String(id)]: true }));
   };
 
@@ -239,21 +228,17 @@ export const HeroSection = () => {
       params.append("specialty", specialty);
     if (day && day !== "Semua Hari") params.append("day", day);
 
-    if (globalThis.window?.location) {
-      globalThis.window.location.href = `/dokter?${params.toString()}`;
-    }
+    window.location.href = `/dokter?${params.toString()}`;
   };
-
-  const radius = 26;
-  const circumference = 2 * Math.PI * radius;
 
   return (
     <section className="relative isolate w-full bg-transparent mb-12 md:mb-24 z-30">
       {/* Banner desktop */}
       <section
         aria-label="Hero banner carousel"
-        className="hidden md:block relative w-full aspect-[1600/620] bg-black overflow-hidden"
+        className="hidden md:block relative w-full aspect-[1600/620] bg-black overflow-hidden select-none"
         aria-busy={loading}
+        onContextMenu={preventContextMenu}
       >
         {loading && (
           <div
@@ -265,8 +250,7 @@ export const HeroSection = () => {
         {activeSlides.length > 0 ? (
           <>
             {activeSlides.map((slide, index) => {
-              const key = String(slide.id);
-              const isLoaded = !!loadedSlides[key];
+              const isLoaded = !!loadedSlides[String(slide.id)];
               const isActive = index === currentSlide;
 
               return (
@@ -279,12 +263,17 @@ export const HeroSection = () => {
                   {!isLoaded && (
                     <div className="absolute inset-0 skeleton-shimmer" />
                   )}
-                  <img
+                  <Image
                     src={slide.image_url}
-                    alt={`Slide ${index}`}
-                    onLoad={() => handleImageLoaded(slide.id)}
-                    onError={() => handleImageError(slide.id)}
-                    className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-700 ${
+                    alt={`Slide ${index + 1}`}
+                    fill
+                    sizes="100vw"
+                    quality={85}
+                    priority={index === 0 && currentDeviceType === "desktop"}
+                    draggable={false}
+                    onLoad={() => handleSlideLoaded(slide.id)}
+                    onError={() => handleSlideLoaded(slide.id)}
+                    className={`object-cover object-center transition-opacity duration-700 pointer-events-none select-none ${
                       isLoaded ? "opacity-100" : "opacity-0"
                     }`}
                   />
@@ -292,7 +281,7 @@ export const HeroSection = () => {
               );
             })}
 
-            {activeSlides.length > 1 && (
+            {hasMultipleSlides && (
               <div className="absolute left-8 bottom-16 z-40">
                 {/* button */}
                 <button
@@ -308,7 +297,7 @@ export const HeroSection = () => {
                     <circle
                       cx="32"
                       cy="32"
-                      r={radius}
+                      r={DESKTOP_RING_RADIUS}
                       className="stroke-white/30"
                       strokeWidth="2.5"
                       fill="transparent"
@@ -316,10 +305,10 @@ export const HeroSection = () => {
                     <circle
                       cx="32"
                       cy="32"
-                      r={radius}
+                      r={DESKTOP_RING_RADIUS}
                       className="stroke-white animate-circle-progress"
                       strokeWidth="2.5"
-                      strokeDasharray={circumference}
+                      strokeDasharray={DESKTOP_RING_CIRCUMFERENCE}
                       strokeLinecap="round"
                       fill="transparent"
                     />
@@ -343,8 +332,9 @@ export const HeroSection = () => {
 
       {/* Banner mobile */}
       <div
-        className="md:hidden relative w-full aspect-2208/2760 bg-black overflow-hidden"
+        className="md:hidden relative w-full aspect-2208/2760 bg-black overflow-hidden select-none"
         aria-busy={loading}
+        onContextMenu={preventContextMenu}
       >
         {loading && (
           <div
@@ -354,8 +344,7 @@ export const HeroSection = () => {
         )}
 
         {activeSlides.map((slide, index) => {
-          const key = String(slide.id);
-          const isLoaded = !!loadedSlides[key];
+          const isLoaded = !!loadedSlides[String(slide.id)];
 
           return (
             <div
@@ -367,12 +356,17 @@ export const HeroSection = () => {
               {!isLoaded && (
                 <div className="absolute inset-0 skeleton-shimmer" />
               )}
-              <img
+              <Image
                 src={slide.image_url}
-                alt={`Slide ${index}`}
-                onLoad={() => handleImageLoaded(slide.id)}
-                onError={() => handleImageError(slide.id)}
-                className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-700 ${
+                alt={`Slide ${index + 1}`}
+                fill
+                sizes="100vw"
+                quality={85}
+                priority={index === 0 && currentDeviceType === "mobile"}
+                draggable={false}
+                onLoad={() => handleSlideLoaded(slide.id)}
+                onError={() => handleSlideLoaded(slide.id)}
+                className={`object-cover object-center transition-opacity duration-700 pointer-events-none select-none ${
                   isLoaded ? "opacity-100" : "opacity-0"
                 }`}
               />
@@ -380,7 +374,7 @@ export const HeroSection = () => {
           );
         })}
 
-        {activeSlides.length > 1 && (
+        {hasMultipleSlides && (
           <div className="absolute left-4 bottom-4 z-40">
             {/* button */}
             <button
@@ -396,7 +390,7 @@ export const HeroSection = () => {
                 <circle
                   cx="24"
                   cy="24"
-                  r={18}
+                  r={MOBILE_RING_RADIUS}
                   className="stroke-white/30"
                   strokeWidth="2"
                   fill="transparent"
@@ -404,10 +398,10 @@ export const HeroSection = () => {
                 <circle
                   cx="24"
                   cy="24"
-                  r={18}
+                  r={MOBILE_RING_RADIUS}
                   className="stroke-white animate-circle-progress-mobile"
                   strokeWidth="2"
-                  strokeDasharray={113.1}
+                  strokeDasharray={MOBILE_RING_CIRCUMFERENCE}
                   strokeLinecap="round"
                   fill="transparent"
                 />
