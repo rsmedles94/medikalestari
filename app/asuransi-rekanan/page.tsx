@@ -63,36 +63,40 @@ export default function AsuransiRekanPage() {
   };
 
   return (
-    <main className="min-h-screen bg-white">
-      {/* bagian header */}
-      <section className="w-full py-8 md:py-15 pb-3 md:pb-4 bg-white">
-        <div className="max-w-[1172px] mx-auto px-4 md:px-8 py-0 md:py-2">
-          {/* navigasi breadcrumb */}
+    <section
+      className="w-full bg-white min-h-screen text-slate-800 relative mb-20"
+      aria-label="Asuransi dan Rekanan"
+    >
+      <div className="max-w-[1139px] w-full mx-auto px-4 py-8 md:py-8">
+        {/* breadcrumb & judul */}
+        <div className="pt-0 md:pt-9 pb-12">
           <motion.nav
-            className="mb-6"
             aria-label="Breadcrumb"
+            className="flex items-center gap-1 text-[14px] font-normal text-gray-300 mb-4"
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease: EASE_SMOOTH }}
           >
-            <div className="flex items-center gap-1 text-[14px] font-normal">
-              <Link
-                href="/"
-                className="text-slate-500 hover:text-slate-900 transition-colors"
-              >
-                Beranda
-              </Link>
-              <ChevronRight
-                size={12}
-                className="text-slate-400"
-                aria-hidden="true"
-              />
-              <span className="font-normal text-slate-900">Asuransi Rekanan</span>
-            </div>
+            <ol className="flex items-center gap-1 list-none p-0 m-0">
+              <li>
+                <Link
+                  href="/"
+                  className="text-black/60 hover:text-gray-300 transition-colors"
+                >
+                  Beranda
+                </Link>
+              </li>
+              <li aria-hidden="true">
+                <ChevronRight size={12} className="text-black/60" />
+              </li>
+              <li aria-current="page" className="font-normal">
+                Asuransi Rekanan
+              </li>
+            </ol>
           </motion.nav>
 
           <motion.h1
-            className="text-4xl md:text-4xl font-bold text-slate-900"
+            className="text-3xl md:text-4xl font-bold text-black border-b border-slate-100 pb-6"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.48, delay: 0.06, ease: EASE_SMOOTH }}
@@ -100,186 +104,182 @@ export default function AsuransiRekanPage() {
             Asuransi dan Rekanan
           </motion.h1>
         </div>
-      </section>
 
-      {/* konten utama */}
-      <section className="w-full pt-4 md:pt-5 pb-20 bg-white">
-        <div className="max-w-[1172px] mx-auto px-4 md:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-9 items-start">
-            {/* informasi penjaminan */}
-            <motion.div
-              className="lg:col-span-5 text-slate-900"
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.52, delay: 0.12, ease: EASE_SMOOTH }}
-            >
-              <h2 className="text-2xl md:text-[26px] font-semibold tracking-[-0.02em] leading-[1.3] text-slate-900">
-                Ketentuan Layanan Asuransi dan Penjaminan
-              </h2>
-              <p className="mt-3 text-[14px] leading-[1.65] text-slate-600 font-normal">
-                Pasien peserta asuransi maupun jaminan perusahaan dapat
-                memanfaatkan layanan rawat jalan, rawat inap, serta pemeriksaan
-                penunjang medis di RS Medika Lestari sesuai cakupan polis yang
-                berlaku.
-              </p>
+        {/* konten utama */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-9 items-start">
+          {/* informasi penjaminan */}
+          <motion.div
+            className="lg:col-span-5 text-slate-900"
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.52, delay: 0.12, ease: EASE_SMOOTH }}
+          >
+            <h2 className="text-2xl md:text-[26px] font-semibold tracking-[-0.02em] leading-[1.3] text-slate-900">
+              Ketentuan Layanan Asuransi dan Penjaminan
+            </h2>
+            <p className="mt-3 text-[14px] leading-[1.65] text-slate-600 font-normal">
+              Pasien peserta asuransi maupun jaminan perusahaan dapat
+              memanfaatkan layanan rawat jalan, rawat inap, serta pemeriksaan
+              penunjang medis di RS Medika Lestari sesuai cakupan polis yang
+              berlaku.
+            </p>
 
-              <div className="mt-5 space-y-4 border-t border-slate-200 pt-5">
-                <div>
-                  <h3 className="text-[14px] font-semibold tracking-[-0.01em] text-slate-900">
-                    Pendaftaran dan Verifikasi Kepesertaan
-                  </h3>
-                  <p className="mt-1 text-[13.5px] leading-[1.6] text-slate-600 font-normal">
-                    Siapkan kartu kepesertaan asuransi dan kartu identitas resmi
-                    (KTP atau KIA) saat mendaftar di loket admisi sebelum
-                    pemeriksaan dokter.
-                  </p>
-                </div>
-
-                <div>
-                  <h3 className="text-[14px] font-semibold tracking-[-0.01em] text-slate-900">
-                    Cakupan Manfaat dan Selisih Biaya
-                  </h3>
-                  <p className="mt-1 text-[13.5px] leading-[1.6] text-slate-600 font-normal">
-                    Penjaminan biaya mengikuti ketentuan masing-masing penanggung
-                    dan TPA. Apabila terdapat selisih tarif atau tindakan di luar
-                    manfaat polis, penyelesaiannya menjadi tanggungan pasien.
-                  </p>
-                </div>
-
-                <div>
-                  <h3 className="text-[14px] font-semibold tracking-[-0.01em] text-slate-900">
-                    Rawat Inap dan Tindakan Terencana
-                  </h3>
-                  <p className="mt-1 text-[13.5px] leading-[1.6] text-slate-600 font-normal">
-                    Untuk rencana rawat inap atau tindakan medis lanjutan,
-                    pastikan status jaminan telah terkonfirmasi oleh pihak
-                    asuransi melalui bagian administrasi rumah sakit.
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* grid logo asuransi */}
-            <div className="lg:col-span-7">
-              <div ref={sliderRef} className="keen-slider overflow-hidden">
-                {/* halaman 1 (logo 1-9) */}
-                <div className="keen-slider__slide w-full shrink-0 grid grid-cols-3 gap-2 sm:gap-2.5">
-                  {ASURANSI_DATA.slice(0, 9).map((award, idx) => (
-                    <motion.div
-                      key={award.id}
-                      title={award.alt}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{
-                        duration: 0.4,
-                        delay: 0.14 + idx * 0.03,
-                        ease: EASE_SMOOTH,
-                      }}
-                      className="bg-white border border-slate-200 p-2.5 sm:p-3.5 aspect-[4/3] flex items-center justify-center transition-colors duration-200 hover:border-slate-300"
-                    >
-                      <div className="relative w-full h-full">
-                        <Image
-                          src={award.src}
-                          alt={award.alt}
-                          fill
-                          sizes="(max-width: 768px) 33vw, 20vw"
-                          className="object-contain"
-                          priority={award.id <= 9}
-                        />
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-
-                {/* halaman 2 (logo 10-18) */}
-                <div className="keen-slider__slide w-full shrink-0 grid grid-cols-3 gap-2 sm:gap-2.5">
-                  {ASURANSI_DATA.slice(9, 18).map((award) => (
-                    <div
-                      key={award.id}
-                      title={award.alt}
-                      className="bg-white border border-slate-200 p-2.5 sm:p-3.5 aspect-[4/3] flex items-center justify-center transition-colors duration-200 hover:border-slate-300"
-                    >
-                      <div className="relative w-full h-full">
-                        <Image
-                          src={award.src}
-                          alt={award.alt}
-                          fill
-                          sizes="(max-width: 768px) 33vw, 20vw"
-                          className="object-contain"
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* halaman 3 (logo 19-27) */}
-                <div className="keen-slider__slide w-full shrink-0 grid grid-cols-3 gap-2 sm:gap-2.5">
-                  {ASURANSI_DATA.slice(18, 27).map((award) => (
-                    <div
-                      key={award.id}
-                      title={award.alt}
-                      className="bg-white border border-slate-200 p-2.5 sm:p-3.5 aspect-[4/3] flex items-center justify-center transition-colors duration-200 hover:border-slate-300"
-                    >
-                      <div className="relative w-full h-full">
-                        <Image
-                          src={award.src}
-                          alt={award.alt}
-                          fill
-                          sizes="(max-width: 768px) 33vw, 20vw"
-                          className="object-contain"
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
+            <div className="mt-5 space-y-4 border-t border-slate-200 pt-5">
+              <div>
+                <h3 className="text-[14px] font-semibold tracking-[-0.01em] text-slate-900">
+                  Pendaftaran dan Verifikasi Kepesertaan
+                </h3>
+                <p className="mt-1 text-[13.5px] leading-[1.6] text-slate-600 font-normal">
+                  Siapkan kartu kepesertaan asuransi dan kartu identitas resmi
+                  (KTP atau KIA) saat mendaftar di loket admisi sebelum
+                  pemeriksaan dokter.
+                </p>
               </div>
 
-              {/* indikator dot rekanan */}
-              <motion.div
-                className="mt-7 flex items-center justify-center gap-4"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.45, delay: 0.35, ease: EASE_SMOOTH }}
-              >
-                {awardDots.map((index) => {
-                  const isAwardActive = index === activeAwardIndex;
-                  return (
-                    <button
-                      key={index}
-                      type="button"
-                      onClick={() => handleAwardDotClick(index)}
-                      className="focus:outline-none flex items-center justify-center h-8 w-8 relative cursor-pointer mb-5 md:mb-none"
-                      aria-label={`Go to award page ${index + 1}`}
-                    >
-                      <motion.div
-                        animate={{
-                          backgroundColor: isAwardActive ? "#ffffff" : "#3D8ECB",
-                        }}
-                        transition={{ duration: 0.2 }}
-                        className="absolute w-5 h-5 rounded-full z-10 pointer-events-none"
-                      />
+              <div>
+                <h3 className="text-[14px] font-semibold tracking-[-0.01em] text-slate-900">
+                  Cakupan Manfaat dan Selisih Biaya
+                </h3>
+                <p className="mt-1 text-[13.5px] leading-[1.6] text-slate-600 font-normal">
+                  Penjaminan biaya mengikuti ketentuan masing-masing penanggung
+                  dan TPA. Apabila terdapat selisih tarif atau tindakan di luar
+                  manfaat polis, penyelesaiannya menjadi tanggungan pasien.
+                </p>
+              </div>
 
-                      <motion.div
-                        initial={{ scale: 0.4, opacity: 0 }}
-                        animate={{
-                          scale: isAwardActive ? 1 : 0.4,
-                          opacity: isAwardActive ? 1 : 0,
-                        }}
-                        transition={{
-                          type: "spring",
-                          stiffness: 280,
-                          damping: 22,
-                        }}
-                        className="absolute w-9 h-9 rounded-full border-[5px] border-[#3D8ECB] bg-[#3D8ECB] z-0 origin-center pointer-events-none"
-                      />
-                    </button>
-                  );
-                })}
-              </motion.div>
+              <div>
+                <h3 className="text-[14px] font-semibold tracking-[-0.01em] text-slate-900">
+                  Rawat Inap dan Tindakan Terencana
+                </h3>
+                <p className="mt-1 text-[13.5px] leading-[1.6] text-slate-600 font-normal">
+                  Untuk rencana rawat inap atau tindakan medis lanjutan,
+                  pastikan status jaminan telah terkonfirmasi oleh pihak
+                  asuransi melalui bagian administrasi rumah sakit.
+                </p>
+              </div>
             </div>
+          </motion.div>
+
+          {/* grid logo asuransi */}
+          <div className="lg:col-span-7">
+            <div ref={sliderRef} className="keen-slider overflow-hidden">
+              {/* halaman 1 (logo 1-9) */}
+              <div className="keen-slider__slide w-full shrink-0 grid grid-cols-3 gap-2 sm:gap-2.5">
+                {ASURANSI_DATA.slice(0, 9).map((award, idx) => (
+                  <motion.div
+                    key={award.id}
+                    title={award.alt}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      duration: 0.4,
+                      delay: 0.14 + idx * 0.03,
+                      ease: EASE_SMOOTH,
+                    }}
+                    className="bg-white border border-slate-200 p-2.5 sm:p-3.5 aspect-[4/3] flex items-center justify-center transition-colors duration-200 hover:border-slate-300"
+                  >
+                    <div className="relative w-full h-full">
+                      <Image
+                        src={award.src}
+                        alt={award.alt}
+                        fill
+                        sizes="(max-width: 768px) 33vw, 20vw"
+                        className="object-contain"
+                        priority={award.id <= 9}
+                      />
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* halaman 2 (logo 10-18) */}
+              <div className="keen-slider__slide w-full shrink-0 grid grid-cols-3 gap-2 sm:gap-2.5">
+                {ASURANSI_DATA.slice(9, 18).map((award) => (
+                  <div
+                    key={award.id}
+                    title={award.alt}
+                    className="bg-white border border-slate-200 p-2.5 sm:p-3.5 aspect-[4/3] flex items-center justify-center transition-colors duration-200 hover:border-slate-300"
+                  >
+                    <div className="relative w-full h-full">
+                      <Image
+                        src={award.src}
+                        alt={award.alt}
+                        fill
+                        sizes="(max-width: 768px) 33vw, 20vw"
+                        className="object-contain"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* halaman 3 (logo 19-27) */}
+              <div className="keen-slider__slide w-full shrink-0 grid grid-cols-3 gap-2 sm:gap-2.5">
+                {ASURANSI_DATA.slice(18, 27).map((award) => (
+                  <div
+                    key={award.id}
+                    title={award.alt}
+                    className="bg-white border border-slate-200 p-2.5 sm:p-3.5 aspect-[4/3] flex items-center justify-center transition-colors duration-200 hover:border-slate-300"
+                  >
+                    <div className="relative w-full h-full">
+                      <Image
+                        src={award.src}
+                        alt={award.alt}
+                        fill
+                        sizes="(max-width: 768px) 33vw, 20vw"
+                        className="object-contain"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* indikator dot rekanan */}
+            <motion.div
+              className="mt-7 flex items-center justify-center gap-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.45, delay: 0.35, ease: EASE_SMOOTH }}
+            >
+              {awardDots.map((index) => {
+                const isAwardActive = index === activeAwardIndex;
+                return (
+                  <button
+                    key={index}
+                    type="button"
+                    onClick={() => handleAwardDotClick(index)}
+                    className="focus:outline-none flex items-center justify-center h-8 w-8 relative cursor-pointer mb-5 md:mb-none"
+                    aria-label={`Go to award page ${index + 1}`}
+                  >
+                    <motion.div
+                      animate={{
+                        backgroundColor: isAwardActive ? "#ffffff" : "#3D8ECB",
+                      }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute w-5 h-5 rounded-full z-10 pointer-events-none"
+                    />
+
+                    <motion.div
+                      initial={{ scale: 0.4, opacity: 0 }}
+                      animate={{
+                        scale: isAwardActive ? 1 : 0.4,
+                        opacity: isAwardActive ? 1 : 0,
+                      }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 280,
+                        damping: 22,
+                      }}
+                      className="absolute w-9 h-9 rounded-full border-[5px] border-[#3D8ECB] bg-[#3D8ECB] z-0 origin-center pointer-events-none"
+                    />
+                  </button>
+                );
+              })}
+            </motion.div>
           </div>
         </div>
-      </section>
-    </main>
+      </div>
+    </section>
   );
 }

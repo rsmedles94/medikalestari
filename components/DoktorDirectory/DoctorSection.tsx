@@ -16,6 +16,7 @@ import {
   CalendarDays,
   FilterIcon,
   ChevronRight,
+  ChevronLeft,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSearchParams } from "next/navigation";
@@ -55,6 +56,28 @@ const DAYS = [
   "Minggu",
 ];
 const ITEMS_PER_PAGE = 10;
+
+const focusRing =
+  "outline-none focus-visible:ring-2 focus-visible:ring-[#003f88]/40";
+
+// nomor halaman, loncatan jadi "gap"
+const getPageItems = (current: number, total: number): (number | "gap")[] => {
+  const pages = [1, total, current - 1, current, current + 1]
+    .filter((p) => p >= 1 && p <= total)
+    .filter((p, i, arr) => arr.indexOf(p) === i)
+    .sort((a, b) => a - b);
+
+  const items: (number | "gap")[] = [];
+  pages.forEach((p, i) => {
+    if (i > 0) {
+      const gap = p - pages[i - 1];
+      if (gap === 2) items.push(p - 1);
+      else if (gap > 2) items.push("gap");
+    }
+    items.push(p);
+  });
+  return items;
+};
 
 // cache dokter agar tidak fetch ulang
 let cachedDoctors: DoctorWithSchedules[] | null = null;
@@ -101,7 +124,6 @@ const DoctorSection = ({
   });
 
   const sectionRef = useRef<HTMLDivElement>(null);
-  const isInitialMount = useRef(true);
 
   // --- HELPERS ---
   const jumpToTop = useCallback(() => {
@@ -306,6 +328,9 @@ const DoctorSection = ({
     }
 
     if (filteredDoctors.length > 0) {
+      const arrow = `flex h-11 w-11 items-center justify-center rounded-lg border border-slate-200 text-[#003f88] transition-colors hover:bg-slate-100 disabled:pointer-events-none disabled:opacity-30 sm:h-12 sm:w-12 ${focusRing}`;
+      const number = `flex h-10 min-w-10 items-center justify-center rounded-lg px-2 text-base font-semibold tabular-nums transition-colors sm:h-12 sm:min-w-12 ${focusRing}`;
+
       return (
         <motion.div
           key="list-view"
@@ -409,45 +434,54 @@ const DoctorSection = ({
           {totalPages > 1 && (
             <nav
               aria-label="Navigasi halaman daftar dokter"
-              className="flex items-center justify-center gap-2 mt-2 md:mt-12 pt-4 "
+              className="mt-2 flex flex-wrap items-center justify-center gap-0.5 pt-4 sm:gap-1 md:mt-12"
             >
-              {currentPage > 1 && (
-                <button
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  aria-label="Halaman sebelumnya"
-                  className="w-16 h-11 flex items-center justify-center text-slate-600 border border-slate-200 rounded-md hover:bg-slate-50 transition-all font-bold text-xs "
-                >
-                  ← PREV
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                aria-label="Halaman sebelumnya"
+                className={`${arrow} mr-1 sm:mr-2`}
+              >
+                <ChevronLeft size={28} strokeWidth={2.25} aria-hidden="true" />
+              </button>
 
-              <div className="flex flex-wrap justify-start gap-2 md:gap-3">
-                {new Array(totalPages).fill(null).map((_, i) => (
+              {getPageItems(currentPage, totalPages).map((item, i, items) =>
+                item === "gap" ? (
+                  <span
+                    key={`gap-${items[i - 1]}`}
+                    aria-hidden="true"
+                    className="w-5 select-none text-center text-slate-400 sm:w-7"
+                  >
+                    &hellip;
+                  </span>
+                ) : (
                   <button
-                    key={`page-${i + 1}`}
-                    onClick={() => handlePageChange(i + 1)}
-                    aria-label={`Halaman ${i + 1}`}
-                    aria-current={currentPage === i + 1 ? "page" : undefined}
-                    className={`w-11 h-11 flex items-center justify-center rounded-md font-bold text-xs transition-all ${
-                      currentPage === i + 1
-                        ? "bg-[#003f88] text-white border border-[#003f88]"
-                        : "text-slate-500 border border-slate-200 hover:bg-slate-50"
+                    type="button"
+                    key={item}
+                    onClick={() => handlePageChange(item)}
+                    aria-label={`Halaman ${item}`}
+                    aria-current={item === currentPage ? "page" : undefined}
+                    className={`${number} ${
+                      item === currentPage
+                        ? "bg-[#003f88] text-white"
+                        : "text-slate-700 hover:bg-slate-100"
                     }`}
                   >
-                    {i + 1}
+                    {item}
                   </button>
-                ))}
-              </div>
-
-              {currentPage < totalPages && (
-                <button
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  aria-label="Halaman berikutnya"
-                  className="w-16 h-11 flex items-center justify-center text-slate-600 border border-slate-200 rounded-md hover:bg-slate-50 transition-all font-bold text-xs"
-                >
-                  NEXT →
-                </button>
+                ),
               )}
+
+              <button
+                type="button"
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                aria-label="Halaman berikutnya"
+                className={`${arrow} ml-1 sm:ml-2`}
+              >
+                <ChevronRight size={28} strokeWidth={2.25} aria-hidden="true" />
+              </button>
             </nav>
           )}
         </motion.div>
@@ -533,7 +567,7 @@ const DoctorSection = ({
                   aria-hidden="true"
                 />
                 <label htmlFor="doctor-name-mobile" className="sr-only">
-                  Cari nama dokter
+                  Nama dokter
                 </label>
                 <input
                   id="doctor-name-mobile"
@@ -602,7 +636,7 @@ const DoctorSection = ({
                 }}
                 className="px-4 h-11 bg-[#003f88] text-white font-semibold hover:bg-[#003f88]/90 transition-all border border-[#003f88] text-base flex items-center justify-center rounded-lg cursor-pointer"
               >
-                Cari
+                Temukan
               </button>
             </div>
 

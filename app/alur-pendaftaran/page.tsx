@@ -140,61 +140,47 @@ export default function AlurPendaftaran() {
   };
 
   return (
-    <main className="min-h-screen bg-white text-white">
-      {/* HEADER — dipertahankan */}
-      <section className="w-full border-b border-slate-200 bg-gradient-to-r from-[#003f88] to-[#003f88] pb-4 pt-8 md:pb-6 md:pt-15">
+    <main className="min-h-screen bg-[#f7f9fb] text-slate-900">
+      {/* HEADER + TAHAPAN PENDAFTARAN — background disatukan dengan #f7f9fb */}
+      <section className="w-full bg-[#f7f9fb] pb-12 pt-8 md:pb-16 md:pt-15">
         <div className="mx-auto max-w-[1172px] px-4 py-0 md:px-8 md:py-2">
-          
-          <motion.nav
-            className="mb-6"
-            aria-label="Breadcrumb"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease: EASE_SMOOTH }}
-          >
-            <div className="flex items-center gap-1 text-[14px] font-normal">
-              <Link
-                href="/"
-                className="text-slate-400 transition-colors hover:text-white"
-              >
-                Beranda
-              </Link>
-              <ChevronRight
-                size={12}
-                className="text-slate-200"
-                aria-hidden="true"
-              />
-              <span className="font-normal text-white">
-                Alur Pendaftaran
-              </span>
-            </div>
-          </motion.nav>
+          <div className="border-b border-slate-200 pb-6 md:pb-8">
+            <motion.nav
+              className="mb-6"
+              aria-label="Breadcrumb"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, ease: EASE_SMOOTH }}
+            >
+              <div className="flex items-center gap-1 text-[14px] font-normal">
+                <Link
+                  href="/"
+                  className="text-slate-500 transition-colors hover:text-slate-900"
+                >
+                  Beranda
+                </Link>
+                <ChevronRight
+                  size={12}
+                  className="text-slate-400"
+                  aria-hidden="true"
+                />
+                <span className="font-normal text-slate-900">
+                  Alur Pendaftaran
+                </span>
+              </div>
+            </motion.nav>
 
-          <motion.h1
-            className="text-4xl font-bold tracking-[-0.02em] text-white md:text-4xl"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.48, delay: 0.06, ease: EASE_SMOOTH }}
-          >
-            Alur Pendaftaran
-          </motion.h1>
-          <motion.p
-            className="mt-3 max-w-2xl text-[15px] font-normal leading-relaxed text-white md:text-base"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.48, delay: 0.1, ease: EASE_SMOOTH }}
-          >
-            Panduan tahapan registrasi dan verifikasi administrasi pasien di RS
-            Medika Lestari untuk kelancaran layanan rawat jalan maupun
-            pemeriksaan penunjang.
-          </motion.p>
-        </div>
-      </section>
+            <motion.h1
+              className="text-4xl font-bold tracking-[-0.02em] text-slate-900 md:text-4xl"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.48, delay: 0.06, ease: EASE_SMOOTH }}
+            >
+              Alur Pendaftaran
+            </motion.h1>
+          </div>
 
-      {/* TAHAPAN PENDAFTARAN */}
-      <section className="bg-[#f7f9fb] py-12 md:py-16">
-        <div className="mx-auto max-w-[1172px] px-4 md:px-8">
-          <div className="mb-8 max-w-2xl md:mb-10">
+          <div className="mb-8 mt-10 max-w-2xl md:mb-10 md:mt-12">
             <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#003f88]">
               Prosedur pasien
             </p>
@@ -225,7 +211,7 @@ export default function AlurPendaftaran() {
                     viewport={{ once: true, margin: "-30px" }}
                     className="grid grid-cols-[42px_minmax(0,1fr)] gap-4 border border-slate-200 bg-white p-5 md:grid-cols-[52px_minmax(0,1fr)] md:gap-5 md:p-6"
                   >
-                    <div className="flex h-10 w-10 items-center justify-center border border-[#d8e4eb] bg-[#003f88] text-white md:h-12 md:w-12 rounded-full">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[#d8e4eb] bg-[#003f88] text-white md:h-12 md:w-12">
                       <StepIcon size={20} strokeWidth={2.5} />
                     </div>
 
@@ -383,14 +369,14 @@ export default function AlurPendaftaran() {
                 <div className="mt-6 flex flex-wrap gap-3">
                   <a
                     href="tel:0215847473"
-                    className="inline-flex min-h-11 items-center justify-center gap-2 bg-[#003f88] px-5 py-3 text-[13px] font-semibold text-white transition-colors hover:bg-[#e67e22] rounded-xl"
+                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#003f88] px-5 py-3 text-[13px] font-semibold text-white transition-colors hover:bg-[#e67e22]"
                   >
                     <Phone size={15} />
                     Hubungi Pendaftaran
                   </a>
                   <Link
                     href="/kontak-kami"
-                    className="inline-flex min-h-11 items-center justify-center gap-2 border border-slate-300 px-5 py-3 text-[13px] font-semibold text-slate-700 transition-colors hover:border-slate-500 hover:bg-slate-50 rounded-xl"
+                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 px-5 py-3 text-[13px] font-semibold text-slate-700 transition-colors hover:border-slate-500 hover:bg-slate-50"
                   >
                     Kontak Kami
                     <ChevronRight size={15} />

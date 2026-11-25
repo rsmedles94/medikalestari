@@ -397,7 +397,7 @@ export default function DoctorScheduleGridMobile({
                 aria-hidden="true"
               />
               <label htmlFor="search-doctor-mobile" className="sr-only">
-                Cari nama dokter
+                Nama dokter
               </label>
               <input
                 id="search-doctor-mobile"
