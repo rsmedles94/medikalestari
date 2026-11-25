@@ -2,10 +2,14 @@ import React, { Suspense } from "react";
 import DoctorScheduleGrid from "@/components/DoktorDirectory/DoctorScheduleGrid";
 import DoctorScheduleGridMobile from "@/components/DoktorDirectory/DoctorScheduleGridMobile";
 import DoctorScheduleSkeleton from "@/components/DoktorDirectory/DoctorScheduleSkeleton";
-import { fetchAllDoctorsWithSchedules } from "@/lib/api";
+import { getCachedDoctorsWithSchedules } from "@/lib/doctors-cache";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { PageTracker } from "@/components/PageTracker";
+
+// ISR: halaman disajikan dari cache server dan dibangun ulang tiap 5 menit.
+// Harus berupa angka literal (tidak boleh referensi variabel).
+export const revalidate = 300;
 
 export const metadata = {
   title: "Jadwal Dokter",
@@ -14,7 +18,7 @@ export const metadata = {
 };
 
 async function DoctorScheduleContent() {
-  const doctorsWithSchedules = await fetchAllDoctorsWithSchedules();
+  const doctorsWithSchedules = await getCachedDoctorsWithSchedules();
 
   return (
     <>
