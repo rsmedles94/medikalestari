@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Image optimization untuk production
   images: {
     remotePatterns: [
       {
@@ -12,7 +13,7 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "flagcdn.com",
       },
-      // Avatar Google Maps
+      // INI YANG WAJIB ADA UNTUK AVATAR GOOGLE MAPS
       {
         protocol: "https",
         hostname: "lh3.googleusercontent.com",
@@ -24,62 +25,76 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
     ],
-    // Format modern: ukuran file lebih kecil
-    formats: ["image/avif", "image/webp"],
-    // Hasil optimasi gambar di-cache 1 tahun
-    minimumCacheTTL: 60 * 60 * 24 * 365,
+    unoptimized: false,
+    // Cache optimization
+    minimumCacheTTL: 60 * 60 * 24 * 365, // 1 year for static images
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    // Quality settings
     qualities: [75, 85, 90, 95],
   },
 
+  // Compression & optimasi production
   compress: true,
+
+  // Routing optimization
   trailingSlash: false,
+
+  // PoweredBy header removal untuk security
   poweredByHeader: false,
+
+  // Production source maps (optional - untuk error tracking)
   productionBrowserSourceMaps: false,
+
+  // React strict mode OFF di production untuk performa
   reactStrictMode: true,
 
+  // Custom headers untuk caching strategy
   async headers() {
     return [
-      // Header keamanan untuk semua route.
-      // Cache-Control halaman TIDAK diatur di sini: Next sudah mengaturnya
-      // otomatis dari `export const revalidate` di tiap page (ISR), dan
-      // memaksa "public" untuk semua halaman berisiko untuk halaman dinamis.
+      // Static JS/CSS - cache for 1 year (immutable)
       {
-        source: "/:path*",
+        source: "/:path*.:ext(js|css)",
         headers: [
-          { key: "X-Content-Type-Options", value: "nosniff" },
-          { key: "X-Frame-Options", value: "SAMEORIGIN" },
-          { key: "X-XSS-Protection", value: "0" }, // fitur lama, dinonaktifkan
           {
-            key: "Referrer-Policy",
-            value: "strict-origin-when-cross-origin",
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
           },
           {
-            key: "Permissions-Policy",
-            value: "geolocation=(), microphone=(), camera=()",
-          },
-          {
-            key: "Strict-Transport-Security",
-            value: "max-age=63072000; includeSubDomains; preload",
+            key: "Vary",
+            value: "Accept-Encoding",
           },
         ],
       },
-      // File statis dari folder /public (gambar & font), 30 hari.
-      // File di /_next/static sudah otomatis immutable 1 tahun oleh Next,
-      // jadi tidak perlu aturan JS/CSS tersendiri (yang juga bisa salah
-      // meng-cache file /public tanpa hash selama 1 tahun).
+      // Fonts - cache for 1 year (immutable)
       {
-        source:
-          "/:path*.(jpg|jpeg|png|gif|webp|avif|svg|ico|woff|woff2|ttf|otf)",
+        source: "/:path*.{woff,woff2,ttf,eot,otf}",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+          {
+            key: "Vary",
+            value: "Accept-Encoding",
+          },
+        ],
+      },
+      // Images - 30 days dengan stale-while-revalidate
+      {
+        source: "/:path*.{jpg,jpeg,png,gif,webp,svg,ico}",
         headers: [
           {
             key: "Cache-Control",
             value: "public, max-age=2592000, stale-while-revalidate=86400",
           },
+          {
+            key: "Vary",
+            value: "Accept-Encoding",
+          },
         ],
       },
-      // API routes: cache singkat
+      // API routes - short cache dengan stale window
       {
         source: "/api/:path*",
         headers: [
@@ -88,21 +103,64 @@ const nextConfig: NextConfig = {
             value:
               "public, max-age=30, s-maxage=60, stale-while-revalidate=300",
           },
+          {
+            key: "Vary",
+            value: "Accept, Accept-Encoding, Authorization",
+          },
+        ],
+      },
+      // HTML pages - 1 min cache + 5 min CDN + 1 day stale
+      {
+        source: "/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value:
+              "public, max-age=60, s-maxage=300, stale-while-revalidate=86400",
+          },
+          {
+            key: "Vary",
+            value: "Accept-Encoding, Accept-Language, Host",
+          },
+          {
+            key: "X-Content-Type-Options",
+            value: "nosniff",
+          },
+          {
+            key: "X-Frame-Options",
+            value: "SAMEORIGIN",
+          },
+          {
+            key: "X-XSS-Protection",
+            value: "1; mode=block",
+          },
+          {
+            key: "Referrer-Policy",
+            value: "strict-origin-when-cross-origin",
+          },
+          {
+            key: "Permissions-Policy",
+            value: "geolocation=(), microphone=(), camera=()",
+          },
         ],
       },
     ];
   },
 
-  experimental: {
-    // https://nextjs.org/docs/messages/middleware-to-proxy
-    proxyTimeout: 30_000,
+  // Redirect optimization
+  async redirects() {
+    return [];
+  },
 
-    // Router Cache di browser: kembali ke halaman yang baru dilihat
-    // memakai payload yang sudah ada, tanpa fetch ulang dan tanpa skeleton.
-    staleTimes: {
-      dynamic: 300, // detik (default: 0)
-      static: 300,
-    },
+  // Rewrite untuk optimization
+  async rewrites() {
+    return [];
+  },
+
+  // Proxy configuration untuk menggantikan middleware (new pattern)
+  // https://nextjs.org/docs/messages/middleware-to-proxy
+  experimental: {
+    proxyTimeout: 30_000,
   },
 };
 
