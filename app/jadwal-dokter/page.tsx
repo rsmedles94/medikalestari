@@ -7,6 +7,10 @@ import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { PageTracker } from "@/components/PageTracker";
 
+// Realtime: halaman dirender ulang di server pada setiap kunjungan/refresh,
+// jadi data dokter dan jadwal selalu yang terbaru dari database.
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Jadwal Dokter",
   description:
