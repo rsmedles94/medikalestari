@@ -43,7 +43,7 @@ const socialMedia = [
 
 // Menu Utama
 const menuItems = [
-  { name: "Dokter Spesialis", href: "/dokter" },
+  { name: "Dokter Kami", href: "/dokter" },
   { name: "Tentang Kami", href: "/tentang-kami" },
   { name: "Portal Pasien", href: "/portal" },
   { name: "Karir", href: "/careers" },
@@ -223,7 +223,7 @@ const FooterContent = ({ onOpenBooking }: FooterContentProps) => (
 
       {/* Alamat */}
       <div className="border-t border-white/60 pt-10 text-center">
-        <p className="text-xl font-bold">RS Medika Lestari Ciledug</p>
+        <p className="text-xl md:text-2xl font-bold">Rumah Sakit Medika Lestari Ciledug Tangerang, Banten</p>
         <p className="text-base font-normal mt-1">
           Jl. HOS Cokroaminoto No.56, RT.001/RW.012, Kec. Karang Tengah, Kota
           Tangerang, Banten 15151
