@@ -9,12 +9,6 @@ import {
   Mail,
   MapPin,
   Check,
-  ClipboardList,
-  Stethoscope,
-  FileText,
-  ShieldCheck,
-  CalendarCheck,
-  Hospital,
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -32,7 +26,6 @@ const steps = [
       "Nomor telepon dan alamat email aktif",
       "Alamat domisili lengkap",
     ],
-    icon: ClipboardList,
   },
   {
     number: "02",
@@ -45,7 +38,6 @@ const steps = [
       "Tentukan jenis layanan (rawat jalan atau penunjang)",
       "Pilih hari dan sesi kunjungan yang diinginkan",
     ],
-    icon: Stethoscope,
   },
   {
     number: "03",
@@ -58,7 +50,6 @@ const steps = [
       "Pemilihan metode penjaminan (pribadi, asuransi, atau perusahaan)",
       "Persetujuan ketentuan layanan pasien",
     ],
-    icon: FileText,
   },
   {
     number: "04",
@@ -70,7 +61,6 @@ const steps = [
       "Pembayaran melalui kasir rumah sakit untuk pasien umum",
       "Penerbitan bukti registrasi dan rincian administrasi",
     ],
-    icon: ShieldCheck,
   },
   {
     number: "05",
@@ -82,7 +72,6 @@ const steps = [
       "Konfirmasi jam estimasi pemeriksaan dokter",
       "Informasi lokasi poliklinik atau ruang pemeriksaan",
     ],
-    icon: CalendarCheck,
   },
   {
     number: "06",
@@ -95,7 +84,6 @@ const steps = [
       "Membawa hasil pemeriksaan penunjang sebelumnya (jika ada)",
       "Menuju ruang poliklinik sesuai panggilan antrean",
     ],
-    icon: Hospital,
   },
 ];
 
@@ -141,10 +129,10 @@ export default function AlurPendaftaran() {
 
   return (
     <main className="min-h-screen bg-[#f7f9fb] text-slate-900">
-      {/* HEADER + TAHAPAN PENDAFTARAN — background disatukan dengan #f7f9fb */}
-      <section className="w-full bg-[#f7f9fb] pb-12 pt-8 md:pb-16 md:pt-15">
+      {/* HEADER HALAMAN + TAHAPAN PENDAFTARAN */}
+      <div className="w-full bg-[#f7f9fb] pb-12 pt-8 md:pb-16 md:pt-15">
         <div className="mx-auto max-w-[1172px] px-4 py-0 md:px-8 md:py-2">
-          <div className="border-b border-slate-200 pb-6 md:pb-8">
+          <header className="border-b border-slate-200 pb-6 md:pb-8">
             <motion.nav
               className="mb-6"
               aria-label="Breadcrumb"
@@ -152,22 +140,22 @@ export default function AlurPendaftaran() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, ease: EASE_SMOOTH }}
             >
-              <div className="flex items-center gap-1 text-[14px] font-normal">
-                <Link
-                  href="/"
-                  className="text-slate-500 transition-colors hover:text-slate-900"
-                >
-                  Beranda
-                </Link>
-                <ChevronRight
-                  size={12}
-                  className="text-slate-400"
-                  aria-hidden="true"
-                />
-                <span className="font-normal text-slate-900">
+              <ol className="m-0 flex list-none items-center gap-1 p-0 text-[14px] font-normal">
+                <li>
+                  <Link
+                    href="/"
+                    className="text-slate-500 transition-colors hover:text-slate-900"
+                  >
+                    Beranda
+                  </Link>
+                </li>
+                <li aria-hidden="true" className="flex items-center">
+                  <ChevronRight size={12} className="text-slate-400" />
+                </li>
+                <li aria-current="page" className="font-normal text-slate-900">
                   Alur Pendaftaran
-                </span>
-              </div>
+                </li>
+              </ol>
             </motion.nav>
 
             <motion.h1
@@ -178,28 +166,22 @@ export default function AlurPendaftaran() {
             >
               Alur Pendaftaran
             </motion.h1>
-          </div>
+          </header>
 
-          <div className="mb-8 mt-10 max-w-2xl md:mb-10 md:mt-12">
-            <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#003f88]">
-              Prosedur pasien
-            </p>
-            <h2 className="text-[26px] font-semibold leading-tight tracking-[-0.025em] text-slate-900 md:text-[30px]">
-              Tahapan Pendaftaran Pasien
-            </h2>
-            <p className="mt-3 max-w-xl text-[14px] leading-7 text-slate-600">
-              Ikuti tahapan berikut agar proses administrasi dan kunjungan
-              berjalan tertib. Siapkan dokumen yang diperlukan sebelum melakukan
-              registrasi.
-            </p>
-          </div>
+          <section aria-labelledby="tahapan-heading">
+            <header className="mb-8 mt-10 max-w-2xl md:mb-10 md:mt-12">
+              <p className="mt-3 max-w-xl text-[14px] leading-7 text-slate-600">
+                Ikuti tahapan berikut agar proses administrasi dan kunjungan
+                berjalan tertib. Siapkan dokumen yang diperlukan sebelum
+                melakukan registrasi.
+              </p>
+            </header>
 
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_280px] lg:gap-12">
-            <div className="space-y-3">
-              {steps.map((step, index) => {
-                const StepIcon = step.icon;
-                return (
-                  <motion.article
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_280px] lg:gap-12">
+              {/* daftar tahapan berurutan */}
+              <ol className="m-0 list-none space-y-3 p-0" role="list">
+                {steps.map((step, index) => (
+                  <motion.li
                     key={step.number}
                     initial={{ opacity: 0, y: 10 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -211,16 +193,15 @@ export default function AlurPendaftaran() {
                     viewport={{ once: true, margin: "-30px" }}
                     className="grid grid-cols-[42px_minmax(0,1fr)] gap-4 border border-slate-200 bg-white p-5 md:grid-cols-[52px_minmax(0,1fr)] md:gap-5 md:p-6"
                   >
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[#d8e4eb] bg-[#003f88] text-white md:h-12 md:w-12">
-                      <StepIcon size={20} strokeWidth={2.5} />
+                    {/* nomor tahap (urutan sudah diumumkan oleh <ol>) */}
+                    <div
+                      aria-hidden="true"
+                      className="flex h-10 w-10 items-center justify-center rounded-full border border-[#d8e4eb] bg-[#003f88] text-[15px] font-bold tabular-nums text-white md:h-12 md:w-12 md:text-[17px]"
+                    >
+                      {step.number}
                     </div>
 
-                    <div className="min-w-0">
-                      <div className="mb-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
-                        <span className="text-[11px] font-bold text-[#003f88]">
-                          TAHAP {step.number}
-                        </span>
-                      </div>
+                    <div className="min-w-0 pt-2 md:pt-3">
                       <h3 className="text-[17px] font-semibold leading-snug tracking-[-0.015em] text-slate-900 md:text-[18px]">
                         {step.title}
                       </h3>
@@ -228,15 +209,16 @@ export default function AlurPendaftaran() {
                         {step.description}
                       </p>
 
-                      <ul className="mt-4 grid grid-cols-1 gap-x-7 gap-y-2 sm:grid-cols-2">
-                        {step.details.map((detail, detailIndex) => (
+                      <ul className="mt-4 grid list-none grid-cols-1 gap-x-7 gap-y-2 p-0 sm:grid-cols-2">
+                        {step.details.map((detail) => (
                           <li
-                            key={`${step.number}-detail-${detailIndex}`}
+                            key={`${step.number}-${detail}`}
                             className="flex items-start gap-2.5 text-[13px] leading-[1.6] text-slate-700"
                           >
                             <Check
                               size={14}
                               strokeWidth={2}
+                              aria-hidden="true"
                               className="mt-[2px] shrink-0 text-[#527b91]"
                             />
                             <span>{detail}</span>
@@ -244,103 +226,128 @@ export default function AlurPendaftaran() {
                         ))}
                       </ul>
                     </div>
-                  </motion.article>
-                );
-              })}
+                  </motion.li>
+                ))}
+              </ol>
+
+              {/* informasi kunjungan */}
+              <aside
+                aria-labelledby="info-kunjungan-heading"
+                className="h-fit border border-slate-200 bg-white lg:sticky lg:top-40"
+              >
+                <header className="border-b border-slate-200 px-5 py-5">
+                  <p className="text-[20px] font-semibold  text-[#003f88]">
+                    Informasi kunjungan
+                  </p>
+                  <h3
+                    id="info-kunjungan-heading"
+                    className="mt-2 text-[17px] font-semibold text-slate-900"
+                  >
+                    Sebelum datang
+                  </h3>
+                  <p className="mt-2 text-[13px] leading-6 text-slate-600">
+                    Perhatikan informasi berikut untuk membantu mempersiapkan
+                    kunjungan Anda.
+                  </p>
+                </header>
+
+                <dl className="m-0 divide-y divide-slate-100 px-5">
+                  <div className="py-4">
+                    <dt className="text-[12px] text-slate-500">
+                      Loket pendaftaran
+                    </dt>
+                    <dd className="m-0 mt-1 text-[14px] font-semibold text-slate-800">
+                      Lantai 1 (Admisi)
+                    </dd>
+                  </div>
+                  <div className="py-4">
+                    <dt className="text-[12px] text-slate-500">
+                      Estimasi proses
+                    </dt>
+                    <dd className="m-0 mt-1 text-[14px] font-semibold text-slate-800">
+                      10–15 menit
+                    </dd>
+                  </div>
+                  <div className="py-4">
+                    <dt className="text-[12px] text-slate-500">
+                      Waktu kedatangan
+                    </dt>
+                    <dd className="m-0 mt-1 text-[14px] font-semibold text-slate-800">
+                      15 menit sebelum jadwal
+                    </dd>
+                  </div>
+                </dl>
+
+                <footer className="border-t border-slate-200 bg-[#f7f9fb] px-5 py-4">
+                  <p className="text-[12px] leading-5 text-slate-600">
+                    Pastikan membawa identitas diri dan dokumen penjaminan
+                    apabila menggunakan asuransi.
+                  </p>
+                </footer>
+              </aside>
             </div>
-
-            <aside className="h-fit border border-slate-200 bg-white lg:sticky lg:top-24">
-              <div className="border-b border-slate-200 px-5 py-5">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#003f88]">
-                  Informasi kunjungan
-                </p>
-                <h3 className="mt-2 text-[17px] font-semibold text-slate-900">
-                  Sebelum datang
-                </h3>
-                <p className="mt-2 text-[13px] leading-6 text-slate-600">
-                  Perhatikan informasi berikut untuk membantu mempersiapkan
-                  kunjungan Anda.
-                </p>
-              </div>
-
-              <dl className="divide-y divide-slate-100 px-5">
-                <div className="py-4">
-                  <dt className="text-[12px] text-slate-500">
-                    Loket pendaftaran
-                  </dt>
-                  <dd className="mt-1 text-[14px] font-semibold text-slate-800">
-                    Lantai 1 (Admisi)
-                  </dd>
-                </div>
-                <div className="py-4">
-                  <dt className="text-[12px] text-slate-500">
-                    Estimasi proses
-                  </dt>
-                  <dd className="mt-1 text-[14px] font-semibold text-slate-800">
-                    10–15 menit
-                  </dd>
-                </div>
-                <div className="py-4">
-                  <dt className="text-[12px] text-slate-500">
-                    Waktu kedatangan
-                  </dt>
-                  <dd className="mt-1 text-[14px] font-semibold text-slate-800">
-                    15 menit sebelum jadwal
-                  </dd>
-                </div>
-              </dl>
-
-              <div className="border-t border-slate-200 bg-[#f7f9fb] px-5 py-4">
-                <p className="text-[12px] leading-5 text-slate-600">
-                  Pastikan membawa identitas diri dan dokumen penjaminan apabila
-                  menggunakan asuransi.
-                </p>
-              </div>
-            </aside>
-          </div>
+          </section>
         </div>
-      </section>
+      </div>
 
-      {/* PERTANYAAN UMUM — isi dan pola accordion dipertahankan */}
-      <section className="w-full border-y border-slate-200 bg-slate-50/70 py-12 md:py-16">
+      {/* PERTANYAAN UMUM */}
+      <section
+        aria-labelledby="faq-heading"
+        className="w-full border-y border-slate-200 bg-slate-50/70 py-12 md:py-16"
+      >
         <div className="mx-auto max-w-[1172px] px-4 md:px-8">
           <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12 lg:gap-12">
-            <div className="lg:col-span-4">
-              <h2 className="text-2xl font-semibold leading-[1.25] tracking-[-0.02em] text-slate-900 md:text-[28px]">
+            <header className="lg:col-span-4">
+              <h2
+                id="faq-heading"
+                className="text-2xl font-semibold leading-[1.25] tracking-[-0.02em] text-slate-900 md:text-[28px]"
+              >
                 Pertanyaan Umum
               </h2>
               <p className="mt-3 text-[14px] leading-[1.65] text-slate-600">
                 Informasi yang sering ditanyakan terkait prosedur registrasi,
                 dokumen persyaratan, dan penyesuaian jadwal kunjungan.
               </p>
-            </div>
+            </header>
 
             <div className="divide-y divide-slate-200 border border-slate-200 bg-white lg:col-span-8">
               {faqs.map((faq, index) => {
                 const isOpen = openFaqIndex === index;
+                const buttonId = `faq-button-${index}`;
+                const panelId = `faq-panel-${index}`;
+
                 return (
-                  <div key={`faq-${index}`} className="transition-colors">
-                    <button
-                      type="button"
-                      onClick={() => toggleFaq(index)}
-                      className="flex w-full cursor-pointer items-center justify-between gap-4 px-5 py-[17px] text-left transition-colors hover:bg-slate-50/80 md:px-6"
-                      aria-expanded={isOpen}
+                  <div key={buttonId} className="transition-colors">
+                    <h3 className="m-0">
+                      <button
+                        type="button"
+                        id={buttonId}
+                        onClick={() => toggleFaq(index)}
+                        className="flex w-full cursor-pointer items-center justify-between gap-4 px-5 py-[17px] text-left transition-colors hover:bg-slate-50/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#003f88]/40 md:px-6"
+                        aria-expanded={isOpen}
+                        aria-controls={panelId}
+                      >
+                        <span className="text-[14px] font-semibold leading-6 text-slate-900 md:text-[15px]">
+                          {faq.question}
+                        </span>
+                        <ChevronDown
+                          size={17}
+                          aria-hidden="true"
+                          className={`shrink-0 text-slate-500 transition-transform duration-200 ${
+                            isOpen ? "rotate-180" : ""
+                          }`}
+                        />
+                      </button>
+                    </h3>
+                    <div
+                      id={panelId}
+                      role="region"
+                      aria-labelledby={buttonId}
+                      hidden={!isOpen}
+                      className="px-5 pb-5 pt-0.5 text-[13.5px] leading-[1.75] text-slate-600 md:px-6 md:text-[14px]"
                     >
-                      <span className="text-[14px] font-semibold leading-6 text-slate-900 md:text-[15px]">
-                        {faq.question}
-                      </span>
-                      <ChevronDown
-                        size={17}
-                        className={`shrink-0 text-slate-500 transition-transform duration-200 ${
-                          isOpen ? "rotate-180" : ""
-                        }`}
-                      />
-                    </button>
-                    {isOpen && (
-                      <div className="px-5 pb-5 pt-0.5 text-[13.5px] leading-[1.75] text-slate-600 md:px-6 md:text-[14px]">
-                        {faq.answer}
-                      </div>
-                    )}
+                      <p className="m-0">{faq.answer}</p>
+                    </div>
                   </div>
                 );
               })}
@@ -350,7 +357,10 @@ export default function AlurPendaftaran() {
       </section>
 
       {/* INFORMASI KONTAK */}
-      <section className="bg-white py-12 pb-20 md:py-16">
+      <section
+        aria-labelledby="kontak-heading"
+        className="bg-white py-12 pb-20 md:py-16"
+      >
         <div className="mx-auto max-w-[1172px] px-4 md:px-8">
           <div className="border border-slate-200">
             <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_300px]">
@@ -358,7 +368,10 @@ export default function AlurPendaftaran() {
                 <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-[#003f88]">
                   Bantuan dan informasi
                 </p>
-                <h2 className="mt-2 text-[23px] font-semibold tracking-[-0.02em] text-slate-900 md:text-[26px]">
+                <h2
+                  id="kontak-heading"
+                  className="mt-2 text-[23px] font-semibold tracking-[-0.02em] text-slate-900 md:text-[26px]"
+                >
                   Layanan Informasi Pendaftaran
                 </h2>
                 <p className="mt-3 max-w-xl text-[14px] leading-7 text-slate-600">
@@ -371,7 +384,7 @@ export default function AlurPendaftaran() {
                     href="tel:0215847473"
                     className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#003f88] px-5 py-3 text-[13px] font-semibold text-white transition-colors hover:bg-[#e67e22]"
                   >
-                    <Phone size={15} />
+                    <Phone size={15} aria-hidden="true" />
                     Hubungi Pendaftaran
                   </a>
                   <Link
@@ -379,13 +392,19 @@ export default function AlurPendaftaran() {
                     className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 px-5 py-3 text-[13px] font-semibold text-slate-700 transition-colors hover:border-slate-500 hover:bg-slate-50"
                   >
                     Kontak Kami
-                    <ChevronRight size={15} />
+                    <ChevronRight size={15} aria-hidden="true" />
                   </Link>
                 </div>
               </div>
 
-              <div className="border-t border-slate-200 bg-[#f7f9fb] p-6 md:p-7 lg:border-l lg:border-t-0">
-                <h3 className="text-[13px] font-semibold text-slate-900">
+              <aside
+                aria-labelledby="jam-layanan-heading"
+                className="border-t border-slate-200 bg-[#f7f9fb] p-6 md:p-7 lg:border-l lg:border-t-0"
+              >
+                <h3
+                  id="jam-layanan-heading"
+                  className="text-[13px] font-semibold text-slate-900"
+                >
                   Jam dan layanan informasi
                 </h3>
                 <p className="mt-2 text-[13px] leading-6 text-slate-600">
@@ -403,13 +422,15 @@ export default function AlurPendaftaran() {
                     (021) 5847473
                   </a>
                 </div>
-              </div>
+              </aside>
             </div>
 
-            <div className="grid grid-cols-1 divide-y divide-slate-200 border-t border-slate-200 md:grid-cols-2 md:divide-x md:divide-y-0">
+            {/* email & lokasi */}
+            <address className="grid grid-cols-1 divide-y divide-slate-200 border-t border-slate-200 not-italic md:grid-cols-2 md:divide-x md:divide-y-0">
               <div className="flex items-start gap-3.5 p-6 md:px-8">
                 <Mail
                   size={18}
+                  aria-hidden="true"
                   className="mt-0.5 shrink-0 text-[#003f88]"
                   strokeWidth={1.8}
                 />
@@ -429,6 +450,7 @@ export default function AlurPendaftaran() {
               <div className="flex items-start gap-3.5 p-6 md:px-8">
                 <MapPin
                   size={18}
+                  aria-hidden="true"
                   className="mt-0.5 shrink-0 text-[#003f88]"
                   strokeWidth={1.8}
                 />
@@ -446,7 +468,7 @@ export default function AlurPendaftaran() {
                   </a>
                 </div>
               </div>
-            </div>
+            </address>
           </div>
         </div>
       </section>

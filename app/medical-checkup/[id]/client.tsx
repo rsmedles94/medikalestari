@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronRight, Phone, MapPin, Check, X } from "lucide-react";
+import { ChevronRight, Phone, Check, X } from "lucide-react";
 import { useKeenSlider } from "keen-slider/react";
 import { motion } from "framer-motion";
 import "keen-slider/keen-slider.min.css";
@@ -30,6 +30,28 @@ const fieldClass =
   "w-full h-12 px-4 bg-white border border-slate-400 rounded-sm text-[15px] text-slate-900 placeholder:text-slate-400 outline-none transition-colors focus:border-[#003f88] focus:ring-1 focus:ring-[#003f88]";
 const textareaClass =
   "w-full px-4 py-3 bg-white border border-slate-400 rounded-sm text-[15px] text-slate-900 placeholder:text-slate-400 outline-none transition-colors resize-none focus:border-[#003f88] focus:ring-1 focus:ring-[#003f88]";
+
+function WhatsAppIcon({
+  className = "w-5 h-5 md:w-6 md:h-6",
+}: {
+  readonly className?: string;
+}) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.85}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={className}
+    >
+      <path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21" />
+      <path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1" />
+    </svg>
+  );
+}
 
 export default function MCUDetailClient({
   params,
@@ -227,7 +249,7 @@ Keluhan/Catatan: ${formData.keluhan}`;
   if (!mcu) {
     return (
       <article className="min-h-screen bg-white w-full">
-        <div className="w-full max-w-[1139px] mx-auto px-4 py-12 text-center">
+        <section className="w-full max-w-[1139px] mx-auto px-4 py-12 text-center">
           <h1 className="text-2xl font-bold text-gray-800 mb-4">
             Paket MCU Tidak Ditemukan
           </h1>
@@ -237,7 +259,7 @@ Keluhan/Catatan: ${formData.keluhan}`;
           >
             Kembali ke daftar paket
           </Link>
-        </div>
+        </section>
       </article>
     );
   }
@@ -258,7 +280,7 @@ Keluhan/Catatan: ${formData.keluhan}`;
               Beranda
             </Link>
           </li>
-          <li className="text-black/60">
+          <li className="text-black/60" aria-hidden="true">
             <ChevronRight size={14} className="inline" />
           </li>
           <li>
@@ -269,7 +291,7 @@ Keluhan/Catatan: ${formData.keluhan}`;
               Medical Checkup
             </Link>
           </li>
-          <li className="text-black/60">
+          <li className="text-black/60" aria-hidden="true">
             <ChevronRight size={14} className="inline" />
           </li>
           <li aria-current="page" className="font-normal text-gray-400">
@@ -305,32 +327,28 @@ Keluhan/Catatan: ${formData.keluhan}`;
             </header>
 
             {/* Price */}
-            <div className="mb-8">
-              <span className="text-3xl md:text-4xl font-bold text-[#003f88]">
-                {mcu.price}
-              </span>
-            </div>
+            <p className="mb-8 text-3xl md:text-4xl font-bold text-[#003f88]">
+              {mcu.price}
+            </p>
 
             {/* CTA Buttons */}
             <div className="flex flex-row gap-2 w-full sm:w-auto">
               <button
+                type="button"
                 onClick={() => setShowWhatsAppForm(true)}
-                className="flex-1  px-5 py-3 bg-green-500 hover:bg-green-600 active:bg-green-700 transition-colors duration-700 text-white text-sm font-semibold rounded-lg  flex items-center justify-center gap-2 cursor-pointer"
+                className="flex-1 px-4 md:px-5 py-3 bg-green-500 hover:bg-green-600 active:bg-green-700 transition-colors duration-700 text-white text-sm md:text-xl font-semibold rounded-lg flex items-center justify-center gap-2 cursor-pointer"
               >
-                <Image
-                  src="/images/icons/whatsapp-fill.svg"
-                  alt="WhatsApp"
-                  width={22}
-                  height={22}
-                  className="invert"
-                />
-                <span className="text-center">Booking Online</span>
+                <WhatsAppIcon className="w-5 h-5 md:w-7 md:h-7 shrink-0" />
+                <span className="text-center">Konsultasi Paket</span>
               </button>
               <a
                 href="tel:+6285717028133"
-                className="flex-1  px-5 py-3 bg-[#003f88] hover:bg-blue-800 active:bg-blue-900 transition-colors duration-700 text-white text-sm font-semibold rounded-lg  flex items-center justify-center gap-2"
+                className="flex-1 px-4 md:px-5 py-3 bg-[#003f88] hover:bg-blue-800 active:bg-blue-900 transition-colors duration-700 text-white text-sm md:text-xl font-semibold rounded-lg flex items-center justify-center gap-2"
               >
-                <Phone size={16} />
+                <Phone
+                  className="w-5 h-5 md:w-6 md:h-6 shrink-0"
+                  aria-hidden="true"
+                />
                 <span className="text-center">Hubungi Kami</span>
               </a>
             </div>
@@ -338,7 +356,10 @@ Keluhan/Catatan: ${formData.keluhan}`;
         </section>
 
         {/* Description */}
-        <section className="mb-12 pb-12 border-b border-gray-200">
+        <section
+          aria-label="Deskripsi Paket"
+          className="mb-12 pb-12 border-b border-gray-200"
+        >
           <div
             className="prose prose-lg max-w-none"
             dangerouslySetInnerHTML={{ __html: mcu.fullDescription }}
@@ -346,10 +367,13 @@ Keluhan/Catatan: ${formData.keluhan}`;
         </section>
 
         {/* Benefits & Examinations Tabs */}
-        <section className="mb-12">
+        <section aria-label="Detail Paket" className="mb-12">
           {/* Tab Navigation */}
-          <div className="flex border-b border-gray-200 mb-8">
+          <div role="tablist" className="flex border-b border-gray-200 mb-8">
             <button
+              type="button"
+              role="tab"
+              aria-selected={selectedTab === "benefits"}
               onClick={() => setSelectedTab("benefits")}
               className={`px-6 py-3 font-semibold transition-colors border-b-2 ${
                 selectedTab === "benefits"
@@ -361,6 +385,9 @@ Keluhan/Catatan: ${formData.keluhan}`;
             </button>
             {mcu.examinations && (
               <button
+                type="button"
+                role="tab"
+                aria-selected={selectedTab === "exams"}
                 onClick={() => setSelectedTab("exams")}
                 className={`px-6 py-3 font-semibold transition-colors border-b-2 ${
                   selectedTab === "exams"
@@ -375,10 +402,10 @@ Keluhan/Catatan: ${formData.keluhan}`;
 
           {/* Tab Content */}
           {selectedTab === "benefits" && (
-            <div role="tabpanel" className="space-y-3">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">
+            <section role="tabpanel" className="space-y-3">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
                 Manfaat Paket {mcu.title}
-              </h3>
+              </h2>
               <ul className="space-y-3">
                 {mcu.benefits.map((benefit) => (
                   <li
@@ -388,19 +415,20 @@ Keluhan/Catatan: ${formData.keluhan}`;
                     <Check
                       className="text-green-500 shrink-0 mt-0.5"
                       size={20}
+                      aria-hidden="true"
                     />
                     <span className="text-gray-700">{benefit}</span>
                   </li>
                 ))}
               </ul>
-            </div>
+            </section>
           )}
 
           {selectedTab === "exams" && mcu.examinations && (
-            <div role="tabpanel" className="space-y-3">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">
+            <section role="tabpanel" className="space-y-3">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
                 Pemeriksaan yang Termasuk
-              </h3>
+              </h2>
               <ul className="space-y-3">
                 {mcu.examinations.map((exam) => (
                   <li
@@ -410,20 +438,27 @@ Keluhan/Catatan: ${formData.keluhan}`;
                     <Check
                       className="text-green-500 shrink-0 mt-0.5"
                       size={20}
+                      aria-hidden="true"
                     />
                     <span className="text-gray-700">{exam}</span>
                   </li>
                 ))}
               </ul>
-            </div>
+            </section>
           )}
         </section>
 
         {/* Other Packages */}
-        <section className="pt-16 pb-16 mt-12 border-t border-slate-100">
+        <section
+          aria-labelledby="related-mcu-heading"
+          className="pt-16 pb-16 mt-12 border-t border-slate-100"
+        >
           <div className="w-full">
             <header className="mb-4">
-              <h2 className="text-2xl md:text-3xl font-bold text-black">
+              <h2
+                id="related-mcu-heading"
+                className="text-2xl md:text-3xl font-bold text-black"
+              >
                 Paket MCU Lainnya
               </h2>
             </header>
@@ -442,7 +477,7 @@ Keluhan/Catatan: ${formData.keluhan}`;
                     >
                       <article className="bg-white border border-gray-300 flex flex-col h-full overflow-hidden transition-all duration-300 group">
                         {/* Image Area */}
-                        <div className="w-full relative bg-gray-50 cursor-pointer overflow-hidden flex items-center justify-center">
+                        <figure className="w-full relative bg-gray-50 cursor-pointer overflow-hidden flex items-center justify-center m-0">
                           <div className="w-full h-auto transform group-hover:scale-105 transition-transform duration-700 ease-in-out">
                             <Image
                               src={item.image}
@@ -454,15 +489,18 @@ Keluhan/Catatan: ${formData.keluhan}`;
                               priority
                             />
                           </div>
-                        </div>
+                        </figure>
 
                         {/* Content Area */}
                         <div className="p-4 md:p-10 flex flex-col grow text-center bg-white">
-                          <Link href={`/medical-checkup/${item.id}`} passHref>
-                            <h3 className="text-sm md:text-xl font-bold text-[#003f88] mb-2 min-h-12 flex items-center justify-center leading-normal cursor-pointer hover:text-[#e67e22] transition-colors duration-300 line-clamp-2">
+                          <h3 className="text-sm md:text-xl font-bold text-[#003f88] mb-2 min-h-12 flex items-center justify-center leading-normal hover:text-[#e67e22] transition-colors duration-300 line-clamp-2">
+                            <Link
+                              href={`/medical-checkup/${item.id}`}
+                              className="w-full h-full flex items-center justify-center"
+                            >
                               {item.title}
-                            </h3>
-                          </Link>
+                            </Link>
+                          </h3>
 
                           <p className="text-[#e67e22] font-bold text-xs md:text-base mb-5 mt-auto">
                             {item.price}
@@ -470,13 +508,11 @@ Keluhan/Catatan: ${formData.keluhan}`;
 
                           {/* Tombol Aksi Selengkapnya */}
                           <div className="mt-auto">
-                            <Link href={`/medical-checkup/${item.id}`} passHref>
-                              <button
-                                type="button"
-                                className="w-full py-2 text-white text-[10px] md:text-xs font-semibold transition-all duration-700 cursor-pointer bg-[#003f88] group-hover:bg-[#e67e22] hover:bg-[#e67e22]"
-                              >
-                                ⭢ Selengkapnya
-                              </button>
+                            <Link
+                              href={`/medical-checkup/${item.id}`}
+                              className="w-full py-2 text-white text-[10px] md:text-xs font-semibold transition-all duration-700 cursor-pointer bg-[#003f88] group-hover:bg-[#e67e22] hover:bg-[#e67e22] block"
+                            >
+                              ⭢ Selengkapnya
                             </Link>
                           </div>
                         </div>
@@ -489,7 +525,11 @@ Keluhan/Catatan: ${formData.keluhan}`;
 
             {/* DOTS INDICATOR - Mobile: 4 dots, Desktop: berdasarkan perView */}
             {loaded && (
-              <div className="mt-8 flex items-center justify-center gap-4 mb-12 md:mb-0">
+              <div
+                role="group"
+                aria-label="Navigasi slide paket MCU lainnya"
+                className="mt-8 flex items-center justify-center gap-4 mb-12 md:mb-0"
+              >
                 {Array.from({ length: totalDots }).map((_, index) => {
                   const isActive = index === currentSlide;
                   return (
@@ -499,6 +539,7 @@ Keluhan/Catatan: ${formData.keluhan}`;
                       onClick={() => handleDotClick(index)}
                       className="focus:outline-none flex items-center justify-center h-8 w-8 relative"
                       aria-label={`Go to slide ${index + 1}`}
+                      aria-pressed={isActive}
                     >
                       {/* Titik Tengah Bulat */}
                       <motion.div
@@ -544,12 +585,12 @@ Keluhan/Catatan: ${formData.keluhan}`;
             className="bg-white rounded-sm w-full max-w-xl max-h-[92vh] flex flex-col shadow-2xl"
           >
             {/* Modal Header */}
-            <div className="shrink-0 flex items-center justify-between px-6 sm:px-8 py-5 border-b border-slate-200">
+            <header className="shrink-0 flex items-center justify-between px-6 sm:px-8 py-5 border-b border-slate-200">
               <h2
                 id="wa-form-title"
                 className="text-2xl font-bold text-slate-900 leading-tight"
               >
-                Formulir Pemesanan
+                Formulir Konsultasi
               </h2>
               <button
                 type="button"
@@ -557,9 +598,9 @@ Keluhan/Catatan: ${formData.keluhan}`;
                 aria-label="Tutup"
                 className="-mr-1 w-12 h-12 flex items-center justify-center text-slate-800 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#003f88]"
               >
-                <X size={40} strokeWidth={1.75} />
+                <X className="w-8 h-8 md:w-10 md:h-10" strokeWidth={1.75} />
               </button>
-            </div>
+            </header>
 
             {/* Modal Content */}
             <form
@@ -630,12 +671,12 @@ Keluhan/Catatan: ${formData.keluhan}`;
               </div>
 
               {/* Paket Info */}
-              <div className="bg-slate-50 border border-slate-300 border-l-4 border-l-[#003f88] px-4 py-3">
+              <aside className="bg-slate-50 border border-slate-300 border-l-4 border-l-[#003f88] px-4 py-3">
                 <p className="text-sm text-slate-800">
                   <span className="font-semibold text-[#003f88]">Paket:</span>{" "}
                   {mcu.title}
                 </p>
-              </div>
+              </aside>
 
               {/* Buttons */}
               <div className="flex gap-3">

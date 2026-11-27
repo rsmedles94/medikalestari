@@ -54,7 +54,7 @@ const DoctorSkeleton = () => {
         </div>
 
         {/* Tombol: bertumpuk di mobile, sejajar di md ke atas */}
-        <div className="mt-auto flex w-full flex-col gap-2.5 md:mt-0 md:flex-row md:items-center md:justify-start md:gap-3">
+        <div className="mt-auto flex w-full flex-col gap-2.5 md:mt-4 md:flex-row md:items-center md:justify-start md:gap-3">
           <div className="relative h-9 w-full shrink-0 overflow-hidden rounded-full bg-linear-to-r from-slate-200 to-slate-300 shadow-sm md:h-11 md:w-36">
             <ShimmerOverlay />
           </div>

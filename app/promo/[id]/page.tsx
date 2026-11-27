@@ -524,23 +524,23 @@ export default function PromoDetailPage() {
               <button
                 type="button"
                 onClick={() => setShowWhatsAppForm(true)}
-                className="flex-1 px-5 py-3 bg-green-500 hover:bg-green-600 active:bg-green-700 transition-colors duration-700 text-white text-sm font-semibold rounded  flex items-center justify-center gap-2 cursor-pointer"
+                className="flex-1 px-5 py-3 bg-green-500 hover:bg-green-600 active:bg-green-700 transition-colors duration-700 text-white text-sm md:text-xl font-semibold rounded  flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Image
                   src="/images/icons/whatsapp-fill.svg"
                   alt="WhatsApp"
-                  width={22}
-                  height={22}
+                  width={25}
+                  height={25}
                   className="invert"
                 />
-                <span>Booking Online</span>
+                <span>Konsultasi Paket</span>
               </button>
 
               <a
                 href="tel:+6285717028133"
-                className="flex-1 px-5 py-3 bg-[#003f88] hover:bg-blue-800 active:bg-blue-900 transition-colors duration-700 text-white text-sm font-semibold rounded transition-colors flex items-center justify-center gap-2"
+                className="flex-1 px-5 py-3 bg-[#003f88] hover:bg-blue-800 active:bg-blue-900 transition-colors duration-700 text-white text-sm md:text-xl font-semibold rounded transition-colors flex items-center justify-center gap-2"
               >
-                <Phone size={16} />
+                <Phone size={25} />
                 <span>Hubungi Kami</span>
               </a>
             </div>
@@ -695,7 +695,7 @@ export default function PromoDetailPage() {
                 id="wa-form-title"
                 className="text-2xl font-bold text-slate-900 leading-tight"
               >
-                Formulir Pemesanan
+                Formulir Konsultasi
               </h2>
               <button
                 type="button"
