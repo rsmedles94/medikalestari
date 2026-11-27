@@ -164,7 +164,7 @@ const buildPrintHtml = (
   <footer>
     <ul class="legend">
       <li>(*) Poliklinik Eksekutif</li>
-      <li>(R) Jadwal Ramadhan</li>
+      <li>(P) Dokter Sedang Praktik</li>
       <li class="c">(C) Cuti</li>
       <li>&ndash; Tidak praktik</li>
     </ul>
