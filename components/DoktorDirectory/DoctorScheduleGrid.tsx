@@ -836,7 +836,7 @@ export default function DoctorScheduleGrid({
             (*) Poliklinik Eksekutif
           </li>
           <li className="text-green-600 flex items-center gap-1">
-            (P) Dokter Sedang Praktik
+            (P) Sedang Praktik
           </li>
           <li className="text-red-600 flex items-center gap-1">(C) Cuti</li>
         </ul>

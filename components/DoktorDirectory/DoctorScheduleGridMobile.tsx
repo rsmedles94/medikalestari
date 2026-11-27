@@ -762,7 +762,7 @@ export default function DoctorScheduleGridMobile({
             (*) Poliklinik Eksekutif
           </li>
           <li className="flex items-center gap-1 text-green-600">
-            (P) Dokter Sedang Praktik
+            (P) Sedang Praktik
           </li>
           <li className="flex items-center gap-1 text-red-600">(C) Cuti</li>
         </ul>
