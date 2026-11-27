@@ -103,7 +103,7 @@ function ServiceCard({ service }: { service: ServiceItem }) {
   return (
     <m.li
       variants={itemVariants}
-      className={`overflow-hidden border border-slate-200 bg-white ${
+      className={`overflow-hidden border border-slate-100 rounded-md bg-white ${
         service.hideOnMobile ? "hidden md:block" : ""
       }`}
     >

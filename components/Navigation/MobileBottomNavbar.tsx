@@ -57,17 +57,13 @@ const ITEM_COUNT = NAV_ITEMS.length;
 // Konstanta layout & animasi
 // ---------------------------------------------------------------------------
 
-const SHRINK_MS = 360;
-const SHRINK_EASE = "cubic-bezier(0.32, 0.72, 0, 1)";
+// Animasi hide / show dock saat scroll
+const HIDE_MS = 320;
+const HIDE_EASE = "cubic-bezier(0.32, 0.72, 0, 1)";
 
 const DOCK_HEIGHT = 64;
-const DOCK_HEIGHT_SHRUNK = 56;
-const DOCK_WIDTH_SHRUNK = "88%";
-
 const PILL_WIDTH = 66;
-const PILL_WIDTH_SHRUNK = 58;
 const PILL_HEIGHT = 55;
-const PILL_HEIGHT_SHRUNK = 48;
 
 const ICON_PAD = 2;
 const DRAG_SCALE = 1.04;
@@ -76,10 +72,13 @@ const INNER_MARGIN = 4;
 // Jari harus bergeser sejauh ini (px) sebelum gesture dianggap drag.
 const DRAG_START_DISTANCE = 6;
 
-// Scroll: jarak minimal (px) sebelum arah scroll dianggap berubah.
-const SCROLL_THRESHOLD = 14;
+// Scroll ke bawah: jarak (px) sebelum dock disembunyikan
+const HIDE_THRESHOLD = 14;
 
-// Di area atas halaman dock selalu penuh
+// Scroll ke atas: cukup sedikit (px) dan dock langsung muncul lagi
+const SHOW_THRESHOLD = 4;
+
+// Di area atas halaman dock selalu tampil
 const SCROLL_TOP_ZONE = 50;
 
 // Ikon berubah putih saat pil berada < ICON_NEAR slot darinya,
@@ -97,8 +96,6 @@ const PILL_COLOR = "rgb(0, 63, 136)";
 const MENU_GLASS_RADIUS = 24;
 
 // Posisi pil dalam satuan "slot" (0 = menu pertama, 4 = menu terakhir).
-// Karena posisinya dihitung sebagai persen lebar dock di CSS, pil SELALU
-// menempel pada ikon walau dock sedang mengecil / membesar.
 const PILL_LEFT = `calc(${ICON_PAD}px + (100% - ${
   ICON_PAD * 2
 }px) * ((var(--pill-pos, 0) + 0.5) / ${ITEM_COUNT}))`;
@@ -199,13 +196,8 @@ function useIsMounted() {
 // Sub-komponen
 // ---------------------------------------------------------------------------
 
-function GlassLayer({
-  radius,
-  radiusTransition,
-}: {
-  radius: number;
-  radiusTransition?: string;
-}) {
+// Lapisan background dock / menu
+function GlassLayer({ radius }: { radius: number }) {
   return (
     <div
       aria-hidden="true"
@@ -215,13 +207,13 @@ function GlassLayer({
         backgroundColor: DOCK_BACKGROUND,
         border: DOCK_BORDER,
         boxShadow: "none",
-        transition: radiusTransition,
         transform: "translate3d(0, 0, 0)",
       }}
     />
   );
 }
 
+// Gambar ikon dock
 function DockImage({
   name,
   style,
@@ -290,7 +282,9 @@ export default function MobileBottomNavbar() {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [isScrolledDown, setIsScrolledDown] = useState(false);
+
+  // true = dock tersembunyi (scroll ke bawah)
+  const [isHidden, setIsHidden] = useState(false);
 
   // Menu yang baru diketuk / dilepas (supaya menu langsung "aktif" sebelum
   // navigasi selesai). Dilepas otomatis saat pathname berubah.
@@ -317,7 +311,7 @@ export default function MobileBottomNavbar() {
   const plusPointerRef = useRef(false);
   const pointerXRef = useRef<number | null>(null);
   const lastSyncKeyRef = useRef<string | null>(null);
-  const shrunkRef = useRef(false);
+  const hiddenRef = useRef(false);
   const isDraggingRef = useRef(false);
   const catchUpRef = useRef(false);
 
@@ -325,7 +319,7 @@ export default function MobileBottomNavbar() {
   const targetRef = useRef(0);
   const initializedRef = useRef(false);
 
-  // Scroll listener (hysteresis + throttle rAF)
+  // Scroll listener: turun = hide, naik sedikit = show (throttle rAF)
 
   useEffect(() => {
     if (!isMounted) return;
@@ -334,10 +328,13 @@ export default function MobileBottomNavbar() {
     let rafId = 0;
     let ticking = false;
 
-    const applyShrink = (value: boolean) => {
-      if (shrunkRef.current !== value) {
-        shrunkRef.current = value;
-        setIsScrolledDown(value);
+    const applyHidden = (value: boolean) => {
+      if (hiddenRef.current !== value) {
+        hiddenRef.current = value;
+        setIsHidden(value);
+
+        // Menu aksi ikut ditutup saat dock disembunyikan
+        if (value) setIsActionMenuOpen(false);
       }
     };
 
@@ -350,24 +347,27 @@ export default function MobileBottomNavbar() {
       );
       const y = Math.min(Math.max(window.scrollY, 0), maxY);
 
+      // Area atas halaman: selalu tampil
       if (y <= SCROLL_TOP_ZONE) {
         anchorY = y;
-        applyShrink(false);
+        applyHidden(false);
         return;
       }
 
-      if (shrunkRef.current) {
+      if (hiddenRef.current) {
+        // Sedang hidden: scroll ke atas sedikit saja -> tampil
         if (y > anchorY) {
           anchorY = y;
-        } else if (anchorY - y > SCROLL_THRESHOLD) {
+        } else if (anchorY - y > SHOW_THRESHOLD) {
           anchorY = y;
-          applyShrink(false);
+          applyHidden(false);
         }
       } else if (y < anchorY) {
         anchorY = y;
-      } else if (y - anchorY > SCROLL_THRESHOLD) {
+      } else if (y - anchorY > HIDE_THRESHOLD) {
+        // Sedang tampil: scroll ke bawah -> hide
         anchorY = y;
-        applyShrink(true);
+        applyHidden(true);
       }
     };
 
@@ -421,14 +421,10 @@ export default function MobileBottomNavbar() {
 
   const committedIndex = lock ?? activeIndex;
 
-  const shouldShrink = isScrolledDown && !isDragging;
-  const pillW = shouldShrink ? PILL_WIDTH_SHRUNK : PILL_WIDTH;
-  const pillH = shouldShrink ? PILL_HEIGHT_SHRUNK : PILL_HEIGHT;
-  const dockHeight = shouldShrink ? DOCK_HEIGHT_SHRUNK : DOCK_HEIGHT;
-  const dockRadius = dockHeight / 2;
+  const dockRadius = DOCK_HEIGHT / 2;
 
   // Di layar sempit pil tidak boleh lebih lebar dari kolomnya
-  const pillWidth = `min(${pillW}px, calc((100% - ${
+  const pillWidth = `min(${PILL_WIDTH}px, calc((100% - ${
     ICON_PAD * 2
   }px) / ${ITEM_COUNT} - 2px))`;
 
@@ -511,9 +507,7 @@ export default function MobileBottomNavbar() {
     };
   }, []);
 
-  // Sinkronkan pil dengan posisi jari saat drag. Dipanggil dari pointer event
-  // dan dari loop rAF selama drag (supaya pil tetap di bawah jari walau dock
-  // sedang membesar karena transisi lebar).
+  // Sinkronkan pil dengan posisi jari saat drag.
   const syncDragPill = useCallback(() => {
     const dock = dockRef.current;
     const pointerX = pointerXRef.current;
@@ -734,19 +728,29 @@ export default function MobileBottomNavbar() {
 
   return (
     <>
+      {/* Modal booking */}
       <BookingModalFloating
         isOpen={isBookingOpen}
         onClose={() => setIsBookingOpen(false)}
       />
 
       <div className="relative min-h-0 w-full">
-        <div className="pointer-events-none fixed inset-x-0 bottom-0 z-[99] flex flex-col items-center justify-end pb-6">
+        {/* Wrapper fixed: geser ke bawah saat hidden, kembali ke 0 saat show */}
+        <div
+          className="pointer-events-none fixed inset-x-0 bottom-0 z-[99] flex flex-col items-center justify-end pb-6"
+          style={{
+            transform: isHidden ? "translateY(130%)" : "translateY(0)",
+            transition: reduceMotion
+              ? "none"
+              : `transform ${HIDE_MS}ms ${HIDE_EASE}`,
+            willChange: "transform",
+          }}
+        >
           <nav
             aria-label="Navigasi Bawah Seluler"
             className="flex w-full select-none flex-col items-center px-4 lg:hidden"
           >
             {/* Action menu: naik dari bawah dengan halus */}
-
             <AnimatePresence>
               {isActionMenuOpen && (
                 <motion.aside
@@ -766,6 +770,7 @@ export default function MobileBottomNavbar() {
                   style={{ willChange: "transform, opacity" }}
                   className="pointer-events-auto relative mb-3.5 flex w-[230px] flex-col rounded-3xl p-2"
                 >
+                  {/* Shadow menu */}
                   <div
                     aria-hidden="true"
                     className="pointer-events-none absolute inset-0 z-0"
@@ -778,6 +783,7 @@ export default function MobileBottomNavbar() {
                   <GlassLayer radius={MENU_GLASS_RADIUS} />
 
                   <div className="relative z-10 flex w-full flex-col">
+                    {/* Button: buat janji temu */}
                     <button
                       type="button"
                       onClick={() => {
@@ -792,6 +798,7 @@ export default function MobileBottomNavbar() {
 
                     <div className="my-1 h-px w-full bg-black/10" />
 
+                    {/* Button: kamar perawatan */}
                     <button
                       type="button"
                       onClick={() => {
@@ -806,6 +813,7 @@ export default function MobileBottomNavbar() {
 
                     <div className="my-1 h-px w-full bg-black/10" />
 
+                    {/* Button: ketersediaan kamar */}
                     <button
                       type="button"
                       onClick={() => {
@@ -823,7 +831,6 @@ export default function MobileBottomNavbar() {
             </AnimatePresence>
 
             {/* Dock dengan elastisitas saat overdrag */}
-
             <motion.div
               ref={dockRef}
               onPointerDown={handlePointerDown}
@@ -831,15 +838,13 @@ export default function MobileBottomNavbar() {
               onPointerUp={handlePointerUp}
               onPointerCancel={handlePointerCancel}
               onContextMenu={(e) => e.preventDefault()}
-              className="pointer-events-auto relative flex max-w-[390px] cursor-grab touch-none select-none items-center active:cursor-grabbing"
+              className="pointer-events-auto relative flex w-full max-w-[390px] cursor-grab touch-none select-none items-center active:cursor-grabbing"
               style={{
-                width: shouldShrink ? DOCK_WIDTH_SHRUNK : "100%",
-                height: dockHeight,
+                height: DOCK_HEIGHT,
                 borderRadius: dockRadius,
                 x: dockTranslateX,
                 scaleX: dockScaleX,
                 skewX: dockSkewX,
-                transition: `width ${SHRINK_MS}ms ${SHRINK_EASE}, height ${SHRINK_MS}ms ${SHRINK_EASE}, border-radius ${SHRINK_MS}ms ${SHRINK_EASE}`,
                 backgroundColor: "transparent",
                 border: "none",
                 boxShadow: "none",
@@ -847,36 +852,29 @@ export default function MobileBottomNavbar() {
                 WebkitUserSelect: "none",
               }}
             >
+              {/* Shadow dock */}
               <div
                 aria-hidden="true"
                 className="pointer-events-none absolute inset-0 z-0"
                 style={{
                   borderRadius: dockRadius,
                   boxShadow: GLASS_SHADOW,
-                  transition: `border-radius ${SHRINK_MS}ms ${SHRINK_EASE}`,
                 }}
               />
 
-              <GlassLayer
-                radius={dockRadius}
-                radiusTransition={`border-radius ${SHRINK_MS}ms ${SHRINK_EASE}`}
-              />
+              <GlassLayer radius={dockRadius} />
 
               {/* Konten dock. Variabel --pill-pos diisi dari `pos` (applyPos). */}
-
               <div ref={contentRef} className="absolute inset-0 z-10">
-                {/* Pil aktif: left = persen lebar dock (CSS), ukuran bertransisi
-                    dengan durasi & easing yang sama dengan dock. */}
-
+                {/* Pil aktif: left = persen lebar dock (CSS) */}
                 <div
                   aria-hidden="true"
                   className="pointer-events-none absolute top-1/2 z-10"
                   style={{
                     left: PILL_LEFT,
                     width: pillWidth,
-                    height: pillH,
+                    height: PILL_HEIGHT,
                     transform: "translate(-50%, -50%)",
-                    transition: `width ${SHRINK_MS}ms ${SHRINK_EASE}, height ${SHRINK_MS}ms ${SHRINK_EASE}`,
                   }}
                 >
                   <motion.div
@@ -887,6 +885,7 @@ export default function MobileBottomNavbar() {
                   />
                 </div>
 
+                {/* Daftar menu */}
                 <menu
                   className="relative z-20 m-0 box-border flex h-full w-full list-none items-center justify-between p-0"
                   style={{ paddingInline: ICON_PAD }}
@@ -900,6 +899,7 @@ export default function MobileBottomNavbar() {
                       className="flex h-full flex-1 items-center justify-center"
                     >
                       {item.isButton ? (
+                        // Button: tambah (plus)
                         <button
                           ref={plusButtonRef}
                           type="button"
@@ -955,6 +955,7 @@ export default function MobileBottomNavbar() {
                           />
                         </button>
                       ) : (
+                        // Link menu
                         <Link
                           href={item.href}
                           aria-label={item.label}
