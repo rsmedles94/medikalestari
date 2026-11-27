@@ -322,7 +322,7 @@ function ScheduleList({
   nowMinutes: number | null;
 }>) {
   return (
-    <ul className="divide-y divide-slate-200 overflow-hidden rounded-lg border border-t-2 border-slate-200 border-t-[#003f88] bg-white px-4">
+    <ul className="divide-y divide-slate-200 overflow-hidden rounded-lg border border-t-4 border-slate-200 border-t-[#003f88] bg-white px-4">
       {doctors.map((doctor) => {
         const onLeave = isOnLeave(doctor, today);
         // cuti lebih diutamakan daripada hijau

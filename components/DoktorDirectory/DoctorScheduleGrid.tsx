@@ -326,7 +326,7 @@ function ScheduleTable({
   return (
     <>
       {/* desktop: tabel */}
-      <div className="hidden overflow-hidden rounded-lg border border-t-2 border-slate-200 border-t-[#003f88] bg-white lg:block">
+      <div className="hidden overflow-hidden rounded-lg border border-t-4 border-slate-200 border-t-[#003f88] bg-white lg:block">
         <table className="w-full table-fixed border-collapse text-left text-sm">
           <caption className="sr-only">Jadwal dokter {specialty}</caption>
           <colgroup>
@@ -410,7 +410,7 @@ function ScheduleTable({
       </div>
 
       {/* layar kecil: daftar, hanya hari praktik */}
-      <ul className="divide-y divide-slate-200 overflow-hidden rounded-lg border border-t-2 border-slate-200 border-t-[#003f88] bg-white px-4 lg:hidden">
+      <ul className="divide-y divide-slate-200 overflow-hidden rounded-lg border border-t-4 border-slate-200 border-t-[#003f88] bg-white px-4 lg:hidden">
         {doctors.map((doctor) => {
           const onLeave = isOnLeave(doctor, today);
           const live = !onLeave && isPracticingNow(doctor, today, nowMinutes);

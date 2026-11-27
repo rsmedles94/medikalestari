@@ -38,7 +38,7 @@ function FieldSkeleton({
 // tabel jadwal (desktop)
 function TableSkeleton({ rows }: Readonly<{ rows: string[] }>) {
   return (
-    <div className="hidden overflow-hidden rounded-lg border border-t-2 border-slate-200 border-t-slate-300 bg-white lg:block">
+    <div className="hidden overflow-hidden rounded-lg border border-t-4 border-slate-200 border-t-slate-300 bg-white lg:block">
       <table className="w-full table-fixed border-collapse">
         <colgroup>
           <col className="w-[24%]" />
@@ -80,7 +80,7 @@ function TableSkeleton({ rows }: Readonly<{ rows: string[] }>) {
 // daftar jadwal (layar kecil)
 function ListSkeleton({ rows }: Readonly<{ rows: string[] }>) {
   return (
-    <ul className="divide-y divide-slate-200 overflow-hidden rounded-lg border border-t-2 border-slate-200 border-t-slate-300 bg-white px-4 lg:hidden">
+    <ul className="divide-y divide-slate-200 overflow-hidden rounded-lg border border-t-4 border-slate-200 border-t-slate-300 bg-white px-4 lg:hidden">
       {rows.map((row) => (
         <li key={row} className="py-3">
           <div className={`h-4 w-3/5 ${bar}`} />
