@@ -55,16 +55,12 @@ const DAYS = [
   "Sabtu",
   "Minggu",
 ];
-
-// hari praktik saja (tanpa "Semua Hari")
-const PRACTICE_DAYS = DAYS.slice(1);
-
 const ITEMS_PER_PAGE = 10;
 
 const focusRing =
   "outline-none focus-visible:ring-2 focus-visible:ring-[#003f88]/40";
 
-// gaya input/select filter mobile (sama seperti di jadwal dokter)
+// gaya input & select filter mobile (sama dengan jadwal dokter mobile)
 const fieldClass =
   "h-11 w-full rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-[#003f88] focus:ring-2 focus:ring-[#003f88]/20";
 
@@ -86,52 +82,6 @@ const getPageItems = (current: number, total: number): (number | "gap")[] => {
   });
   return items;
 };
-
-// jam praktik pada satu hari
-const getTimes = (schedules: Schedule[] = [], day: string): string[] =>
-  schedules
-    .filter((s) => s.day_of_week === day)
-    .map((s) => `${s.start_time.slice(0, 5)}–${s.end_time.slice(0, 5)}`);
-
-// jadwal praktik di samping kartu dokter
-function DoctorSchedule({ schedules }: Readonly<{ schedules?: Schedule[] }>) {
-  const days = PRACTICE_DAYS.map((day) => ({
-    day,
-    times: getTimes(schedules, day),
-  })).filter((d) => d.times.length > 0);
-
-  return (
-    <section className="block w-full flex-1 border-t border-slate-100 pt-3 text-left md:hidden lg:block lg:w-40 lg:flex-none lg:shrink-0 lg:self-stretch lg:border-t-0 lg:border-l lg:pl-5 lg:pt-8 xl:w-52">
-      <h4 className="mb-2 flex items-center gap-2 text-xs font-semibold text-slate-800 lg:mb-3 lg:text-[15px]">
-        Jadwal Praktik
-      </h4>
-
-      {days.length > 0 ? (
-        <dl className="space-y-1.5 text-xs lg:text-sm">
-          {days.map(({ day, times }) => (
-            <div
-              key={day}
-              className="flex items-start justify-between gap-2 lg:gap-3"
-            >
-              <dt className="text-slate-500">{day}</dt>
-              <dd className="text-right tabular-nums text-slate-800">
-                {times.map((time, i) => (
-                  <span key={`${time}-${i}`} className="block">
-                    {time}
-                  </span>
-                ))}
-              </dd>
-            </div>
-          ))}
-        </dl>
-      ) : (
-        <p className="text-xs text-slate-400 lg:text-sm">
-          Belum ada jadwal praktik
-        </p>
-      )}
-    </section>
-  );
-}
 
 // cache dokter agar tidak fetch ulang
 let cachedDoctors: DoctorWithSchedules[] | null = null;
@@ -325,8 +275,8 @@ const DoctorSection = ({
     setTimeout(() => setIsPaging(false), 400);
   };
 
-  // submit form filter mobile
-  const handleSubmit = (e: React.FormEvent) => {
+  // submit form filter mobile (tombol Temukan atau Enter)
+  const handleMobileSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     handleApplyFilter();
   };
@@ -351,11 +301,14 @@ const DoctorSection = ({
           className="grid grid-cols-2 gap-3 md:grid-cols-1 md:gap-6"
           aria-hidden="true"
         >
-          {/* 4 skeleton di mobile (genap untuk 2 kolom), 3 di tablet/desktop */}
+          {/* mobile: 4 kartu (2 baris x 2 kolom), md ke atas: 3 kartu */}
           {new Array(4).fill(null).map((_, i) => (
-            <React.Fragment key={`skeleton-${i}-${loading ? "load" : "page"}`}>
-              <DoctorSkeleton className={i === 3 ? "md:hidden" : ""} />
-            </React.Fragment>
+            <div
+              key={`skeleton-${i}-${loading ? "load" : "page"}`}
+              className={`h-full min-w-0 ${i === 3 ? "md:hidden" : ""}`}
+            >
+              <DoctorSkeleton />
+            </div>
           ))}
         </motion.div>
       );
@@ -377,13 +330,15 @@ const DoctorSection = ({
             <script
               type="application/ld+json"
               dangerouslySetInnerHTML={{
-                __html: JSON.stringify(doctorsJsonLd),
+                __html: JSON.stringify(doctorsJsonLd).replace(/</g, "\\u003c"),
               }}
             />
           )}
 
-          {/* mobile: grid 2 kolom ke bawah, tablet/desktop: 1 kolom seperti semula */}
-          <ul className="grid grid-cols-2 gap-3 list-none p-0 m-0 md:grid-cols-1 md:gap-6">
+          <h2 className="sr-only">Daftar dokter</h2>
+
+          {/* mobile: 2 kolom (kartu vertikal), md ke atas: 1 kolom (kartu horizontal) */}
+          <ul className="m-0 grid list-none grid-cols-2 gap-3 p-0 md:grid-cols-1 md:gap-6">
             {paginatedDoctors.map((doctor, index) => (
               <li
                 key={`doctor-${doctor.id || index}-${startIndex + index}`}
@@ -392,18 +347,14 @@ const DoctorSection = ({
                 className="min-w-0"
               >
                 <article
-                  className={`relative group flex h-full flex-col items-center gap-3 p-3 text-center md:h-fit md:flex-row md:items-start md:gap-8 md:p-8 md:text-left lg:gap-5 lg:p-6 xl:gap-8 xl:p-8 bg-white border border-slate-100 shadow-sm rounded-none transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:border-slate-100 ${
+                  className={`group relative flex h-full min-h-88 flex-col items-center gap-4 rounded-none border border-slate-100 bg-white p-4 pt-6 text-center shadow-sm transition-all duration-300 hover:-translate-y-2 hover:border-slate-100 hover:shadow-xl md:h-fit md:min-h-0 md:flex-row md:items-start md:gap-8 md:p-8 md:text-left ${
                     doctor.status === "cuti"
-                      ? "opacity-60 pointer-events-none"
+                      ? "pointer-events-none opacity-60"
                       : ""
                   }`}
                 >
-                  {doctor.status === "cuti" && (
-                    <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none"></div>
-                  )}
-
                   {/* foto dokter */}
-                  <figure className="relative w-24 h-24 sm:w-32 sm:h-32 md:w-44 md:h-44 lg:w-28 lg:h-28 xl:w-36 xl:h-36 shrink-0 rounded-full overflow-hidden shadow-sm bg-slate-100 flex items-center justify-center">
+                  <div className="relative flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-full bg-slate-100 shadow-sm sm:h-36 sm:w-36 md:h-44 md:w-44">
                     {doctor.image_url ? (
                       <Image
                         src={doctor.image_url}
@@ -412,11 +363,11 @@ const DoctorSection = ({
                         fill
                         className="object-cover"
                         priority={index < 3}
-                        sizes="(max-width: 768px) 96px, 176px"
+                        sizes="(max-width: 768px) 144px, 176px"
                       />
                     ) : (
                       <svg
-                        className="w-1/2 h-1/2 text-gray-400"
+                        className="h-1/2 w-1/2 text-gray-400"
                         fill="currentColor"
                         viewBox="0 0 24 24"
                         aria-hidden="true"
@@ -424,31 +375,32 @@ const DoctorSection = ({
                         <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                       </svg>
                     )}
-                  </figure>
+                  </div>
 
                   {/* detail dokter */}
-                  <div className="flex w-full min-w-0 flex-none flex-col md:block md:w-auto md:flex-1">
-                    <header className="mb-3 md:mb-4">
+                  <div className="flex w-full min-w-0 flex-1 flex-col">
+                    <header className="mb-4">
                       <h3
                         itemProp="name"
-                        className="mt-0 line-clamp-2 min-h-10 text-sm font-bold leading-snug text-slate-800 md:mt-8 md:line-clamp-none md:min-h-0 md:text-2xl"
+                        className="mt-0 line-clamp-2 min-h-10 wrap-break-word text-sm font-bold leading-snug text-slate-800 sm:min-h-11 sm:text-base md:mt-8 md:line-clamp-none md:min-h-0 md:text-2xl"
                       >
                         {doctor.name}
                       </h3>
                       <p
                         itemProp="medicalSpecialty"
-                        className="mt-1 line-clamp-2 min-h-8 text-gray-400 font-semibold text-[10px] md:mt-0 md:line-clamp-none md:min-h-0 md:text-xs mb-1"
+                        className="mt-1 line-clamp-2 min-h-8 text-[10px] font-semibold text-gray-400 md:line-clamp-none md:min-h-0 md:text-xs"
                       >
                         {doctor.specialty}
                       </p>
                     </header>
 
-                    <footer className="mb-3 flex w-full flex-col items-stretch gap-2 md:mb-0 md:flex-row md:flex-nowrap md:items-center md:justify-start md:gap-3">
+                    {/* tombol: bertumpuk di mobile, sejajar di md ke atas */}
+                    <div className="mt-auto flex w-full flex-col gap-2.5 md:flex-row md:items-center md:justify-start md:gap-3">
                       <button
                         type="button"
                         onClick={() => setSelectedDoctor(doctor)}
                         aria-label={`Buat janji temu dengan ${doctor.name}`}
-                        className="w-full shrink-0 whitespace-nowrap px-3 py-2 md:w-auto md:px-6 md:py-3 lg:px-4 xl:px-6 bg-[#003f88] text-white text-[10px] md:text-[12px] lg:text-[11px] xl:text-[12px] font-bold rounded-full transition-all hover:bg-[#003f88]/90 active:scale-95 cursor-pointer"
+                        className={`w-full cursor-pointer whitespace-nowrap rounded-full bg-[#003f88] px-3 py-2.5 text-[11px] font-bold text-white transition-all hover:bg-[#003f88]/90 active:scale-95 md:w-auto md:shrink-0 md:px-8 md:py-3 md:text-[12px] ${focusRing}`}
                       >
                         Buat Janji Temu
                       </button>
@@ -457,15 +409,12 @@ const DoctorSection = ({
                         href={`/dokter/${doctor.id}`}
                         itemProp="url"
                         aria-label={`Lihat profil ${doctor.name}`}
-                        className="w-full shrink-0 whitespace-nowrap inline-flex items-center justify-center px-3 py-2 md:w-auto md:px-6 md:py-3 lg:px-4 xl:px-6 bg-white text-slate-600 text-[10px] md:text-[12px] lg:text-[11px] xl:text-[12px] font-bold rounded-full border-2 border-slate-200 transition-all hover:bg-[#e67e22] hover:text-white active:scale-95"
+                        className={`inline-flex w-full items-center justify-center whitespace-nowrap rounded-full border border-slate-200 bg-white px-3 py-2.5 text-[11px] font-bold text-slate-600 transition-all hover:bg-[#e67e22] hover:text-white active:scale-95 md:w-auto md:shrink-0 md:px-8 md:py-3 md:text-[12px] ${focusRing}`}
                       >
                         Profil Dokter
                       </Link>
-                    </footer>
+                    </div>
                   </div>
-
-                  {/* jadwal praktik (desktop saja) */}
-                  <DoctorSchedule schedules={doctor.schedules} />
                 </article>
               </li>
             ))}
@@ -537,10 +486,10 @@ const DoctorSection = ({
         exit={{ opacity: 0 }}
         role="status"
         aria-live="polite"
-        className="flex flex-col items-center justify-center h-96 bg-slate-50/50 rounded-none border border-dashed border-slate-200"
+        className="flex h-96 flex-col items-center justify-center rounded-none border border-dashed border-slate-200 bg-slate-50/50"
       >
-        <Search size={40} className="text-slate-300 mb-4" aria-hidden="true" />
-        <h3 className="text-slate-500 font-normal">Dokter tidak ditemukan</h3>
+        <Search size={40} className="mb-4 text-slate-300" aria-hidden="true" />
+        <h3 className="font-normal text-slate-500">Dokter tidak ditemukan</h3>
       </motion.div>
     );
   };
@@ -548,7 +497,7 @@ const DoctorSection = ({
   return (
     <section
       ref={sectionRef}
-      className="w-full bg-white min-h-screen text-slate-800 relative mb-20"
+      className="relative mb-20 min-h-screen w-full bg-white text-slate-800"
       id="dokter-spesialis"
       aria-label="Daftar dokter spesialis"
     >
@@ -564,18 +513,18 @@ const DoctorSection = ({
         )}
       </AnimatePresence>
 
-      <div className="max-w-[1139px] w-full mx-auto px-4 py-8 md:py-8">
+      <div className="mx-auto w-full max-w-[1139px] px-4 py-8 md:py-8">
         {/* breadcrumb & judul */}
-        <div className="pt-0 md:pt-9 pb-12">
+        <header className="pb-12 pt-0 md:pt-9">
           <nav
             aria-label="Breadcrumb"
-            className="flex items-center gap-1 text-[14px] font-normal text-gray-300 mb-4"
+            className="mb-4 flex items-center gap-1 text-[14px] font-normal text-gray-300"
           >
-            <ol className="flex items-center gap-1 list-none p-0 m-0">
+            <ol className="m-0 flex list-none items-center gap-1 p-0">
               <li>
                 <Link
                   href="/"
-                  className="text-black/60 hover:text-gray-300 transition-colors"
+                  className="text-black/60 transition-colors hover:text-gray-300"
                 >
                   Beranda
                 </Link>
@@ -588,113 +537,126 @@ const DoctorSection = ({
               </li>
             </ol>
           </nav>
-          <h1 className="text-3xl md:text-4xl font-bold text-black border-b border-slate-100 pb-6">
+          <h1 className="border-b border-slate-100 pb-6 text-3xl font-bold text-black md:text-4xl">
             Dokter Kami
           </h1>
-        </div>
+        </header>
 
-        <div className="flex flex-col lg:flex-row gap-8 items-start">
-          {/* filter mobile (sama seperti di jadwal dokter) */}
-          <form
-            role="search"
-            aria-label="Filter pencarian dokter"
-            onSubmit={handleSubmit}
-            className="lg:hidden grid w-full grid-cols-2 gap-4 rounded-md border border-slate-200 bg-slate-50 p-4 -mt-4"
-          >
-            {/* input nama */}
-            <div className="col-span-2">
-              <label
-                htmlFor="doctor-name-mobile"
-                className="mb-1.5 block text-sm font-medium text-slate-700"
-              >
-                Nama dokter
-              </label>
-              <div className="relative">
-                <Search
-                  size={16}
-                  aria-hidden="true"
-                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-                />
-                <input
-                  id="doctor-name-mobile"
-                  type="search"
-                  placeholder="Nama dokter"
-                  value={tempFilter.name}
-                  onChange={(e) =>
-                    setTempFilter({ ...tempFilter, name: e.target.value })
-                  }
-                  enterKeyHint="search"
-                  className={`${fieldClass} pl-9`}
-                />
+        <div className="flex flex-col items-start gap-8 lg:flex-row">
+          {/* filter mobile (sama dengan filter jadwal dokter mobile) */}
+          <div className="-mt-4 w-full lg:hidden">
+            <form
+              role="search"
+              aria-label="Cari dokter"
+              onSubmit={handleMobileSubmit}
+              className="grid grid-cols-2 gap-4 rounded-md border border-slate-200 bg-slate-50 p-4"
+            >
+              <h2 className="sr-only">Filter pencarian dokter</h2>
+
+              {/* input nama */}
+              <div className="col-span-2">
+                <label
+                  htmlFor="doctor-name-mobile"
+                  className="mb-1.5 block text-sm font-medium text-slate-700"
+                >
+                  Nama dokter
+                </label>
+                <div className="relative">
+                  <Search
+                    size={16}
+                    aria-hidden="true"
+                    className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                  />
+                  <input
+                    id="doctor-name-mobile"
+                    type="search"
+                    placeholder="Nama dokter"
+                    value={tempFilter.name}
+                    onChange={(e) =>
+                      setTempFilter((prev) => ({
+                        ...prev,
+                        name: e.target.value,
+                      }))
+                    }
+                    enterKeyHint="search"
+                    className={`${fieldClass} pl-9`}
+                  />
+                </div>
               </div>
-            </div>
 
-            {/* pilih spesialis */}
-            <div>
-              <label
-                htmlFor="specialty-select-mobile"
-                className="mb-1.5 block text-sm font-medium text-slate-700"
-              >
-                Spesialis
-              </label>
-              <select
-                id="specialty-select-mobile"
-                value={tempFilter.specialty}
-                onChange={(e) =>
-                  setTempFilter({ ...tempFilter, specialty: e.target.value })
-                }
-                className={fieldClass}
-              >
-                {SPECIALTY_CATEGORIES.map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
-                ))}
-              </select>
-            </div>
+              {/* pilih spesialis */}
+              <div>
+                <label
+                  htmlFor="specialty-select-mobile"
+                  className="mb-1.5 block text-sm font-medium text-slate-700"
+                >
+                  Spesialis
+                </label>
+                <select
+                  id="specialty-select-mobile"
+                  value={tempFilter.specialty}
+                  onChange={(e) =>
+                    setTempFilter((prev) => ({
+                      ...prev,
+                      specialty: e.target.value,
+                    }))
+                  }
+                  className={fieldClass}
+                >
+                  {SPECIALTY_CATEGORIES.map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-            {/* pilih hari */}
-            <div>
-              <label
-                htmlFor="day-select-mobile"
-                className="mb-1.5 block text-sm font-medium text-slate-700"
-              >
-                Hari praktik
-              </label>
-              <select
-                id="day-select-mobile"
-                value={tempFilter.day}
-                onChange={(e) =>
-                  setTempFilter({ ...tempFilter, day: e.target.value })
-                }
-                className={fieldClass}
-              >
-                {DAYS.map((d) => (
-                  <option key={d} value={d}>
-                    {d}
-                  </option>
-                ))}
-              </select>
-            </div>
+              {/* pilih hari */}
+              <div>
+                <label
+                  htmlFor="day-select-mobile"
+                  className="mb-1.5 block text-sm font-medium text-slate-700"
+                >
+                  Hari praktik
+                </label>
+                <select
+                  id="day-select-mobile"
+                  value={tempFilter.day}
+                  onChange={(e) =>
+                    setTempFilter((prev) => ({ ...prev, day: e.target.value }))
+                  }
+                  className={fieldClass}
+                >
+                  {DAYS.map((d) => (
+                    <option key={d} value={d}>
+                      {d}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-            {/* tombol temukan */}
-            <div className="col-span-2">
-              <button
-                type="submit"
-                className={`h-11 w-full rounded-md bg-[#003f88] px-6 text-sm font-semibold text-white transition-colors hover:bg-[#003f88]/90 active:scale-[0.98] cursor-pointer ${focusRing}`}
-              >
-                Temukan
-              </button>
-            </div>
-          </form>
+              {/* tombol temukan */}
+              <div className="col-span-2">
+                <button
+                  type="submit"
+                  className={`h-11 w-full cursor-pointer rounded-md bg-[#003f88] px-6 text-sm font-semibold text-white transition-colors hover:bg-[#003f88]/90 active:scale-[0.98] ${focusRing}`}
+                >
+                  Temukan
+                </button>
+              </div>
+            </form>
+          </div>
 
           {/* sidebar filter desktop */}
-          <aside className="hidden lg:block w-1/3 xl:w-1/4 lg:sticky lg:top-45 z-30">
+          <aside
+            aria-label="Filter dokter"
+            className="z-30 hidden w-1/3 lg:sticky lg:top-45 lg:block xl:w-1/4"
+          >
             <search
-              className="border border-slate-200 p-8 bg-white rounded-none shadow-sm h-fit block"
+              className="block h-fit rounded-none border border-slate-200 bg-white p-8 shadow-sm"
               aria-label="Filter pencarian dokter"
             >
-              <div className="flex items-center gap-3 mb-8 text-[#003f88] border-b border-slate-50 pb-4">
+              <div className="mb-8 flex items-center gap-3 border-b border-slate-50 pb-4 text-[#003f88]">
                 <FilterIcon size={18} aria-hidden="true" />
                 <h2 className="text-lg font-bold">Filter Pencarian</h2>
               </div>
@@ -703,13 +665,13 @@ const DoctorSection = ({
               <div className="mb-6">
                 <label
                   htmlFor="doctor-name"
-                  className="block text-sm font-bold text-[#003f88] mb-2"
+                  className="mb-2 block text-sm font-bold text-[#003f88]"
                 >
                   Nama Dokter
                 </label>
                 <div className="relative">
                   <User
-                    className="absolute left-0 bottom-3 text-slate-400"
+                    className="absolute bottom-3 left-0 text-slate-400"
                     size={16}
                     aria-hidden="true"
                   />
@@ -721,7 +683,7 @@ const DoctorSection = ({
                     onChange={(e) =>
                       setTempFilter({ ...tempFilter, name: e.target.value })
                     }
-                    className="w-full border-b border-slate-200 py-2 pl-7 outline-none focus:border-[#003f88] text-sm bg-transparent rounded-none"
+                    className="w-full rounded-none border-b border-slate-200 bg-transparent py-2 pl-7 text-sm outline-none focus:border-[#003f88]"
                   />
                 </div>
               </div>
@@ -730,13 +692,13 @@ const DoctorSection = ({
               <div className="mb-6">
                 <label
                   htmlFor="specialty-select"
-                  className="block text-sm font-bold text-[#003f88] mb-2"
+                  className="mb-2 block text-sm font-bold text-[#003f88]"
                 >
                   Spesialis
                 </label>
                 <div className="relative">
                   <Stethoscope
-                    className="absolute left-0 bottom-3 text-slate-400"
+                    className="absolute bottom-3 left-0 text-slate-400"
                     size={16}
                     aria-hidden="true"
                   />
@@ -749,7 +711,7 @@ const DoctorSection = ({
                         specialty: e.target.value,
                       })
                     }
-                    className="w-full border-b border-slate-200 bg-transparent py-2 pl-7 outline-none cursor-pointer text-sm rounded-none appearance-none"
+                    className="w-full cursor-pointer appearance-none rounded-none border-b border-slate-200 bg-transparent py-2 pl-7 text-sm outline-none"
                   >
                     {SPECIALTY_CATEGORIES.map((s) => (
                       <option key={s} value={s}>
@@ -764,13 +726,13 @@ const DoctorSection = ({
               <div className="mb-10">
                 <label
                   htmlFor="day-select"
-                  className="block text-sm font-bold text-[#003f88] mb-2"
+                  className="mb-2 block text-sm font-bold text-[#003f88]"
                 >
                   Pilih Hari
                 </label>
                 <div className="relative">
                   <CalendarDays
-                    className="absolute left-0 bottom-3 text-slate-400"
+                    className="absolute bottom-3 left-0 text-slate-400"
                     size={16}
                     aria-hidden="true"
                   />
@@ -780,7 +742,7 @@ const DoctorSection = ({
                     onChange={(e) =>
                       setTempFilter({ ...tempFilter, day: e.target.value })
                     }
-                    className="w-full border-b border-slate-200 bg-transparent py-2 pl-7 outline-none cursor-pointer text-sm rounded-none appearance-none"
+                    className="w-full cursor-pointer appearance-none rounded-none border-b border-slate-200 bg-transparent py-2 pl-7 text-sm outline-none"
                   >
                     {DAYS.map((d) => (
                       <option key={d} value={d}>
@@ -792,8 +754,9 @@ const DoctorSection = ({
               </div>
 
               <button
+                type="button"
                 onClick={handleApplyFilter}
-                className="w-full bg-[#003f88] text-white py-4 font-bold rounded-full cursor-pointer transition-all hover:bg-[#003f88]/90 active:scale-[0.98]"
+                className="w-full cursor-pointer rounded-full bg-[#003f88] py-4 font-bold text-white transition-all hover:bg-[#003f88]/90 active:scale-[0.98]"
               >
                 Temukan Dokter
               </button>
@@ -801,11 +764,16 @@ const DoctorSection = ({
           </aside>
 
           {/* konten utama */}
-          <main className="w-full lg:w-2/3 xl:w-3/4 relative z-20 min-h-150">
+          <div className="relative z-20 min-h-150 w-full lg:w-2/3 xl:w-3/4">
+            {/* jumlah hasil untuk pembaca layar */}
+            <p aria-live="polite" className="sr-only">
+              {loading ? "" : `${filteredDoctors.length} dokter ditemukan`}
+            </p>
+
             <AnimatePresence mode="wait" initial={false}>
               {renderContent()}
             </AnimatePresence>
-          </main>
+          </div>
         </div>
       </div>
     </section>
