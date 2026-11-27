@@ -102,7 +102,7 @@ function DoctorSchedule({ schedules }: Readonly<{ schedules?: Schedule[] }>) {
 
   return (
     <div className="hidden lg:block lg:w-40 xl:w-52 shrink-0 self-stretch border-l border-slate-100 pl-5 pt-8">
-      <div className="mb-3 flex items-center gap-2 text-[15px] font-semibold text-[#003f88]">
+      <div className="mb-3 flex items-center gap-2 text-[15px] font-semibold text-slate-800">
         Jadwal Praktik
       </div>
 
@@ -394,7 +394,7 @@ const DoctorSection = ({
                     <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none"></div>
                   )}
                   {/* foto dokter */}
-                  <div className="relative w-24 h-24 sm:w-32 sm:h-32 md:w-44 md:h-44 lg:w-28 lg:h-28 xl:w-36 xl:h-36 shrink-0 rounded-full overflow-hidden border-4 border-slate-50 group-hover:border-blue-50 transition-colors shadow-sm bg-slate-100 flex items-center justify-center">
+                  <div className="relative w-24 h-24 sm:w-32 sm:h-32 md:w-44 md:h-44 lg:w-28 lg:h-28 xl:w-36 xl:h-36 shrink-0 rounded-full overflow-hidden shadow-sm bg-slate-100 flex items-center justify-center">
                     {doctor.image_url ? (
                       <Image
                         src={doctor.image_url}

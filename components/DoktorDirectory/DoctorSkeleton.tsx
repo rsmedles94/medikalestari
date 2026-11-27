@@ -32,7 +32,7 @@ const DoctorSkeleton = () => {
       className="relative flex flex-row items-start gap-4 md:gap-8 lg:gap-5 xl:gap-8 p-4 md:p-8 lg:p-6 xl:p-8 bg-slate-50 border border-slate-100 shadow-sm h-fit min-h-4 md:min-h-60 lg:min-h-0 rounded-none overflow-hidden"
     >
       {/* Foto Dokter Skeleton shimmer effect */}
-      <div className="relative w-24 h-24 sm:w-32 sm:h-32 md:w-44 md:h-44 lg:w-28 lg:h-28 xl:w-36 xl:h-36 shrink-0 rounded-full bg-slate-200 border-4 border-slate-50 overflow-hidden shadow-sm">
+      <div className="relative w-24 h-24 sm:w-32 sm:h-32 md:w-44 md:h-44 lg:w-28 lg:h-28 xl:w-36 xl:h-36 bg-slate-300 shrink-0 rounded-full overflow-hidden shadow-sm">
         <ShimmerOverlay />
       </div>
 
