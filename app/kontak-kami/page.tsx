@@ -193,14 +193,6 @@ const KontakKamiContent = ({ initialEmail }: KontakKamiContentProps) => {
                   className="w-full sm:w-auto bg-[#003f88] hover:bg-[#002b5c] active:scale-[0.99] text-white px-8 py-3.5 rounded-lg text-sm font-semibold transition-all inline-flex items-center justify-center gap-2.5 cursor-pointer"
                 >
                   <span>Kirim Pesan</span>
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    aria-hidden="true"
-                    className="w-4 h-4 shrink-0"
-                  >
-                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
-                  </svg>
                 </button>
               </div>
             </form>

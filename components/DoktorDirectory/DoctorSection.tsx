@@ -101,15 +101,18 @@ function DoctorSchedule({ schedules }: Readonly<{ schedules?: Schedule[] }>) {
   })).filter((d) => d.times.length > 0);
 
   return (
-    <div className="hidden lg:block lg:w-40 xl:w-52 shrink-0 self-stretch border-l border-slate-100 pl-5 pt-8">
-      <div className="mb-3 flex items-center gap-2 text-[15px] font-semibold text-slate-800">
+    <section className="block w-full flex-1 border-t border-slate-100 pt-3 text-left md:hidden lg:block lg:w-40 lg:flex-none lg:shrink-0 lg:self-stretch lg:border-t-0 lg:border-l lg:pl-5 lg:pt-8 xl:w-52">
+      <h4 className="mb-2 flex items-center gap-2 text-xs font-semibold text-slate-800 lg:mb-3 lg:text-[15px]">
         Jadwal Praktik
-      </div>
+      </h4>
 
       {days.length > 0 ? (
-        <dl className="space-y-1.5 text-sm">
+        <dl className="space-y-1.5 text-xs lg:text-sm">
           {days.map(({ day, times }) => (
-            <div key={day} className="flex items-start justify-between gap-3">
+            <div
+              key={day}
+              className="flex items-start justify-between gap-2 lg:gap-3"
+            >
               <dt className="text-slate-500">{day}</dt>
               <dd className="text-right tabular-nums text-slate-800">
                 {times.map((time, i) => (
@@ -122,9 +125,11 @@ function DoctorSchedule({ schedules }: Readonly<{ schedules?: Schedule[] }>) {
           ))}
         </dl>
       ) : (
-        <p className="text-sm text-slate-400">Belum ada jadwal praktik</p>
+        <p className="text-xs text-slate-400 lg:text-sm">
+          Belum ada jadwal praktik
+        </p>
       )}
-    </div>
+    </section>
   );
 }
 
@@ -343,12 +348,13 @@ const DoctorSection = ({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="space-y-6"
+          className="grid grid-cols-2 gap-3 md:grid-cols-1 md:gap-6"
           aria-hidden="true"
         >
-          {new Array(3).fill(null).map((_, i) => (
+          {/* 4 skeleton di mobile (genap untuk 2 kolom), 3 di tablet/desktop */}
+          {new Array(4).fill(null).map((_, i) => (
             <React.Fragment key={`skeleton-${i}-${loading ? "load" : "page"}`}>
-              <DoctorSkeleton />
+              <DoctorSkeleton className={i === 3 ? "md:hidden" : ""} />
             </React.Fragment>
           ))}
         </motion.div>
@@ -376,15 +382,17 @@ const DoctorSection = ({
             />
           )}
 
-          <ul className="grid grid-cols-1 gap-6 list-none p-0 m-0">
+          {/* mobile: grid 2 kolom ke bawah, tablet/desktop: 1 kolom seperti semula */}
+          <ul className="grid grid-cols-2 gap-3 list-none p-0 m-0 md:grid-cols-1 md:gap-6">
             {paginatedDoctors.map((doctor, index) => (
               <li
                 key={`doctor-${doctor.id || index}-${startIndex + index}`}
                 itemScope
                 itemType="https://schema.org/Physician"
+                className="min-w-0"
               >
                 <article
-                  className={`relative group flex flex-row items-start gap-4 md:gap-8 lg:gap-5 xl:gap-8 p-4 md:p-8 lg:p-6 xl:p-8 bg-white border border-slate-100 shadow-sm h-fit rounded-none transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:border-slate-100 ${
+                  className={`relative group flex h-full flex-col items-center gap-3 p-3 text-center md:h-fit md:flex-row md:items-start md:gap-8 md:p-8 md:text-left lg:gap-5 lg:p-6 xl:gap-8 xl:p-8 bg-white border border-slate-100 shadow-sm rounded-none transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:border-slate-100 ${
                     doctor.status === "cuti"
                       ? "opacity-60 pointer-events-none"
                       : ""
@@ -393,8 +401,9 @@ const DoctorSection = ({
                   {doctor.status === "cuti" && (
                     <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none"></div>
                   )}
+
                   {/* foto dokter */}
-                  <div className="relative w-24 h-24 sm:w-32 sm:h-32 md:w-44 md:h-44 lg:w-28 lg:h-28 xl:w-36 xl:h-36 shrink-0 rounded-full overflow-hidden shadow-sm bg-slate-100 flex items-center justify-center">
+                  <figure className="relative w-24 h-24 sm:w-32 sm:h-32 md:w-44 md:h-44 lg:w-28 lg:h-28 xl:w-36 xl:h-36 shrink-0 rounded-full overflow-hidden shadow-sm bg-slate-100 flex items-center justify-center">
                     {doctor.image_url ? (
                       <Image
                         src={doctor.image_url}
@@ -415,30 +424,31 @@ const DoctorSection = ({
                         <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                       </svg>
                     )}
-                  </div>
+                  </figure>
 
                   {/* detail dokter */}
-                  <div className="flex-1 text-left min-w-0">
-                    <div className="mb-2 md:mb-4">
+                  <div className="flex w-full min-w-0 flex-none flex-col md:block md:w-auto md:flex-1">
+                    <header className="mb-3 md:mb-4">
                       <h3
                         itemProp="name"
-                        className="text-lg md:text-2xl font-bold text-slate-800 mt-0 md:mt-8"
+                        className="mt-0 line-clamp-2 min-h-10 text-sm font-bold leading-snug text-slate-800 md:mt-8 md:line-clamp-none md:min-h-0 md:text-2xl"
                       >
                         {doctor.name}
                       </h3>
                       <p
                         itemProp="medicalSpecialty"
-                        className="text-gray-400 font-semibold text-[10px] md:text-xs mb-1"
+                        className="mt-1 line-clamp-2 min-h-8 text-gray-400 font-semibold text-[10px] md:mt-0 md:line-clamp-none md:min-h-0 md:text-xs mb-1"
                       >
                         {doctor.specialty}
                       </p>
-                    </div>
+                    </header>
 
-                    <div className="flex flex-row flex-nowrap items-center justify-start gap-2 md:gap-3 w-full">
+                    <footer className="mb-3 flex w-full flex-col items-stretch gap-2 md:mb-0 md:flex-row md:flex-nowrap md:items-center md:justify-start md:gap-3">
                       <button
+                        type="button"
                         onClick={() => setSelectedDoctor(doctor)}
                         aria-label={`Buat janji temu dengan ${doctor.name}`}
-                        className="shrink-0 whitespace-nowrap px-4 py-2 md:px-6 md:py-3 lg:px-4 xl:px-6 bg-[#003f88] text-white text-[10px] md:text-[12px] lg:text-[11px] xl:text-[12px] font-bold rounded-full transition-all hover:bg-[#003f88]/90 active:scale-95 cursor-pointer"
+                        className="w-full shrink-0 whitespace-nowrap px-3 py-2 md:w-auto md:px-6 md:py-3 lg:px-4 xl:px-6 bg-[#003f88] text-white text-[10px] md:text-[12px] lg:text-[11px] xl:text-[12px] font-bold rounded-full transition-all hover:bg-[#003f88]/90 active:scale-95 cursor-pointer"
                       >
                         Buat Janji Temu
                       </button>
@@ -447,11 +457,11 @@ const DoctorSection = ({
                         href={`/dokter/${doctor.id}`}
                         itemProp="url"
                         aria-label={`Lihat profil ${doctor.name}`}
-                        className="shrink-0 whitespace-nowrap inline-flex items-center justify-center px-4 py-2 md:px-6 md:py-3 lg:px-4 xl:px-6 bg-white text-slate-600 text-[10px] md:text-[12px] lg:text-[11px] xl:text-[12px] font-bold rounded-full border border-slate-200 transition-all hover:bg-[#e67e22] hover:text-white active:scale-95"
+                        className="w-full shrink-0 whitespace-nowrap inline-flex items-center justify-center px-3 py-2 md:w-auto md:px-6 md:py-3 lg:px-4 xl:px-6 bg-white text-slate-600 text-[10px] md:text-[12px] lg:text-[11px] xl:text-[12px] font-bold rounded-full border-2 border-slate-200 transition-all hover:bg-[#e67e22] hover:text-white active:scale-95"
                       >
                         Profil Dokter
                       </Link>
-                    </div>
+                    </footer>
                   </div>
 
                   {/* jadwal praktik (desktop saja) */}

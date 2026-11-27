@@ -15,18 +15,14 @@ const AboutUs = () => {
 
   const isImageLoaded = (imageName: string) => loadedImages.has(imageName);
 
-  const partners = ["tomtom", "viatris", "zoetis", "rohto", "davita", "chewy"];
-
   const cardData = [
     {
       title: "VISI",
-      img: "/misi.jpg",
       content:
         "Menjadikan Rumah Sakit yang terbaik dan terjangkau oleh seluruh lapisan masyarakat.",
     },
     {
       title: "MISI",
-      img: "/misi.jpg",
       content: (
         <ul className="space-y-2 text-sm">
           <li>1. Mengutamakan Pasien Safety.</li>
@@ -37,7 +33,6 @@ const AboutUs = () => {
     },
     {
       title: "MOTTO",
-      img: "/misi.jpg",
       content: (
         <span className="italic">
           &quot;Kesembuhan Anda Kebahagiaan Kami&quot;
@@ -47,10 +42,13 @@ const AboutUs = () => {
   ];
 
   return (
-    <article className="bg-white text-slate-900 scroll md:-mt-12 pb-20">
+    <main className="bg-white text-slate-900 scroll md:-mt-12 pb-20">
       {/* breadcrumb tentang kami */}
-      <header className="max-w-[1159px] mx-auto px-4 py-8 md:py-20">
-        <div className="mb-8 md:mb-12 border-b border-slate-100 pb-6 md:py-9 ">
+      <section
+        aria-labelledby="about-heading"
+        className="max-w-[1160px] mx-auto px-6 pt-8 pb-4 lg:py-20"
+      >
+        <header className="mb-4 lg:mb-12 border-b border-slate-100 pb-6 md:py-9">
           <nav
             aria-label="Breadcrumb"
             className="flex items-center gap-1 text-[14px] text-gray-300 mb-4"
@@ -66,14 +64,17 @@ const AboutUs = () => {
               Tentang Kami
             </span>
           </nav>
-          <h1 className="text-4xl font-bold text-black mb-2">Tentang Kami</h1>
+          <h1 id="about-heading" className="text-4xl font-bold text-black mb-2">
+            Tentang Kami
+          </h1>
           <p className="text-slate-600">
             Mengabdi untuk kesehatan masyarakat sejak 1994 dengan pelayanan
             prima dan terakreditasi Paripurna.
           </p>
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
-          <div className="lg:col-span-8 relative aspect-[16/10] overflow-hidden border border-slate-200 shadow-sm group">
+        </header>
+
+        <div className="hidden lg:grid grid-cols-12 gap-3 md:gap-4">
+          <figure className="col-span-8 relative aspect-[16/10] overflow-hidden rounded-lg border border-slate-200 shadow-sm group">
             {!isImageLoaded("hospital-building") && (
               <ImageSkeleton width="w-full" height="h-full" />
             )}
@@ -85,10 +86,10 @@ const AboutUs = () => {
               priority
               onLoad={() => handleImageLoad("hospital-building")}
             />
-          </div>
+          </figure>
 
-          <div className="lg:col-span-4 flex flex-col gap-6 md:gap-8">
-            <div className="relative flex-1 aspect-[16/9] lg:aspect-auto overflow-hidden border border-slate-200 shadow-sm">
+          <div className="col-span-4 flex flex-col gap-3 md:gap-4">
+            <figure className="relative flex-1 min-h-[120px] overflow-hidden rounded-lg border border-slate-200 shadow-sm">
               {!isImageLoaded("room") && (
                 <ImageSkeleton width="w-full" height="h-full" />
               )}
@@ -99,8 +100,8 @@ const AboutUs = () => {
                 className="object-cover"
                 onLoad={() => handleImageLoad("room")}
               />
-            </div>
-            <div className="relative flex-1 aspect-[16/9] lg:aspect-auto overflow-hidden border border-slate-200 shadow-sm">
+            </figure>
+            <figure className="relative flex-1 min-h-[120px] overflow-hidden rounded-lg border border-slate-200 shadow-sm">
               {!isImageLoaded("lobby") && (
                 <ImageSkeleton width="w-full" height="h-full" />
               )}
@@ -111,126 +112,84 @@ const AboutUs = () => {
                 className="object-cover"
                 onLoad={() => handleImageLoad("lobby")}
               />
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* sejarah */}
-      <section className="max-w-[1160px] mx-auto px-6 pb-24">
-        <div className="max-w-[1160px]">
-          <h2 className="text-3xl font-bold tracking-tight text-slate-950 uppercase mb-6">
-            Sejarah Berdirinya RS Medika Lestari
-          </h2>
-          <div className="space-y-6 text-slate-700 leading-relaxed text-justify text-[16px]">
-            <p>
-              Berdiri tanggal 15 oktober 1994, berawal dari sebuah klinik yang
-              bertempat di Jl. HOS Cokroaminoto Perum Pondok Lestari Blok C1
-              No.1-2, Ciledug Kota Tanggerang 15157. Medika Lestari hadir untuk
-              memenuhi permintaan masyarakat akan kesehatan yang baik dan prima.
-              Pada tahun 1997 Klinik Medika Lestari membangun gedung baru dan
-              meningkatkan statusnya dari klinik menjadi Klinik Spesialis dan
-              Rumah Bersalin Medika Lestari.
-            </p>
-            <p>
-              Pada tahun 2005 Rumah Sakit Medika Lestari menambah fasilitas dan
-              meningkatkan statusnya menjadi Rumah Sakit Ibu dan Anak (RSIA) dan
-              selanjutnya pada tahun 2008 Rumah Sakit Medika Lestari
-              meningkatkan statusnya menjadi Rumah Sakit Umum. Tahun 2012 Rumah
-              Sakit Medika Lestari terus berkembang dengan Motivasi yang sangat
-              tinggi serta kebersamaan dan kekompakan seluruh karyawan RS Medika
-              Lestari, kini RS Medika Lestari sampai pada proses pembangunan
-              serta pengembangan dari segi pelayanan serta fasilitas.
-            </p>
-            <p>
-              Tahun 2017 sampai sekarang RS Medika Lestari sudah melayani Rawat
-              Inap, Rawat Jalan, dan layanan 24 Jam (IGD, Radiologi,
-              Laboratorium, Farmasi). Pada tahun 2023 RS Medika Lestari sudah
-              terakreditasi paripurna.
-            </p>
+            </figure>
           </div>
         </div>
       </section>
 
-      {/* visi & misi */}
-      <section className="bg-slate-50 border-y border-slate-200 py-24">
-        <div className="max-w-[1160px] mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {cardData.map((item) => (
-              <div
-                key={item.title}
-                className="group relative h-[420px] w-full overflow-hidden bg-white shadow-xl border border-slate-100"
+      {/* sejarah & visi-misi-motto */}
+      <section
+        aria-label="Sejarah, Visi, Misi, dan Motto"
+        className="max-w-[1160px] mx-auto px-6 pb-24"
+      >
+        <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-8 items-stretch">
+          {/* sejarah di sisi kiri */}
+          <article
+            aria-labelledby="history-heading"
+            className="h-full bg-white border border-slate-200 rounded-lg p-6 md:p-10 shadow-sm flex flex-col justify-between"
+          >
+            <div>
+              <h2
+                id="history-heading"
+                className="text-2xl font-bold tracking-tight text-slate-950 uppercase mb-6"
               >
-                {/* image tentang kami  */}
-                <div
-                  className="absolute inset-0 z-0 bg-cover bg-center transition-transform duration-[800ms] md:scale-105 md:group-hover:scale-100"
-                  style={{ backgroundImage: `url('${item.img}')` }}
-                />
+                Sejarah Berdirinya RS Medika Lestari
+              </h2>
+              <div className="space-y-6 text-slate-700 leading-relaxed text-justify text-[16px]">
+                <p>
+                  Berdiri tanggal 15 oktober 1994, berawal dari sebuah klinik
+                  yang bertempat di Jl. HOS Cokroaminoto Perum Pondok Lestari
+                  Blok C1 No.1-2, Ciledug Kota Tanggerang 15157. Medika Lestari
+                  hadir untuk memenuhi permintaan masyarakat akan kesehatan yang
+                  baik dan prima. Pada tahun 1997 Klinik Medika Lestari
+                  membangun gedung baru dan meningkatkan statusnya dari klinik
+                  menjadi Klinik Spesialis dan Rumah Bersalin Medika Lestari.
+                </p>
+                <p>
+                  Pada tahun 2005 Rumah Sakit Medika Lestari menambah fasilitas
+                  dan meningkatkan statusnya menjadi Rumah Sakit Ibu dan Anak
+                  (RSIA) dan selanjutnya pada tahun 2008 Rumah Sakit Medika
+                  Lestari meningkatkan statusnya menjadi Rumah Sakit Umum. Tahun
+                  2012 Rumah Sakit Medika Lestari terus berkembang dengan
+                  Motivasi yang sangat tinggi serta kebersamaan dan kekompakan
+                  seluruh karyawan RS Medika Lestari, kini RS Medika Lestari
+                  sampai pada proses pembangunan serta pengembangan dari segi
+                  pelayanan serta fasilitas.
+                </p>
+                <p>
+                  Tahun 2017 sampai sekarang RS Medika Lestari sudah melayani
+                  Rawat Inap, Rawat Jalan, dan layanan 24 Jam (IGD, Radiologi,
+                  Laboratorium, Farmasi). Pada tahun 2023 RS Medika Lestari
+                  sudah terakreditasi paripurna.
+                </p>
+              </div>
+            </div>
+          </article>
 
-                {/* layer overlay polygon */}
-                <div
-                  className="absolute inset-0 z-10 bg-[#003f88]/75 transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] 
-                             md:[clip-path:polygon(0_85%,100%_70%,100%_100%,0%_100%)] 
-                             md:group-hover:[clip-path:polygon(0_0,100%_0,100%_100%,0%_100%)]
-                             md:group-hover:bg-[#003f88]/85"
-                />
-
-                {/* konten teks */}
-                <div className="absolute inset-0 z-20 p-8 flex flex-col justify-end">
-                  {/* Judul */}
-                  <h3 className="text-white text-3xl font-bold transition-all duration-700 md:group-hover:-translate-y-2">
-                    {item.title}
-                  </h3>
-
-                  {/* deskripsi */}
-                  <div
-                    className="max-h-[300px] opacity-100 mt-4 transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] 
-                               md:max-h-0 md:opacity-0 md:mt-0 md:group-hover:max-h-[200px] md:group-hover:opacity-100 md:group-hover:mt-4"
-                  >
-                    <div className="text-white/95 leading-relaxed pt-3 border-t border-white/20 font-medium">
+          {/* visi, misi & motto sejajar vertikal di sisi kanan */}
+          <div className="h-full flex flex-col justify-between gap-6">
+            {cardData.map((item) => (
+              <article
+                key={item.title}
+                className="flex-1 bg-white border border-slate-200 rounded-lg p-6 shadow-sm flex flex-col justify-between"
+              >
+                <div className="flex items-start justify-between gap-4 h-full">
+                  {/* tulisan di sisi kiri */}
+                  <div className="flex-1 text-left">
+                    <h2 className="text-slate-950 text-2xl font-bold tracking-tight mb-2">
+                      {item.title}
+                    </h2>
+                    <div className="text-slate-600 leading-relaxed pt-2 border-t border-slate-200 font-medium">
                       {item.content}
                     </div>
                   </div>
                 </div>
-              </div>
+              </article>
             ))}
           </div>
         </div>
       </section>
-
-      {/* mitra kami */}
-      <section className="max-w-[1160px] mx-auto px-6 py-24">
-        <div className="text-center mb-16">
-          <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 mb-4 uppercase">
-            Mitra Kami
-          </h2>
-          <p className="text-slate-500 text-[15px] max-w-[700px] mx-auto">
-            Komitmen kami terhadap kualitas divalidasi oleh organisasi perawatan
-            kesehatan bergengsi
-          </p>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-5">
-          {partners.map((item) => (
-            <div
-              key={item}
-              className="flex items-center justify-center p-4 border border-slate-100 bg-white shadow-sm h-32 relative rounded-lg"
-            >
-              {!isImageLoaded(`partner-${item}`) && (
-                <ImageSkeleton width="w-24" height="h-24" />
-              )}
-              <Image
-                src={`/tentangkami/${item}.webp`}
-                alt={`Logo mitra ${item}`}
-                fill
-                className="object-contain p-4"
-                onLoad={() => handleImageLoad(`partner-${item}`)}
-              />
-            </div>
-          ))}
-        </div>
-      </section>
-    </article>
+    </main>
   );
 };
 
