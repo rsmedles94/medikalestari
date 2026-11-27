@@ -55,10 +55,18 @@ const DAYS = [
   "Sabtu",
   "Minggu",
 ];
+
+// hari praktik saja (tanpa "Semua Hari")
+const PRACTICE_DAYS = DAYS.slice(1);
+
 const ITEMS_PER_PAGE = 10;
 
 const focusRing =
   "outline-none focus-visible:ring-2 focus-visible:ring-[#003f88]/40";
+
+// gaya input/select filter mobile (sama seperti di jadwal dokter)
+const fieldClass =
+  "h-11 w-full rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-[#003f88] focus:ring-2 focus:ring-[#003f88]/20";
 
 // nomor halaman, loncatan jadi "gap"
 const getPageItems = (current: number, total: number): (number | "gap")[] => {
@@ -78,6 +86,47 @@ const getPageItems = (current: number, total: number): (number | "gap")[] => {
   });
   return items;
 };
+
+// jam praktik pada satu hari
+const getTimes = (schedules: Schedule[] = [], day: string): string[] =>
+  schedules
+    .filter((s) => s.day_of_week === day)
+    .map((s) => `${s.start_time.slice(0, 5)}–${s.end_time.slice(0, 5)}`);
+
+// jadwal praktik di samping kartu dokter
+function DoctorSchedule({ schedules }: Readonly<{ schedules?: Schedule[] }>) {
+  const days = PRACTICE_DAYS.map((day) => ({
+    day,
+    times: getTimes(schedules, day),
+  })).filter((d) => d.times.length > 0);
+
+  return (
+    <div className="hidden lg:block lg:w-40 xl:w-52 shrink-0 self-stretch border-l border-slate-100 pl-5 pt-8">
+      <div className="mb-3 flex items-center gap-2 text-[15px] font-semibold text-[#003f88]">
+        Jadwal Praktik
+      </div>
+
+      {days.length > 0 ? (
+        <dl className="space-y-1.5 text-sm">
+          {days.map(({ day, times }) => (
+            <div key={day} className="flex items-start justify-between gap-3">
+              <dt className="text-slate-500">{day}</dt>
+              <dd className="text-right tabular-nums text-slate-800">
+                {times.map((time, i) => (
+                  <span key={`${time}-${i}`} className="block">
+                    {time}
+                  </span>
+                ))}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      ) : (
+        <p className="text-sm text-slate-400">Belum ada jadwal praktik</p>
+      )}
+    </div>
+  );
+}
 
 // cache dokter agar tidak fetch ulang
 let cachedDoctors: DoctorWithSchedules[] | null = null;
@@ -101,9 +150,6 @@ const DoctorSection = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedDoctor, setSelectedDoctor] =
     useState<DoctorWithSchedules | null>(null);
-  const [showMobileSpecialtyModal, setShowMobileSpecialtyModal] =
-    useState(false);
-  const [showMobileDayModal, setShowMobileDayModal] = useState(false);
 
   const searchParams = useSearchParams();
   const urlSpecialty = searchParams.get("specialty") || "";
@@ -274,28 +320,10 @@ const DoctorSection = ({
     setTimeout(() => setIsPaging(false), 400);
   };
 
-  const handleSpecialtySelect = (specialty: string) => {
-    setTempFilter((prev) => ({ ...prev, specialty }));
-    setShowMobileSpecialtyModal(false);
-  };
-
-  const handleDaySelect = (day: string) => {
-    setTempFilter((prev) => ({ ...prev, day }));
-    setShowMobileDayModal(false);
-  };
-
-  const handleOpenSpecialtyModal = () => {
-    setShowMobileSpecialtyModal(!showMobileSpecialtyModal);
-    if (!showMobileSpecialtyModal) {
-      setShowMobileDayModal(false);
-    }
-  };
-
-  const handleOpenDayModal = () => {
-    setShowMobileDayModal(!showMobileDayModal);
-    if (!showMobileDayModal) {
-      setShowMobileSpecialtyModal(false);
-    }
+  // submit form filter mobile
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleApplyFilter();
   };
 
   const handlePageChange = (newPage: number) => {
@@ -356,7 +384,7 @@ const DoctorSection = ({
                 itemType="https://schema.org/Physician"
               >
                 <article
-                  className={`relative group flex flex-row items-start gap-4 md:gap-8 p-4 md:p-8 bg-white border border-slate-100 shadow-sm h-fit rounded-none transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:border-slate-100 ${
+                  className={`relative group flex flex-row items-start gap-4 md:gap-8 lg:gap-5 xl:gap-8 p-4 md:p-8 lg:p-6 xl:p-8 bg-white border border-slate-100 shadow-sm h-fit rounded-none transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:border-slate-100 ${
                     doctor.status === "cuti"
                       ? "opacity-60 pointer-events-none"
                       : ""
@@ -366,7 +394,7 @@ const DoctorSection = ({
                     <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none"></div>
                   )}
                   {/* foto dokter */}
-                  <div className="relative w-24 h-24 sm:w-32 sm:h-32 md:w-44 md:h-44 shrink-0 rounded-full overflow-hidden border-4 border-slate-50 group-hover:border-blue-50 transition-colors shadow-sm bg-slate-100 flex items-center justify-center">
+                  <div className="relative w-24 h-24 sm:w-32 sm:h-32 md:w-44 md:h-44 lg:w-28 lg:h-28 xl:w-36 xl:h-36 shrink-0 rounded-full overflow-hidden border-4 border-slate-50 group-hover:border-blue-50 transition-colors shadow-sm bg-slate-100 flex items-center justify-center">
                     {doctor.image_url ? (
                       <Image
                         src={doctor.image_url}
@@ -406,11 +434,11 @@ const DoctorSection = ({
                       </p>
                     </div>
 
-                    <div className="flex flex-row items-center justify-start gap-2 md:gap-3 w-full">
+                    <div className="flex flex-row flex-nowrap items-center justify-start gap-2 md:gap-3 w-full">
                       <button
                         onClick={() => setSelectedDoctor(doctor)}
                         aria-label={`Buat janji temu dengan ${doctor.name}`}
-                        className="shrink-0 whitespace-nowrap px-4 py-2 md:px-8 md:py-3 bg-[#003f88] text-white text-[10px] md:text-[12px] font-bold rounded-full transition-all hover:bg-[#003f88]/90 active:scale-95 cursor-pointer"
+                        className="shrink-0 whitespace-nowrap px-4 py-2 md:px-6 md:py-3 lg:px-4 xl:px-6 bg-[#003f88] text-white text-[10px] md:text-[12px] lg:text-[11px] xl:text-[12px] font-bold rounded-full transition-all hover:bg-[#003f88]/90 active:scale-95 cursor-pointer"
                       >
                         Buat Janji Temu
                       </button>
@@ -419,12 +447,15 @@ const DoctorSection = ({
                         href={`/dokter/${doctor.id}`}
                         itemProp="url"
                         aria-label={`Lihat profil ${doctor.name}`}
-                        className="shrink-0 whitespace-nowrap inline-flex items-center justify-center px-4 py-2 md:px-8 md:py-3 bg-white text-slate-600 text-[10px] md:text-[12px] font-bold rounded-full border border-slate-200 transition-all hover:bg-[#e67e22] hover:text-white active:scale-95"
+                        className="shrink-0 whitespace-nowrap inline-flex items-center justify-center px-4 py-2 md:px-6 md:py-3 lg:px-4 xl:px-6 bg-white text-slate-600 text-[10px] md:text-[12px] lg:text-[11px] xl:text-[12px] font-bold rounded-full border border-slate-200 transition-all hover:bg-[#e67e22] hover:text-white active:scale-95"
                       >
                         Profil Dokter
                       </Link>
                     </div>
                   </div>
+
+                  {/* jadwal praktik (desktop saja) */}
+                  <DoctorSchedule schedules={doctor.schedules} />
                 </article>
               </li>
             ))}
@@ -553,158 +584,99 @@ const DoctorSection = ({
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8 items-start">
-          {/* filter mobile */}
-          <search
-            className="lg:hidden w-full flex flex-col gap-4"
+          {/* filter mobile (sama seperti di jadwal dokter) */}
+          <form
+            role="search"
             aria-label="Filter pencarian dokter"
+            onSubmit={handleSubmit}
+            className="lg:hidden grid w-full grid-cols-2 gap-4 rounded-md border border-slate-200 bg-slate-50 p-4 -mt-4"
           >
-            <div className="flex items-center gap-2 bg-slate-50 p-3 rounded-lg border border-slate-100 -mt-4">
-              {/* input nama */}
-              <div className="flex-1 relative">
+            {/* input nama */}
+            <div className="col-span-2">
+              <label
+                htmlFor="doctor-name-mobile"
+                className="mb-1.5 block text-sm font-medium text-slate-700"
+              >
+                Nama dokter
+              </label>
+              <div className="relative">
                 <Search
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[#003f88]"
                   size={16}
                   aria-hidden="true"
+                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
                 />
-                <label htmlFor="doctor-name-mobile" className="sr-only">
-                  Nama dokter
-                </label>
                 <input
                   id="doctor-name-mobile"
-                  type="text"
-                  placeholder="Cari Dokter"
+                  type="search"
+                  placeholder="Nama dokter"
                   value={tempFilter.name}
-                  onChange={(e) => {
-                    setTempFilter({ ...tempFilter, name: e.target.value });
-                    if (e.target.value === "") {
-                      setActiveFilter((prev) => ({ ...prev, name: "" }));
-                      setCurrentPage(1);
-                    }
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      handleApplyFilter();
-                    }
-                  }}
-                  inputMode="search"
+                  onChange={(e) =>
+                    setTempFilter({ ...tempFilter, name: e.target.value })
+                  }
                   enterKeyHint="search"
-                  className="w-full border border-slate-200 h-11 pl-10 pr-4 outline-none focus:border-[#003f88] text-[14px] bg-white"
+                  className={`${fieldClass} pl-9`}
                 />
               </div>
-              {/* tombol spesialis */}
-              <button
-                onClick={handleOpenSpecialtyModal}
-                aria-label="Filter spesialis"
-                aria-expanded={showMobileSpecialtyModal}
-                className={`w-11 h-11 flex items-center justify-center border transition-all bg-white ${
-                  showMobileSpecialtyModal
-                    ? "border-[#003f88] bg-white"
-                    : "border-slate-200"
-                }`}
-                title="Filter Spesialis"
-              >
-                <Stethoscope
-                  size={20}
-                  className="text-[#003f88]"
-                  aria-hidden="true"
-                />
-              </button>
+            </div>
 
-              {/* tombol hari */}
-              <button
-                onClick={handleOpenDayModal}
-                aria-label="Filter hari"
-                aria-expanded={showMobileDayModal}
-                className={`w-11 h-11 flex items-center justify-center border transition-all bg-white ${
-                  showMobileDayModal
-                    ? "border-[#003f88] bg-white"
-                    : "border-slate-200 "
-                }`}
-                title="Filter Hari"
+            {/* pilih spesialis */}
+            <div>
+              <label
+                htmlFor="specialty-select-mobile"
+                className="mb-1.5 block text-sm font-medium text-slate-700"
               >
-                <CalendarDays
-                  size={20}
-                  className="text-[#003f88]"
-                  aria-hidden="true"
-                />
-              </button>
+                Spesialis
+              </label>
+              <select
+                id="specialty-select-mobile"
+                value={tempFilter.specialty}
+                onChange={(e) =>
+                  setTempFilter({ ...tempFilter, specialty: e.target.value })
+                }
+                className={fieldClass}
+              >
+                {SPECIALTY_CATEGORIES.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-              {/* tombol cari */}
+            {/* pilih hari */}
+            <div>
+              <label
+                htmlFor="day-select-mobile"
+                className="mb-1.5 block text-sm font-medium text-slate-700"
+              >
+                Hari praktik
+              </label>
+              <select
+                id="day-select-mobile"
+                value={tempFilter.day}
+                onChange={(e) =>
+                  setTempFilter({ ...tempFilter, day: e.target.value })
+                }
+                className={fieldClass}
+              >
+                {DAYS.map((d) => (
+                  <option key={d} value={d}>
+                    {d}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* tombol temukan */}
+            <div className="col-span-2">
               <button
-                onClick={() => {
-                  handleApplyFilter();
-                }}
-                className="px-4 h-11 bg-[#003f88] text-white font-semibold hover:bg-[#003f88]/90 transition-all border border-[#003f88] text-base flex items-center justify-center rounded-lg cursor-pointer"
+                type="submit"
+                className={`h-11 w-full rounded-md bg-[#003f88] px-6 text-sm font-semibold text-white transition-colors hover:bg-[#003f88]/90 active:scale-[0.98] cursor-pointer ${focusRing}`}
               >
                 Temukan
               </button>
             </div>
-
-            {/* dropdown spesialis */}
-            <AnimatePresence>
-              {showMobileSpecialtyModal && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.2 }}
-                  className="w-full bg-white border border-slate-200 shadow-lg z-50 max-h-64 overflow-y-auto"
-                >
-                  <div className="p-2">
-                    {SPECIALTY_CATEGORIES.map((s) => (
-                      <button
-                        key={s}
-                        onClick={() => handleSpecialtySelect(s)}
-                        aria-current={
-                          tempFilter.specialty === s ? "true" : undefined
-                        }
-                        className={`w-full text-left px-4 py-2 text-sm transition-all ${
-                          tempFilter.specialty === s
-                            ? "bg-[#003f88] text-white font-semibold"
-                            : "text-slate-700 hover:bg-slate-50"
-                        }`}
-                      >
-                        {s}
-                      </button>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* dropdown hari */}
-            <AnimatePresence>
-              {showMobileDayModal && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.2 }}
-                  className="w-full bg-white border border-slate-200 shadow-lg z-50 overflow-y-auto"
-                >
-                  <div className="p-2">
-                    <div className="px-4 py-2 text-xs font-bold text-[#003f88] bg-white">
-                      Pilih Hari
-                    </div>
-                    {DAYS.map((d) => (
-                      <button
-                        key={d}
-                        onClick={() => handleDaySelect(d)}
-                        aria-current={tempFilter.day === d ? "true" : undefined}
-                        className={`w-full text-left px-4 py-2 text-sm transition-all whitespace-nowrap ${
-                          tempFilter.day === d
-                            ? "bg-[#003f88] text-white font-semibold"
-                            : "text-slate-700 hover:bg-slate-50"
-                        }`}
-                      >
-                        {d}
-                      </button>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </search>
+          </form>
 
           {/* sidebar filter desktop */}
           <aside className="hidden lg:block w-1/3 xl:w-1/4 lg:sticky lg:top-45 z-30">
